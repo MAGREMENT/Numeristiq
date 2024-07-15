@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         mc:Ignorable="d"
-        Title="SettingWindow" Height="450" Width="800"
+        Title="SettingWindow" Height="500" Width="800"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
@@ -18,7 +18,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="75"/>
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
@@ -29,13 +29,15 @@
         <controls:TitleBarControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" x:Name="TitleBar" Minimize="Minimize"
                                   ChangeSize="ChangeSize" Close="Close" AllowResize="False" AppTitle="Settings"/>
         
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Width="200" Height="450" Style="{StaticResource TransparentBarScrollViewer}">
-            <StackPanel x:Name="TitlePanel" MinHeight="448"/>
-        </ScrollViewer>
+        <StackPanel Grid.Row="1" Grid.Column="0" x:Name="TitlePanel" VerticalAlignment="Stretch"
+                    Width="200" Margin="10,10, 0, 0"/>
         
-        <ScrollViewer Grid.Row="1" Grid.Column="1" Height="400" Style="{StaticResource TransparentBarScrollViewer}">
-            <StackPanel x:Name="SettingPanel" MinHeight="398"/>
-        </ScrollViewer>
+        <Border Grid.Row="1" Grid.Column="1" Margin="0,10,10,0" Background="{DynamicResource Background2}"
+                Padding="5" CornerRadius="0, 5, 5, 0">
+            <ScrollViewer  Style="{StaticResource TransparentBarScrollViewer}">
+                <StackPanel x:Name="SettingPanel"/>
+            </ScrollViewer>
+        </Border>
         
         <Grid Grid.Row="2" Grid.Column="1">
             <Grid.ColumnDefinitions>
@@ -46,7 +48,7 @@
             
             <Button Grid.Column="1" Margin="5,0,5,0" Style="{StaticResource BorderButton}"
                     VerticalAlignment="Center" HorizontalAlignment="Center" Click="Save" Background="{DynamicResource Primary1}">Save</Button>
-            <Button Grid.Column="2" Margin="5, 0, 5, 0" VerticalAlignment="Center" Style="{StaticResource BorderButton}"
+            <Button Grid.Column="2" Margin="0, 0, 20, 0" VerticalAlignment="Center" Style="{StaticResource BorderButton}"
                     HorizontalAlignment="Center" Click="Cancel" Background="{DynamicResource Off}">Cancel</Button>
         </Grid>
     </Grid>

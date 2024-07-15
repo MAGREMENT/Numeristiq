@@ -44,6 +44,42 @@
 		    <Style TargetType="Window"> 
 			    <Setter Property="FontFamily" Value="{StaticResource Poppins}" />             
 		    </Style> 
+			
+			<Style TargetType="RadioButton" x:Key="ChangeRadioButton">
+				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
+				<Setter Property="FontSize" Value="16"/>
+				<Setter Property="FontWeight" Value="SemiBold"/>
+				<Setter Property="Background" Value="{DynamicResource Background2}"/>
+				<Setter Property="Margin" Value="0, 0, 0, 5"/>
+				<Setter Property="HorizontalAlignment" Value="Left"/>
+				<Setter Property="Template">
+					<Setter.Value>
+						<ControlTemplate TargetType="RadioButton">
+							<Border Padding="15" Width="150" Background="{TemplateBinding Background}"
+							        CornerRadius="3">
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="*"/>
+									</Grid.ColumnDefinitions>
+									
+									<Border Grid.Column="0" Height="20" Width="20" CornerRadius="10" x:Name="Check"
+									        BorderBrush="{DynamicResource Text}" BorderThickness="3"/>
+									
+									<ContentPresenter Grid.Column="1" VerticalAlignment="Center"
+									                  HorizontalAlignment="Left" Margin="5, 0, 0, 0"/>
+								</Grid>
+							</Border>
+							
+							<ControlTemplate.Triggers>
+								<Trigger Property="IsChecked" Value="True">
+									<Setter TargetName="Check" Property="Background" Value="{DynamicResource Primary1}"/>
+								</Trigger>
+							</ControlTemplate.Triggers>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+			</Style>
 		    
 		    <Style TargetType="Button" x:Key="WelcomeButton">
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
@@ -113,17 +149,18 @@
 		    
 		    <Style TargetType="Button" x:Key="BorderButton">
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
-			    <Setter Property="FontSize" Value="15"/>
+			    <Setter Property="FontSize" Value="16"/>
 			    <Setter Property="FontWeight" Value="Bold"/>
 			    <Setter Property="BorderBrush" Value="Transparent"/>
 			    <Setter Property="Template">
 				    <Setter.Value>
 					    <ControlTemplate TargetType="Button">
-						    <Grid Background="{TemplateBinding Background}">
-							    <Border BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}"/>
-							    <ContentPresenter Margin="13,8" HorizontalAlignment="Center"
+						    <Border BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}"
+						            Background="{TemplateBinding Background}" Padding="18, 10"
+						            CornerRadius="5">
+							    <ContentPresenter HorizontalAlignment="Center"
 							                      VerticalAlignment="Center"/>
-						    </Grid>
+						    </Border>
 						    
 						    <ControlTemplate.Triggers>
 							    <Trigger Property="IsMouseOver" Value="True">
@@ -456,24 +493,22 @@
 		    
 		    <Style TargetType="RadioButton" x:Key="SettingTitleStyle">
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
-			    <Setter Property="FontSize" Value="18"/>
+			    <Setter Property="FontSize" Value="16"/>
 			    <Setter Property="Background" Value="Transparent"/>
+			    <Setter Property="HorizontalAlignment" Value="Stretch"/>
 			    <Setter Property="Template">
 				    <Setter.Value>
 					    <ControlTemplate TargetType="RadioButton">
 						    <Border Background="{TemplateBinding Background}"
-						            BorderThickness="0" Height="30">
+						            BorderThickness="0" Padding="5, 10" CornerRadius="10, 0, 0, 10">
 							    <ContentPresenter Content="{TemplateBinding Content}"
 							                      VerticalAlignment="Center"
-							                      HorizontalAlignment="Center"></ContentPresenter>
+							                      HorizontalAlignment="Center"/>
 						    </Border>
 						    
 						    <ControlTemplate.Triggers>
-							    <Trigger Property="IsMouseOver" Value="True">
-								    <Setter Property="Background" Value="{DynamicResource Primary1}"/>
-							    </Trigger>
 							    <Trigger Property="IsChecked" Value="True">
-								    <Setter Property="FontWeight" Value="SemiBold"/>
+								    <Setter Property="Background" Value="{DynamicResource Background2}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>

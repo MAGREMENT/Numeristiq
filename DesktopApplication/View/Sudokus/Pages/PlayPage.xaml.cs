@@ -22,6 +22,7 @@ public partial class PlayPage : ISudokuPlayView
     private readonly SudokuPlayPresenter _presenter;
 
     private bool _disabled;
+    private readonly bool _initialized;
     
     public PlayPage(SudokuApplicationPresenter appPresenter)
     {
@@ -29,21 +30,17 @@ public partial class PlayPage : ISudokuPlayView
         _presenter = appPresenter.Initialize(this);
         
         InitializeHighlightColorBoxes();
+        _initialized = true;
     }
 
     #region ISudokuPlayView
 
-    public ISudokuPlayerDrawer Drawer => Board;
-    public ISudokuSolverDrawer ClueShower => Board;
+    public ISudokuPlayerDrawer Drawer => (ISudokuPlayerDrawer)Embedded.OptimizableContent!;
+    public ISudokuSolverDrawer ClueShower => (ISudokuSolverDrawer)Embedded.OptimizableContent!;
 
     public void FocusDrawer()
     {
-        Board.Focus();
-    }
-
-    public void SetChangeLevelOptions(string[] options, int value)
-    {
-        ChangeLevelSelector.SetOptions(options, value);
+        ((FrameworkElement)Embedded.OptimizableContent!).Focus();
     }
 
     public void SetIsPlaying(bool isPlaying)
@@ -177,10 +174,7 @@ public partial class PlayPage : ISudokuPlayView
         }
     }
 
-    private void SetChangeLevel(int index)
-    {
-        _presenter.SetChangeLevel(index);
-    }
+    
 
     private void Start(object sender, RoutedEventArgs e)
     {
@@ -318,5 +312,25 @@ public partial class PlayPage : ISudokuPlayView
         ForwardButton.IsEnabled = false;
         BackButton.IsEnabled = false;
         _disabled = true;
+    }
+
+    private void ChangeLevelToSolution(object sender, RoutedEventArgs e)
+    {
+        if(_initialized) _presenter.SetChangeLevel(ChangeLevel.Solution);
+    }
+    
+    private void ChangeLevelToTop(object sender, RoutedEventArgs e)
+    {
+        if(_initialized) _presenter.SetChangeLevel(ChangeLevel.TopPossibilities);
+    }
+    
+    private void ChangeLevelToCenter(object sender, RoutedEventArgs e)
+    {
+        if(_initialized) _presenter.SetChangeLevel(ChangeLevel.MiddlePossibilities);
+    }
+    
+    private void ChangeLevelToBottom(object sender, RoutedEventArgs e)
+    {
+        if(_initialized) _presenter.SetChangeLevel(ChangeLevel.BottomPossibilities);
     }
 }

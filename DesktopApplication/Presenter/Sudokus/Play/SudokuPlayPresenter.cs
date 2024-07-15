@@ -39,8 +39,6 @@ public class SudokuPlayPresenter
         _translator = new SudokuHighlighterTranslator(_view.ClueShower, _settings);
         _disabler = new Disabler(_view);
         
-        _view.SetChangeLevelOptions(EnumConverter.ToStringArray<ChangeLevel>(new SpaceConverter()), (int)_changeLevel);
-        
         _player.MainLocation = _settings.MainLocation;
         
         _settings.AddEvent(SpecificSettings.StartAngle, _ => RefreshHighlights());
@@ -158,9 +156,9 @@ public class SudokuPlayPresenter
         }
     }
 
-    public void SetChangeLevel(int index)
+    public void SetChangeLevel(ChangeLevel level)
     {
-        _changeLevel = (ChangeLevel)index;
+        _changeLevel = level;
         _view.FocusDrawer();
     }
 
