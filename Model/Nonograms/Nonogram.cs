@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Model.Core.BackTracking;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -130,16 +131,19 @@ public class Nonogram : IReadOnlyNonogram
         {
             if (_cells[index, col])
             {
-                if (remaining == 0) return false;
-
-                if (remaining > 0) remaining--;
-                else
+                switch (remaining)
                 {
-                    if (!enumerator.MoveNext()) return false;
-                    remaining = enumerator.Current - 1; 
+                    case 0:
+                    case < 0 when !enumerator.MoveNext():
+                        return false;
+                    case < 0:
+                        remaining = enumerator.Current - 1; 
+                        continue;
                 }
             }
-            else if (remaining == 0) remaining -= 1;
+            else if (remaining > 0) return false;
+
+            remaining--;
         }
 
         return !enumerator.MoveNext();
@@ -150,20 +154,23 @@ public class Nonogram : IReadOnlyNonogram
         using var enumerator = _verticalCollection[index].GetEnumerator();
 
         var remaining = -1;
-        for (int row = 0; row < ColumnCount; row++)
+        for (int row = 0; row < RowCount; row++)
         {
             if (_cells[row, index])
             {
-                if (remaining == 0) return false;
-
-                if (remaining > 0) remaining--;
-                else
+                switch (remaining)
                 {
-                    if (!enumerator.MoveNext()) return false;
-                    remaining = enumerator.Current - 1;
+                    case 0:
+                    case < 0 when !enumerator.MoveNext():
+                        return false;
+                    case < 0:
+                        remaining = enumerator.Current - 1;
+                        continue;
                 }
             }
-            else if (remaining == 0) remaining -= 1;
+            else if (remaining > 0) return false;
+
+            remaining--;
         }
 
         return !enumerator.MoveNext();
@@ -302,7 +309,7 @@ public class Nonogram : IReadOnlyNonogram
     }
 }
 
-public interface IReadOnlyNonogram
+public interface IReadOnlyNonogram : ICopyable<Nonogram>
 {
     int RowCount { get; }
     int ColumnCount { get; }

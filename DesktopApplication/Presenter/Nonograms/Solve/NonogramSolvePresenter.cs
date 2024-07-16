@@ -22,8 +22,9 @@ public class NonogramSolvePresenter
         _translator = new NonogramHighlightTranslator(_view.Drawer);
         _solver = new NonogramSolver();
         _solver.StrategyManager.AddStrategies(new PerfectRemainingSpaceStrategy(), new NotEnoughSpaceStrategy(),
-            new PerfectValueSpaceStrategy(), new ValueCompletionStrategy(), new BridgingStrategy(),
-            new SplittingStrategy(), new EdgeValueStrategy(), new ValueOverlayStrategy(), new UnreachableSquareStrategy());
+            new EdgeValueStrategy(), new PerfectValueSpaceStrategy(), new ValueCompletionStrategy(),
+            new BridgingStrategy(), new SplittingStrategy(), new ValueOverlayStrategy(),
+            new UnreachableSquareStrategy(), new BruteForceStrategy());
     }
 
     public void SetNewNonogram(string s)

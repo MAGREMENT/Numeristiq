@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Core.BackTracking;
 using Model.Core.Generators;
 using Model.Utility;
 
@@ -10,42 +11,21 @@ namespace Model.Sudokus.Generator;
 /// </summary>
 public class RDRSudokuPuzzleGenerator : RDRPuzzleGenerator<Sudoku>
 {
+    private readonly SudokuBackTracker _backTracker = new();
+    
     public RDRSudokuPuzzleGenerator(IFilledPuzzleGenerator<Sudoku> filledGenerator) : base(filledGenerator)
     {
     }
 
     protected override int GetSolutionCount(Sudoku puzzle, int stopAt)
     {
-        return BackTracking.Count(puzzle, ConstantPossibilitiesGiver.Instance, stopAt);
+        _backTracker.StopAt = stopAt;
+        _backTracker.Set(puzzle, ConstantPossibilitiesGiver.Instance);
+        return _backTracker.Count();
     }
 
     protected override Cell GetSymmetricCell(Sudoku puzzle,Cell cell)
     {
         return new Cell(8 - cell.Row, 8 - cell.Column);
-    }
-}
-
-public class ConstantPossibilitiesGiver : IPossibilitiesGiver
-{
-    private static readonly IEnumerable<int> _enumerable = Create();
-
-    public static ConstantPossibilitiesGiver Instance { get; } = new();
-
-    private ConstantPossibilitiesGiver()
-    {
-        
-    }
-    
-    public IEnumerable<int> EnumeratePossibilitiesAt(int row, int col)
-    {
-        return _enumerable;
-    }
-
-    private static IEnumerable<int> Create()
-    {
-        for (int i = 1; i <= 9; i++)
-        {
-            yield return i;
-        }
     }
 }

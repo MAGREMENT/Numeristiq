@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Core.BackTracking;
 using Model.Core.Generators;
 using Model.Utility;
 
@@ -6,6 +7,11 @@ namespace Model.Tectonics.Generator;
 
 public class RandomLayoutBackTrackingFilledTectonicGenerator : IFilledPuzzleGenerator<ITectonic>
 {
+    private readonly TectonicBackTracker _backTracker = new()
+    {
+        StopAt = 1
+    };
+    
     public GridSizeRandomizer Randomizer { get; } = new(2, 10);
 
     public ITectonic Generate()
@@ -48,12 +54,8 @@ public class RandomLayoutBackTrackingFilledTectonicGenerator : IFilledPuzzleGene
                 }
             }
 
-            var buffer = BackTracking.Solutions(result, new TectonicPossibilitiesGiver(result), 1);
-            if (buffer.Count > 0)
-            {
-                result = buffer[0];
-                break;
-            }
+            _backTracker.Set(result, new TectonicPossibilitiesGiver(result));
+            if (_backTracker.Fill()) break;
         }
 
         return result;

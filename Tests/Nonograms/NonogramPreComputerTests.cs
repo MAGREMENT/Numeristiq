@@ -6,7 +6,7 @@ using Model.Nonograms.Solver;
 
 namespace Tests.Nonograms;
 
-public class NonogramPreComputeTests
+public class NonogramPreComputerTests
 {
     [Test]
     public void TestValueSpaces()

@@ -40,7 +40,8 @@ public static class Program
             .AddCommand(new HelpCommand(), true)
             .AddCommand(new NonogramSolveCommand())
             .AddCommand(new NonogramSolveBatchCommand())
-            .AddCommand(new NonogramGenerateBatchCommand());
+            .AddCommand(new NonogramGenerateBatchCommand())
+            .AddCommand(new NonogramSolutionCount());
 
         return instance;
     }

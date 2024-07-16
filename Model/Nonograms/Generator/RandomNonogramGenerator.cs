@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.Core.BackTracking;
 using Model.Core.Generators;
+using Model.Nonograms.Solver;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -7,77 +9,92 @@ namespace Model.Nonograms.Generator;
 
 public class RandomNonogramGenerator : IPuzzleGenerator<Nonogram>
 {
+    private readonly NaiveNonogramBackTracker _backTracker = new(new Nonogram(), ConstantAvailabilityChecker.Instance)
+    {
+        StopAt = 2
+    };
+    
     public GridSizeRandomizer Randomizer { get; } = new(3, 20);
 
     public event OnNextStep? StepDone;
     public bool KeepSymmetry { get; set; } //TODO
-    public bool KeepUniqueness { get; set; } //TODO
+    public bool KeepUniqueness { get; set; } = true;
 
     public Nonogram Generate()
     {
-        var size = Randomizer.GenerateSize();
-        var buffer = new CalibratedInfiniteBitmap(size.RowCount, size.ColumnCount);
+        Nonogram result;
 
-        for (int r = 0; r < size.RowCount; r++)
+        do
         {
-            for (int c = 0; c < size.ColumnCount; c++)
-            {
-                if (Randomizer.GenerateChance(1, 2)) buffer.Add(r, c);
-            }
-        }
+            var size = Randomizer.GenerateSize();
+            var buffer = new CalibratedInfiniteBitmap(size.RowCount, size.ColumnCount);
 
-        for (int r = 0; r < size.RowCount; r++)
-        {
-            if(buffer.IsRowEmpty(r)) buffer.Add(r, Randomizer.GenerateBetween(0, size.ColumnCount));
-        }
-        
-        for (int c = 0; c < size.ColumnCount; c++)
-        {
-            if(buffer.IsColumnEmpty(c)) buffer.Add(Randomizer.GenerateBetween(0, size.RowCount), c);
-        }
-
-        List<int[]> h = new();
-        List<int[]> v = new();
-        List<int> current = new();
-
-        for (int r = 0; r < size.RowCount; r++)
-        {
-            int streak = 0;
-            for (int c = 0; c < size.ColumnCount; c++)
-            {
-                if (buffer.Contains(r, c)) streak++;
-                else if (streak > 0)
-                {
-                    current.Add(streak);
-                    streak = 0;
-                }
-            }
-
-            if (streak > 0) current.Add(streak);
-            h.Add(current.ToArray());
-            current.Clear();
-        }
-        
-        for (int c = 0; c < size.ColumnCount; c++)
-        {
-            int streak = 0;
             for (int r = 0; r < size.RowCount; r++)
             {
-                if (buffer.Contains(r, c)) streak++;
-                else if (streak > 0)
+                for (int c = 0; c < size.ColumnCount; c++)
                 {
-                    current.Add(streak);
-                    streak = 0;
+                    if (Randomizer.GenerateChance(1, 2)) buffer.Add(r, c);
                 }
             }
 
-            if (streak > 0) current.Add(streak);
-            v.Add(current.ToArray());
-            current.Clear();
-        }
+            for (int r = 0; r < size.RowCount; r++)
+            {
+                if (buffer.IsRowEmpty(r)) buffer.Add(r, Randomizer.GenerateBetween(0, size.ColumnCount));
+            }
 
-        var result = new Nonogram();
-        result.Add(h, v);
+            for (int c = 0; c < size.ColumnCount; c++)
+            {
+                if (buffer.IsColumnEmpty(c)) buffer.Add(Randomizer.GenerateBetween(0, size.RowCount), c);
+            }
+
+            List<int[]> h = new();
+            List<int[]> v = new();
+            List<int> current = new();
+
+            for (int r = 0; r < size.RowCount; r++)
+            {
+                int streak = 0;
+                for (int c = 0; c < size.ColumnCount; c++)
+                {
+                    if (buffer.Contains(r, c)) streak++;
+                    else if (streak > 0)
+                    {
+                        current.Add(streak);
+                        streak = 0;
+                    }
+                }
+
+                if (streak > 0) current.Add(streak);
+                h.Add(current.ToArray());
+                current.Clear();
+            }
+
+            for (int c = 0; c < size.ColumnCount; c++)
+            {
+                int streak = 0;
+                for (int r = 0; r < size.RowCount; r++)
+                {
+                    if (buffer.Contains(r, c)) streak++;
+                    else if (streak > 0)
+                    {
+                        current.Add(streak);
+                        streak = 0;
+                    }
+                }
+
+                if (streak > 0) current.Add(streak);
+                v.Add(current.ToArray());
+                current.Clear();
+            }
+
+            result = new Nonogram();
+            result.Add(h, v);
+
+            if (!KeepUniqueness) break;
+
+            _backTracker.Set(result);
+        } while (_backTracker.Count() > 1);
+        
         return result;
     }
     

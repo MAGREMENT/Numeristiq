@@ -11,6 +11,7 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
     private const int UnorderedIndex = 1;
     private const int FailsIndex = 2;
     private const int InstancesIndex = 3;
+    private const int LimitIndex = 4;
     
     public override string Description { get; }
 
@@ -28,7 +29,9 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
             new Option("-u", "Sets all strategies instance handling to unordered all"),
             new Option("--list-fails", "Lists all solver fails"),
             new Option("--list-instances", $"Lists all {name}'s that presented the strategy in their solution path",
-                ValueRequirement.Mandatory, ValueType.String)
+                ValueRequirement.Mandatory, ValueType.String),
+            new Option("--limit", $"Limits the number of {name} solved", ValueRequirement.Mandatory,
+                ValueType.Int)
         })
     {
         Description = $"Solves all the {name}'s in a text file";
@@ -42,6 +45,8 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
     {
         var solver = GetSolver(interpreter.Instantiator);
         solver.FastMode = true;
+
+        int limit = report.IsOptionUsed(LimitIndex) ? (int)report.GetOptionValue(LimitIndex)! : int.MaxValue;
 
         if (report.IsOptionUsed(UnorderedIndex)) solver.SetAllStrategiesHandlingTo(InstanceHandling.UnorderedAll);
         
@@ -61,6 +66,7 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
         
         using TextReader reader = new StreamReader((string)report.GetArgumentValue(FileIndex), Encoding.UTF8);
 
+        int count = 0;
         while ((_line = reader.ReadLine()) is not null)
         {
             int commentStart = _line.IndexOf('#');
@@ -82,6 +88,8 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
             {
                 instances.Add(s);
             }
+
+            if (++count >= limit) break;
         }
 
         Console.WriteLine(_statistics);

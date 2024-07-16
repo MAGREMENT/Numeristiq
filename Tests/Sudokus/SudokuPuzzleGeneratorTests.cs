@@ -1,8 +1,8 @@
-﻿using Model.Core.Trackers;
+﻿using Model.Core.BackTracking;
+using Model.Core.Trackers;
 using Model.Sudokus;
 using Model.Sudokus.Generator;
 using Model.Sudokus.Solver;
-using Model.Utility;
 using Repository;
 
 namespace Tests.Sudokus;
@@ -25,6 +25,10 @@ public class SudokuPuzzleGeneratorTests
         finder.AttachTo(solver);
         
         var puzzles = generator.Generate(SudokuCount);
+        var backTracker = new SudokuBackTracker(new Sudoku(), ConstantPossibilitiesGiver.Instance)
+        {
+            StopAt = 2
+        };
         
         Assert.Multiple(() =>
         {
@@ -35,7 +39,8 @@ public class SudokuPuzzleGeneratorTests
                 solver.Solve();
                 Console.WriteLine(" - " + finder.Hardest?.Name);
 
-                var solution = BackTracking.Solutions(p, ConstantPossibilitiesGiver.Instance, 2);
+                backTracker.Set(p);
+                var solution = backTracker.Solutions();
                 Assert.That(solution, Has.Count.EqualTo(1));
                 Assert.That(solution[0].IsCorrect(), Is.True);
             }
@@ -54,7 +59,8 @@ public class SudokuPuzzleGeneratorTests
                 solver.Solve();
                 Console.WriteLine(" - " + finder.Hardest?.Name);
 
-                var solution = BackTracking.Solutions(p, ConstantPossibilitiesGiver.Instance, 2);
+                backTracker.Set(p);
+                var solution = backTracker.Solutions();
                 Assert.That(solution, Has.Count.EqualTo(1));
                 Assert.That(solution[0].IsCorrect(), Is.True);
             }

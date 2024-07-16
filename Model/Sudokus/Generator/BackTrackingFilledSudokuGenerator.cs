@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Core.BackTracking;
 using Model.Core.Generators;
-using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 
 namespace Model.Sudokus.Generator;
 
 public class BackTrackingFilledSudokuGenerator : IFilledPuzzleGenerator<Sudoku>
 {
+    private readonly SudokuBackTracker _backTracker = new(new Sudoku(), new RandomPossibilitiesGiver())
+    {
+        StopAt = 1
+    };
+    
     public Sudoku Generate()
     {
-        return BackTracking.Solutions(new Sudoku(), new RandomPossibilitiesGiver(), 1)[0];
+        return _backTracker.Solutions()[0];
     }
 
     public Sudoku Generate(out List<Cell> removableCells)

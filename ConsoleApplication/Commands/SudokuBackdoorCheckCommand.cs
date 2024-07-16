@@ -1,9 +1,8 @@
-﻿using Model.Sudokus;
-using Model.Sudokus.Generator;
+﻿using Model.Core.BackTracking;
+using Model.Sudokus;
 using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Strategies;
 using Model.Sudokus.Solver.Strategies.AlternatingInference.Types;
-using Model.Utility;
 
 namespace ConsoleApplication.Commands;
 
@@ -11,6 +10,8 @@ public class SudokuBackdoorCheckCommand : Command
 {
     private const int StringIndex = 0;
     private const int SetIndex = 0;
+    
+    private readonly SudokuBackTracker _backTracker = new(new Sudoku(), ConstantPossibilitiesGiver.Instance);
     
     public SudokuBackdoorCheckCommand() : base("Backdoor", 
         new []
@@ -46,7 +47,8 @@ public class SudokuBackdoorCheckCommand : Command
 
         var sudoku = SudokuTranslator.TranslateLineFormat((string)report.GetArgumentValue(StringIndex));
 
-        var solutions = BackTracking.Solutions(sudoku, ConstantPossibilitiesGiver.Instance, int.MaxValue);
+        _backTracker.Set(sudoku);
+        var solutions = _backTracker.Solutions();
         if (solutions.Count == 0)
         {
             Console.WriteLine("The sudoku has no solution");

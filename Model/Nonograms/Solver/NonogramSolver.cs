@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
+using Model.Core.BackTracking;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Utility;

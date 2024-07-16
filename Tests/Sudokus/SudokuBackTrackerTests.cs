@@ -1,10 +1,9 @@
+using Model.Core.BackTracking;
 using Model.Sudokus;
-using Model.Sudokus.Generator;
-using Model.Utility;
 
-namespace Tests;
+namespace Tests.Sudokus;
 
-public class BackTrackingTests
+public class SudokuBackTrackerTests
 {
     [Test]
     public void MultipleSolutionsTest()
@@ -12,16 +11,19 @@ public class BackTrackingTests
         var sudoku = SudokuTranslator.TranslateLineFormat(
                 ".9.2.......1..693..3.71..8.35........48..2.6...7......56....4......4.2..2...3.6.7");
         var copy = sudoku.Copy();
+        var backTracker = new SudokuBackTracker(sudoku, ConstantPossibilitiesGiver.Instance);
 
-        var result = BackTracking.Solutions(sudoku, ConstantPossibilitiesGiver.Instance, int.MaxValue);
+        var result = backTracker.Solutions();
         
         Assert.Multiple(() =>
         {
             Assert.That(result, Has.Count.EqualTo(26));
             Assert.That(sudoku, Is.EqualTo(copy));
         });
-        
-        result = BackTracking.Solutions(sudoku, ConstantPossibilitiesGiver.Instance, 2);
+
+        backTracker.StopAt = 2;
+        backTracker.Set(sudoku);
+        result = backTracker.Solutions();
         
         Assert.Multiple(() =>
         {

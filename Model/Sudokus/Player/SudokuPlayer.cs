@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Core;
-using Model.Sudokus.Generator;
+using Model.Core.BackTracking;
 using Model.Sudokus.Player.HistoricEvents;
 using Model.Utility;
 using Model.Utility.BitSets;

@@ -1,30 +1,24 @@
-﻿using Model.Tectonics;
-using Model.Utility;
+﻿using ConsoleApplication.Commands.Abstracts;
+using Model.Core.BackTracking;
+using Model.Tectonics;
 
 namespace ConsoleApplication.Commands;
 
-public class TectonicSolutionCountCommand : Command
+public class TectonicSolutionCountCommand : SolutionCountCommand<ITectonic, IPossibilitiesGiver>
 {
-    private const int SudokuIndex = 0;
-
-    public TectonicSolutionCountCommand() : base("SolutionCount", 
-        new Argument("Tectonic string", ValueType.String))
+    public TectonicSolutionCountCommand() : base("Tectonic")
     {
     }
 
-    public override string Description => "Counts the number of solutions for a given Sudoku";
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    protected override BackTracker<ITectonic, IPossibilitiesGiver> BackTracker { get; } = new TectonicBackTracker();
+    protected override void SetBackTracker(string s)
     {
-        var tectonic = TectonicTranslator.TranslateRdFormat((string)report.GetArgumentValue(SudokuIndex));
+        var t = TectonicTranslator.TranslateRdFormat(s);
+        BackTracker.Set(t, new TectonicPossibilitiesGiver(t));
+    }
 
-        var result = BackTracking.Solutions(tectonic, new TectonicPossibilitiesGiver(tectonic),
-            int.MaxValue);
-        
-        Console.WriteLine($"Number of solutions : {result.Count}\n");
-
-        foreach (var t in result)
-        {
-            Console.WriteLine(TectonicTranslator.TranslateRdFormat(t));
-        }
+    protected override string ToString(ITectonic puzzle)
+    {
+        return TectonicTranslator.TranslateRdFormat(puzzle);
     }
 }

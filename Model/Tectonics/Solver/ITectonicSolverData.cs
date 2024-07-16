@@ -1,4 +1,5 @@
 ﻿using Model.Core;
+using Model.Core.BackTracking;
 using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;

@@ -20,6 +20,7 @@ public class SudokuPlayPresenter
     private readonly SudokuSolver _solver;
     private readonly Settings _settings;
     private readonly SudokuPlayer _player;
+    private readonly SudokuBackTracker _backTracker;
     private readonly SudokuHighlighterTranslator _translator;
     private readonly Disabler _disabler;
 
@@ -36,6 +37,10 @@ public class SudokuPlayPresenter
         _solver = solver;
         _settings = settings;
         _player = new SudokuPlayer();
+        _backTracker = new SudokuBackTracker(new Sudoku(), _player)
+        {
+            StopAt = 1
+        };
         _translator = new SudokuHighlighterTranslator(_view.ClueShower, _settings);
         _disabler = new Disabler(_view);
         
@@ -269,7 +274,11 @@ public class SudokuPlayPresenter
         _disabler.Disable(1);
         if (_settings.TestSolutionCount)
         {
-            var count = await Task.Run(() => BackTracking.Count(sudoku, _player, 1));
+            var count = await Task.Run(() =>
+            {
+                _backTracker.Set(sudoku);
+                return _backTracker.Count();
+            });
             if (count == 0) return new Clue<ISudokuHighlighter>("The current sudoku has no solution"); 
         }
         

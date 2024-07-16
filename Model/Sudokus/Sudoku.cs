@@ -1,5 +1,6 @@
 ﻿using System;
 using Model.Core;
+using Model.Core.BackTracking;
 using Model.Core.Generators;
 using Model.Utility;
 using Model.Utility.BitSets;

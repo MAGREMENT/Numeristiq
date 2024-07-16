@@ -1,0 +1,33 @@
+﻿using Model.Core;
+using Model.Core.BackTracking;
+using Model.Core.Changes;
+using Model.Core.Highlighting;
+
+namespace Model.Nonograms.Solver.Strategies;
+
+public class BruteForceStrategy : Strategy<INonogramSolverData>
+{
+    private readonly BackTracker<Nonogram, IAvailabilityChecker> _backTracker
+        = new NaiveNonogramBackTracker();
+    
+    public BruteForceStrategy() : base("Brute Force", StepDifficulty.ByTrial, InstanceHandling.FirstOnly)
+    {
+    }
+
+    public override void Apply(INonogramSolverData data)
+    {
+        _backTracker.Set(data.Nonogram.Copy(), data);
+        if (!_backTracker.Fill()) return;
+
+        for (int row = 0; row < data.Nonogram.RowCount; row++)
+        {
+            for (int col = 0; col < data.Nonogram.ColumnCount; col++)
+            {
+                if (_backTracker.Current[row, col]) data.ChangeBuffer.ProposeSolutionAddition(row, col);
+            }
+        }
+
+        data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<INonogramSolvingState, INonogramHighlighter>
+            .Instance);
+    }
+}

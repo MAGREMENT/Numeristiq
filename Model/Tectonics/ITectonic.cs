@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
+using Model.Core.BackTracking;
 using Model.Core.Generators;
 using Model.Utility;
 
@@ -26,8 +27,6 @@ public interface ITectonic : IReadOnlyTectonic, ICellsAndDigitsPuzzle
 
 public interface IReadOnlyTectonic : INumericSolvingState, ICopyable<ITectonic>
 {
-    public int RowCount { get; }
-    public int ColumnCount { get; }
     public int GetSolutionCount();
     
     public IReadOnlyList<IZone> Zones { get; }

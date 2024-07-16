@@ -1,30 +1,26 @@
-﻿using Model.Sudokus;
+﻿using ConsoleApplication.Commands.Abstracts;
+using Model.Core.BackTracking;
+using Model.Sudokus;
 using Model.Sudokus.Generator;
-using Model.Utility;
 
 namespace ConsoleApplication.Commands;
 
-public class SudokuSolutionCountCommand : Command
+public class SudokuSolutionCountCommand : SolutionCountCommand<Sudoku, IPossibilitiesGiver>
 {
-    private const int SudokuIndex = 0;
-
-    public SudokuSolutionCountCommand() : base("SolutionCount", 
-        new Argument("Sudoku string", ValueType.String))
+    public SudokuSolutionCountCommand() : base("Sudoku")
     {
     }
 
-    public override string Description => "Counts the number of solutions for a given Sudoku";
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    protected override BackTracker<Sudoku, IPossibilitiesGiver> BackTracker { get; }
+        = new SudokuBackTracker(new Sudoku(), ConstantPossibilitiesGiver.Instance);
+    
+    protected override void SetBackTracker(string s)
     {
-        var sudoku = SudokuTranslator.TranslateLineFormat((string)report.GetArgumentValue(SudokuIndex));
+        BackTracker.Set(SudokuTranslator.TranslateLineFormat(s));
+    }
 
-        var result = BackTracking.Solutions(sudoku, ConstantPossibilitiesGiver.Instance, int.MaxValue);
-        
-        Console.WriteLine($"Number of solutions : {result.Count}\n");
-
-        foreach (var s in result)
-        {
-            Console.WriteLine(SudokuTranslator.TranslateLineFormat(s, SudokuLineFormatEmptyCellRepresentation.Points));
-        }
+    protected override string ToString(Sudoku puzzle)
+    {
+        return SudokuTranslator.TranslateLineFormat(puzzle, SudokuLineFormatEmptyCellRepresentation.Points);
     }
 }

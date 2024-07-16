@@ -43,7 +43,7 @@ public class Instantiator
             new AlternatingInferenceGeneralization(new XChainType()),
             new GroupEliminationStrategy(),
             new AlternatingInferenceGeneralization(new AlternatingInferenceChainType()),
-            new BruteForceStrategy());
+            new Model.Tectonics.Solver.Strategies.BruteForceStrategy());
         
         return solver;
     }
@@ -63,13 +63,14 @@ public class Instantiator
         var solver = new NonogramSolver();
         solver.StrategyManager.AddStrategies(new PerfectRemainingSpaceStrategy(),
             new NotEnoughSpaceStrategy(),
+            new EdgeValueStrategy(),
             new PerfectValueSpaceStrategy(),
             new ValueCompletionStrategy(),
             new BridgingStrategy(),
             new SplittingStrategy(),
-            new EdgeValueStrategy(),
             new ValueOverlayStrategy(),
-            new UnreachableSquareStrategy());
+            new UnreachableSquareStrategy(),
+            new Model.Nonograms.Solver.Strategies.BruteForceStrategy());
         
         return solver;
     }
