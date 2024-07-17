@@ -11,7 +11,7 @@ public class MinimumHardestDifficultyCriteria : EvaluationCriteria
     public const string OfficialName = "Minimum Hardest Strategy";
     
     public MinimumHardestDifficultyCriteria() : base(OfficialName, 
-        new EnumSetting<StepDifficulty>("Difficulty",
+        new EnumSetting<StepDifficulty>("Difficulty", "The evaluator must use at least one strategy with a higher difficulty",
             new SpaceConverter(), StepDifficulty.Basic))
     {
     }

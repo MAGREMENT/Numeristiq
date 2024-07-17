@@ -6,7 +6,7 @@
       xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
       xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       mc:Ignorable="d"
-      Title="ManagePage" d:DesignHeight="660" d:DesignWidth="1350">
+      Title="ManagePage" d:DesignHeight="660" d:DesignWidth="1400">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>

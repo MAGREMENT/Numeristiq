@@ -16,6 +16,9 @@ public class BruteForceStrategy : Strategy<INonogramSolverData>
 
     public override void Apply(INonogramSolverData data)
     {
+        //Too slow above this limit
+        if (data.Nonogram.RowCount + data.Nonogram.ColumnCount > 20) return;
+        
         _backTracker.Set(data.Nonogram.Copy(), data);
         if (!_backTracker.Fill()) return;
 

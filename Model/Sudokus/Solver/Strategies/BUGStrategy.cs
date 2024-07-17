@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Explanation;
@@ -21,7 +20,8 @@ public class BUGStrategy : SudokuStrategy
     
     public BUGStrategy(int maxAdditionalCandidates) : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling)
     {
-        _maxAdditionalCandidates = new IntSetting("Max additional candidates", new SliderInteractionInterface(1, 5, 1), maxAdditionalCandidates);
+        _maxAdditionalCandidates = new IntSetting("Max additional candidates", "The maximum amount of cells with an additional candidate",
+            new SliderInteractionInterface(1, 5, 1), maxAdditionalCandidates);
         AddSetting(_maxAdditionalCandidates);
         
         UniquenessDependency = UniquenessDependency.FullyDependent;

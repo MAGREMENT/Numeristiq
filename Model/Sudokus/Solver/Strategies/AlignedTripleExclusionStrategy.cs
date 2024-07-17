@@ -25,11 +25,15 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
     
     public AlignedTripleExclusionStrategy(int minSharedSeenCells, int maxAlsSize, int maxAalsSize) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
-        _minSharedSeenCells = new IntSetting("Minimum shared seen cells", new SliderInteractionInterface(5, 12, 1), minSharedSeenCells);
+        _minSharedSeenCells = new IntSetting("Minimum shared seen cells", "The minimum amount of cells" +
+                                                                          "the base of the pattern must see together",
+            new SliderInteractionInterface(5, 12, 1), minSharedSeenCells);
         AddSetting(_minSharedSeenCells);
-        _maxAlsSize = new IntSetting("Max ALS Size", new SliderInteractionInterface(2, 5, 1), maxAlsSize);
+        _maxAlsSize = new IntSetting("Max ALS Size", "The maximum size for the almost locked sets",
+            new SliderInteractionInterface(2, 5, 1), maxAlsSize);
         AddSetting(_maxAlsSize);
-        _maxAalsSize = new IntSetting("Max AALS Size", new SliderInteractionInterface(2, 5, 1), maxAalsSize);
+        _maxAalsSize = new IntSetting("Max AALS Size", "The maximum size for the almost almost locked sets",
+            new SliderInteractionInterface(2, 5, 1), maxAalsSize);
         AddSetting(_maxAalsSize);
     }
 

@@ -7,6 +7,7 @@
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="View/Styles/TitleBarStyles.xaml"/>
+				<ResourceDictionary Source="View/Styles/ScrollViewerStyles.xaml"/>
 			</ResourceDictionary.MergedDictionaries>
 			
 			<Brush x:Key="Background1">#0E0E15</Brush>
@@ -29,7 +30,6 @@
 		    <Brush x:Key="Off">Red</Brush>
 		    <Color x:Key="OffColor">Red</Color>
 		    <Brush x:Key="Disabled">Gray</Brush>
-		    <Brush x:Key="DifficultyNone">Gray</Brush>
 		    <Brush x:Key="DifficultyBasic">RoyalBlue</Brush>
 		    <Brush x:Key="DifficultyEasy">Green</Brush>
 		    <Brush x:Key="DifficultyMedium">Orange</Brush>
@@ -624,86 +624,12 @@
 			    <Setter Property="view:AttachedProperties.OverBackground" Value="{DynamicResource Secondary1}"/>
 		    </Style>
 		    
-		    <Style x:Key="TransparentThumb" TargetType="Thumb">
-			    <Setter Property="IsTabStop" Value="False"/>
-			    <Setter Property="SnapsToDevicePixels" Value="True"/>
-			    <Setter Property="Focusable" Value="False"/>
-			    <Setter Property="Background">
-				    <Setter.Value>
-					    <SolidColorBrush Color="{DynamicResource ThumbColor}" Opacity="0.1"/>
-				    </Setter.Value>
-			    </Setter>
-			    <Setter Property="Template">
-				    <Setter.Value>
-					    <ControlTemplate TargetType="Thumb">
-						    <Border CornerRadius="3"
-						            Background="{TemplateBinding Background}"
-						            BorderThickness="0"/>
-						    
-						    <ControlTemplate.Triggers>
-							    <Trigger Property="IsMouseOver" Value="True">
-								    <Setter Property="Background">
-									    <Setter.Value>
-										    <SolidColorBrush Color="{DynamicResource ThumbColor}"/>
-									    </Setter.Value>
-								    </Setter>
-							    </Trigger>
-						    </ControlTemplate.Triggers>
-					    </ControlTemplate>
-				    </Setter.Value>
-			    </Setter>
-		    </Style>
-		    
-		    <Style x:Key="TransparentBar" TargetType="ScrollBar">
-			    <Setter Property="SnapsToDevicePixels" Value="True"/>
-			    <Setter Property="Template">
-				    <Setter.Value>
-					    <ControlTemplate TargetType="ScrollBar">
-						    <Track IsDirectionReversed="True"
-						           x:Name="PART_Track">
-							    <Track.Thumb>
-								    <Thumb Style="{StaticResource TransparentThumb}" Margin="1"/>
-							    </Track.Thumb>
-						    </Track>
-					    </ControlTemplate>
-				    </Setter.Value>
-			    </Setter>
-		    </Style>
-		    
-		    <Style x:Key="TransparentBarScrollViewer" TargetType="ScrollViewer">
-			    <Setter Property="Background" Value="{DynamicResource Background2}"/>
-			    <Setter Property="Template">
-				    <Setter.Value>
-					    <ControlTemplate TargetType="ScrollViewer">
-						    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
-							    <Grid>
-								    <Grid.ColumnDefinitions>
-									    <ColumnDefinition/>
-									    <ColumnDefinition Width="Auto"/>
-								    </Grid.ColumnDefinitions>
-							    
-								    <ScrollContentPresenter Grid.Column="0" Grid.ColumnSpan="2" CanContentScroll="{TemplateBinding CanContentScroll}"/>
-							    
-								    <ScrollBar Grid.Column="1"
-								               Value="{TemplateBinding VerticalOffset}"
-								               Maximum="{TemplateBinding ScrollableHeight}"
-								               ViewportSize="{TemplateBinding ViewportHeight}"
-								               Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
-								               x:Name="PART_VerticalScrollBar"
-								               Style="{StaticResource TransparentBar}"/>
-							    </Grid>
-						    </Border>
-					    </ControlTemplate>
-				    </Setter.Value>
-			    </Setter>
-		    </Style>
-		    
-		    <Style x:Key="LogRadioButton" TargetType="RadioButton">
+		    <Style x:Key="StepRadioButton" TargetType="RadioButton">
 			    <Setter Property="Background" Value="{DynamicResource Background2}"/>
 			    <Setter Property="BorderBrush" Value="{DynamicResource Background2}"/>
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 			    <Setter Property="FontSize" Value="16"/>
-			    <Setter Property="Margin" Value="5"></Setter>
+			    <Setter Property="Padding" Value="5"/>
 			    <Setter Property="Template">
 				    <Setter.Value>
 					    <ControlTemplate TargetType="RadioButton">

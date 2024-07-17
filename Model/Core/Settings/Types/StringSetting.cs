@@ -2,13 +2,16 @@
 
 public class StringSetting : ISetting
 {
+    public event OnValueChange? ValueChanged;
     public string Name { get; }
+    public string Description { get; }
     public ISettingInteractionInterface InteractionInterface { get; }
     public string Value { get; private set; }
 
-    public StringSetting(string name, ISettingInteractionInterface i, string defaultValue = "")
+    public StringSetting(string name, string description, ISettingInteractionInterface i, string defaultValue = "")
     {
         Name = name;
+        Description = description;
         InteractionInterface = i;
         Value = defaultValue;
     }
@@ -22,5 +25,6 @@ public class StringSetting : ISetting
     {
         value = checkValidity ? InteractionInterface.Verify(value) : value;
         Value = value.ToString()!;
+        ValueChanged?.Invoke(value);
     }
 }

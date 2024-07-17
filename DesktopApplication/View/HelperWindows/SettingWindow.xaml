@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         mc:Ignorable="d"
-        Title="SettingWindow" Height="500" Width="800"
+        Title="SettingWindow" Height="530" Width="800"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
@@ -18,7 +18,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="75"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
@@ -39,14 +39,20 @@
             </ScrollViewer>
         </Border>
         
-        <Grid Grid.Row="2" Grid.Column="1">
+        <Grid Grid.Row="2" Grid.Column="0" ColumnSpan="2" Height="90">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             
-            <Button Grid.Column="1" Margin="5,0,5,0" Style="{StaticResource BorderButton}"
+            <Border Grid.Column="0" Margin="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                    CornerRadius="5" Background="{DynamicResource Background2}" Padding="10, 5">
+                <TextBlock x:Name="Description" HorizontalAlignment="Left" VerticalAlignment="Center"
+                           Foreground="{DynamicResource Text}" FontSize="14" TextWrapping="Wrap"/>
+            </Border>
+            
+            <Button Grid.Column="1" Margin="0,0,5,0" Style="{StaticResource BorderButton}"
                     VerticalAlignment="Center" HorizontalAlignment="Center" Click="Save" Background="{DynamicResource Primary1}">Save</Button>
             <Button Grid.Column="2" Margin="0, 0, 20, 0" VerticalAlignment="Center" Style="{StaticResource BorderButton}"
                     HorizontalAlignment="Center" Click="Cancel" Background="{DynamicResource Off}">Cancel</Button>

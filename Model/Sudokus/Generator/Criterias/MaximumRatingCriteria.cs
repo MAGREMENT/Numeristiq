@@ -11,7 +11,7 @@ public class MaximumRatingCriteria : EvaluationCriteria
     public const string OfficialName = "Maximum Rating";
     
     public MaximumRatingCriteria() : base(OfficialName, 
-        new DoubleSetting("Rating",
+        new DoubleSetting("Rating", "The maximum rating a Sudoku can have",
             new SliderInteractionInterface(1, 3, 0.05), 3))
     {
     }

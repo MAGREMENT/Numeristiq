@@ -11,7 +11,7 @@ public class MinimumRatingCriteria : EvaluationCriteria
     public const string OfficialName = "Minimum Rating";
     
     public MinimumRatingCriteria() : base(OfficialName, 
-        new DoubleSetting("Rating",
+        new DoubleSetting("Rating", "The minimum rating a Sudoku must have",
             new SliderInteractionInterface(1, 3, 0.05)))
     {
     }

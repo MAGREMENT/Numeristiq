@@ -6,6 +6,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/DesktopApplication;component/View/Styles/TitleBarStyles.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/DesktopApplication;component/View/Styles/ScrollViewerStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <Brush x:Key="Background1">#0E0E15</Brush>
@@ -28,6 +29,7 @@
             <Brush x:Key="DifficultyExtreme">Purple</Brush>
             <Brush x:Key="DifficultyInhuman">SlateBlue</Brush>
             <Brush x:Key="DifficultyByTrial">White</Brush>
+            <Color x:Key="ThumbColor">White</Color>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

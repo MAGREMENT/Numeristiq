@@ -23,8 +23,10 @@ public class StrategySettingsPresenter : IEnumerable<(ISetting, int)>, ISettingC
 
     public IEnumerator<(ISetting, int)> GetEnumerator()
     {
-        yield return (new BooleanSetting("Enabled", _strategy.Enabled), -1);
-        yield return (new EnumSetting<InstanceHandling>("Instance handling",SpaceConverter.Instance, _strategy.InstanceHandling), -2);
+        yield return (new BooleanSetting("Enabled", "Is the strategy enabled", _strategy.Enabled), -1);
+        yield return (new EnumSetting<InstanceHandling>("Instance handling", "Defines the way different instances" +
+                                                                             "of the same strategy during the same search are handled",
+            SpaceConverter.Instance, _strategy.InstanceHandling), -2);
         for (int i = 0; i < _strategy.Settings.Count; i++)
         {
             yield return (_strategy.Settings[i], i);

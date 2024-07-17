@@ -46,9 +46,9 @@ public class SudokuPlayPresenter
         
         _player.MainLocation = _settings.MainLocation;
         
-        _settings.AddEvent(SpecificSettings.StartAngle, _ => RefreshHighlights());
-        _settings.AddEvent(SpecificSettings.RotationDirection, _ => RefreshHighlights());
-        _settings.AddEvent(SpecificSettings.MainLocation, v => _player.MainLocation = (PossibilitiesLocation)v.ToInt());
+        _settings.StartAngleSetting.ValueChanged += _ => RefreshHighlights();
+        _settings.RotationDirectionSetting.ValueChanged += _ => RefreshHighlights();
+        _settings.MainLocationSetting.ValueChanged += v => _player.MainLocation = (PossibilitiesLocation)v.ToInt();
 
         SettingsPresenter = new SettingsPresenter(_settings, SettingCollections.SudokuPlayPage);
 

@@ -3,7 +3,6 @@ using System.Windows.Controls;
 using DesktopApplication.Presenter;
 using DesktopApplication.View.Settings;
 using Model.Core.Settings;
-using Model.Utility;
 using Model.Utility.Collections;
 
 namespace DesktopApplication.View.HelperWindows;
@@ -46,6 +45,8 @@ public partial class SettingWindow
             if (control is not null)
             {
                 control.Margin = new Thickness(10, 10, 0, 0);
+                control.MouseEnter += (_, _) => Description.Text = settingAndIndex.Item1.Description;
+                control.MouseLeave += (_, _) => Description.Text = string.Empty;
                 SettingPanel.Children.Add(control);
             }
         }

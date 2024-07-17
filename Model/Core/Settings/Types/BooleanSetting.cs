@@ -2,13 +2,16 @@
 
 public class BooleanSetting : ISetting
 {
+    public event OnValueChange? ValueChanged;
     public string Name { get; }
+    public string Description { get; }
     public ISettingInteractionInterface InteractionInterface { get; } = new CheckBoxInteractionInterface();
     public bool Value { get; private set; }
 
-    public BooleanSetting(string name, bool defaultValue = false)
+    public BooleanSetting(string name, string description, bool defaultValue = false)
     {
         Name = name;
+        Description = description;
         Value = defaultValue;
     }
     
@@ -21,5 +24,6 @@ public class BooleanSetting : ISetting
     {
         value = checkValidity ? InteractionInterface.Verify(value) : value;
         Value = value.ToBool();
+        ValueChanged?.Invoke(value);
     }
 }

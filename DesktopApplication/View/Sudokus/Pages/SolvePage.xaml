@@ -7,7 +7,7 @@
       xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       xmlns:controls="clr-namespace:DesktopApplication.View.Sudokus.Controls"
       mc:Ignorable="d"
-      Title="SolvePage" d:DesignHeight="660" d:DesignWidth="1380">
+      Title="SolvePage" d:DesignHeight="660" d:DesignWidth="1400">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -67,7 +67,7 @@
             </Grid>
         </Grid>
         
-        <Border Grid.Column="2" Margin="0, 10, 10, 10" Width="270" Background="{DynamicResource Background2}"
+        <Border Grid.Column="2" Margin="0, 10, 10, 10" Width="290" Background="{DynamicResource Background2}"
                 Padding="5" CornerRadius="5">
             <Grid>
                 <Grid.RowDefinitions>

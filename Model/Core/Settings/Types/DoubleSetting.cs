@@ -2,13 +2,16 @@
 
 public class DoubleSetting : ISetting
 {
+    public event OnValueChange? ValueChanged;
     public string Name { get; }
+    public string Description { get; }
     public ISettingInteractionInterface InteractionInterface { get; }
     public double Value { get; private set; }
 
-    public DoubleSetting(string name, ISettingInteractionInterface i, double defaultValue = 1)
+    public DoubleSetting(string name, string description, ISettingInteractionInterface i, double defaultValue = 1)
     {
         Name = name;
+        Description = description;
         InteractionInterface = i;
         Value = defaultValue;
     }
@@ -22,5 +25,6 @@ public class DoubleSetting : ISetting
     {
         value = checkValidity ? InteractionInterface.Verify(value) : value;
         Value = value.ToDouble();
+        ValueChanged?.Invoke(value);
     }
 }

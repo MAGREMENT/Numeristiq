@@ -22,8 +22,10 @@ public class UniqueRectanglesStrategy : SudokuStrategy
     
     public UniqueRectanglesStrategy(bool allowMissingCandidates, int maxAlsSize) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
-        _allowMissingCandidates = new BooleanSetting("Missing candidates allowed", allowMissingCandidates);
-        _maxAlsSize = new IntSetting("Max ALS Size", new SliderInteractionInterface(2, 5, 1), maxAlsSize);
+        _allowMissingCandidates = new BooleanSetting("Missing candidates allowed", "Allows missing candidates in patterns",
+            allowMissingCandidates);
+        _maxAlsSize = new IntSetting("Max ALS Size", "The maximum size for the almost locked sets",
+            new SliderInteractionInterface(2, 5, 1), maxAlsSize);
         UniquenessDependency = UniquenessDependency.FullyDependent;
         AddSetting(_allowMissingCandidates);
         AddSetting(_maxAlsSize);

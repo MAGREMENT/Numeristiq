@@ -14,8 +14,8 @@ public class MustUseStrategyCriteria : EvaluationCriteria
     public const string OfficialName = "Must Use Strategy";
     
     public MustUseStrategyCriteria(IReadOnlyList<string> strategies) : base(OfficialName, 
-        new StringSetting("StrategyName", new AutoFillingInteractionInterface(strategies),
-            NakedSingleStrategy.OfficialName))
+        new StringSetting("StrategyName", "A strategy that must be used by the evaluator",
+            new AutoFillingInteractionInterface(strategies), NakedSingleStrategy.OfficialName))
     {
     }
 

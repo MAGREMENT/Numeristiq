@@ -24,7 +24,7 @@ public class GlobalApplicationPresenter
         _themes = themes;
         
         TrySetTheme();
-        _settings.AddEvent(SpecificSettings.Theme, _ => TrySetTheme());
+        _settings.ThemeSetting.ValueChanged += _ => TrySetTheme();
     }
 
     public WelcomePresenter InitializeWelcomePresenter()

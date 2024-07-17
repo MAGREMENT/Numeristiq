@@ -12,8 +12,8 @@ public class CantUseStrategyCriteria : EvaluationCriteria
     public const string OfficialName = "Can't Use Strategy";
     
     public CantUseStrategyCriteria(IReadOnlyList<string> strategies) : base(OfficialName, 
-        new StringSetting("StrategyName", new AutoFillingInteractionInterface(strategies)
-            , NakedSingleStrategy.OfficialName))
+        new StringSetting("StrategyName", "A strategy that cannot be used by the evaluator",
+            new AutoFillingInteractionInterface(strategies), NakedSingleStrategy.OfficialName))
     {
     }
 

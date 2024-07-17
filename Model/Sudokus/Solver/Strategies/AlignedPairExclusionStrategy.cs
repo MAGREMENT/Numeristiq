@@ -22,7 +22,8 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
     
     public AlignedPairExclusionStrategy(int maxAlsSize) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
-        _maxAlsSize = new IntSetting("Max ALS Size", new SliderInteractionInterface(2, 5, 1), maxAlsSize);
+        _maxAlsSize = new IntSetting("Max ALS Size", "The maximum size for the almost locked sets",
+            new SliderInteractionInterface(2, 5, 1), maxAlsSize);
         AddSetting(_maxAlsSize);
     }
 

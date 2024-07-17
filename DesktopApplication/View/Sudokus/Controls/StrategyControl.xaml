@@ -18,7 +18,7 @@
               Data="M 7,12 12.5,18 12.5,18 18,7" x:Name="CheckMark" VerticalAlignment="Center"/>
         
         <TextBlock Grid.Column="1" FontSize="14" Foreground="{DynamicResource Text}"
-                   VerticalAlignment="Center" x:Name="TextBlock">Strategy</TextBlock>
+                   VerticalAlignment="Center" x:Name="StrategyName" HorizontalAlignment="Left">Strategy</TextBlock>
         
         <Path Grid.Column="2" Width="25" Height="25" Stroke="Red" StrokeThickness="3"
               Data="M 7,7 18,18 M 7,18 18,7" x:Name="CrossMark" VerticalAlignment="Center"/>

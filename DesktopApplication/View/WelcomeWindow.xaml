@@ -21,7 +21,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <controls:TitleBarControl Grid.Row="0" DockPanel.Dock="Top" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
+        <controls:TitleBarControl Grid.Row="0" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
                                   AllowResize="False">
             <controls:SettingsButton Clicked="ShowSettingWindow"/>
         </controls:TitleBarControl>

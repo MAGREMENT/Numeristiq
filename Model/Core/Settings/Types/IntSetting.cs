@@ -2,13 +2,16 @@
 
 public class IntSetting : ISetting
 {
+    public event OnValueChange? ValueChanged;
     public string Name { get; }
+    public string Description { get; }
     public ISettingInteractionInterface InteractionInterface { get; }
     public int Value { get; private set; }
 
-    public IntSetting(string name, ISettingInteractionInterface i, int defaultValue = 1)
+    public IntSetting(string name, string description, ISettingInteractionInterface i, int defaultValue = 1)
     {
         Name = name;
+        Description = description;
         InteractionInterface = i;
         Value = defaultValue;
     }
@@ -22,5 +25,6 @@ public class IntSetting : ISetting
     {
         value = checkValidity ? InteractionInterface.Verify(value) : value;
         Value = value.ToInt();
+        ValueChanged?.Invoke(value);
     }
 }

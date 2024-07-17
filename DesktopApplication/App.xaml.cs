@@ -54,7 +54,6 @@ public partial class App : IGlobalApplicationView
         Resources["Off"] = ThemeInformation.ToBrush(t.Off);
         Resources["OffColor"] = ThemeInformation.ToColor(t.Off);
         Resources["Disabled"] = ThemeInformation.ToBrush(t.Disabled);
-        Resources["DifficultyNone"] = ThemeInformation.ToBrush(t.DifficultyNone);
         Resources["DifficultyBasic"] = ThemeInformation.ToBrush(t.DifficultyBasic);
         Resources["DifficultyEasy"] = ThemeInformation.ToBrush(t.DifficultyEasy);
         Resources["DifficultyMedium"] = ThemeInformation.ToBrush(t.DifficultyMedium);
@@ -189,6 +188,7 @@ public class ThemeInformation
 
     public static string ResourceNameFor(StepDifficulty difficulty)
     {
+        if (difficulty == StepDifficulty.None) return "Disabled";
         return "Difficulty" + difficulty;
     }
     

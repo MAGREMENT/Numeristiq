@@ -14,27 +14,39 @@ public class Settings
     private readonly ISetting[] _settings;
     private readonly NamedListSpan<ISetting>[][] _collections;
     private readonly ISettingRepository _repository;
-    private readonly Dictionary<int, List<OnSettingChange>> _events = new();
 
     public Settings(IReadOnlyList<Theme> themes, ISettingRepository repository)
     {
         _settings = new ISetting[]
         {
-            new IntSetting("Theme", new NameListInteractionInterface(themes), -1),
-            new BooleanSetting("Show same cell links"),
-            new EnumSetting<LinkOffsetSidePriority>("Link offset side priority",null, LinkOffsetSidePriority.Any),
-            new BooleanSetting("Unique solution", true),
-            new IntSetting("Start angle", new SliderInteractionInterface(0, 360, 10), 0),
-            new EnumSetting<RotationDirection>("Rotation direction", SpaceConverter.Instance, RotationDirection.ClockWise),
-            new EnumSetting<SudokuStringFormat>("Copy default format", SpaceConverter.Instance, SudokuStringFormat.Grid),
-            new BooleanSetting("Open copy dialog"),
-            new EnumSetting<SudokuStringFormat>("Paste default format", SpaceConverter.Instance, SudokuStringFormat.Base32),
-            new BooleanSetting("Open paste dialog"),
-            new EnumSetting<SudokuLineFormatEmptyCellRepresentation>("Line format empty cell representation", SpaceConverter.Instance, SudokuLineFormatEmptyCellRepresentation.Shortcuts),
-            new BooleanSetting("Convert solo candidate to given for grid format"),
-            new EnumSetting<PossibilitiesLocation>("Main possibilities location", SpaceConverter.Instance, PossibilitiesLocation.Middle),
-            new BooleanSetting("Test solution count for clue"),
-            new BooleanSetting("Fast possibility display")
+            new IntSetting("Theme", "The theme of the application.", new NameListInteractionInterface(themes), -1),
+            new BooleanSetting("Show same cell links", "Allows links between candidates of the same cell to be shown."),
+            new EnumSetting<LinkOffsetSidePriority>("Link offset side priority", "Defines which side will be prioritized" +
+                " for the angle of links.", null, LinkOffsetSidePriority.Any),
+            new BooleanSetting("Unique solution", "The puzzle must have a unique solution. Allows additional strategies."
+                , true),
+            new IntSetting("Start angle", "Start angle for cells multi-color highlighting.",
+                new SliderInteractionInterface(0, 360, 10), 0),
+            new EnumSetting<RotationDirection>("Rotation direction", "Rotation direction for cells multi-color highlighting.",
+                SpaceConverter.Instance, RotationDirection.ClockWise),
+            new EnumSetting<SudokuStringFormat>("Copy default format", "The default format used for copying.",
+                SpaceConverter.Instance, SudokuStringFormat.Grid),
+            new BooleanSetting("Open copy dialog", "Opens a dialog window with options when a copy is asked."),
+            new EnumSetting<SudokuStringFormat>("Paste default format", "The default format used for pasting.",
+                SpaceConverter.Instance, SudokuStringFormat.Base32),
+            new BooleanSetting("Open paste dialog", "Opens a dialog window with options when a paste is asked."),
+            new EnumSetting<SudokuLineFormatEmptyCellRepresentation>("Line format empty cell representation",
+                "Defines how empty cells are represented when translating a Sudoku to text",
+                SpaceConverter.Instance, SudokuLineFormatEmptyCellRepresentation.Shortcuts),
+            new BooleanSetting("Convert solo candidate to given for grid format", "Tells the parser to" +
+                " convert cells with only one candidates to be converted to a solution with the grid format."),
+            new EnumSetting<PossibilitiesLocation>("Main possibilities location",
+                "Sets the main possibilities location, used for various operation like computing possibilities."
+                ,SpaceConverter.Instance, PossibilitiesLocation.Middle),
+            new BooleanSetting("Test solution count for clue", "When asking for a clue, verifies that the" +
+                                                               " Sudoku has indeed a solution."),
+            new BooleanSetting("Fast possibility display", "Display the Sudoku's possibilities in a" +
+                                                           " faster but less elegant way.")
         };
         _collections = new[]
         {
@@ -64,11 +76,6 @@ public class Settings
         _repository = repository;
     }
     
-    public void Update(ISetting setting)
-    {
-        _repository.UpdateSetting(setting);
-    }
-    
     public void Update(IEnumerable<ISetting> settings)
     {
         _repository.UpdateSettings(settings);
@@ -79,40 +86,34 @@ public class Settings
         var setting = _settings[index];
         
         _settings[index].Set(value, checkValidity);
-        FirePossibleEvents(index);
-        if (update) Update(setting);
+        if (update) _repository.UpdateSetting(setting);
     }
 
     public void TrySet(string name, SettingValue value)
     {
-        for(int i = 0; i < _settings.Length; i++)
+        foreach (var setting in _settings)
         {
-            var setting = _settings[i];
             if (setting.Name.Equals(name))
             {
                 setting.Set(value);
-                FirePossibleEvents(i);
                 return;
             }
         }
-    }
-    
-    public void AddEvent(SpecificSettings specific, OnSettingChange del)
-    {
-        if (!_events.TryGetValue((int)specific, out var list))
-        {
-            list = new List<OnSettingChange>();
-            _events[(int)specific] = list;
-        }
-
-        list.Add(del);
     }
 
     public IReadOnlyList<NamedListSpan<ISetting>> GetCollection(SettingCollections collection) =>
         _collections[(int)collection];
 
-    public ISetting GetSetting(SpecificSettings specific) => _settings[(int)specific];
+    public ISetting ThemeSetting => _settings[0];
+    public ISetting ShowSameCellsLinksSetting => _settings[1];
+    public ISetting LinkOffsetSidePrioritySetting => _settings[2];
+    public ISetting AllowUniquenessSetting => _settings[3];
+    public ISetting StartAngleSetting => _settings[4];
+    public ISetting RotationDirectionSetting => _settings[5];
+    public ISetting MainLocationSetting => _settings[12];
+    public ISetting FastPossibilityDisplaySetting => _settings[14];
     
+    //TODO to ISetting
     public int Theme => _settings[0].Get().ToInt();
     public bool ShowSameCellLinks => _settings[1].Get().ToBool();
     public LinkOffsetSidePriority LinkOffsetSidePriority => ((EnumSetting<LinkOffsetSidePriority>)_settings[2]).Value;
@@ -128,18 +129,6 @@ public class Settings
     public PossibilitiesLocation MainLocation => ((EnumSetting<PossibilitiesLocation>)_settings[12]).Value;
     public bool TestSolutionCount => _settings[13].Get().ToBool();
     public bool FastPossibilityDisplay => _settings[14].Get().ToBool();
-    
-    #region Private
-
-    private void FirePossibleEvents(int index)
-    {
-        if (_events.TryGetValue(index, out var list))
-        {
-            foreach (var e in list) e(_settings[index].Get());
-        }
-    }
-
-    #endregion
 }
 
 public enum SettingCollections
@@ -149,17 +138,3 @@ public enum SettingCollections
     SudokuPlayPage,
     SudokuGeneratePage
 }
-
-public enum SpecificSettings
-{
-    Theme = 0,
-    ShowSameCellLinks = 1,
-    LinkOffsetSidePriority = 2,
-    AllowUniqueness = 3,
-    StartAngle = 4,
-    RotationDirection = 5,
-    MainLocation = 12,
-    FastPossibilityDisplay = 14
-}
-
-public delegate void OnSettingChange(SettingValue setting);

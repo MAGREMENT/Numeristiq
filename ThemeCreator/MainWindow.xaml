@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls;assembly=DesktopApplication"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="MainWindow" Height="600" Width="900"
         ResizeMode="NoResize"
         WindowStyle="None">
     
@@ -19,7 +19,20 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <controls:TitleBarControl Grid.Row="0" DockPanel.Dock="Top" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <controls:TitleBarControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                  x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
                                   AllowResize="False"/>
+        
+        <Border Grid.Row="1" Grid.Column="1" Width="300" Margin="10" Background="{DynamicResource Background2}"
+                CornerRadius="5" Padding="5">
+            <ScrollViewer Style="{StaticResource TransparentBarScrollViewer}">
+                <StackPanel x:Name="ColorList"/>
+            </ScrollViewer>
+        </Border>
     </Grid>
 </Window>

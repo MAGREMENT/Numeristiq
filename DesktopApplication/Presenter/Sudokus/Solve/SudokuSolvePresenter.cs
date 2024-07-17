@@ -48,14 +48,14 @@ public class SudokuSolvePresenter : ICommitApplier
 
         _view.Drawer.FastPossibilityDisplay = _settings.FastPossibilityDisplay;
 
-        _settings.AddEvent(SpecificSettings.FastPossibilityDisplay, v =>
+        _settings.FastPossibilityDisplaySetting.ValueChanged += v =>
         {
             _view.Drawer.FastPossibilityDisplay = v.ToBool();
             RedrawBoard();
-        });
-        _settings.AddEvent(SpecificSettings.LinkOffsetSidePriority, _ => RedrawBoard());
-        _settings.AddEvent(SpecificSettings.ShowSameCellLinks, _ => RedrawBoard());
-        _settings.AddEvent(SpecificSettings.AllowUniqueness, AllowUniqueness);
+        };
+        _settings.LinkOffsetSidePrioritySetting.ValueChanged += _ => RedrawBoard();
+        _settings.ShowSameCellsLinksSetting.ValueChanged += _ => RedrawBoard();
+        _settings.AllowUniquenessSetting.ValueChanged += AllowUniqueness;
         
         SettingsPresenter = new SettingsPresenter(_settings, SettingCollections.SudokuSolvePage);
 

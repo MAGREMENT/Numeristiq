@@ -7,7 +7,7 @@
       xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       xmlns:controls1="clr-namespace:DesktopApplication.View.Sudokus.Controls"
       mc:Ignorable="d"
-      Title="GeneratePage" d:DesignHeight="660" d:DesignWidth="1350">
+      Title="GeneratePage" d:DesignHeight="660" d:DesignWidth="1400">
     <Grid Background="{DynamicResource Background1}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
