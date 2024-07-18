@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
+using Model.Core.BackTracking;
 using Model.Utility;
 using Model.Utility.Collections;
 
@@ -8,6 +8,7 @@ namespace Model.Repositories;
 public interface IThemeRepository
 {
     IReadOnlyList<Theme> GetThemes();
+    void AddTheme(Theme theme);
 }
 
 public record Theme(string Name,
@@ -26,7 +27,7 @@ public record Theme(string Name,
     RGB ChangeColorationCauseOffSeven, RGB ChangeColorationCauseOffEight, RGB ChangeColorationCauseOffNine,
     RGB ChangeColorationCauseOffTen, RGB ChangeColorationCauseOnOne,
     RGB HighlightColorFirst, RGB HighlightColorSecond, RGB HighlightColorThird, RGB HighlightColorFourth,
-    RGB HighlightColorFifth, RGB HighlightColorSixth, RGB HighlightColorSeventh) : INamed
+    RGB HighlightColorFifth, RGB HighlightColorSixth, RGB HighlightColorSeventh) : INamed, ICopyable<Theme>
 {
     public IEnumerable<(string, RGB)> AllColors()
     {
@@ -37,5 +38,25 @@ public record Theme(string Name,
 
             yield return (p.Name, rgb);
         }
+    }
+
+    public Theme Copy()
+    {
+        return new Theme(Name, Background1, Background2, Background3
+            , Primary1, Primary2
+            , Secondary1, Secondary2
+            , Accent
+            , Text
+            , On, Off
+            , Disabled
+            , DifficultyBasic, DifficultyEasy, DifficultyMedium, DifficultyHard
+            , DifficultyExtreme, DifficultyInhuman, DifficultyByTrial
+            , ChangeColorationNeutral, ChangeColorationChangeOne, ChangeColorationChangeTwo
+            , ChangeColorationCauseOffOne, ChangeColorationCauseOffTwo, ChangeColorationCauseOffThree
+            , ChangeColorationCauseOffFour, ChangeColorationCauseOffFive, ChangeColorationCauseOffSix
+            , ChangeColorationCauseOffSeven, ChangeColorationCauseOffEight, ChangeColorationCauseOffNine
+            , ChangeColorationCauseOffTen, ChangeColorationCauseOnOne
+            , HighlightColorFirst, HighlightColorSecond, HighlightColorThird, HighlightColorFourth
+            , HighlightColorFifth, HighlightColorSixth, HighlightColorSeventh);
     }
 }

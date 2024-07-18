@@ -3,7 +3,7 @@ using Model.Repositories;
 
 namespace Repository;
 
-public class SettingsJsonRepository : JSONRepository, ISettingRepository
+public class SettingsJsonRepository : JsonRepository, ISettingRepository
 {
     private Dictionary<string, string>? _buffer;
     

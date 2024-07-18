@@ -1,11 +1,11 @@
 ﻿using System.Windows;
 
-namespace ThemeCreator
+namespace ThemeCreator;
+
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
+public partial class App
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
-    {
-    }
+    public new static App Current => (App)Application.Current;
 }

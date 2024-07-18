@@ -4,11 +4,11 @@ using Model;
 
 namespace Repository;
 
-public abstract class JSONRepository
+public abstract class JsonRepository
 {
     private readonly string _filePath;
 
-    protected JSONRepository(string filePath, bool searchParentDirectories, bool createIfNotFound)
+    protected JsonRepository(string filePath, bool searchParentDirectories, bool createIfNotFound)
     {
         _filePath = Instantiate(filePath, searchParentDirectories, createIfNotFound);
     }

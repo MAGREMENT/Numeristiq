@@ -16,7 +16,7 @@ public class SudokuPuzzleGeneratorTests
     [Test]
     public void GenerationTest()
     {
-        var repo = new SudokuStrategyJSONRepository("strategies.json", true, true);
+        var repo = new SudokuStrategyJsonRepository("strategies.json", true, true);
 
         var solver = new SudokuSolver();
         solver.StrategyManager.AddStrategies(repo.GetStrategies());

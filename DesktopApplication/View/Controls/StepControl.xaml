@@ -18,35 +18,31 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
         
-            <TextBlock Grid.Row="0" Grid.Column="0" FontSize="20" Foreground="{DynamicResource Text}" 
-                       FontWeight="Bold" x:Name="Number">#0</TextBlock>
+            <Border Grid.Row="0" Grid.Column="0" Background="{DynamicResource Background3}" Height="40"
+                    MinWidth="40" Margin="5" CornerRadius="5">
+                <TextBlock FontSize="20" Foreground="{DynamicResource Text}" 
+                           FontWeight="Bold" x:Name="Number" VerticalAlignment="Center" HorizontalAlignment="Center">0</TextBlock>
+            </Border>
+            
             <TextBlock Grid.Row="0" Grid.Column="1" FontSize="18" VerticalAlignment="Center" Margin="5, 0, 0, 0"
-                       FontWeight="Bold" TextWrapping="Wrap" x:Name="Title">Strategy</TextBlock>
+                       FontWeight="Bold" TextWrapping="Wrap" x:Name="Title" Foreground="White">Strategy</TextBlock>
             
             <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="BottomPart" Visibility="Collapsed">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 
-                <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" x:Name="TextOutput" FontSize="14" HorizontalAlignment="Left"
-                           Foreground="{DynamicResource Text}" TextWrapping="Wrap" Margin="10, 10, 0, 0"/>
+                <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" x:Name="TextOutput" FontSize="15" HorizontalAlignment="Left"
+                           Foreground="{DynamicResource Text}" TextWrapping="Wrap" Margin="10, 10, 0, 10"/>
                 
-                <Button Grid.Column="2" Grid.Row="1" Style="{StaticResource FullPrimaryButton}" Margin="5" 
-                        Height="36" FontSize="17" HorizontalAlignment="Stretch" Click="OnExplanationAsked">Explanation</Button>
-                
-                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                    <RadioButton VerticalAlignment="Center" x:Name="BeforeButton" Style="{StaticResource StepRadioButton}" Checked="BeforeChecked">Before</RadioButton>
-                    <RadioButton VerticalAlignment="Center" x:Name="AfterButton" Style="{StaticResource StepRadioButton}" Checked="AfterChecked">After</RadioButton>
-                </StackPanel>
-                    
-                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="10, 0, 0, 0">
                     <Button Style="{StaticResource LogHighlightButton}" Click="ShiftLeft">
                         <Path
                             Width="26"
@@ -57,7 +53,7 @@
                             StrokeThickness="1" />
                     </Button>
                     <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource Text}" 
-                               x:Name="HighlightCount" Margin="2.5, 0, 2.5, 0" TextAlignment="Center">1 / 1</TextBlock>
+                               x:Name="HighlightCount" Margin="5, 0, 5, 0" TextAlignment="Center">1 / 1</TextBlock>
                     <Button Style="{StaticResource LogHighlightButton}" Click="ShiftRight">
                         <Path
                             Width="26"
@@ -68,6 +64,14 @@
                             StrokeThickness="1" />
                     </Button>
                 </StackPanel>
+                    
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="10 0 0 0">
+                    <RadioButton VerticalAlignment="Center" x:Name="BeforeButton" Style="{StaticResource StepRadioButton}" Checked="BeforeChecked">Before</RadioButton>
+                    <RadioButton VerticalAlignment="Center" x:Name="AfterButton" Style="{StaticResource StepRadioButton}" Checked="AfterChecked">After</RadioButton>
+                </StackPanel>
+                
+                <Button Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource FullPrimaryButton}" Margin="10" 
+                        Padding="7" FontSize="20" HorizontalAlignment="Stretch" Click="OnExplanationAsked">Explanation</Button>
             </Grid>
         </Grid>
     </Border>

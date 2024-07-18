@@ -18,7 +18,7 @@ public class SudokuApplicationPresenter
     public SudokuApplicationPresenter(Settings settings)
     {
         _settings = settings;
-        _strategiesRepository = new SudokuStrategyJSONRepository("strategies.json", 
+        _strategiesRepository = new SudokuStrategyJsonRepository("strategies.json", 
             !GlobalApplicationPresenter.IsForProduction, true);
         _strategyManager.AddStrategies(_strategiesRepository.GetStrategies());
     }

@@ -1,6 +1,6 @@
 ﻿namespace DesktopApplication;
 
-public enum StateShown
+public enum StateShown //TODO move this
 {
     Before, After
 }

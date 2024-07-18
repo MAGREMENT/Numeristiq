@@ -77,4 +77,6 @@ public class HardCodedThemeRepository : IThemeRepository
                 RGB.FromHex(0x49A37C))
         };
     }
+
+    public void AddTheme(Theme theme) { }
 }

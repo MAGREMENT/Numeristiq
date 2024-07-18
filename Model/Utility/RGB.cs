@@ -13,6 +13,11 @@ public readonly struct RGB
     public byte Green { get; }
     public byte Blue { get; }
 
+    public int ToHex()
+    {
+        return (Red << 16) | (Green << 8) | Blue;
+    }
+
     public static RGB FromHex(int hex)
     {
         return new RGB((byte)(hex >> 16), (byte)(hex >> 8), (byte)hex);

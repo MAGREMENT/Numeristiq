@@ -5,11 +5,11 @@ using Model.Sudokus.Solver;
 
 namespace Repository;
 
-public class SudokuStrategyJSONRepository : JSONRepository, IStrategyRepository<SudokuStrategy>
+public class SudokuStrategyJsonRepository : JsonRepository, IStrategyRepository<SudokuStrategy>
 {
     private List<StrategyDAO>? _buffer;
     
-    public SudokuStrategyJSONRepository(string filePath, bool searchParentDirectories, bool createIfNotFound) 
+    public SudokuStrategyJsonRepository(string filePath, bool searchParentDirectories, bool createIfNotFound) 
         : base(filePath, searchParentDirectories, createIfNotFound)
     {
     }

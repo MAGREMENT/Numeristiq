@@ -23,7 +23,7 @@ public class Instantiator
     {
         if (!_sudokuInstantiated)
         {
-            _sudokuStrategies = new SudokuStrategyJSONRepository("strategies.json", 
+            _sudokuStrategies = new SudokuStrategyJsonRepository("strategies.json", 
                 !IsForProduction, true).GetStrategies();
             _sudokuInstantiated = true;
         }
