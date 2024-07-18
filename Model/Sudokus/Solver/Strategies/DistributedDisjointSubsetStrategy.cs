@@ -136,6 +136,42 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
     }
 }
 
+public readonly struct DistributedDisjointSubsetCover
+{
+    private readonly int _shardHouses;
+    private readonly int _row;
+    private readonly int _col;
+
+    public DistributedDisjointSubsetCover(Cell cell)
+    {
+        _row = cell.Row;
+        _col = cell.Column;
+        _shardHouses = 0b111;
+    }
+
+    private DistributedDisjointSubsetCover(int row, int col, int sharedHouses)
+    {
+        _row = row;
+        _col = col;
+        _shardHouses = sharedHouses;
+    }
+
+    public bool IsValid() => _shardHouses > 0;
+
+    public DistributedDisjointSubsetCover Adapt(Cell cell)
+    {
+        int sh = _shardHouses;
+        int n = _row == cell.Row ? 0b100 : ~0b100;
+        sh &= n;
+        n = _col == cell.Column ? 0b10 : ~0b10;
+        sh &= n << 1;
+        n = _row / 3 == cell.Row / 3 && _col / 3 == cell.Column / 3 ? 1 : ~1;
+        sh &= n;
+
+        return new DistributedDisjointSubsetCover(_row, _col, sh);
+    }
+}
+
 public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Dictionary<int, List<Cell>> _possibilitiesCells;
