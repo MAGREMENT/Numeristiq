@@ -3,7 +3,7 @@
 namespace ThemeCreator;
 
 public partial class ColorControl
-{
+{ 
     public ColorControl(Brush brush, string name)
     {
         InitializeComponent();

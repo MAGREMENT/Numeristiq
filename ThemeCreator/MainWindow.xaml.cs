@@ -60,7 +60,21 @@ public partial class MainWindow : IMainView
     {
         foreach (var color in colors)
         {
-            ColorList.Children.Add(new ColorControl(ThemeInformation.ToBrush(color.Item2), color.Item1));
+            var control = new ColorControl(ThemeInformation.ToBrush(color.Item2), color.Item1);
+            control.MouseLeftButtonDown += (_, _) => _presenter.SelectColor(control.ColorName.Text);
+            ColorList.Children.Add(control);
         }
+    }
+
+    public void SelectColor(string name)
+    {
+        CurrentColor.SetResourceReference(ForegroundProperty, "Text");
+        CurrentColor.Text = name;
+    }
+
+    public void UnselectColor()
+    {
+        CurrentColor.SetResourceReference(ForegroundProperty, "Disabled");
+        CurrentColor.Text = "None";
     }
 }

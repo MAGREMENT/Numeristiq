@@ -207,6 +207,14 @@ public class SudokuStrategiesTests
             "b0g141039409a40h94b00996940hh441i6p69g0m962141h4o4g609054109g1030h118121g181211c1441030c0h03110h0c2181gcgc41410k949kg103as2c848g0mg14109218k11860921969k9414ok41o6",
             "- 873");
     }
+
+    [Test]
+    public void DDSTest()
+    {
+        TestSudokuStrategyInstance(new DistributedDisjointSubsetStrategy(),
+            "0hj0a6t009c21474n04eh8062146hg815choecj8a4tgc4tg1o7c032e2o0mc811ea0cg1c80e81h0gg42kq215e582a41h005a2qa1o9a9oa02gag03g105411818110309c0e0e0g10h05g10541180h1803a0a0",
+            "- 518 519 919 632 734 834 341 346 349");
+    }
     
     #region BlossomLoop
 

@@ -10,29 +10,42 @@ public class Presenter
     private const bool IsForProduction = false;
     
     private readonly IMainView _view;
-    private readonly IThemeRepository _repository;
-    private readonly List<Theme> _themes;
-    private Theme _current;
+    private readonly MultiThemeRepository _repository;
+    private readonly List<(Theme, bool)> _themes;
+    private int _currentTheme;
+    private string? _currentColor;
 
     public Presenter(IMainView view)
     {
         _view = view;
         _repository = new MultiThemeRepository(new JsonThemeRepository("themes.json",
             !IsForProduction, true), new HardCodedThemeRepository());
-        _themes = new List<Theme>(_repository.GetThemes());
+        _themes = _repository.GetThemesAndState();
 
-        _current = _themes[0].Copy();
-
-        _view.SetCurrentTheme(_current);
+        _view.SetCurrentTheme(_themes[_currentTheme].Item1);
         _view.SetOtherThemes(GetOtherThemes());
-        _view.SetColors(_current.AllColors());
+        _view.SetColors(_themes[_currentTheme].Item1.AllColors());
+    }
+
+    public void SelectColor(string name)
+    {
+        if (name.Equals(_currentColor))
+        {
+            _currentColor = null;
+            _view.UnselectColor();
+        }
+        else
+        {
+            _currentColor = name;
+            _view.SelectColor(name);
+        }
     }
 
     private IEnumerable<Theme> GetOtherThemes()
     {
-        foreach (var t in _themes)
+        for(int i = 0; i < _themes.Count; i++)
         {
-            if(!t.Name.Equals(_current.Name)) yield return t;
+            if (i != _currentTheme) yield return _themes[i].Item1;
         }
     }
 }
@@ -42,4 +55,6 @@ public interface IMainView
     void SetCurrentTheme(Theme theme);
     void SetOtherThemes(IEnumerable<Theme> themes);
     void SetColors(IEnumerable<(string, RGB)> colors);
+    void SelectColor(string name);
+    void UnselectColor();
 }
