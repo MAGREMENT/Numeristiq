@@ -211,7 +211,7 @@ public class SudokuStrategiesTests
     [Test]
     public void DDSTest()
     {
-        TestSudokuStrategyInstance(new DistributedDisjointSubsetStrategy(),
+        TestSudokuStrategyInstance(new DistributedDisjointSubsetStrategy(9),
             "0hj0a6t009c21474n04eh8062146hg815choecj8a4tgc4tg1o7c032e2o0mc811ea0cg1c80e81h0gg42kq215e582a41h005a2qa1o9a9oa02gag03g105411818110309c0e0e0g10h05g10541180h1803a0a0",
             "- 518 519 919 632 734 834 341 346 349");
     }

@@ -2,6 +2,8 @@
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Core.Settings;
+using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
@@ -14,8 +16,12 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
     public const string OfficialName = "Distributed Disjoint Subset";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public DistributedDisjointSubsetStrategy() : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
+    private readonly IntSetting _maxSize;
+
+    public DistributedDisjointSubsetStrategy(int maxSize) : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
     {
+        _maxSize = new IntSetting("Maximum Size", "The maximum amount of cells in the pattern",
+            new SliderInteractionInterface(2, 9, 1), maxSize);
     }
     
     public override void Apply(ISudokuSolverData solverData)

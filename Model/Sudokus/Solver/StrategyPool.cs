@@ -99,7 +99,7 @@ public static class StrategyPool
             new AIChainAlgorithmV2<ISudokuElement>())},
         {MultiSectorLockedSetsStrategy.OfficialName, () => new MultiSectorLockedSetsStrategy(new RowsAndColumnsSearcher(
             3, 5, 1))},
-        {DistributedDisjointSubsetStrategy.OfficialName, () => new DistributedDisjointSubsetStrategy()},
+        {DistributedDisjointSubsetStrategy.OfficialName, () => new DistributedDisjointSubsetStrategy(8)},
         {AlmostLockedCandidatesStrategy.OfficialNameForType2, () => new AlmostLockedCandidatesStrategy(2)},
         {AlmostLockedCandidatesStrategy.OfficialNameForType3, () => new AlmostLockedCandidatesStrategy(3)},
         {OddagonStrategy.OfficialName, () => new OddagonStrategy()},
