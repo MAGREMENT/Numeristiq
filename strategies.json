@@ -270,7 +270,7 @@
   },
   {
     "Name": "BUG-Lite",
-    "Enabled": true,
+    "Enabled": false,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {

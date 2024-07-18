@@ -208,13 +208,25 @@ public class SudokuStrategiesTests
             "- 873");
     }
 
+    #region Distributed Disjoint Subset
+
     [Test]
-    public void DDSTest()
+    public void DDSTest1()
     {
-        TestSudokuStrategyInstance(new DistributedDisjointSubsetStrategy(9),
+        TestSudokuStrategyInstance(new DistributedDisjointSubsetStrategy(8),
             "0hj0a6t009c21474n04eh8062146hg815choecj8a4tgc4tg1o7c032e2o0mc811ea0cg1c80e81h0gg42kq215e582a41h005a2qa1o9a9oa02gag03g105411818110309c0e0e0g10h05g10541180h1803a0a0",
             "- 518 519 919 632 734 834 341 346 349");
     }
+
+    [Test]
+    public void DDSTest2()
+    {
+        TestSudokuStrategyInstance(new DistributedDisjointSubsetStrategy(8),
+            "0h4184o4o2g6112109g134a4bcb82c03410h0330093g412gg10581812gg17g306g090305050o4103g8go218111280311280581410hg1282c0ia4a2118kg14141g124ac0h2c84110311810ik4g2k60k0921",
+            "- 223 814 175 672 356");
+    }
+
+    #endregion
     
     #region BlossomLoop
 

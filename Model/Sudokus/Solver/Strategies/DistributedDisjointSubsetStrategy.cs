@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Position;
-using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -35,27 +37,31 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
                 if (solverData.Sudoku[row, col] != 0) continue;
 
                 var current = new Cell(row, col);
+                var positions = new GridPositions { { row, col } };
+                var covers = new DistributedDisjointSubsetCover[9];
+                var poss = solverData.PossibilitiesAt(row, col);
                 
-                GridPositions positions = new GridPositions();
-                positions.Add(row, col);
-                Dictionary<int, List<Cell>> possibilitiesCells = new();
-                foreach (var p in solverData.PossibilitiesAt(row, col).EnumeratePossibilities())
+                foreach (var p in poss.EnumeratePossibilities())
                 {
-                    possibilitiesCells.Add(p, new List<Cell>{current});
+                    covers[p - 1] = new DistributedDisjointSubsetCover(current);
                 }
 
-                if (Search(solverData, possibilitiesCells, positions, alreadyExplored)) return;
+                if (Search(solverData, covers, poss.Count, positions, alreadyExplored)) return;
             }
         }
     }
 
-    private bool Search(ISudokuSolverData solverData, Dictionary<int, List<Cell>> possibilitiesCells,
+    private bool Search(ISudokuSolverData solverData, DistributedDisjointSubsetCover[] covers, int coverCount,
         GridPositions positions, HashSet<GridPositions> alreadyExplored)
     {
+        if (positions.Count == _maxSize.Value) return false;
+        
+        Span<DistributedDisjointSubsetCover> old = stackalloc DistributedDisjointSubsetCover[9];
+        covers.CopyTo(old);
+        
         foreach (var cell in positions.AllSeenCells())
         {
-            if (solverData.Sudoku[cell.Row, cell.Column] != 0 ||
-                !ShareAUnitWithAll(solverData, cell, possibilitiesCells)) continue;
+            if (solverData.Sudoku[cell.Row, cell.Column] != 0) continue;
             
             positions.Add(cell);
             if (alreadyExplored.Contains(positions))
@@ -63,88 +69,70 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
                 positions.Remove(cell);
                 continue;
             }
-
             alreadyExplored.Add(positions.Copy());
             
-            foreach (var p in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
+            int newCoverCount = coverCount;
+            var poss = solverData.PossibilitiesAt(cell);
+            bool notOk = false;
+            
+            foreach (var p in poss.EnumeratePossibilities())
             {
-                if (!possibilitiesCells.TryGetValue(p, out var list))
+                var cover = covers[p - 1];
+                var newCover = cover.Adapt(cell);
+                if (!newCover.IsValid())
                 {
-                    list = new List<Cell>();
-                    possibilitiesCells[p] = list;
+                    old.CopyTo(covers);
+                    positions.Remove(cell);
+                    notOk = true;
+                    break;
                 }
 
-                list.Add(cell);
+                covers[p - 1] = newCover;
+                if (!cover.IsValid()) newCoverCount++;
             }
 
-            if (positions.Count == possibilitiesCells.Count)
+            if (notOk) continue;
+
+            if (positions.Count == newCoverCount)
             {
-                if (Process(solverData, possibilitiesCells)) return true;
+                if (Process(solverData, positions, covers)) return true;
             }
             
-            if (Search(solverData, possibilitiesCells, positions, alreadyExplored)) return true;
+            if (Search(solverData, covers, newCoverCount, positions, alreadyExplored)) return true;
 
+            old.CopyTo(covers);
             positions.Remove(cell);
-            foreach (var p in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
-            {
-                var list = possibilitiesCells[p];
-
-                list.RemoveAt(list.Count - 1);
-                if (list.Count == 0) possibilitiesCells.Remove(p);
-            }
         }
         
         return false;
     }
 
-    private bool Process(ISudokuSolverData solverData, Dictionary<int, List<Cell>> possibilitiesCells)
+    private bool Process(ISudokuSolverData solverData, GridPositions positions, DistributedDisjointSubsetCover[] covers)
     {
-        foreach (var entry in possibilitiesCells)
+        for(int i = 0; i < covers.Length; i++)
         {
-            foreach (var ssc in SudokuCellUtility.SharedSeenCells(entry.Value))
+            var cover = covers[i];
+            if (!cover.IsValid()) continue;
+            
+            foreach (var ssc in cover.SeenCells())
             {
-                solverData.ChangeBuffer.ProposePossibilityRemoval(entry.Key, ssc);
+                if(!positions.Contains(ssc)) solverData.ChangeBuffer.ProposePossibilityRemoval(i + 1, ssc);
             }
         }
 
         return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                   new DistributedDisjointSubsetReportBuilder(PossibilitiesCellsDeepCopy(possibilitiesCells))) &&
+                   new DistributedDisjointSubsetReportBuilder(positions, covers)) &&
                StopOnFirstPush;
-    }
-
-    private Dictionary<int, List<Cell>> PossibilitiesCellsDeepCopy(Dictionary<int, List<Cell>> original)
-    {
-        var result = new Dictionary<int, List<Cell>>();
-
-        foreach (var entry in original)
-        {
-            result.Add(entry.Key, new List<Cell>(entry.Value));
-        }
-        
-        return result;
-    }
-
-    private bool ShareAUnitWithAll(ISudokuSolverData solverData, Cell cell, Dictionary<int, List<Cell>> possibilitiesCells)
-    {
-        bool ok = false;
-        foreach (var poss in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
-        {
-            if (!possibilitiesCells.TryGetValue(poss, out var toShareAUnitWith)) continue;
-
-            ok = true;
-            foreach (var c in toShareAUnitWith)
-            {
-                if (!SudokuCellUtility.ShareAUnit(cell, c)) return false;
-            }
-        }
-
-        return ok;
     }
 }
 
 public readonly struct DistributedDisjointSubsetCover
 {
-    private readonly int _shardHouses;
+    private const uint RowRemove = ~(uint)0b1000;
+    private const uint ColumnRemove = ~(uint)0b100;
+    private const uint BoxRemove = ~(uint)0b10;
+    
+    private readonly uint _sharedHouses;
     private readonly int _row;
     private readonly int _col;
 
@@ -152,51 +140,113 @@ public readonly struct DistributedDisjointSubsetCover
     {
         _row = cell.Row;
         _col = cell.Column;
-        _shardHouses = 0b111;
+        //RowBit - ColumnBit - BoxBit - InitializationBit
+        _sharedHouses = 0b1111;
     }
 
-    private DistributedDisjointSubsetCover(int row, int col, int sharedHouses)
+    private DistributedDisjointSubsetCover(int row, int col, uint sharedHouses)
     {
         _row = row;
         _col = col;
-        _shardHouses = sharedHouses;
+        _sharedHouses = sharedHouses;
     }
-
-    public bool IsValid() => _shardHouses > 0;
+    
+    public bool IsValid() => _sharedHouses > 1;
 
     public DistributedDisjointSubsetCover Adapt(Cell cell)
     {
-        int sh = _shardHouses;
-        int n = _row == cell.Row ? 0b100 : ~0b100;
-        sh &= n;
-        n = _col == cell.Column ? 0b10 : ~0b10;
-        sh &= n << 1;
-        n = _row / 3 == cell.Row / 3 && _col / 3 == cell.Column / 3 ? 1 : ~1;
-        sh &= n;
+        if (_sharedHouses == 0) return new DistributedDisjointSubsetCover(cell);
+        
+        var sh = _sharedHouses;
+        if (_row != cell.Row) sh &= RowRemove;
+        if (_col != cell.Column) sh &= ColumnRemove;
+        if (_row / 3 != cell.Row / 3 || _col / 3 != cell.Column / 3) sh &= BoxRemove;
 
         return new DistributedDisjointSubsetCover(_row, _col, sh);
+    }
+
+    public void CurrentlyCoveringHouses(StringBuilder builder)
+    {
+        bool alreadyOne = false;
+        if (((_sharedHouses >> 3) & 1) > 0)
+        {
+            alreadyOne = true;
+            builder.Append("r" + (_row + 1));
+        }
+        
+        if (((_sharedHouses >> 2) & 1) > 0)
+        {
+            if (alreadyOne) builder.Append(" or ");
+            alreadyOne = true;
+            builder.Append("c" + (_col + 1));
+        }
+
+        if (((_sharedHouses >> 1) & 1) > 0)
+        {
+            if (alreadyOne) builder.Append(" or ");
+            builder.Append("b" + (_row / 3 * 3 + _col / 3));
+        }
+    }
+
+    public IEnumerable<Cell> SeenCells()
+    {
+        if (((_sharedHouses >> 3) & 1) > 0)
+        {
+            for (int c = 0; c < 9; c++)
+            {
+                yield return new Cell(_row, c);
+            }
+        }
+        
+        if (((_sharedHouses >> 2) & 1) > 0)
+        {
+            for (int r = 0; r < 9; r++)
+            {
+                yield return new Cell(r, _col);
+            }
+        }
+
+        if (((_sharedHouses >> 1) & 1) > 0)
+        {
+            var sr = _row / 3 * 3;
+            var sc = _col / 3 * 3;
+
+            for (int r = 0; r < 3; r++)
+            {
+                for (int c = 0; c < 3; c++)
+                {
+                    yield return new Cell(sr + r, sc + c);
+                }
+            }
+        }
     }
 }
 
 public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly Dictionary<int, List<Cell>> _possibilitiesCells;
+    private readonly DistributedDisjointSubsetCover[] _covers = new DistributedDisjointSubsetCover[9];
+    private readonly GridPositions _positions;
 
-    public DistributedDisjointSubsetReportBuilder(Dictionary<int, List<Cell>> possibilitiesCells)
+    public DistributedDisjointSubsetReportBuilder(GridPositions positions, DistributedDisjointSubsetCover[] covers)
     {
-        _possibilitiesCells = possibilitiesCells;
+        _positions = positions.Copy();
+        Array.Copy(covers, _covers, covers.Length);
     }
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
             int color = (int)ChangeColoration.CauseOffOne;
-            foreach (var entry in _possibilitiesCells)
+            for(int i = 0; i < _covers.Length; i++)
             {
-                foreach (var cell in entry.Value)
+                var cover = _covers[i];
+                if(!cover.IsValid()) continue;
+                
+                foreach (var cell in _positions)
                 {
-                    lighter.HighlightPossibility(entry.Key, cell.Row, cell.Column, (ChangeColoration)color);
+                    if(snapshot.PossibilitiesAt(cell).Contains(i + 1)) 
+                        lighter.HighlightPossibility(i + 1, cell.Row, cell.Column, (ChangeColoration)color);
                 }
 
                 color++;
@@ -204,6 +254,22 @@ public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<Numer
             
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
+    }
+
+    private string Description()
+    {
+        var builder = new StringBuilder($"Distributed Disjoint Subset in {_positions.ToStringSequence(", ")}. ");
+        for (int i = 0; i < _covers.Length; i++)
+        {
+            var cover = _covers[i];
+            if (!cover.IsValid()) continue;
+
+            builder.Append($"{i + 1} => ");
+            cover.CurrentlyCoveringHouses(builder);
+            builder.Append(". ");
+        }
+
+        return builder.ToString();
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
