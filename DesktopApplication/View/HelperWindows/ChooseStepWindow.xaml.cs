@@ -2,7 +2,6 @@
 using System.Windows.Controls;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.Presenter.Sudokus.Solve.ChooseStep;
-using Model;
 using Model.Core;
 
 namespace DesktopApplication.View.HelperWindows;
@@ -32,7 +31,7 @@ public partial class ChooseStepWindow : IChooseStepView
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     }
 
-    public ISudokuSolverDrawer Drawer => Board;
+    public ISudokuSolverDrawer Drawer => (ISudokuSolverDrawer)Embedded.OptimizableContent!;
     
     public void ClearCommits()
     {
@@ -53,24 +52,14 @@ public partial class ChooseStepWindow : IChooseStepView
         StepsPanel.Children.Add(tb);
     }
 
-    public void SetPreviousPageExistence(bool exists)
-    {
-        PreviousButton.IsEnabled = exists;
-    }
-
-    public void SetNextPageExistence(bool exists)
-    {
-        NextButton.IsEnabled = exists;
-    }
-
     public void SetTotalPage(int n)
     {
-        TotalPage.Text = n.ToString();
+        PageSelector.Max = n;
     }
 
     public void SetCurrentPage(int n)
     {
-        CurrentPage.Text = n.ToString();
+        PageSelector.Current = n;
     }
 
     public void SelectStep(int index)
@@ -94,14 +83,9 @@ public partial class ChooseStepWindow : IChooseStepView
         SelectButton.IsEnabled = isEnabled;
     }
 
-    private void PreviousPage(object sender, RoutedEventArgs e)
+    private void OnPageChange(int newPage)
     {
-        _presenter.ChangePage(-1);
-    }
-
-    private void NextPage(object sender, RoutedEventArgs e)
-    {
-        _presenter.ChangePage(1);
+        _presenter.ChangePage(newPage);
     }
 
     private void OnSelection(object sender, RoutedEventArgs e)

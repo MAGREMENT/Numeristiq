@@ -12,7 +12,6 @@ public partial class StepControl
 
     public event OnOpenRequest? OpenRequested;
     public event OnStateShownChange? StateShownChanged;
-    public event OnHighlightShift? HighlightShifted;
     public event OnExplanationAsked? ExplanationAsked;
     
     public StepControl(IStep step, StateShown stateShown)
@@ -24,7 +23,7 @@ public partial class StepControl
         Title.Text = step.Title;
         Title.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(step.Difficulty));
         Number.Text = step.Id.ToString();
-        HighlightCount.Text = step.GetCursorPosition();
+        PageSelector.Max = step.HighlightCount();
         SetStateShown(stateShown);
         TextOutput.Text = step.Description;
     }
@@ -61,12 +60,6 @@ public partial class StepControl
         _shouldCallStateShownEvent = true;
     }
 
-
-    public void SetCursorPosition(string s)
-    {
-        HighlightCount.Text = s;
-    }
-
     private void OnClick(object sender, MouseButtonEventArgs e)
     {
         OpenRequested?.Invoke(_id);
@@ -81,16 +74,6 @@ public partial class StepControl
     {
         if (_shouldCallStateShownEvent) StateShownChanged?.Invoke(StateShown.After);
     }
-    
-    private void ShiftLeft(object sender, RoutedEventArgs e)
-    {
-        HighlightShifted?.Invoke(true);
-    }
-    
-    private void ShiftRight(object sender, RoutedEventArgs e)
-    {
-        HighlightShifted?.Invoke(false);
-    }
 
     private void OnExplanationAsked(object sender, RoutedEventArgs e)
     {
@@ -100,5 +83,4 @@ public partial class StepControl
 
 public delegate void OnOpenRequest(int id);
 public delegate void OnStateShownChange(StateShown stateShown);
-public delegate void OnHighlightShift(bool isLeft);
 public delegate void OnExplanationAsked();

@@ -23,6 +23,11 @@ public class HighlightManager<THighlighter> : IHighlightable<THighlighter>
         _highlights[_cursor].Highlight(highlighter);
     }
 
+    public void GoTo(int pos)
+    {
+        _cursor = pos;
+    }
+
     public void ShiftLeft()
     {
         _cursor--;

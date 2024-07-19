@@ -13,7 +13,7 @@ public interface IStep
     StepDifficulty Difficulty { get; }
     string Description { get; }
     ExplanationElement? Explanation { get; }
-    string GetCursorPosition();
+    int HighlightCount();
     string ChangesToString();
 }
 
@@ -24,9 +24,9 @@ public interface IDichotomousStep<THighlighter> : IStep
     IDichotomousSolvingState To { get; }
     HighlightManager<THighlighter> HighlightManager { get; }
 
-    string IStep.GetCursorPosition()
+    int IStep.HighlightCount()
     {
-        return HighlightManager.CursorPosition();
+        return HighlightManager.Count;
     }
 
     string IStep.ChangesToString()
@@ -42,9 +42,9 @@ public interface INumericStep<THighlighter> : IStep
     INumericSolvingState To { get; }
     HighlightManager<THighlighter> HighlightManager { get; }
 
-    string IStep.GetCursorPosition()
+    int IStep.HighlightCount()
     {
-        return HighlightManager.CursorPosition();
+        return HighlightManager.Count;
     }
 
     string IStep.ChangesToString()

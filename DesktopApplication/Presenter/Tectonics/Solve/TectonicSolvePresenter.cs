@@ -123,17 +123,15 @@ public class TectonicSolvePresenter
         _translator.Translate(log.HighlightManager);
     }
 
-    public void RequestHighlightShift(bool isLeft)
+    public void RequestHighlightChange(int newHighlight)
     {
-        if (_currentlyOpenedStep < 0 || _currentlyOpenedStep > _solver.Steps.Count) return;
+        if (_currentlyOpenedStep < 0 || _currentlyOpenedStep >= _solver.Steps.Count) return;
         
         var log = _solver.Steps[_currentlyOpenedStep];
-        if(isLeft) log.HighlightManager.ShiftLeft();
-        else log.HighlightManager.ShiftRight();
+        log.HighlightManager.GoTo(newHighlight - 1);
         
         _view.Drawer.ClearHighlights();
         _translator.Translate(log.HighlightManager);
-        _view.SetCursorPosition(_currentlyOpenedStep, log.HighlightManager.CursorPosition());
     }
 
     public void SelectCell(Cell c)

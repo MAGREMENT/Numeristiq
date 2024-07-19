@@ -12,13 +12,44 @@
 				<ResourceDictionary Source="View/Styles/BrushesAndColors.xaml"/>
 			</ResourceDictionary.MergedDictionaries>
 			
-		    
 		    <FontFamily x:Key="Poppins">pack://application:,,,/View/Fonts/#Poppins</FontFamily>
 		    <FontFamily x:Key="RobotoMono">pack://application:,,,/View/Fonts/#Roboto Mono</FontFamily>
 		    
 		    <Style TargetType="Window"> 
 			    <Setter Property="FontFamily" Value="{StaticResource Poppins}" />             
 		    </Style> 
+			
+			<Style TargetType="Button" x:Key="ForegroundButton">
+				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
+				<Setter Property="Template">
+					<Setter.Value>
+						<ControlTemplate TargetType="Button">
+							<Border Background="{TemplateBinding Background}"
+							        Padding="{TemplateBinding Padding}"
+							        Width="{TemplateBinding Width}"
+							        Height="{TemplateBinding Height}">
+								<ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+							</Border>
+							
+							<ControlTemplate.Triggers>
+								<MultiTrigger>
+									<MultiTrigger.Conditions>
+										<Condition Property="IsEnabled" Value="True"/>
+										<Condition Property="IsMouseOver" Value="True"/>
+									</MultiTrigger.Conditions>
+									<MultiTrigger.Setters>
+										<Setter Property="Foreground" Value="{DynamicResource Primary1}"/>
+									</MultiTrigger.Setters>
+								</MultiTrigger>
+								
+								<Trigger Property="IsEnabled" Value="False">
+									<Setter Property="Foreground" Value="{DynamicResource Disabled}"/>
+								</Trigger>
+							</ControlTemplate.Triggers>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+			</Style>
 			
 			<Style TargetType="RadioButton" x:Key="ChangeRadioButton">
 				<Setter Property="Foreground" Value="{DynamicResource Text}"/>

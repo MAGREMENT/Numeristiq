@@ -40,7 +40,7 @@ public partial class SolvePage : ITectonicSolveView
             LogPanel.Children.Add(lc);
             lc.OpenRequested += _presenter.RequestLogOpening;
             lc.StateShownChanged += _presenter.RequestStateShownChange;
-            lc.HighlightShifted += _presenter.RequestHighlightShift;
+            lc.PageSelector.PageChanged += _presenter.RequestHighlightChange;
         });
         LogViewer.Dispatcher.Invoke(() => LogViewer.ScrollToEnd());
     }
@@ -76,14 +76,6 @@ public partial class SolvePage : ITectonicSolveView
 
             lc.SetStateShown(stateShown);
         }
-    }
-
-    public void SetCursorPosition(int index, string s)
-    {
-        if (index < 0 || index > LogPanel.Children.Count) return;
-        if (LogPanel.Children[index] is not StepControl lc) return;
-
-        lc.SetCursorPosition(s);
     }
 
     private void CreateNewTectonic(string s)

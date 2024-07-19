@@ -63,7 +63,7 @@ public partial class SolvePage : ISudokuSolveView
             LogPanel.Children.Add(lc);
             lc.OpenRequested += _presenter.RequestLogOpening;
             lc.StateShownChanged += _presenter.RequestStateShownChange;
-            lc.HighlightShifted += _presenter.RequestHighlightShift;
+            lc.PageSelector.PageChanged += _presenter.RequestHighlightChange;
             lc.ExplanationAsked += () =>
             {
                 var builder = _presenter.RequestExplanation();
@@ -105,14 +105,6 @@ public partial class SolvePage : ISudokuSolveView
 
             lc.SetStateShown(stateShown);
         }
-    }
-
-    public void SetCursorPosition(int index, string s)
-    {
-        if (index < 0 || index > LogPanel.Children.Count) return;
-        if (LogPanel.Children[index] is not StepControl lc) return;
-
-        lc.SetCursorPosition(s);
     }
 
     public void InitializeStrategies(IReadOnlyList<SudokuStrategy> strategies)

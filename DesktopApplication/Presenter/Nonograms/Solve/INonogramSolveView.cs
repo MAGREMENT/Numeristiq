@@ -12,5 +12,4 @@ public interface INonogramSolveView
     void OpenLog(int index);
     void CloseLogs();
     void SetLogsStateShown(StateShown stateShown);
-    void SetCursorPosition(int index, string s);
 }

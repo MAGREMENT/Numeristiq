@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="DesktopApplication.View.Controls.PageSelectorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d">
+    <Border CornerRadius="5" Height="40" Background="{DynamicResource Background3}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <Button Style="{StaticResource ForegroundButton}"
+                    Grid.Column="0" Click="PageBefore" x:Name="MinusButton"
+                    VerticalAlignment="Center" Margin="0 0 5 0"
+                    Background="{DynamicResource Background3}"
+                    Width="30" Height="30" >
+                <Path Width="30" Height="30" 
+                      Stroke="{Binding Path=Foreground,
+								 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                      StrokeThickness="2" Data="M 10,15 H 20" />
+            </Button>
+            
+            <TextBlock Grid.Column="1" Foreground="{DynamicResource Text}"
+                       FontSize="20" Width="30" VerticalAlignment="Center" TextAlignment="Center"
+                       x:Name="BeforeBefore" Margin="0 0 5 0" FontWeight="Bold"
+                       Visibility="Collapsed">1</TextBlock>
+            
+            <TextBlock Grid.Column="2" Foreground="{DynamicResource Text}"
+                       FontSize="20" Width="30" VerticalAlignment="Center" TextAlignment="Center"
+                       x:Name="Before" Margin="0 0 5 0" FontWeight="Bold">1</TextBlock>
+            
+            <Border Grid.Column="3" Width="30" Height="30" VerticalAlignment="Center"
+                    CornerRadius="5" Background="{DynamicResource Primary1}">
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="CurrentTb" 
+                           Foreground="{DynamicResource Background2}" FontSize="20"
+                           FontWeight="Bold">2</TextBlock>
+            </Border>
+            
+            <TextBlock Grid.Column="4" Foreground="{DynamicResource Text}"
+                       FontSize="20" Width="30" VerticalAlignment="Center" TextAlignment="Center"
+                       x:Name="After" Margin="5 0 0 0"
+                       FontWeight="Bold">3</TextBlock>
+            
+            <TextBlock Grid.Column="5" Foreground="{DynamicResource Text}"
+                       FontSize="20" Width="30" VerticalAlignment="Center" TextAlignment="Center"
+                       x:Name="AfterAfter" Margin="5 0 0 0"
+                       FontWeight="Bold" Visibility="Collapsed">3</TextBlock>
+            
+            <Button Style="{StaticResource ForegroundButton}"
+                    Grid.Column="6" Click="PageAfter" x:Name="PlusButton"
+                    Margin="5 0 0 0"  VerticalAlignment="Center"
+                    Background="{DynamicResource Background3}">
+                <Path Width="30" Height="30" 
+                      Stroke="{Binding Path=Foreground,
+								 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                      StrokeThickness="2" Data="M 10,15 H 20 M 15,10 V 20" /> 
+            </Button>
+        </Grid>
+    </Border>
+</UserControl>

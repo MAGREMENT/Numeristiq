@@ -35,8 +35,6 @@ public class ChooseStepPresenter
 
         _view.SetTotalPage(_commits.Count / PageCount + (_commits.Count % PageCount > 0 ? 1 : 0));
         _view.SetCurrentPage(_currentPage + 1);
-        _view.SetPreviousPageExistence(false);
-        _view.SetNextPageExistence(_commits.Count > PageCount);
 
         var drawer = _view.Drawer;
         for (int row = 0; row < 9; row++)
@@ -53,18 +51,13 @@ public class ChooseStepPresenter
         drawer.Refresh();
     }
 
-    public void ChangePage(int diff)
+    public void ChangePage(int newPage)
     {
-        var newPage = _currentPage + diff;
         if (newPage < 0 || newPage * PageCount >= _commits.Count) return;
 
-        _currentPage = newPage;
+        _currentPage = newPage - 1;
         _view.ClearCommits();
         SetSteps();
-
-        _view.SetCurrentPage(_currentPage + 1);
-        _view.SetPreviousPageExistence(_currentPage > 0);
-        _view.SetNextPageExistence(newPage * PageCount < _commits.Count - 1);
     }
 
     public void ShowStep(int index)

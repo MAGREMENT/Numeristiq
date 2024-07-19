@@ -1,5 +1,4 @@
-﻿using Model.Core.Highlighting;
-using Model.Core.Steps;
+﻿using Model.Core.Steps;
 
 namespace DesktopApplication.Presenter.Tectonics.Solve;
 
@@ -13,5 +12,4 @@ public interface ITectonicSolveView
     void OpenLog(int index);
     void CloseLogs();
     void SetLogsStateShown(StateShown stateShown);
-    void SetCursorPosition(int index, string s);
 }

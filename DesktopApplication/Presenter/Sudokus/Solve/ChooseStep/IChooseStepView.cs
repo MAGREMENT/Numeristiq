@@ -9,8 +9,6 @@ public interface IChooseStepView
     
     public void ClearCommits();
     public void AddCommit(Strategy maker, int index);
-    public void SetPreviousPageExistence(bool exists);
-    public void SetNextPageExistence(bool exists);
     public void SetTotalPage(int n);
     public void SetCurrentPage(int n);
     public void SelectStep(int index);
