@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -21,7 +23,7 @@ public class XYChainsStrategy : SudokuStrategy
         solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.XYChainSpecific,
             SudokuConstructRuleBank.CellStrongLink);
         var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
-        var route = new List<CellPossibility>();
+        var route = new List<XYCell>();
         var visited = new HashSet<CellPossibility>();
 
         foreach (var start in graph)
@@ -32,16 +34,14 @@ public class XYChainsStrategy : SudokuStrategy
     }
 
     private bool Search(ISudokuSolverData solverData, ILinkGraph<CellPossibility> graph, CellPossibility current,
-        List<CellPossibility> route, HashSet<CellPossibility> visited)
+        List<XYCell> route, HashSet<CellPossibility> visited)
     {
         var friend = graph.Neighbors(current, LinkStrength.Strong).First();
-
-        route.Add(current);
-        route.Add(friend);
-        visited.Add(current);
-        visited.Add(friend);
         
-        if(friend.Possibility == route[0].Possibility && Process(solverData, route)) return true;
+        route.Add(new XYCell(current.Possibility, friend.Possibility, current.Row, current.Column));
+        visited.Add(current);
+        
+        if(friend.Possibility == route[0].XPossibility && Process(solverData, route)) return true;
 
         foreach (var next in graph.Neighbors(friend, LinkStrength.Weak))
         {
@@ -52,58 +52,93 @@ public class XYChainsStrategy : SudokuStrategy
         }
 
         route.RemoveAt(route.Count - 1);
-        route.RemoveAt(route.Count - 1);
 
         return false;
     }
 
-    private bool Process(ISudokuSolverData solverData, List<CellPossibility> visited)
+    private bool Process(ISudokuSolverData solverData, List<XYCell> route)
     {
-        foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
+        foreach (var coord in route[0].SharedSeenCells(route[^1]))
         {
-            solverData.ChangeBuffer.ProposePossibilityRemoval(visited[0].Possibility, coord.Row, coord.Column);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(route[0].XPossibility, coord.Row, coord.Column);
         }
         
-        return solverData.ChangeBuffer.Commit( new XYChainReportBuilder(visited))
-            && StopOnFirstPush;
+        return solverData.ChangeBuffer.Commit(new XYChainReportBuilder(route)) && StopOnFirstPush;
+    }
+}
+
+public readonly struct XYCell
+{
+    public int XPossibility { get; }
+    public int YPossibility { get; }
+    public int Row { get; }
+    public int Column { get; }
+    
+    public XYCell(int xPossibility, int yPossibility, int row, int column)
+    {
+        XPossibility = xPossibility;
+        YPossibility = yPossibility;
+        Row = row;
+        Column = column;
+    }
+
+    public IEnumerable<Cell> SharedSeenCells(XYCell cell)
+    {
+        return SudokuCellUtility.SharedSeenCells(Row, Column, cell.Row, cell.Column);
+    }
+
+    public CellPossibility XCellPossibility() => new(Row, Column, XPossibility);
+
+    public CellPossibility YCellPossibility() => new(Row, Column, YPossibility);
+
+    public override bool Equals(object? obj)
+    {
+        return obj is XYCell xy && xy.Row == Row && xy.Column == Column && xy.XPossibility == XPossibility
+               && xy.YPossibility == YPossibility;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Row, Column, XPossibility, YPossibility);
+    }
+
+    public override string ToString()
+    {
+        return $"{XPossibility}{YPossibility}r{Row + 1}c{Column + 1}";
     }
 }
 
 public class XYChainReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly CellPossibility[] _visited;
+    private readonly XYCell[] _route;
 
-    public XYChainReportBuilder(List<CellPossibility> visited)
+    public XYChainReportBuilder(List<XYCell> route)
     {
-        _visited = visited.ToArray();
+        _route = route.ToArray();
     }
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>($"XY-Chain : {_route.ToStringSequence(" - ")}", lighter =>
         {
-            for (int i = 0; i < _visited.Length; i++)
+            for (int i = 0; i < _route.Length; i++)
             {
-                lighter.HighlightPossibility(_visited[i].Possibility, _visited[i].Row, _visited[i].Column, i % 2 == 0 ?
-                    ChangeColoration.CauseOnOne: ChangeColoration.CauseOffTwo);
-                if (i > _visited.Length - 2) continue;
-                lighter.CreateLink(_visited[i], _visited[i + 1], i % 2 == 0 ? LinkStrength.Weak : LinkStrength.Strong);
+                var xyCell = _route[i];
+                
+                lighter.HighlightPossibility(xyCell.XPossibility, xyCell.Row, xyCell.Column, 
+                    ChangeColoration.CauseOffTwo);
+                lighter.HighlightPossibility(xyCell.YPossibility, xyCell.Row, xyCell.Column, 
+                    ChangeColoration.CauseOnOne);
+                lighter.CreateLink(xyCell.XCellPossibility(), xyCell.YCellPossibility(), LinkStrength.Strong);
+
+                if (i > 0)
+                {
+                    lighter.CreateLink(_route[i - 1].YCellPossibility(), xyCell.XCellPossibility(), LinkStrength.Weak);
+                }
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
-    }
-
-    private string Description()
-    {
-        var builder = new StringBuilder("XY-Chain : ");
-
-        for (int i = 0; i < _visited.Length; i += 2)
-        {
-            
-        }
-        
-        return builder.ToString();
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

@@ -101,7 +101,7 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
 
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength)
     {
-        if (_settings.ShowSameCellLinks && from.ToCell() == to.ToCell()) return;
+        if (!_settings.ShowSameCellLinks && from.ToCell() == to.ToCell()) return;
         
         _drawer.CreateLink(from.Row, from.Column, from.Possibility, to.Row, to.Column,
             to.Possibility, linkStrength, _settings.LinkOffsetSidePriority);
@@ -109,7 +109,7 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
 
     public void CreateLink(ISudokuElement from, ISudokuElement to, LinkStrength linkStrength)
     {
-        if (_settings.ShowSameCellLinks && from is CellPossibility cp1 && to is CellPossibility cp2
+        if (!_settings.ShowSameCellLinks && from is CellPossibility cp1 && to is CellPossibility cp2
             && cp1.ToCell() == cp2.ToCell()) return;
         
         if (linkStrength == LinkStrength.Strong && (from is NakedSet || to is NakedSet)) return;

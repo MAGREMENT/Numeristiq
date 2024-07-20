@@ -74,7 +74,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
                 {
                    solverData.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
                    return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                              new AvoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstPush;
+                              new UnavoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstPush;
                 }
 
                 return false;
@@ -83,7 +83,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
                 {
                     solverData.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
                     return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                        new AvoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstPush;
+                        new UnavoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstPush;
                 }
                 
                 return false;
@@ -108,7 +108,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         }
 
         if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                new AvoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstPush) return true;
+                new UnavoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstPush) return true;
 
         var notBiValuePossibilities = possibilitiesRoofOne | possibilitiesRoofTwo;
         notBiValuePossibilities -= values.One;
@@ -120,7 +120,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
 
             ProcessArWithAls(solverData, roof, als);
             if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                    new AvoidableRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als)) &&
+                    new UnavoidableRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als)) &&
                         StopOnFirstPush) return true;
         }
 
@@ -152,12 +152,12 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
     }
 }
 
-public class AvoidableRectanglesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
+public class UnavoidableRectanglesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
 
-    public AvoidableRectanglesReportBuilder(Cell[] floor, Cell[] roof)
+    public UnavoidableRectanglesReportBuilder(Cell[] floor, Cell[] roof)
     {
         _floor = floor;
         _roof = roof;
@@ -188,13 +188,13 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder<NumericChan
     }
 }
 
-public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
+public class UnavoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
     private readonly IPossibilitiesPositions _als;
 
-    public AvoidableRectanglesWithAlmostLockedSetReportBuilder(Cell[] floor, Cell[] roof, IPossibilitiesPositions als)
+    public UnavoidableRectanglesWithAlmostLockedSetReportBuilder(Cell[] floor, Cell[] roof, IPossibilitiesPositions als)
     {
         _floor = floor;
         _roof = roof;
