@@ -8,6 +8,7 @@ using Model.Sudokus.Solver.PossibilityPosition;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -165,7 +166,9 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder<NumericChange, ISu
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>($"Death Blossom from {_stems.ToStringSequence(" ,")}," +
+                                                    $"targeting {_target.ToString()} with {_als.ToStringSequence(", ")}",
+            lighter =>
         {
             foreach (var stem in _stems)
             {
@@ -190,19 +193,6 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder<NumericChange, ISu
             
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
-    }
-
-    private string Explanation()
-    {
-        var builder = new StringBuilder();
-        var asList = new List<IPossibilitiesPositions>(_als);
-
-        for (int i = 0; i < asList.Count; i++)
-        {
-            builder.Append($"#{i + 1} : {asList[i]}\n");
-        }
-
-        return builder.ToString();
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

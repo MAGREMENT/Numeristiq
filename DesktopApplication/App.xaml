@@ -14,6 +14,10 @@
 			
 		    <FontFamily x:Key="Poppins">pack://application:,,,/View/Fonts/#Poppins</FontFamily>
 		    <FontFamily x:Key="RobotoMono">pack://application:,,,/View/Fonts/#Roboto Mono</FontFamily>
+			
+			<Style TargetType="Image" x:Key="Fant">
+				<Setter Property="RenderOptions.BitmapScalingMode" Value="Fant"/>
+			</Style>
 		    
 		    <Style TargetType="Window"> 
 			    <Setter Property="FontFamily" Value="{StaticResource Poppins}" />             

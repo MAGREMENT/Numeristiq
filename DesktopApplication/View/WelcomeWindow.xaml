@@ -23,7 +23,14 @@
         
         <controls:TitleBarControl Grid.Row="0" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
                                   AllowResize="False">
-            <controls:SettingsButton Clicked="ShowSettingWindow"/>
+            <StackPanel Orientation="Horizontal">
+                <controls:SettingsButton Clicked="ShowSettingWindow"/>
+                <Button Style="{StaticResource SimpleHoverButton}" Width="40" Height="40"
+                        Click="ShowThemeWindow">
+                    <Image Source="Images/themes.png" Height="26" Width="26" Style="{StaticResource Fant}"
+                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Button>
+            </StackPanel>
         </controls:TitleBarControl>
         
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0, 20, 0, 20" HorizontalAlignment="Center">

@@ -89,15 +89,15 @@ public class Settings
         if (update) _repository.UpdateSetting(setting);
     }
 
-    public void TrySet(string name, SettingValue value)
+    public void TrySet(string name, SettingValue value, bool checkValidity = true, bool update = true)
     {
         foreach (var setting in _settings)
         {
-            if (setting.Name.Equals(name))
-            {
-                setting.Set(value);
-                return;
-            }
+            if (!setting.Name.Equals(name)) continue;
+            
+            setting.Set(value, checkValidity);
+            if (update) _repository.UpdateSetting(setting);
+            return;
         }
     }
 

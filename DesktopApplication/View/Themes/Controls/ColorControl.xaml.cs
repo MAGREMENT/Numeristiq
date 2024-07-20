@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
 
-namespace ThemeCreator;
+namespace DesktopApplication.View.Themes.Controls;
 
 public partial class ColorControl
 { 

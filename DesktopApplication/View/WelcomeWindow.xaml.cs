@@ -6,6 +6,7 @@ using DesktopApplication.View.Kakuros;
 using DesktopApplication.View.Nonograms;
 using DesktopApplication.View.Sudokus;
 using DesktopApplication.View.Tectonics;
+using DesktopApplication.View.Themes;
 
 namespace DesktopApplication.View;
 
@@ -69,6 +70,12 @@ public partial class WelcomeWindow
     private void ShowSettingWindow()
     {
         var window = new SettingWindow(_presenter.SettingsPresenter);
+        window.Show();
+    }
+
+    private void ShowThemeWindow(object sender, RoutedEventArgs e)
+    {
+        var window = new ThemeWindow();
         window.Show();
     }
 }

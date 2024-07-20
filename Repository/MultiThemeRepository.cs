@@ -23,20 +23,17 @@ public class MultiThemeRepository : IThemeRepository
         return result;
     }
 
-    public List<(Theme, bool)> GetThemesAndState()
-    {
-        var result = new List<(Theme, bool)>();
+    public int WritableCount() => _repositories[0].Count();
 
-        for (int i = 0; i < _repositories.Count; i++)
+    public int Count()
+    {
+        var total = 0;
+        foreach (var repo in _repositories)
         {
-            var themes = _repositories[i].GetThemes();
-            foreach (var t in themes)
-            {
-                result.Add((t, i == 0));
-            }
+            total += repo.Count();
         }
-        
-        return result;
+
+        return total;
     }
 
     public void AddTheme(Theme theme)

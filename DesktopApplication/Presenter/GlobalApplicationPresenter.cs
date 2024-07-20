@@ -4,6 +4,7 @@ using DesktopApplication.Presenter.Kakuros;
 using DesktopApplication.Presenter.Nonograms;
 using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Tectonics;
+using DesktopApplication.Presenter.Themes;
 using Model.Repositories;
 using Repository;
 
@@ -15,13 +16,18 @@ public class GlobalApplicationPresenter
     
     private readonly Settings _settings;
     private readonly IGlobalApplicationView _view;
-    private readonly IReadOnlyList<Theme> _themes;
+    private readonly ThemeManager _themeManager;
 
-    private GlobalApplicationPresenter(IGlobalApplicationView view, Settings settings, IReadOnlyList<Theme> themes)
+    private GlobalApplicationPresenter(IGlobalApplicationView view, MultiThemeRepository themeRepository,
+        ISettingRepository settingsRepository)
     {
         _view = view;
-        _settings = settings;
-        _themes = themes;
+        _themeManager = new ThemeManager(themeRepository);
+        _settings = new Settings(_themeManager.Themes, settingsRepository);
+        foreach (var entry in settingsRepository.GetSettings())
+        {
+            _settings.TrySet(entry.Key, entry.Value, false, false);
+        }
         
         TrySetTheme();
         _settings.ThemeSetting.ValueChanged += _ => TrySetTheme();
@@ -51,13 +57,15 @@ public class GlobalApplicationPresenter
     {
         return new NonogramApplicationPresenter();
     }
+
+    public ThemePresenter InitializeThemePresenter(IThemeView view) => new(_themeManager, _settings, view);
     
     private void TrySetTheme()
     {
         var index = _settings.Theme;
-        if(index < 0 || index >= _themes.Count) return;
+        if(index < 0 || index >= _themeManager.Themes.Count) return;
         
-        _view.SetTheme(_themes[index]);
+        _view.SetTheme(_themeManager.Themes[index]);
     }
 
     #region Instance
@@ -73,23 +81,15 @@ public class GlobalApplicationPresenter
         }
     }
 
-    public static GlobalApplicationPresenter InitializeInstance(IGlobalApplicationView view)
+    public static void InitializeInstance(IGlobalApplicationView view)
     {
-        var themeRepository = new HardCodedThemeRepository();
+        var themeRepository = new MultiThemeRepository(new JsonThemeRepository("themes.json",
+                !IsForProduction, true),
+            new HardCodedThemeRepository());
         var settingsRepository = new SettingsJsonRepository("settings.json", 
             !IsForProduction, true);
 
-        var themes = themeRepository.GetThemes();
-        var settingsDic = settingsRepository.GetSettings();
-        var settings = new Settings(themes, settingsRepository);
-        
-        foreach (var entry in settingsDic)
-        {
-            settings.TrySet(entry.Key, entry.Value);
-        }
-        
-        _instance = new GlobalApplicationPresenter(view, settings, themes);
-        return _instance;
+        _instance = new GlobalApplicationPresenter(view, themeRepository, settingsRepository);
     }
 
     #endregion

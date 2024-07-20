@@ -18,6 +18,12 @@ public class JsonThemeRepository : JsonRepository, IThemeRepository
         return _buffer is null ? Array.Empty<Theme>() : To(_buffer);
     }
 
+    public int Count()
+    {
+        _buffer ??= Download<List<ThemeDto>>();
+        return _buffer?.Count ?? 0;
+    }
+
     public void AddTheme(Theme theme)
     {
         _buffer ??= Download<List<ThemeDto>>();

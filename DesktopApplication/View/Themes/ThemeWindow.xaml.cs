@@ -1,27 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using DesktopApplication;
+using DesktopApplication.Presenter;
+using DesktopApplication.Presenter.Themes;
+using DesktopApplication.View.Themes.Controls;
 using Model.Repositories;
 using Model.Utility;
 
-namespace ThemeCreator;
+namespace DesktopApplication.View.Themes;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : IMainView
+public partial class ThemeWindow : IThemeView
 {
-    private readonly Presenter _presenter;
+    private readonly ThemePresenter _presenter;
     
-    public MainWindow()
+    public ThemeWindow()
     {
         InitializeComponent();
         
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
 
-        _presenter = new Presenter(this);
+        _presenter = GlobalApplicationPresenter.Instance.InitializeThemePresenter(this);
     }
     
     private void Minimize()
@@ -34,30 +36,26 @@ public partial class MainWindow : IMainView
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     }
 
-    public void SetCurrentTheme(Theme theme)
+    public void SetCurrentTheme(string name)
     {
-        App.Current.SetTheme(theme);
-        CurrentName.Text = theme.Name + " Theme";
+        CurrentName.Text = name + " Theme";
     }
 
-    public void SetOtherThemes(IEnumerable<Theme> themes)
+    public void SetOtherThemes(IEnumerable<(Theme, bool)> themes)
     {
+        OtherThemes.Children.Clear();
         foreach (var t in themes)
         {
-            var tb = new TextBlock
-            {
-                FontSize = 14,
-                Padding = new Thickness(5),
-                Text = t.Name
-            };
-            tb.SetResourceReference(ForegroundProperty, "Text");
+            var control = new ThemeControl(t.Item1.Name, t.Item2);
+            control.MouseLeftButtonDown += (_, _) => _presenter.SetTheme(t.Item1.Name);
 
-            OtherThemes.Children.Add(tb);
+            OtherThemes.Children.Add(control);
         }
     }
 
     public void SetColors(IEnumerable<(string, RGB)> colors)
     {
+        ColorList.Children.Clear();
         foreach (var color in colors)
         {
             var control = new ColorControl(ThemeInformation.ToBrush(color.Item2), color.Item1);

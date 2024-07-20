@@ -28,8 +28,6 @@ public partial class ManagePage : ISudokuManageView
         InitializeComponent();
         _presenter = appPresenter.Initialize(this);
         _presenter.Initialize();
-        
-        RenderOptions.SetBitmapScalingMode(Bin, BitmapScalingMode.Fant);
     }
 
     public void ClearSearchResults()
@@ -198,6 +196,7 @@ public partial class ManagePage : ISudokuManageView
         if (e.Data.GetData(typeof(StrategyDragDropData)) is not StrategyDragDropData data) return;
 
         if (data.Index != -1) _presenter.RemoveStrategy(data.Index);
+        if(sender is FrameworkElement element) element.SetResourceReference(BackgroundProperty, "Background2");
     }
     
     private void ScrollOnDrag(object sender, DragEventArgs e)
@@ -293,7 +292,21 @@ public partial class ManagePage : ISudokuManageView
     private void Download(object sender, RoutedEventArgs e)
     {
         _presenter.DownloadPreset();
-    } 
+    }
+
+    private void OnDragEnter(object sender, DragEventArgs e)
+    {
+        if (sender is not FrameworkElement element 
+            || e.Data.GetData(typeof(StrategyDragDropData)) is not StrategyDragDropData data
+            || data.Index == -1) return;
+        element.SetResourceReference(BackgroundProperty, "Background3");
+    }
+
+    private void OnDragLeave(object sender, DragEventArgs e)
+    {
+        if (sender is not FrameworkElement element) return;
+        element.SetResourceReference(BackgroundProperty, "Background2");
+    }
 }
 
 

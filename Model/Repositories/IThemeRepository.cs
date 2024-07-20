@@ -8,6 +8,7 @@ namespace Model.Repositories;
 public interface IThemeRepository
 {
     IReadOnlyList<Theme> GetThemes();
+    int Count();
     void AddTheme(Theme theme);
 }
 

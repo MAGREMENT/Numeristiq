@@ -85,6 +85,8 @@
       <None Remove="View\Fonts\Poppins\Poppins-ExtraBold.ttf" />
       <None Remove="View\Fonts\Poppins\Poppins-BoldItalic.ttf" />
       <None Remove="View\Fonts\Poppins\Poppins-Bold.ttf" />
+      <None Remove="View\Images\themes.png" />
+      <Resource Include="View\Images\themes.png" />
 
 
 
