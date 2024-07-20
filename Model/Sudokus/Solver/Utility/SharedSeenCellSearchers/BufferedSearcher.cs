@@ -5,7 +5,7 @@ namespace Model.Sudokus.Solver.Utility.SharedSeenCellSearchers;
 
 public class BufferedSearcher : ISharedSeenCellSearcher
 {
-    private readonly IEnumerable<Cell>[,] _buffer = new IEnumerable<Cell>[80, 81];
+    private readonly IEnumerable<Cell>[,] _buffer = new IEnumerable<Cell>[80, 81]; //TODO improve
 
     public BufferedSearcher(ISharedSeenCellSearcher impl)
     {

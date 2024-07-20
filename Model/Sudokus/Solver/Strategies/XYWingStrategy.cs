@@ -124,7 +124,9 @@ public class XYWingReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSo
     
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>($"XY-Wing in r{_hingeRow + 1}c{_hingeCol + 1}, " +
+                                                    $"r{_row1 + 1}c{_col1 + 1} and r{_row2 + 1}c{_col2 + 1}",
+            lighter =>
         {
             lighter.HighlightCell(_hingeRow, _hingeCol, ChangeColoration.CauseOffTwo);
             lighter.HighlightCell(_row1, _col1, ChangeColoration.CauseOffOne);

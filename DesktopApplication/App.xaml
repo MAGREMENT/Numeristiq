@@ -572,7 +572,7 @@
 						    
 			    <ControlTemplate.Triggers>
 				    <Trigger Property="IsMouseOver" Value="True">
-					    <Setter TargetName="OutsideBorder" Property="Background" Value="{Binding Path=(view:AttachedProperties.OverBackground),
+					    <Setter TargetName="OutsideBorder" Property="Background" Value="{Binding Path=(view:AttachedProperties.HoverBackground),
 	                        RelativeSource={RelativeSource TemplatedParent}}"/>
 					    <Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
 				    </Trigger>
@@ -588,7 +588,7 @@
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 			    <Setter Property="Template" Value="{StaticResource LightUpButtonTemplate}"/>
 			    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
-			    <Setter Property="view:AttachedProperties.OverBackground" Value="{DynamicResource Background3}"/>
+			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource Background3}"/>
 		    </Style>
 		    
 		    <Style x:Key="LogHighlightButton" TargetType="Button">
@@ -597,7 +597,7 @@
 			    <Setter Property="VerticalAlignment" Value="Center"/>
 			    <Setter Property="Template" Value="{StaticResource LightUpButtonTemplate}"/>
 			    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
-			    <Setter Property="view:AttachedProperties.OverBackground" Value="{DynamicResource Background3}"/>
+			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource Background3}"/>
 		    </Style>
 		    
 		    <Style x:Key="DefaultLightUpButtonStyle" TargetType="Button">
@@ -607,7 +607,7 @@
 			    <Setter Property="Padding" Value="10"/>
 			    <Setter Property="Template" Value="{StaticResource LightUpButtonTemplate}"/>
 			    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
-			    <Setter Property="view:AttachedProperties.OverBackground" Value="{DynamicResource Background3}"/>
+			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource Background3}"/>
 		    </Style>
 		    
 		    <Style x:Key="PrimaryLightUpButtonStyle" TargetType="Button">
@@ -617,7 +617,7 @@
 			    <Setter Property="Padding" Value="10"/>
 			    <Setter Property="Template" Value="{StaticResource LightUpButtonTemplate}"/>
 			    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
-			    <Setter Property="view:AttachedProperties.OverBackground" Value="{DynamicResource Primary1}"/>
+			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource Primary1}"/>
 		    </Style>
 		    
 		    <Style x:Key="SecondaryLightUpButtonStyle" TargetType="Button">
@@ -627,7 +627,7 @@
 			    <Setter Property="Padding" Value="10"/>
 			    <Setter Property="Template" Value="{StaticResource LightUpButtonTemplate}"/>
 			    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
-			    <Setter Property="view:AttachedProperties.OverBackground" Value="{DynamicResource Secondary1}"/>
+			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource Secondary1}"/>
 		    </Style>
 		    
 		    <Style x:Key="StepRadioButton" TargetType="RadioButton">

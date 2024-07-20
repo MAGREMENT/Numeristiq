@@ -5,16 +5,16 @@ namespace DesktopApplication.View;
 
 public static class AttachedProperties
 {
-    public static readonly DependencyProperty OverBackgroundProperty = DependencyProperty.RegisterAttached(
-        "OverBackground", typeof(Brush), typeof(AttachedProperties));
+    public static readonly DependencyProperty HoverBackgroundProperty = DependencyProperty.RegisterAttached(
+        "HoverBackground", typeof(Brush), typeof(AttachedProperties));
     
-    public static void SetOverBackground(DependencyObject element, Brush value)
+    public static void SetHoverBackground(DependencyObject element, Brush value)
     {
-        element.SetValue(OverBackgroundProperty, value);
+        element.SetValue(HoverBackgroundProperty, value);
     }
 
-    public static Brush GetOverBackground(DependencyObject element)
+    public static Brush GetHoverBackground(DependencyObject element)
     {
-        return (Brush)element.GetValue(OverBackgroundProperty);
+        return (Brush)element.GetValue(HoverBackgroundProperty);
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
-using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 
@@ -92,6 +92,18 @@ public class XYChainReportBuilder : IChangeReportBuilder<NumericChange, ISudokuS
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
+    }
+
+    private string Description()
+    {
+        var builder = new StringBuilder("XY-Chain : ");
+
+        for (int i = 0; i < _visited.Length; i += 2)
+        {
+            
+        }
+        
+        return builder.ToString();
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
