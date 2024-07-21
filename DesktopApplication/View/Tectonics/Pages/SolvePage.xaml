@@ -53,22 +53,31 @@
             </RadioButton>
         </StackPanel>
         
-        <Grid Grid.Column="2" Width="400">
+        <Grid Grid.Column="2" Width="400" Margin="0 10 10 10">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
-            <TextBlock Grid.Row="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
-                       Background="{DynamicResource Background1}" Foreground="{DynamicResource Text}">Steps</TextBlock>
+            <Border Grid.Row="0" Background="{DynamicResource Background2}" CornerRadius="5"
+                    Padding="5">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
+                               Margin="5 0 0 0" Foreground="{DynamicResource Text}">Steps</TextBlock>
             
-            <ScrollViewer Grid.Row="1" Margin="0,0,0,5" x:Name="LogViewer"
-                          Style="{StaticResource TransparentBarScrollViewer}" VerticalAlignment="Stretch">
-                <StackPanel x:Name="LogPanel"/>
-            </ScrollViewer>
+                    <ScrollViewer Grid.Row="1" Margin="0,0,0,5" x:Name="LogViewer"
+                                  Style="{StaticResource TransparentBarScrollViewer}" VerticalAlignment="Stretch">
+                        <StackPanel x:Name="LogPanel"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
             
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="1" Margin="0 10 0 0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -79,10 +88,10 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 
-                <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="5" Click="Solve">Solve</Button>
-                <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="5" Click="Advance">Advance</Button>
-                <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="5, 5, 5, 10" Click="Reset">Reset</Button>
-                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="5, 5, 5, 10" Click="Clear">Clear</Button>
+                <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="0 0 5 5" Click="Solve">Solve</Button>
+                <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="5 0 0 5" Click="Advance">Advance</Button>
+                <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="0 5 5 0" Click="Reset">Reset</Button>
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="5 5 0 0" Click="Clear">Clear</Button>
             </Grid>
         </Grid>
         
