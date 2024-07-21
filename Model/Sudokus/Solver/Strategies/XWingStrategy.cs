@@ -109,12 +109,12 @@ public class XWingReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSol
                 switch (_unit)
                 {
                     case Unit.Row :
-                        lighter.HighlightPossibility(_number, _unit1, other, ChangeColoration.CauseOffOne);
-                        lighter.HighlightPossibility(_number, _unit2, other, ChangeColoration.CauseOffOne);
+                        lighter.HighlightPossibility(_number, _unit1, other, StepColor.Cause1);
+                        lighter.HighlightPossibility(_number, _unit2, other, StepColor.Cause1);
                         break;
                     case Unit.Column :
-                        lighter.HighlightPossibility(_number, other, _unit1, ChangeColoration.CauseOffOne);
-                        lighter.HighlightPossibility(_number, other, _unit2, ChangeColoration.CauseOffOne);
+                        lighter.HighlightPossibility(_number, other, _unit1, StepColor.Cause1);
+                        lighter.HighlightPossibility(_number, other, _unit2, StepColor.Cause1);
                         break;
                 }
             }

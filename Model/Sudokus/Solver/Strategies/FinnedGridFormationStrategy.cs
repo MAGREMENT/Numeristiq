@@ -243,12 +243,12 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder<NumericChan
             {
                 foreach (var coord in normal)
                 {
-                    lighter.HighlightPossibility(_number, coord.Row, coord.Column, ChangeColoration.CauseOffOne);
+                    lighter.HighlightPossibility(_number, coord.Row, coord.Column, StepColor.Cause1);
                 }
                 
                 foreach (var coord in finned)
                 {
-                    lighter.HighlightPossibility(_number, coord.Row, coord.Column, ChangeColoration.CauseOffTwo);
+                    lighter.HighlightPossibility(_number, coord.Row, coord.Column, StepColor.Cause2);
                 }
                 
                 ChangeReportHelper.HighlightChanges(lighter, changes);

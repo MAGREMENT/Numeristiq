@@ -10,8 +10,6 @@ public static class HighlightCompiler
 {
     private static readonly SudokuHighlightCompiler _sudokuCompiler = new();
 
-    public static IHighlightCompiler<ISudokuHighlighter> ForSudoku => _sudokuCompiler;
-    
     public static IHighlightCompiler<THighlighter> For<THighlighter>()
     {
         if (_sudokuCompiler is IHighlightCompiler<THighlighter> compiler)
@@ -54,9 +52,9 @@ public class SudokuHighlightCompiler : IHighlightCompiler<ISudokuHighlighter>, I
         return result;
     }
     
-    public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration)
+    public void HighlightPossibility(int possibility, int row, int col, StepColor color)
     {
-        _instructions.Add(new HighlightInstruction(InstructionType.HighlightPossibility, possibility, row, col, coloration));
+        _instructions.Add(new HighlightInstruction(InstructionType.HighlightPossibility, possibility, row, col, color));
     }
 
     public void EncirclePossibility(int possibility, int row, int col)
@@ -64,27 +62,27 @@ public class SudokuHighlightCompiler : IHighlightCompiler<ISudokuHighlighter>, I
         _instructions.Add(new HighlightInstruction(InstructionType.EncirclePossibility, possibility, row, col));
     }
 
-    public void HighlightCell(int row, int col, ChangeColoration coloration)
+    public void HighlightCell(int row, int col, StepColor color)
     {
-        _instructions.Add(new HighlightInstruction(InstructionType.HighlightCell, row, col, coloration));
+        _instructions.Add(new HighlightInstruction(InstructionType.HighlightCell, row, col, color));
     }
 
     public void EncircleCell(int row, int col)
     {
-        _instructions.Add(new HighlightInstruction(InstructionType.EncircleCell, row, col, ChangeColoration.None));
+        _instructions.Add(new HighlightInstruction(InstructionType.EncircleCell, row, col, StepColor.None));
     }
     
-    public void EncircleHouse(House house, ChangeColoration coloration)
+    public void EncircleHouse(House house, StepColor color)
     {
         _instructions.Add(new HighlightInstruction(InstructionType.EncircleHouse,
-            house.Unit, house.Number, coloration));
+            house.Unit, house.Number, color));
     }
 
-    public void HighlightElement(ISudokuElement element, ChangeColoration coloration)
+    public void HighlightElement(ISudokuElement element, StepColor color)
     {
         _registers.Add(element);
         _instructions.Add(new HighlightInstruction(InstructionType.HighlightSudokuElement,
-            _registers.Count - 1, coloration));
+            _registers.Count - 1, color));
     }
 
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength)

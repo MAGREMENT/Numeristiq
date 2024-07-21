@@ -184,12 +184,12 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
         Layers[HighlightIndex].Clear();
     }
 
-    public void EncircleCells(HashSet<Cell> cells, ChangeColoration color)
+    public void EncircleCells(HashSet<Cell> cells, StepColor color)
     {
         //TODO
     }
 
-    public void HighlightHorizontalValues(int row, int startIndex, int endIndex, ChangeColoration color)
+    public void HighlightHorizontalValues(int row, int startIndex, int endIndex, StepColor color)
     {
         var left = (_maxWidth - _rows[row].Count + startIndex) * _cellSize / 2;
         var right = left + (endIndex - startIndex + 1) * _cellSize / 2;
@@ -202,7 +202,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
             new Point(right - wShift, bottom - hShift)), App.Current.ThemeInformation.ToBrush(color)));
     }
 
-    public void HighlightVerticalValues(int col, int startIndex, int endIndex, ChangeColoration color)
+    public void HighlightVerticalValues(int col, int startIndex, int endIndex, StepColor color)
     {
         var top = (_maxDepth - _columns[col].Count + startIndex) * _cellSize / 2;
         var bottom = top + (endIndex - startIndex + 1) * _cellSize / 2;
@@ -215,7 +215,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
             new Point(right - wShift, bottom - hShift)), App.Current.ThemeInformation.ToBrush(color)));
     }
 
-    public void EncircleRowSection(int row, int startIndex, int endIndex, ChangeColoration color)
+    public void EncircleRowSection(int row, int startIndex, int endIndex, StepColor color)
     {
         var left = GetLeft(startIndex) - _lineWidth / 2;
         var top = GetTop(row) - _lineWidth / 2;
@@ -226,7 +226,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
             new Point(right, bottom)), new Pen(App.Current.ThemeInformation.ToBrush(color), _lineWidth)));
     }
 
-    public void EncircleColumnSection(int col, int startIndex, int endIndex, ChangeColoration color)
+    public void EncircleColumnSection(int col, int startIndex, int endIndex, StepColor color)
     {
         var left = GetLeft(col) - _lineWidth / 2;
         var top = GetTop(startIndex) - _lineWidth / 2;

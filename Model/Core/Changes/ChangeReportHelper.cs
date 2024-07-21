@@ -19,8 +19,8 @@ public static class ChangeReportHelper
     public static void HighlightChange(INumericSolvingStateHighlighter highlightable, NumericChange progress)
     {
         if(progress.Type == ChangeType.PossibilityRemoval)
-            highlightable.HighlightPossibility(progress.Number, progress.Row, progress.Column, ChangeColoration.ChangeTwo);
-        else highlightable.HighlightCell(progress.Row, progress.Column, ChangeColoration.ChangeOne);
+            highlightable.HighlightPossibility(progress.Number, progress.Row, progress.Column, StepColor.Change2);
+        else highlightable.HighlightCell(progress.Row, progress.Column, StepColor.Change1);
     }
     
     public static string ToName(int n)

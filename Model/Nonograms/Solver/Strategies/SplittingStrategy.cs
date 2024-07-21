@@ -85,10 +85,10 @@ public class SplittingReportBuilder : IChangeReportBuilder<DichotomousChange, IN
     {
         return new ChangeReport<INonogramHighlighter>("Splitting", lighter =>
         {
-            lighter.HighlightValues(_orientation, _unit, _v, _v, ChangeColoration.CauseOffOne);
+            lighter.HighlightValues(_orientation, _unit, _v, _v, StepColor.Cause1);
             var middle = _orientation == Orientation.Horizontal ? changes[0].Column : changes[0].Row;
-            lighter.EncircleLineSection(_orientation, _unit, _start, middle - 1, ChangeColoration.CauseOffOne);
-            lighter.EncircleLineSection(_orientation, _unit, middle + 1, _end, ChangeColoration.CauseOffOne);
+            lighter.EncircleLineSection(_orientation, _unit, _start, middle - 1, StepColor.Cause1);
+            lighter.EncircleLineSection(_orientation, _unit, middle + 1, _end, StepColor.Cause1);
         });
     }
 

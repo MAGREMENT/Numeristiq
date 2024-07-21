@@ -200,8 +200,8 @@ public class ExtendedUniqueRectanglesReportBuilder : IChangeReportBuilder<Numeri
             foreach (var cell in _cells)
             {
                 lighter.HighlightCell(cell, _poss.ContainsAll(snapshot.PossibilitiesAt(cell))
-                    ? ChangeColoration.CauseOffOne 
-                    : ChangeColoration.CauseOffTwo);
+                    ? StepColor.Cause1 
+                    : StepColor.Cause2);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

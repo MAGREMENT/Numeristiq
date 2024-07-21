@@ -93,12 +93,12 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<NumericChange,
         {
             foreach (var coord in _one.EnumerateCells())
             {
-                lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.CauseOffOne);
+                lighter.HighlightCell(coord.Row, coord.Column, StepColor.Cause1);
             }
 
             foreach (var coord in _two.EnumerateCells())
             {
-                lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.CauseOffTwo);
+                lighter.HighlightCell(coord.Row, coord.Column, StepColor.Cause2);
             }
 
             foreach (var possibility in _restrictedCommons.EnumeratePossibilities())
@@ -106,13 +106,13 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<NumericChange,
                 foreach (var coord in _one.EnumerateCells())
                 {
                     if(snapshot.PossibilitiesAt(coord).Contains(possibility))
-                        lighter.HighlightPossibility(possibility, coord.Row, coord.Column, ChangeColoration.Neutral);
+                        lighter.HighlightPossibility(possibility, coord.Row, coord.Column, StepColor.Neutral);
                 }
                 
                 foreach (var coord in _two.EnumerateCells())
                 {
                     if(snapshot.PossibilitiesAt(coord).Contains(possibility))
-                        lighter.HighlightPossibility(possibility, coord.Row, coord.Column, ChangeColoration.Neutral);
+                        lighter.HighlightPossibility(possibility, coord.Row, coord.Column, StepColor.Neutral);
                 }
             }
 

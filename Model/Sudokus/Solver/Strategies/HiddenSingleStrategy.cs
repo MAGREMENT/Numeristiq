@@ -105,7 +105,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder<NumericChange, ISu
 
         return new Clue<ISudokuHighlighter>(lighter =>
         {
-            lighter.EncircleHouse(house, ChangeColoration.CauseOffOne);
+            lighter.EncircleHouse(house, StepColor.Cause1);
         }, "Look at the possibilities in that house");
     }
 }

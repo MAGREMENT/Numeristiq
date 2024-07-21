@@ -243,12 +243,12 @@ public class FishReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolv
         {
             foreach (var cell in _inCommon)
             {
-                lighter.HighlightPossibility(_possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_possibility, cell.Row, cell.Column, StepColor.Cause1);
             }
 
             foreach (var cell in _fins)
             {
-                lighter.HighlightPossibility(_possibility, cell.Row, cell.Column, ChangeColoration.CauseOffTwo);
+                lighter.HighlightPossibility(_possibility, cell.Row, cell.Column, StepColor.Cause2);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

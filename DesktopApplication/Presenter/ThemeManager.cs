@@ -26,6 +26,11 @@ public class ThemeManager
         }
     }
 
+    public bool IsEditable(int index)
+    {
+        return index < _repository.WritableCount();
+    }
+
     public int IndexOf(string name)
     {
         for (int i = 0; i < _themes.Count; i++)

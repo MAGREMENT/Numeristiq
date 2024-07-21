@@ -119,12 +119,12 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder<NumericChange, I
 
                 foreach (var coord in _vertices.On)
                 {
-                    lighter.HighlightPossibility(coord, ChangeColoration.CauseOnOne);
+                    lighter.HighlightPossibility(coord, StepColor.On);
                 }
 
                 foreach (var coord in _vertices.Off)
                 {
-                    lighter.HighlightPossibility(coord, ChangeColoration.CauseOffOne);
+                    lighter.HighlightPossibility(coord, StepColor.Cause1);
                 }
             };
         }
@@ -137,12 +137,12 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder<NumericChange, I
 
                 foreach (var coord in _vertices.On)
                 {
-                    lighter.HighlightPossibility(coord, ChangeColoration.CauseOnOne);
+                    lighter.HighlightPossibility(coord, StepColor.On);
                 }
 
                 foreach (var coord in _vertices.Off)
                 {
-                    lighter.HighlightPossibility(coord, ChangeColoration.CauseOffOne);
+                    lighter.HighlightPossibility(coord, StepColor.Cause1);
                 }
             
                 ChangeReportHelper.HighlightChanges(lighter, changes);

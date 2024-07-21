@@ -93,7 +93,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<NumericCh
         {
             foreach (var pos in _miniPos)
             {
-                lighter.HighlightPossibility(_number, pos.Row, pos.Column, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_number, pos.Row, pos.Column, StepColor.Cause1);
             }
             
             ChangeReportHelper.HighlightChanges(lighter, changes);

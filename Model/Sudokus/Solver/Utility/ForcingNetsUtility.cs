@@ -26,7 +26,7 @@ public static class ForcingNetsUtility
 
                 if (alreadyHighlighted.Contains(to)) break;
                 
-                lighter.HighlightElement(to, link == LinkStrength.Strong ? ChangeColoration.CauseOnOne : ChangeColoration.CauseOffOne);
+                lighter.HighlightElement(to, link == LinkStrength.Strong ? StepColor.On : StepColor.Cause1);
                 lighter.CreateLink(from, to, link);
                 alreadyHighlighted.Add(to);
             }
@@ -36,7 +36,7 @@ public static class ForcingNetsUtility
             if (!alreadyHighlighted.Contains(first))
             {
                 lighter.HighlightElement(first, startColoring == Coloring.On ?
-                    ChangeColoration.CauseOnOne : ChangeColoration.CauseOffOne);
+                    StepColor.On : StepColor.Cause1);
                 alreadyHighlighted.Add(first);
             }
         }

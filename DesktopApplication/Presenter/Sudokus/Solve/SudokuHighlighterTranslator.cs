@@ -25,9 +25,9 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
         _drawer.Refresh();
     }
 
-    public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration)
+    public void HighlightPossibility(int possibility, int row, int col, StepColor color)
     {
-        _drawer.FillPossibility(row, col, possibility, coloration);
+        _drawer.FillPossibility(row, col, possibility, color);
     }
 
     public void EncirclePossibility(int possibility, int row, int col)
@@ -35,9 +35,9 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
         _drawer.EncirclePossibility(row, col, possibility);
     }
 
-    public void HighlightCell(int row, int col, ChangeColoration coloration)
+    public void HighlightCell(int row, int col, StepColor color)
     {
-        _drawer.FillCell(row, col, coloration);
+        _drawer.FillCell(row, col, color);
     }
 
     public void EncircleCell(int row, int col)
@@ -45,20 +45,20 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
         _drawer.EncircleCell(row, col);
     }
 
-    public void EncircleHouse(House house, ChangeColoration coloration)
+    public void EncircleHouse(House house, StepColor color)
     {
         var extremities = house.GetExtremities();
         _drawer.EncircleRectangle(extremities.Item1.Row, extremities.Item1.Column,
-            extremities.Item2.Row, extremities.Item2.Column, coloration);
+            extremities.Item2.Row, extremities.Item2.Column, color);
     }
 
-    public void HighlightElement(ISudokuElement element, ChangeColoration coloration)
+    public void HighlightElement(ISudokuElement element, StepColor color)
     {
-        if (ChangeColorationUtility.IsOff(coloration) && element is PointingRow or PointingColumn or CellsPossibility)
+        if (ChangeColorationUtility.IsOff(color) && element is PointingRow or PointingColumn or CellsPossibility)
         {
             foreach (var cp in element.EnumerateCellPossibility())
             {
-                HighlightPossibility(cp.Possibility, cp.Row, cp.Column, coloration);
+                HighlightPossibility(cp.Possibility, cp.Row, cp.Column, color);
             }
 
             return;
@@ -67,7 +67,7 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
         switch (element)
         {
             case CellPossibility cp :
-                HighlightPossibility(cp.Possibility, cp.Row, cp.Column, coloration);
+                HighlightPossibility(cp.Possibility, cp.Row, cp.Column, color);
                 break;
             case PointingRow pr :
                 var minCol = 9;
@@ -79,7 +79,7 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
                 }
                 
                 _drawer.EncircleRectangle(pr.Row, minCol, pr.Possibility, pr.Row,
-                    maxCol, pr.Possibility, coloration);
+                    maxCol, pr.Possibility, color);
                 break;
             case PointingColumn pc :
                 var minRow = 9;
@@ -91,10 +91,10 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
                 }
 
                 _drawer.EncircleRectangle(minRow, pc.Column, pc.Possibility, maxRow,
-                    pc.Column, pc.Possibility, coloration);
+                    pc.Column, pc.Possibility, color);
                 break;
             case NakedSet ans :
-                _drawer.DelimitPossibilityPatch(ans.EveryCellPossibility(), coloration);
+                _drawer.DelimitPossibilityPatch(ans.EveryCellPossibility(), color);
                 break;
         }
     }

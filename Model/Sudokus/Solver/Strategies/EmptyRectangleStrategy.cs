@@ -131,9 +131,9 @@ public class EmptyRectangleReportBuilder : IChangeReportBuilder<NumericChange, I
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
-            lighter.HighlightCell(_hinge, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_one, ChangeColoration.CauseOffTwo);
-            lighter.HighlightCell(_two, ChangeColoration.CauseOffTwo);
+            lighter.HighlightCell(_hinge, StepColor.Cause1);
+            lighter.HighlightCell(_one, StepColor.Cause2);
+            lighter.HighlightCell(_two, StepColor.Cause2);
 
             lighter.CreateLink(new CellPossibility(_hinge, _possibility), new CellPossibility(_one, _possibility),
                 _isOneLinkStrong ? LinkStrength.Strong : LinkStrength.Weak);
@@ -148,7 +148,7 @@ public class EmptyRectangleReportBuilder : IChangeReportBuilder<NumericChange, I
                     var col = _miniCol * 3 + gridCol;
                     
                     if(snapshot.PossibilitiesAt(row, col).Contains(_possibility)) lighter.HighlightPossibility(
-                        _possibility, row, col, ChangeColoration.CauseOffThree);
+                        _possibility, row, col, StepColor.Cause3);
                 }
             }
 

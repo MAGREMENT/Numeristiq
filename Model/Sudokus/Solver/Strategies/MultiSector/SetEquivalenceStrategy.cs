@@ -140,12 +140,12 @@ public class GeometricEquivalenceReportBuilder : IChangeReportBuilder<NumericCha
         {
             foreach (var cell in _equivalence.FirstSet)
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOnOne);
+                lighter.HighlightCell(cell, StepColor.On);
             }
             
             foreach (var cell in _equivalence.SecondSet)
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
+                lighter.HighlightCell(cell, StepColor.Cause1);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

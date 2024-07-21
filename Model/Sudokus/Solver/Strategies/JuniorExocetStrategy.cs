@@ -517,25 +517,25 @@ public class DoubleTargetExocetReportBuilder : IChangeReportBuilder<NumericChang
 
         return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
-            lighter.HighlightCell(_e.Base1, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_e.Base2, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_e.Base1, StepColor.Cause1);
+            lighter.HighlightCell(_e.Base2, StepColor.Cause1);
             
-            lighter.HighlightCell(_e.Target1, ChangeColoration.CauseOffTwo);
-            lighter.HighlightCell(_e.Target2, ChangeColoration.CauseOffTwo);
+            lighter.HighlightCell(_e.Target1, StepColor.Cause2);
+            lighter.HighlightCell(_e.Target2, StepColor.Cause2);
 
             foreach (var cell in sCells)
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
+                lighter.HighlightCell(cell, StepColor.Cause3);
             }
 
             foreach (var cp in sPossibilities)
             {
-                lighter.HighlightPossibility(cp, ChangeColoration.Neutral);
+                lighter.HighlightPossibility(cp, StepColor.Neutral);
             }
 
             foreach (var cell in sSolved)
             {
-                lighter.HighlightCell(cell, ChangeColoration.Neutral);
+                lighter.HighlightCell(cell, StepColor.Neutral);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
@@ -607,31 +607,31 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<NumericChang
         
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
-            lighter.HighlightCell(_je1.Base1, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_je1.Base2, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_je1.Base1, StepColor.Cause1);
+            lighter.HighlightCell(_je1.Base2, StepColor.Cause1);
             
-            lighter.HighlightCell(_je1.Target1, ChangeColoration.CauseOffTwo);
-            lighter.HighlightCell(_je1.Target2, ChangeColoration.CauseOffTwo);
+            lighter.HighlightCell(_je1.Target1, StepColor.Cause2);
+            lighter.HighlightCell(_je1.Target2, StepColor.Cause2);
             
-            lighter.HighlightCell(_je2.Base1, ChangeColoration.CauseOffFive);
-            lighter.HighlightCell(_je2.Base2, ChangeColoration.CauseOffFive);
+            lighter.HighlightCell(_je2.Base1, StepColor.Cause5);
+            lighter.HighlightCell(_je2.Base2, StepColor.Cause5);
             
-            lighter.HighlightCell(_je2.Target1, ChangeColoration.CauseOffFour);
-            lighter.HighlightCell(_je2.Target2, ChangeColoration.CauseOffFour);
+            lighter.HighlightCell(_je2.Target1, StepColor.Cause4);
+            lighter.HighlightCell(_je2.Target2, StepColor.Cause4);
 
             foreach (var cell in sCells)
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
+                lighter.HighlightCell(cell, StepColor.Cause3);
             }
 
             foreach (var cp in sPossibilities)
             {
-                lighter.HighlightPossibility(cp, ChangeColoration.Neutral);
+                lighter.HighlightPossibility(cp, StepColor.Neutral);
             }
 
             foreach (var cell in sSolved)
             {
-                lighter.HighlightCell(cell, ChangeColoration.Neutral);
+                lighter.HighlightCell(cell, StepColor.Neutral);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

@@ -87,8 +87,8 @@ public class UnreachableSquareReportBuilder : IChangeReportBuilder<DichotomousCh
             highlights[i] = lighter =>
             {
                 lighter.HighlightValues(_orientation, _unit, _spaces.FirstValueIndex + n,
-                    _spaces.FirstValueIndex + n, ChangeColoration.CauseOffOne);
-                lighter.EncircleLineSection(_orientation, _unit, _spaces[n].Start, _spaces[n].End, ChangeColoration.CauseOffOne);
+                    _spaces.FirstValueIndex + n, StepColor.Cause1);
+                lighter.EncircleLineSection(_orientation, _unit, _spaces[n].Start, _spaces[n].End, StepColor.Cause1);
             };
         }
 

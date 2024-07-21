@@ -425,14 +425,14 @@ public static class FireworksHighlightUtils
         {
             if(snapshot.PossibilitiesAt(firework.ColumnWing).Contains(possibility))
                 lighter.HighlightPossibility(possibility, firework.ColumnWing.Row, firework.ColumnWing.Column,
-                    (ChangeColoration) startColor);
+                    (StepColor) startColor);
                 
             if(snapshot.PossibilitiesAt(firework.RowWing).Contains(possibility))
                 lighter.HighlightPossibility(possibility, firework.RowWing.Row, firework.RowWing.Column,
-                    (ChangeColoration) startColor);
+                    (StepColor) startColor);
                 
             lighter.HighlightPossibility(possibility, firework.Cross.Row, firework.Cross.Column,
-                (ChangeColoration) startColor);
+                (StepColor) startColor);
 
             startColor++;
         }
@@ -452,7 +452,7 @@ public class FireworksReportBuilder : IChangeReportBuilder<NumericChange, ISudok
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
-            var color = (int)ChangeColoration.CauseOffOne;
+            var color = (int)StepColor.Cause1;
 
             foreach (var firework in _fireworks)
             {
@@ -484,7 +484,7 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<N
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
-            var color = (int)ChangeColoration.CauseOffOne;
+            var color = (int)StepColor.Cause1;
 
             FireworksHighlightUtils.Highlight(lighter, _fireworks, snapshot, ref color);
 
@@ -492,7 +492,7 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<N
             {
                 foreach (var cell in als.EnumerateCells())
                 {
-                    lighter.HighlightCell(cell.Row, cell.Column, (ChangeColoration) color);
+                    lighter.HighlightCell(cell.Row, cell.Column, (StepColor) color);
                 }
                 
                 color++;
@@ -523,12 +523,12 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder<Numeric
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
-            int color = (int)ChangeColoration.CauseOffOne;
+            int color = (int)StepColor.Cause1;
             FireworksHighlightUtils.Highlight(lighter, _fireworks, snapshot, ref color);
 
             foreach (var cell in _cells)
             {
-                lighter.HighlightPossibility(cell, ChangeColoration.CauseOnOne);
+                lighter.HighlightPossibility(cell, StepColor.On);
             }
 
             lighter.CreateLink(_cells[0], _cells[1], LinkStrength.Strong);
@@ -558,13 +558,13 @@ public class FireworksWithCellReportBuilder : IChangeReportBuilder<NumericChange
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
-            int color = (int)ChangeColoration.CauseOffOne;
+            int color = (int)StepColor.Cause1;
             foreach (var f in _fireworks)
             {
                 FireworksHighlightUtils.Highlight(lighter, f, snapshot, ref color);
             }
             
-            lighter.HighlightCell(_cell, ChangeColoration.CauseOnOne);
+            lighter.HighlightCell(_cell, StepColor.On);
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });

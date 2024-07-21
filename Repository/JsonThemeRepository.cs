@@ -55,13 +55,13 @@ public record ThemeDto(string Name,
     int Disabled,
     int DifficultyBasic, int DifficultyEasy, int DifficultyMedium, int DifficultyHard,
     int DifficultyExtreme, int DifficultyInhuman, int DifficultyByTrial,
-    int ChangeColorationNeutral, int ChangeColorationChangeOne, int ChangeColorationChangeTwo,
-    int ChangeColorationCauseOffOne, int ChangeColorationCauseOffTwo, int ChangeColorationCauseOffThree,
-    int ChangeColorationCauseOffFour, int ChangeColorationCauseOffFive, int ChangeColorationCauseOffSix,
-    int ChangeColorationCauseOffSeven, int ChangeColorationCauseOffEight, int ChangeColorationCauseOffNine,
-    int ChangeColorationCauseOffTen, int ChangeColorationCauseOnOne,
-    int HighlightColorFirst, int HighlightColorSecond, int HighlightColorThird, int HighlightColorFourth,
-    int HighlightColorFifth, int HighlightColorSixth, int HighlightColorSeventh)
+    int StepColorNeutral, int StepColorChange1, int StepColorChange2,
+    int StepColorCause1, int StepColorCause2, int StepColorCause3,
+    int StepColorCause4, int StepColorCause5, int StepColorCause6,
+    int StepColorCause7, int StepColorCause8, int StepColorCause9,
+    int StepColorCause10, int StepColorOn,
+    int HighlightColor1, int HighlightColor2, int HighlightColor3, int HighlightColor4,
+    int HighlightColor5, int HighlightColor6, int HighlightColor7)
 {
     public static ThemeDto From(Theme theme)
     {
@@ -74,13 +74,13 @@ public record ThemeDto(string Name,
             , theme.Disabled.ToHex()
             , theme.DifficultyBasic.ToHex(), theme.DifficultyEasy.ToHex(), theme.DifficultyMedium.ToHex(), theme.DifficultyHard.ToHex()
             , theme.DifficultyExtreme.ToHex(), theme.DifficultyInhuman.ToHex(), theme.DifficultyByTrial.ToHex()
-            , theme.ChangeColorationNeutral.ToHex(), theme.ChangeColorationChangeOne.ToHex(), theme.ChangeColorationChangeTwo.ToHex()
-            , theme.ChangeColorationCauseOffOne.ToHex(), theme.ChangeColorationCauseOffTwo.ToHex(), theme.ChangeColorationCauseOffThree.ToHex()
-            , theme.ChangeColorationCauseOffFour.ToHex(), theme.ChangeColorationCauseOffFive.ToHex(), theme.ChangeColorationCauseOffSix.ToHex()
-            , theme.ChangeColorationCauseOffSeven.ToHex(), theme.ChangeColorationCauseOffEight.ToHex(), theme.ChangeColorationCauseOffNine.ToHex()
-            , theme.ChangeColorationCauseOffTen.ToHex(), theme.ChangeColorationCauseOnOne.ToHex()
-            , theme.HighlightColorFirst.ToHex(), theme.HighlightColorSecond.ToHex(), theme.HighlightColorThird.ToHex(), theme.HighlightColorFourth.ToHex()
-            , theme.HighlightColorFifth.ToHex(), theme.HighlightColorSixth.ToHex(), theme.HighlightColorSeventh.ToHex());
+            , theme.StepColorNeutral.ToHex(), theme.StepColorChange1.ToHex(), theme.StepColorChange2.ToHex()
+            , theme.StepColorCause1.ToHex(), theme.StepColorCause2.ToHex(), theme.StepColorCause3.ToHex()
+            , theme.StepColorCause4.ToHex(), theme.StepColorCause5.ToHex(), theme.StepColorCause6.ToHex()
+            , theme.StepColorCause7.ToHex(), theme.StepColorCause8.ToHex(), theme.StepColorCause9.ToHex()
+            , theme.StepColorCause10.ToHex(), theme.StepColorOn.ToHex()
+            , theme.HighlightColor1.ToHex(), theme.HighlightColor2.ToHex(), theme.HighlightColor3.ToHex(), theme.HighlightColor4.ToHex()
+            , theme.HighlightColor5.ToHex(), theme.HighlightColor6.ToHex(), theme.HighlightColor7.ToHex());
     }
     
     public Theme To()
@@ -94,12 +94,12 @@ public record ThemeDto(string Name,
             , RGB.FromHex(Disabled)
             , RGB.FromHex(DifficultyBasic), RGB.FromHex(DifficultyEasy), RGB.FromHex(DifficultyMedium), RGB.FromHex(DifficultyHard)
             , RGB.FromHex(DifficultyExtreme), RGB.FromHex(DifficultyInhuman), RGB.FromHex(DifficultyByTrial)
-            , RGB.FromHex(ChangeColorationNeutral), RGB.FromHex(ChangeColorationChangeOne), RGB.FromHex(ChangeColorationChangeTwo)
-            , RGB.FromHex(ChangeColorationCauseOffOne), RGB.FromHex(ChangeColorationCauseOffTwo), RGB.FromHex(ChangeColorationCauseOffThree)
-            , RGB.FromHex(ChangeColorationCauseOffFour), RGB.FromHex(ChangeColorationCauseOffFive), RGB.FromHex(ChangeColorationCauseOffSix)
-            , RGB.FromHex(ChangeColorationCauseOffSeven), RGB.FromHex(ChangeColorationCauseOffEight), RGB.FromHex(ChangeColorationCauseOffNine)
-            , RGB.FromHex(ChangeColorationCauseOffTen), RGB.FromHex(ChangeColorationCauseOnOne)
-            , RGB.FromHex(HighlightColorFirst), RGB.FromHex(HighlightColorSecond), RGB.FromHex(HighlightColorThird), RGB.FromHex(HighlightColorFourth)
-            , RGB.FromHex(HighlightColorFifth), RGB.FromHex(HighlightColorSixth), RGB.FromHex(HighlightColorSeventh));
+            , RGB.FromHex(StepColorNeutral), RGB.FromHex(StepColorChange1), RGB.FromHex(StepColorChange2)
+            , RGB.FromHex(StepColorCause1), RGB.FromHex(StepColorCause2), RGB.FromHex(StepColorCause3)
+            , RGB.FromHex(StepColorCause4), RGB.FromHex(StepColorCause5), RGB.FromHex(StepColorCause6)
+            , RGB.FromHex(StepColorCause7), RGB.FromHex(StepColorCause8), RGB.FromHex(StepColorCause9)
+            , RGB.FromHex(StepColorCause10), RGB.FromHex(StepColorOn)
+            , RGB.FromHex(HighlightColor1), RGB.FromHex(HighlightColor2), RGB.FromHex(HighlightColor3), RGB.FromHex(HighlightColor4)
+            , RGB.FromHex(HighlightColor5), RGB.FromHex(HighlightColor6), RGB.FromHex(HighlightColor7));
     }
 }

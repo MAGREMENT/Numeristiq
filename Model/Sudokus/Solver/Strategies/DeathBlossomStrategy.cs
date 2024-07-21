@@ -173,15 +173,15 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder<NumericChange, ISu
             foreach (var stem in _stems)
             {
                 if (snapshot[stem.Row, stem.Column] != 0) continue;
-                lighter.HighlightCell(stem, ChangeColoration.Neutral);
+                lighter.HighlightCell(stem, StepColor.Neutral);
             }
             
-            lighter.HighlightCell(_target, ChangeColoration.CauseOnOne);
+            lighter.HighlightCell(_target, StepColor.On);
 
-            int start = (int)ChangeColoration.CauseOffOne;
+            int start = (int)StepColor.Cause1;
             foreach (var als in _als)
             {
-                var coloration = (ChangeColoration)start;
+                var coloration = (StepColor)start;
 
                 foreach (var cell in als.EnumerateCells())
                 {

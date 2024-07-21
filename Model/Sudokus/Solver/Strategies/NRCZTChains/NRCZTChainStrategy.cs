@@ -207,8 +207,8 @@ public class NRCZTChainReportBuilder : IChangeReportBuilder<NumericChange, ISudo
         {
             foreach (var relation in _chain)
             {
-                lighter.HighlightPossibility(relation.From, ChangeColoration.CauseOffOne);
-                lighter.HighlightPossibility(relation.To, ChangeColoration.CauseOnOne);
+                lighter.HighlightPossibility(relation.From, StepColor.Cause1);
+                lighter.HighlightPossibility(relation.To, StepColor.On);
                 lighter.CreateLink(relation.From, relation.To, LinkStrength.Strong);
             }
             

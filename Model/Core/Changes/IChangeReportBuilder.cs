@@ -90,18 +90,17 @@ public class Clue<T> : IHighlightable<T>
     }
 }
 
-public enum ChangeColoration
+public enum StepColor
 {
-    None, Neutral, ChangeOne, ChangeTwo, CauseOffOne, CauseOffTwo, CauseOffThree,
-    CauseOffFour, CauseOffFive, CauseOffSix, CauseOffSeven, CauseOffEight, CauseOffNine,
-    CauseOffTen, CauseOnOne
+    None, Neutral, Change1, Change2, Cause1, Cause2, Cause3,
+    Cause4, Cause5, Cause6, Cause7, Cause8, Cause9, Cause10, On
 }
 
 public static class ChangeColorationUtility
 {
-    public static bool IsOff(ChangeColoration coloration)
+    public static bool IsOff(StepColor color)
     {
-        return (int)coloration is >= 4 and <= 13;
+        return (int)color is >= 4 and <= 13;
     }
 }
 

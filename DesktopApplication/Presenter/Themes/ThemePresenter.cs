@@ -47,7 +47,7 @@ public class ThemePresenter
 
         _view.SetCurrentTheme(current.Name);
         _view.SetOtherThemes(_themeManager.EnumerateThemesAndState(_settings.Theme));
-        _view.SetColors(current.AllColors());
+        _view.SetColors(current.AllColors(), _themeManager.IsEditable(_settings.Theme));
 
         UnselectCurrentColor();
     }

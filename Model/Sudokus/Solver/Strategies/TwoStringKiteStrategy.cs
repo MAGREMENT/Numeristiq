@@ -83,10 +83,10 @@ public class TwoStringKiteReportBuilder : IChangeReportBuilder<NumericChange, IS
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
-            lighter.HighlightPossibility(_possibility, _inCommon1.Row, _inCommon1.Column, ChangeColoration.CauseOffOne);
-            lighter.HighlightPossibility(_possibility, _inCommon2.Row, _inCommon2.Column, ChangeColoration.CauseOffOne);
-            lighter.HighlightPossibility(_possibility, _other1.Row, _other1.Column, ChangeColoration.CauseOffOne);
-            lighter.HighlightPossibility(_possibility, _other2.Row, _other2.Column, ChangeColoration.CauseOffOne);
+            lighter.HighlightPossibility(_possibility, _inCommon1.Row, _inCommon1.Column, StepColor.Cause1);
+            lighter.HighlightPossibility(_possibility, _inCommon2.Row, _inCommon2.Column, StepColor.Cause1);
+            lighter.HighlightPossibility(_possibility, _other1.Row, _other1.Column, StepColor.Cause1);
+            lighter.HighlightPossibility(_possibility, _other2.Row, _other2.Column, StepColor.Cause1);
             
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });

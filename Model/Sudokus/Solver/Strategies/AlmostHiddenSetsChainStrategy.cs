@@ -175,14 +175,14 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericCh
     {
         return new ChangeReport<ISudokuHighlighter>("Almost Hidden Sets Chain : " +  _chain, lighter =>
         {
-            var color = (int)ChangeColoration.CauseOffOne;
+            var color = (int)StepColor.Cause1;
             foreach (var ahs in _chain.Elements)
             {
                 foreach (var possibility in ahs.Possibilities.EnumeratePossibilities())
                 {
                     foreach (var cell in ahs.EnumerateCells(possibility))
                     {
-                        lighter.HighlightPossibility(possibility, cell.Row, cell.Column, (ChangeColoration)color);
+                        lighter.HighlightPossibility(possibility, cell.Row, cell.Column, (StepColor)color);
                     }
                 }
 

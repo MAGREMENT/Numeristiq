@@ -20,18 +20,18 @@ public class NonogramHighlightTranslator : INonogramHighlighter
         _drawer.Refresh();
     }
 
-    public void HighlightValues(Orientation orientation, int unit, int startIndex, int endIndex, ChangeColoration color)
+    public void HighlightValues(Orientation orientation, int unit, int startIndex, int endIndex, StepColor color)
     {
         if (orientation == Orientation.Horizontal) _drawer.HighlightHorizontalValues(unit, startIndex, endIndex, color);
         else _drawer.HighlightVerticalValues(unit, startIndex, endIndex, color);
     }
 
-    public void EncircleCells(IEnumerable<Cell> cells, ChangeColoration color)
+    public void EncircleCells(IEnumerable<Cell> cells, StepColor color)
     {
         _drawer.EncircleCells(new HashSet<Cell>(cells), color);
     }
 
-    public void EncircleLineSection(Orientation orientation, int unit, int startIndex, int endIndex, ChangeColoration color)
+    public void EncircleLineSection(Orientation orientation, int unit, int startIndex, int endIndex, StepColor color)
     {
         if (orientation == Orientation.Horizontal) _drawer.EncircleRowSection(unit, startIndex, endIndex, color);
         else _drawer.EncircleColumnSection(unit, startIndex, endIndex, color);

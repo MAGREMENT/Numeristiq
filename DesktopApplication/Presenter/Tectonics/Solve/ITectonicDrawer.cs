@@ -22,8 +22,8 @@ public interface ITectonicDrawer
     void PutCursorOn(IContainingEnumerable<Cell> cells);
     void ClearCursor();
     void ClearHighlights();
-    void FillPossibility(int row, int col, int possibility, ChangeColoration coloration);
-    void FillCell(int row, int col, ChangeColoration coloration);
+    void FillPossibility(int row, int col, int possibility, StepColor color);
+    void FillCell(int row, int col, StepColor color);
     void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
         LinkStrength strength, LinkOffsetSidePriority priority);
 }

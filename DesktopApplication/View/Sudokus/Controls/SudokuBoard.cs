@@ -311,14 +311,14 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         _isSpecialNumberBrush[row, column] = isClue;
     }
 
-    public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration)
+    public void FillPossibility(int row, int col, int possibility, StepColor color)
     {
-        FillPossibility(row, col, possibility, App.Current.ThemeInformation.ToBrush(coloration));
+        FillPossibility(row, col, possibility, App.Current.ThemeInformation.ToBrush(color));
     }
 
-    public void FillCell(int row, int col, ChangeColoration coloration)
+    public void FillCell(int row, int col, StepColor color)
     {
-        FillCell(row, col, App.Current.ThemeInformation.ToBrush(coloration));
+        FillCell(row, col, App.Current.ThemeInformation.ToBrush(color));
     }
 
     public void EncirclePossibility(int row, int col, int possibility)
@@ -336,7 +336,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
     }
 
     public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
-        ChangeColoration coloration)
+        StepColor color)
     {
         var delta = _smallLineWidth / 2;
         
@@ -371,18 +371,18 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         }
         
         Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
-            new Pen(App.Current.ThemeInformation.ToBrush(coloration), _bigLineWidth)));
+            new Pen(App.Current.ThemeInformation.ToBrush(color), _bigLineWidth)));
     }
 
-    public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, ChangeColoration coloration)
+    public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, StepColor color)
     {
-        EncircleRectangle(rowFrom, colFrom, rowTo, colTo, App.Current.ThemeInformation.ToBrush(coloration));
+        EncircleRectangle(rowFrom, colFrom, rowTo, colTo, App.Current.ThemeInformation.ToBrush(color));
     }
 
-    public void DelimitPossibilityPatch(CellPossibility[] cps, ChangeColoration coloration)
+    public void DelimitPossibilityPatch(CellPossibility[] cps, StepColor color)
     {
         var w = _possibilitySize / 6;
-        var brush = App.Current.ThemeInformation.ToBrush(coloration);
+        var brush = App.Current.ThemeInformation.ToBrush(color);
 
         var list = Layers[PossibilitiesHighlightIndex];
         foreach (var cp in cps)

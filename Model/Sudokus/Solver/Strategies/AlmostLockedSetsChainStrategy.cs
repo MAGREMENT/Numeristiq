@@ -151,12 +151,12 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<NumericCh
     {
         return new ChangeReport<ISudokuHighlighter>("Almost Locked Sets Chain : " +  _chain, lighter =>
         {
-            var color = (int)ChangeColoration.CauseOffOne;
+            var color = (int)StepColor.Cause1;
             foreach (var als in _chain.Elements)
             {
                 foreach (var cell in als.EnumerateCells())
                 {
-                    lighter.HighlightCell(cell, (ChangeColoration)color);
+                    lighter.HighlightCell(cell, (StepColor)color);
                 }
 
                 color++;
@@ -178,12 +178,12 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<NumericCh
     {
         foreach (var cell in elementBefore.EnumerateCells(link))
         {
-            lighter.HighlightPossibility(link, cell.Row, cell.Column, ChangeColoration.Neutral);
+            lighter.HighlightPossibility(link, cell.Row, cell.Column, StepColor.Neutral);
         }
                 
         foreach (var cell in elementAfter.EnumerateCells(link))
         {
-            lighter.HighlightPossibility(link, cell.Row, cell.Column, ChangeColoration.Neutral);
+            lighter.HighlightPossibility(link, cell.Row, cell.Column, StepColor.Neutral);
         }
 
         var minDistance = double.MaxValue;

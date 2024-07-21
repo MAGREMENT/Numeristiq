@@ -87,7 +87,7 @@ public class BUGStrategyReportBuilder : IChangeReportBuilder<NumericChange, ISud
         {
             foreach (var cp in _additionalCandidates)
             {
-                lighter.HighlightPossibility(cp, ChangeColoration.CauseOnOne);
+                lighter.HighlightPossibility(cp, StepColor.On);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
@@ -119,7 +119,7 @@ public class BUGStrategyReportBuilder : IChangeReportBuilder<NumericChange, ISud
         {
             foreach (var cp in _additionalCandidates)
             {
-                lighter.HighlightPossibility(cp, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(cp, StepColor.Cause1);
             }
         }, "These possibilities prevents a deadly pattern");
     }

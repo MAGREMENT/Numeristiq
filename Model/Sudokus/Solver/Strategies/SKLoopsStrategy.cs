@@ -352,17 +352,17 @@ public class SKLoopsReportBuilder : IChangeReportBuilder<NumericChange, ISudokuS
         {
             foreach (var cell in _cells)
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
+                lighter.HighlightCell(cell, StepColor.Cause3);
             }
 
             foreach (var cell in on)
             {
-                lighter.HighlightPossibility(cell, ChangeColoration.CauseOnOne);
+                lighter.HighlightPossibility(cell, StepColor.On);
             }
 
             foreach (var cell in off)
             {
-                lighter.HighlightPossibility(cell, ChangeColoration.CauseOffTwo);
+                lighter.HighlightPossibility(cell, StepColor.Cause2);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

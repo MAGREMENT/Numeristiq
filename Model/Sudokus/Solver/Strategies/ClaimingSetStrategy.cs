@@ -120,7 +120,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<NumericChange,
         {
             foreach (var coord in causes)
             {
-                lighter.HighlightPossibility(_number, coord.Row, coord.Column, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_number, coord.Row, coord.Column, StepColor.Cause1);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

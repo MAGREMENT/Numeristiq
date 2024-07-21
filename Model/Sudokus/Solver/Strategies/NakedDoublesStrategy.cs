@@ -179,7 +179,7 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder<NumericChange,
             {
                 foreach (var cell in cells)
                 {
-                    lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
+                    lighter.HighlightPossibility(possibility, cell.Row, cell.Column, StepColor.Cause1);
                 } 
             }
 
@@ -234,7 +234,7 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<NumericCha
             {
                 foreach (var cell in cells)
                 {
-                    lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
+                    lighter.HighlightPossibility(possibility, cell.Row, cell.Column, StepColor.Cause1);
                 } 
             }
 

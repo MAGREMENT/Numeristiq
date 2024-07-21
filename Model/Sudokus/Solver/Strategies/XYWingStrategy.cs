@@ -128,9 +128,9 @@ public class XYWingReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSo
                                                     $"r{_row1 + 1}c{_col1 + 1} and r{_row2 + 1}c{_col2 + 1}",
             lighter =>
         {
-            lighter.HighlightCell(_hingeRow, _hingeCol, ChangeColoration.CauseOffTwo);
-            lighter.HighlightCell(_row1, _col1, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_row2, _col2, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_hingeRow, _hingeCol, StepColor.Cause2);
+            lighter.HighlightCell(_row1, _col1, StepColor.Cause1);
+            lighter.HighlightCell(_row2, _col2, StepColor.Cause1);
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });

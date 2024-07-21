@@ -87,9 +87,9 @@ public class BridgingReportBuilder : IChangeReportBuilder<DichotomousChange, INo
     {
         return new ChangeReport<INonogramHighlighter>("Bridging", lighter =>
         {
-            lighter.HighlightValues(_orientation, _unit, _valueIndex, _valueIndex, ChangeColoration.CauseOnOne);
-            lighter.EncircleLineSection(_orientation, _unit, _current, _current, ChangeColoration.CauseOnOne);
-            lighter.EncircleLineSection(_orientation, _unit, _last, _last, ChangeColoration.CauseOnOne);
+            lighter.HighlightValues(_orientation, _unit, _valueIndex, _valueIndex, StepColor.On);
+            lighter.EncircleLineSection(_orientation, _unit, _current, _current, StepColor.On);
+            lighter.EncircleLineSection(_orientation, _unit, _last, _last, StepColor.On);
         });
     }
 

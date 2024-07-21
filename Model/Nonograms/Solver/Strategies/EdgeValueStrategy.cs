@@ -95,8 +95,8 @@ public class EdgeValueReportBuilder : IChangeReportBuilder<DichotomousChange, IN
     {
         return new ChangeReport<INonogramHighlighter>("Edge Value", lighter =>
         {
-            lighter.EncircleLineSection(_orientation, _unit, _space.Start, _space.End, ChangeColoration.CauseOnOne);
-            lighter.HighlightValues(_orientation, _unit, _valueIndex, _valueIndex, ChangeColoration.CauseOnOne);
+            lighter.EncircleLineSection(_orientation, _unit, _space.Start, _space.End, StepColor.On);
+            lighter.HighlightValues(_orientation, _unit, _valueIndex, _valueIndex, StepColor.On);
         });
     }
 

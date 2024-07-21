@@ -298,7 +298,7 @@ public class WXYZWingReportBuilder : IChangeReportBuilder<NumericChange, ISudoku
         {
             foreach (var cell in cells)
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
+                lighter.HighlightCell(cell, StepColor.Cause1);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

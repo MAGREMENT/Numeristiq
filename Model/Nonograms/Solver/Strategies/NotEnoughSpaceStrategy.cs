@@ -137,8 +137,8 @@ public class NotEnoughSpaceReportBuilder : IChangeReportBuilder<DichotomousChang
     {
         return new ChangeReport<INonogramHighlighter>("Not Enough Space", lighter =>
         {
-            lighter.HighlightValues(_orientation, _unit, _ind, _ind, ChangeColoration.CauseOffOne);
-            lighter.EncircleLineSection(_orientation, _unit, _start + 1, _end - 1, ChangeColoration.CauseOffOne);
+            lighter.HighlightValues(_orientation, _unit, _ind, _ind, StepColor.Cause1);
+            lighter.EncircleLineSection(_orientation, _unit, _start + 1, _end - 1, StepColor.Cause1);
         });
     }
 

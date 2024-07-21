@@ -160,19 +160,19 @@ public class FinnedXWingReportBuilder : IChangeReportBuilder<NumericChange, ISud
             foreach (var normalOther in _normal)
             {
                 if(_unit == Unit.Row) lighter.HighlightPossibility(_number, _normalUnit,
-                    normalOther, ChangeColoration.CauseOffOne);
+                    normalOther, StepColor.Cause1);
                 else lighter.HighlightPossibility(_number, normalOther,
-                    _normalUnit, ChangeColoration.CauseOffOne);
+                    _normalUnit, StepColor.Cause1);
             }
 
             foreach (var finnedOther in _finned)
             {
                 if (_unit == Unit.Row)
                     lighter.HighlightPossibility(_number, _finnedUnit, finnedOther,
-                        _normal.Contains(finnedOther) ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOffTwo);
+                        _normal.Contains(finnedOther) ? StepColor.Cause1 : StepColor.Cause2);
                 else
                     lighter.HighlightPossibility(_number, finnedOther, _finnedUnit,
-                        _normal.Contains(finnedOther) ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOffTwo);
+                        _normal.Contains(finnedOther) ? StepColor.Cause1 : StepColor.Cause2);
             }
             
             ChangeReportHelper.HighlightChanges(lighter, changes);

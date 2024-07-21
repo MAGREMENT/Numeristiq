@@ -254,26 +254,26 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder<NumericChange, ISudoku
         {
             foreach (var cell in _centerCells)
             {
-                lighter.HighlightCell(cell, ChangeColoration.Neutral);
+                lighter.HighlightCell(cell, StepColor.Neutral);
 
                 foreach (var possibility in snapshot.PossibilitiesAt(cell).EnumeratePossibilities())
                 {
                     if(_boxPP.Possibilities.Contains(possibility)) lighter.HighlightPossibility(possibility, cell.Row,
-                        cell.Column, ChangeColoration.CauseOffOne);
+                        cell.Column, StepColor.Cause1);
                     else if(_unitPP.Possibilities.Contains(possibility)) lighter.HighlightPossibility(possibility, cell.Row,
-                        cell.Column, ChangeColoration.CauseOffTwo);
-                    else lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOnOne);
+                        cell.Column, StepColor.Cause2);
+                    else lighter.HighlightPossibility(possibility, cell.Row, cell.Column, StepColor.On);
                 }
             }
 
             foreach (var cell in _boxPP.EnumerateCells())
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
+                lighter.HighlightCell(cell, StepColor.Cause1);
             }
 
             foreach (var cell in _unitPP.EnumerateCells())
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffTwo);
+                lighter.HighlightCell(cell, StepColor.Cause2);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

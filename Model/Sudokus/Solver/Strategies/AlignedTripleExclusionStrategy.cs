@@ -366,20 +366,20 @@ public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder<NumericC
         return new ChangeReport<ISudokuHighlighter>($"Aligned Triple Exclusion in {_c1}, {_c2} and {_c3} with "
             + _useful.ToStringSequence(", "), lighter =>
         {
-            lighter.HighlightCell(_c1, ChangeColoration.Neutral);
-            lighter.HighlightCell(_c2, ChangeColoration.Neutral);
-            lighter.HighlightCell(_c3, ChangeColoration.Neutral);
+            lighter.HighlightCell(_c1, StepColor.Neutral);
+            lighter.HighlightCell(_c2, StepColor.Neutral);
+            lighter.HighlightCell(_c3, StepColor.Neutral);
 
             var removed = new ReadOnlyBitSet16();
             foreach (var change in changes) removed += change.Number;
             
-            int color = (int) ChangeColoration.CauseOffOne;
+            int color = (int) StepColor.Cause1;
             foreach (var als in _useful)
             {
                 if (!removed.ContainsAny(als.Possibilities)) continue;
                 foreach (var coord in als.EnumerateCells())
                 {
-                    lighter.HighlightCell(coord.Row, coord.Column, (ChangeColoration) color);
+                    lighter.HighlightCell(coord.Row, coord.Column, (StepColor) color);
                 }
 
                 color++;

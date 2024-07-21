@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Themes;
 using DesktopApplication.View.Themes.Controls;
@@ -53,12 +52,12 @@ public partial class ThemeWindow : IThemeView
         }
     }
 
-    public void SetColors(IEnumerable<(string, RGB)> colors)
+    public void SetColors(IEnumerable<(string, RGB)> colors, bool canBeSelected)
     {
         ColorList.Children.Clear();
         foreach (var color in colors)
         {
-            var control = new ColorControl(ThemeInformation.ToBrush(color.Item2), color.Item1);
+            var control = new ColorControl(ThemeInformation.ToBrush(color.Item2), color.Item1, canBeSelected);
             control.MouseLeftButtonDown += (_, _) => _presenter.SelectColor(control.ColorName.Text);
             ColorList.Children.Add(control);
         }

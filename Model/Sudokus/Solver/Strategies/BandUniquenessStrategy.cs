@@ -137,7 +137,7 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder<NumericChange, I
         return new ChangeReport<ISudokuHighlighter>($"Band-Uniqueness in {_unit.ToString().ToLower()} band " + 
                                                     $"{_mini + 1}", lighter =>
         {
-            int color = (int)ChangeColoration.CauseOffOne;
+            int color = (int)StepColor.Cause1;
             foreach (var p in _presence.EnumeratePossibilities())
             {
                 for (int u = 0; u < 3; u++)
@@ -145,7 +145,7 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder<NumericChange, I
                     for (int o = 0; o < 9; o++)
                     {
                         var cell = _unit == Unit.Row ? new Cell(_mini * 3 + u, o) : new Cell(o, _mini * 3 + u);
-                        if (snapshot[cell.Row, cell.Column] == p) lighter.HighlightCell(cell, (ChangeColoration)color);
+                        if (snapshot[cell.Row, cell.Column] == p) lighter.HighlightCell(cell, (StepColor)color);
                     }
                 }
                 

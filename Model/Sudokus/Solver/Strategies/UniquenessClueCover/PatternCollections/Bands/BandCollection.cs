@@ -235,7 +235,7 @@ public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<Numeric
         {
             foreach (var cell in cells)
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffTwo);
+                lighter.HighlightCell(cell, StepColor.Cause2);
             }
             
             ChangeReportHelper.HighlightChanges(lighter, changes);

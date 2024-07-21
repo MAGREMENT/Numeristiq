@@ -8,23 +8,23 @@ namespace Model.Core.Highlighting;
 
 public interface INumericSolvingStateHighlighter
 {
-    public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration);
+    public void HighlightPossibility(int possibility, int row, int col, StepColor color);
 
-    public void HighlightPossibility(CellPossibility coord, ChangeColoration coloration)
+    public void HighlightPossibility(CellPossibility coord, StepColor color)
     {
-        HighlightPossibility(coord.Possibility, coord.Row, coord.Column, coloration);
+        HighlightPossibility(coord.Possibility, coord.Row, coord.Column, color);
     }
 
-    public void HighlightPossibility(Cell cell, int possibility, ChangeColoration coloration)
+    public void HighlightPossibility(Cell cell, int possibility, StepColor color)
     {
-        HighlightPossibility(possibility, cell.Row, cell.Column, coloration);
+        HighlightPossibility(possibility, cell.Row, cell.Column, color);
     }
     
-    public void HighlightCell(int row, int col, ChangeColoration coloration);
+    public void HighlightCell(int row, int col, StepColor color);
 
-    public void HighlightCell(Cell coord, ChangeColoration coloration)
+    public void HighlightCell(Cell coord, StepColor color)
     {
-        HighlightCell(coord.Row, coord.Column, coloration);
+        HighlightCell(coord.Row, coord.Column, color);
     }
     
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength);
@@ -46,15 +46,15 @@ public interface ISudokuHighlighter : INumericSolvingStateHighlighter
         EncircleCell(coord.Row, coord.Column);
     }
 
-    public void EncircleHouse(House house, ChangeColoration coloration);
+    public void EncircleHouse(House house, StepColor color);
 
-    public void HighlightElement(ISudokuElement element, ChangeColoration coloration);
+    public void HighlightElement(ISudokuElement element, StepColor color);
 
     public void CreateLink(ISudokuElement from, ISudokuElement to, LinkStrength linkStrength);
 }
 
 public interface ITectonicHighlighter : INumericSolvingStateHighlighter
 {
-    public void HighlightElement(ITectonicElement element, ChangeColoration coloration);
+    public void HighlightElement(ITectonicElement element, StepColor color);
     public void CreateLink(ITectonicElement from, ITectonicElement to, LinkStrength linkStrength);
 }

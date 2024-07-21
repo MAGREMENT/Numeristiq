@@ -84,28 +84,28 @@ public class SingleTargetExocetReportBuilder : IChangeReportBuilder<NumericChang
 
         return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
-            lighter.HighlightCell(_e.Base1, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_e.Base2, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_e.Base1, StepColor.Cause1);
+            lighter.HighlightCell(_e.Base2, StepColor.Cause1);
             
-            lighter.HighlightCell(_e.Target, ChangeColoration.CauseOffTwo);
+            lighter.HighlightCell(_e.Target, StepColor.Cause2);
             foreach (var target in _e.EnumerateAbsentTargets())
             {
-                lighter.HighlightCell(target, ChangeColoration.CauseOnOne);
+                lighter.HighlightCell(target, StepColor.On);
             }
 
             foreach (var cell in sCells)
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
+                lighter.HighlightCell(cell, StepColor.Cause3);
             }
 
             foreach (var cp in sPossibilities)
             {
-                lighter.HighlightPossibility(cp, ChangeColoration.Neutral);
+                lighter.HighlightPossibility(cp, StepColor.Neutral);
             }
 
             foreach (var cell in sSolved)
             {
-                lighter.HighlightCell(cell, ChangeColoration.Neutral);
+                lighter.HighlightCell(cell, StepColor.Neutral);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

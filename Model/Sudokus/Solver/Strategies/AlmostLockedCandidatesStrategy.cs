@@ -351,12 +351,12 @@ public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericC
         {
             foreach (var cell in _centerCells)
             {
-                lighter.HighlightCell(cell, ChangeColoration.Neutral);
+                lighter.HighlightCell(cell, StepColor.Neutral);
             }
             
             foreach (var cell in _als.EnumerateCells())
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
+                lighter.HighlightCell(cell, StepColor.Cause1);
             }
 
             foreach (var cell in _correspondence)
@@ -364,7 +364,7 @@ public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericC
                 foreach (var p in _als.Possibilities.EnumeratePossibilities())
                 {
                     if (snapshot.PossibilitiesAt(cell).Contains(p))
-                        lighter.HighlightPossibility(p, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
+                        lighter.HighlightPossibility(p, cell.Row, cell.Column, StepColor.Cause1);
                 }
             }
 

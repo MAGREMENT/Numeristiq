@@ -72,8 +72,8 @@ public class PerfectValueSpaceStrategyReportBuilder : IChangeReportBuilder<Dicho
     {
         return new ChangeReport<INonogramHighlighter>("Perfect Remaining Space", lighter =>
         {
-            lighter.EncircleLineSection(_orientation, _unit, _space.Start, _space.End, ChangeColoration.CauseOnOne);
-            lighter.HighlightValues(_orientation, _unit, _valueIndex, _valueIndex, ChangeColoration.CauseOnOne);
+            lighter.EncircleLineSection(_orientation, _unit, _space.Start, _space.End, StepColor.On);
+            lighter.HighlightValues(_orientation, _unit, _valueIndex, _valueIndex, StepColor.On);
         });
     }
 

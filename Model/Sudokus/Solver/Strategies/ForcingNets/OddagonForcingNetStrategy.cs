@@ -107,7 +107,7 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder<NumericChange
         {
             foreach (var element in _oddagon.Loop.Elements)
             {
-                lighter.HighlightPossibility(element, ChangeColoration.CauseOffTwo);
+                lighter.HighlightPossibility(element, StepColor.Cause2);
             }
             
             _oddagon.Loop.ForEachLink((one, two)
@@ -118,7 +118,7 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder<NumericChange
             foreach (var cp in _oddagon.Guardians)
             {
                 lighter.EncirclePossibility(cp);
-                lighter.HighlightPossibility(cp, ChangeColoration.CauseOnOne);
+                lighter.HighlightPossibility(cp, StepColor.On);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

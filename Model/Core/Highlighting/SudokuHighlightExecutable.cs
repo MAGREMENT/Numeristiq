@@ -46,20 +46,20 @@ public readonly struct HighlightInstruction
     private readonly int _bits;
 
     public HighlightInstruction(InstructionType type, int possibility, int row, int col,
-        ChangeColoration coloration = ChangeColoration.None)
+        StepColor color = StepColor.None)
     {
-        _bits = (int)coloration << 28 | (int)type << 24 | possibility << 20 | row << 16 | col << 12;
+        _bits = (int)color << 28 | (int)type << 24 | possibility << 20 | row << 16 | col << 12;
     }
     
     public HighlightInstruction(InstructionType type, int row, int col,
-        ChangeColoration coloration = ChangeColoration.None)
+        StepColor color = StepColor.None)
     {
-        _bits = (int)coloration << 28 | (int)type << 24 | row << 16 | col << 12;
+        _bits = (int)color << 28 | (int)type << 24 | row << 16 | col << 12;
     }
     
-    public HighlightInstruction(InstructionType type, int register, ChangeColoration coloration = ChangeColoration.None)
+    public HighlightInstruction(InstructionType type, int register, StepColor color = StepColor.None)
     {
-        _bits = (int)coloration << 28 | (int)type << 24 | register << 12;
+        _bits = (int)color << 28 | (int)type << 24 | register << 12;
     }
     
     
@@ -76,9 +76,9 @@ public readonly struct HighlightInstruction
                 | col1 << 12 | possibility2 << 8 | row2 << 4 | col2;
     }
 
-    public HighlightInstruction(InstructionType type, Unit unit, int number, ChangeColoration coloration)
+    public HighlightInstruction(InstructionType type, Unit unit, int number, StepColor color)
     {
-        _bits = (int)coloration << 28 | (int)type << 24 | number << 4 | (int)unit;
+        _bits = (int)color << 28 | (int)type << 24 | number << 4 | (int)unit;
     }
     
     public void Apply(ISudokuHighlighter highlighter, ISudokuElement[] registers)
@@ -87,11 +87,11 @@ public readonly struct HighlightInstruction
         {
             case InstructionType.HighlightPossibility :
                 highlighter.HighlightPossibility((_bits >> 20) & 0xF, (_bits >> 16) & 0xF,
-                    (_bits >> 12) & 0xF, (ChangeColoration)((_bits >> 28) & 0xF));
+                    (_bits >> 12) & 0xF, (StepColor)((_bits >> 28) & 0xF));
                 break;
             case InstructionType.HighlightCell :
                 highlighter.HighlightCell((_bits >> 16) & 0xF,
-                    (_bits >> 12) & 0xF, (ChangeColoration)((_bits >> 28) & 0xF));
+                    (_bits >> 12) & 0xF, (StepColor)((_bits >> 28) & 0xF));
                 break;
             case InstructionType.EncirclePossibility :
                 highlighter.EncirclePossibility((_bits >> 20) & 0xF, (_bits >> 16) & 0xF,
@@ -103,7 +103,7 @@ public readonly struct HighlightInstruction
                 break;
             case InstructionType.HighlightSudokuElement :
                 highlighter.HighlightElement(registers[(_bits >> 12) & 0xFFF],
-                    (ChangeColoration)((_bits >> 28) & 0xF));
+                    (StepColor)((_bits >> 28) & 0xF));
                 break;
             case InstructionType.CreateLink :
                 highlighter.CreateLink(new CellPossibility((_bits >> 16) & 0xF,
@@ -116,7 +116,7 @@ public readonly struct HighlightInstruction
                 break;
             case InstructionType.EncircleHouse:
                 highlighter.EncircleHouse(new House((Unit)(_bits & 0xF), (_bits >> 4) & 0xF),
-                    (ChangeColoration)((_bits >> 28) & 0xF));
+                    (StepColor)((_bits >> 28) & 0xF));
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

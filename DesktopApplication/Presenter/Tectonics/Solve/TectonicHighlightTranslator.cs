@@ -21,14 +21,14 @@ public class TectonicHighlightTranslator : ITectonicHighlighter
         _drawer.Refresh();
     }
 
-    public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration)
+    public void HighlightPossibility(int possibility, int row, int col, StepColor color)
     {
-        _drawer.FillPossibility(row, col, possibility, coloration);
+        _drawer.FillPossibility(row, col, possibility, color);
     }
 
-    public void HighlightCell(int row, int col, ChangeColoration coloration)
+    public void HighlightCell(int row, int col, StepColor color)
     {
-        _drawer.FillCell(row, col, coloration);
+        _drawer.FillCell(row, col, color);
     }
 
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength)
@@ -37,11 +37,11 @@ public class TectonicHighlightTranslator : ITectonicHighlighter
             to.Column, to.Possibility, linkStrength, LinkOffsetSidePriority.Any);
     }
 
-    public void HighlightElement(ITectonicElement element, ChangeColoration coloration)
+    public void HighlightElement(ITectonicElement element, StepColor color)
     {
         foreach (var cp in element.EnumerateCellPossibility())
         {
-            HighlightPossibility(cp.Possibility, cp.Row, cp.Column, coloration);
+            HighlightPossibility(cp.Possibility, cp.Row, cp.Column, color);
         }
     }
 

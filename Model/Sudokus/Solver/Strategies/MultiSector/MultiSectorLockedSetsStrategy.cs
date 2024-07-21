@@ -121,7 +121,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<NumericCh
         {
             foreach (var cell in _grid)
             {
-                lighter.HighlightCell(cell, ChangeColoration.Neutral);
+                lighter.HighlightCell(cell, StepColor.Neutral);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
@@ -181,19 +181,19 @@ public class CoveringUnits
 
     public Highlight<ISudokuHighlighter>[] Highlight(ISudokuSolvingState snapshot, GridPositions gp)
     {
-        var n = (int)ChangeColoration.CauseOffOne;
+        var n = (int)StepColor.Cause1;
         var i = 0;
         List<Highlight<ISudokuHighlighter>> h = new();
 
         foreach (var entry in _dictionary)
         {
-            var color = (ChangeColoration)(n + i);
+            var color = (StepColor)(n + i);
             
             h.Add(lighter =>
             {
                 foreach (var cell in gp)
                 {
-                    lighter.HighlightCell(cell, ChangeColoration.Neutral);
+                    lighter.HighlightCell(cell, StepColor.Neutral);
                 }
                 
                 lighter.EncircleHouse(entry.Key, color);

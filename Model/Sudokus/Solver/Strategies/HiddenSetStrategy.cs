@@ -196,7 +196,7 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder<Numeric
                 foreach (var cell in cells)
                 {
                     if(snapshot.PossibilitiesAt(cell).Contains(possibility))
-                        lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
+                        lighter.HighlightPossibility(possibility, cell.Row, cell.Column, StepColor.Cause1);
                 }
             }
 
@@ -233,7 +233,7 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder<Num
                 foreach (var pos in _miniPos)
                 {
                     if (snapshot.PossibilitiesAt(pos.Row, pos.Column).Contains(possibility))
-                        lighter.HighlightPossibility(possibility, pos.Row, pos.Column, ChangeColoration.CauseOffOne);
+                        lighter.HighlightPossibility(possibility, pos.Row, pos.Column, StepColor.Cause1);
                 }
             }
 

@@ -160,18 +160,18 @@ public class XYZRingReportBuilder : IChangeReportBuilder<NumericChange, ISudokuS
     {
         return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
-            lighter.HighlightCell(_hinge, ChangeColoration.CauseOffTwo);
-            lighter.HighlightCell(_hingeRow, ChangeColoration.CauseOffTwo);
-            lighter.HighlightCell(_hingeColumn, ChangeColoration.CauseOffTwo);
+            lighter.HighlightCell(_hinge, StepColor.Cause2);
+            lighter.HighlightCell(_hingeRow, StepColor.Cause2);
+            lighter.HighlightCell(_hingeColumn, StepColor.Cause2);
 
             foreach (var p in _rowFriend.EnumerateCellPossibility())
             {
-                lighter.HighlightPossibility(p, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(p, StepColor.Cause1);
             }
             
             foreach (var p in _columnFriend.EnumerateCellPossibility())
             {
-                lighter.HighlightPossibility(p, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(p, StepColor.Cause1);
             }
             
             lighter.CreateLink(new CellPossibility(_hingeRow, _poss), _rowFriend, LinkStrength.Weak);

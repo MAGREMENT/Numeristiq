@@ -436,18 +436,18 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer, ISizeOpti
         Layers[LinksIndex].Clear();
     }
 
-    public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration)
+    public void FillPossibility(int row, int col, int possibility, StepColor color)
     {
         var size = GetPossibilitySize(row, col);
         
         Layers[PossibilityHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(row, col, possibility), GetTop(row, col, possibility),
-            size, size), App.Current.ThemeInformation.ToBrush(coloration)));
+            size, size), App.Current.ThemeInformation.ToBrush(color)));
     }
 
-    public void FillCell(int row, int col, ChangeColoration coloration)
+    public void FillCell(int row, int col, StepColor color)
     {
         Layers[CellHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
-            _cellSize, _cellSize), App.Current.ThemeInformation.ToBrush(coloration)));
+            _cellSize, _cellSize), App.Current.ThemeInformation.ToBrush(color)));
     }
     
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,

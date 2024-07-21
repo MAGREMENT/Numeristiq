@@ -169,13 +169,13 @@ public class UnavoidableRectanglesReportBuilder : IChangeReportBuilder<NumericCh
         {
             foreach (var floor in _floor)
             {
-                lighter.HighlightCell(floor, ChangeColoration.CauseOffTwo);
+                lighter.HighlightCell(floor, StepColor.Cause2);
             }
 
             foreach (var roof in _roof)
             {
-                lighter.HighlightCell(roof, snapshot[roof.Row, roof.Column] == 0 ? ChangeColoration.CauseOffOne
-                    : ChangeColoration.CauseOffTwo);
+                lighter.HighlightCell(roof, snapshot[roof.Row, roof.Column] == 0 ? StepColor.Cause1
+                    : StepColor.Cause2);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
@@ -207,17 +207,17 @@ public class UnavoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeRepo
         {
             foreach (var floor in _floor)
             {
-                lighter.HighlightCell(floor, ChangeColoration.CauseOffTwo);
+                lighter.HighlightCell(floor, StepColor.Cause2);
             }
 
             foreach (var roof in _roof)
             {
-                lighter.HighlightCell(roof, ChangeColoration.CauseOffOne);
+                lighter.HighlightCell(roof, StepColor.Cause1);
             }
 
             foreach (var cell in _als.EnumerateCells())
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
+                lighter.HighlightCell(cell, StepColor.Cause3);
             }
             
             ChangeReportHelper.HighlightChanges(lighter, changes);

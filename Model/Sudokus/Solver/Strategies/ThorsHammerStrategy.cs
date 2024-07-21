@@ -485,12 +485,12 @@ public class ThorsHammerReportBuilder : IChangeReportBuilder<NumericChange, ISud
         {
             foreach (var cell in _cells)
             {
-                lighter.HighlightCell(cell, ChangeColoration.Neutral);
+                lighter.HighlightCell(cell, StepColor.Neutral);
             }
 
             foreach (var cp in _notInPattern)
             {
-                lighter.HighlightPossibility(cp, ChangeColoration.CauseOnOne);
+                lighter.HighlightPossibility(cp, StepColor.On);
             }
             
             ChangeReportHelper.HighlightChanges(lighter, changes);

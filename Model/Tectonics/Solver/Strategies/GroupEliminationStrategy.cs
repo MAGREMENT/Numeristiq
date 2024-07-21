@@ -107,7 +107,7 @@ public class GroupEliminationReportBuilder : IChangeReportBuilder<NumericChange,
         {
             foreach (var cell in Cells)
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffTwo);
+                lighter.HighlightCell(cell, StepColor.Cause2);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

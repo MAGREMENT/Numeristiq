@@ -165,14 +165,14 @@ public class ReverseBUGLiteChangeReport : IChangeReportBuilder<NumericChange, IS
         {
             foreach (var o in _others1)
             {
-                if (_unit == Unit.Row) lighter.HighlightCell(_unit1, o, ChangeColoration.CauseOffOne);
-                else lighter.HighlightCell(o, _unit1, ChangeColoration.CauseOffOne);
+                if (_unit == Unit.Row) lighter.HighlightCell(_unit1, o, StepColor.Cause1);
+                else lighter.HighlightCell(o, _unit1, StepColor.Cause1);
             }
             
             foreach (var o in _others2)
             {
-                if (_unit == Unit.Row) lighter.HighlightCell(_unit2, o, ChangeColoration.CauseOffOne);
-                else lighter.HighlightCell(o, _unit2, ChangeColoration.CauseOffOne);
+                if (_unit == Unit.Row) lighter.HighlightCell(_unit2, o, StepColor.Cause1);
+                else lighter.HighlightCell(o, _unit2, StepColor.Cause1);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

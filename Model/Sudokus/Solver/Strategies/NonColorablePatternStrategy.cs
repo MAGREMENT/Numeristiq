@@ -181,7 +181,7 @@ public class NonColorablePatternReportBuilder : IChangeReportBuilder<NumericChan
             {
                 foreach (var p in snapshot.PossibilitiesAt(cell).EnumeratePossibilities())
                 {
-                    lighter.HighlightPossibility(p, cell.Row, cell.Column, ChangeColoration.CauseOffTwo);
+                    lighter.HighlightPossibility(p, cell.Row, cell.Column, StepColor.Cause2);
                 }
             }
             foreach (var cell in _notPerfect)
@@ -189,7 +189,7 @@ public class NonColorablePatternReportBuilder : IChangeReportBuilder<NumericChan
                 foreach (var p in snapshot.PossibilitiesAt(cell).EnumeratePossibilities())
                 {
                     lighter.HighlightPossibility(p, cell.Row, cell.Column, _possibilities.Contains(p)
-                    ? ChangeColoration.CauseOffTwo : ChangeColoration.CauseOnOne);
+                    ? StepColor.Cause2 : StepColor.On);
                 }
             }
 

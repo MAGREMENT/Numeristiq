@@ -300,7 +300,7 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder<NumericChange, I
                         if (!snapshot.PossibilitiesAt(row, col).Contains(_number)) continue;
 
                         lighter.HighlightCell(row, col, current.Contains(row, col) 
-                            ? ChangeColoration.CauseOnOne : ChangeColoration.Neutral);
+                            ? StepColor.On : StepColor.Neutral);
                     }
                 }
 

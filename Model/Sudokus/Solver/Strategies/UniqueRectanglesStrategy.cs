@@ -422,13 +422,13 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder<NumericChange,
         {
             foreach (var floor in _floor)
             {
-                lighter.HighlightCell(floor, ChangeColoration.CauseOffTwo);
+                lighter.HighlightCell(floor, StepColor.Cause2);
             }
 
             foreach (var roof in _roof)
             {
                 lighter.HighlightCell(roof, snapshot.PossibilitiesAt(roof).Count == 2 ? 
-                    ChangeColoration.CauseOffTwo : ChangeColoration.CauseOffOne);
+                    StepColor.Cause2 : StepColor.Cause1);
             }
             
             ChangeReportHelper.HighlightChanges(lighter, changes);
@@ -460,12 +460,12 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<
         {
             foreach (var floor in _floor)
             {
-                lighter.HighlightCell(floor, ChangeColoration.CauseOffTwo);
+                lighter.HighlightCell(floor, StepColor.Cause2);
             }
 
             foreach (var roof in _roof)
             {
-                lighter.HighlightCell(roof, ChangeColoration.CauseOffOne);
+                lighter.HighlightCell(roof, StepColor.Cause1);
             }
 
             lighter.CreateLink(_link.From, _link.To, LinkStrength.Strong);
@@ -499,17 +499,17 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
         {
             foreach (var floor in _floor)
             {
-                lighter.HighlightCell(floor, ChangeColoration.CauseOffTwo);
+                lighter.HighlightCell(floor, StepColor.Cause2);
             }
 
             foreach (var roof in _roof)
             {
-                lighter.HighlightCell(roof, ChangeColoration.CauseOffOne);
+                lighter.HighlightCell(roof, StepColor.Cause1);
             }
 
             foreach (var cell in _als.EnumerateCells())
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
+                lighter.HighlightCell(cell, StepColor.Cause3);
             }
             
             ChangeReportHelper.HighlightChanges(lighter, changes);
@@ -539,11 +539,11 @@ public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder<NumericC
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
-            lighter.HighlightCell(_initial, ChangeColoration.CauseOffTwo);
+            lighter.HighlightCell(_initial, StepColor.Cause2);
 
-            lighter.HighlightCell(_opposite, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_opposite.Row, _initial.Column, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_initial.Row, _opposite.Column, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_opposite, StepColor.Cause1);
+            lighter.HighlightCell(_opposite.Row, _initial.Column, StepColor.Cause1);
+            lighter.HighlightCell(_initial.Row, _opposite.Column, StepColor.Cause1);
 
             lighter.CreateLink(new CellPossibility(_opposite, _stronglyLinkedPossibility), new CellPossibility(
                 _opposite.Row, _initial.Column, _stronglyLinkedPossibility), LinkStrength.Strong);

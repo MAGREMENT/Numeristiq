@@ -151,8 +151,8 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<NumericChange
         {
             foreach (var cell in cells)
             {
-                lighter.HighlightPossibility(_n1, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
-                lighter.HighlightPossibility(_n2, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_n1, cell.Row, cell.Column, StepColor.Cause1);
+                lighter.HighlightPossibility(_n2, cell.Row, cell.Column, StepColor.Cause1);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
@@ -199,8 +199,8 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<NumericCh
         {
             foreach (var cell in cells)
             {
-                lighter.HighlightPossibility(_n1, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
-                lighter.HighlightPossibility(_n2, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_n1, cell.Row, cell.Column, StepColor.Cause1);
+                lighter.HighlightPossibility(_n2, cell.Row, cell.Column, StepColor.Cause1);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

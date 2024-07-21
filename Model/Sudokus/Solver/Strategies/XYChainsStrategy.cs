@@ -126,9 +126,9 @@ public class XYChainReportBuilder : IChangeReportBuilder<NumericChange, ISudokuS
                 var xyCell = _route[i];
                 
                 lighter.HighlightPossibility(xyCell.XPossibility, xyCell.Row, xyCell.Column, 
-                    ChangeColoration.CauseOffTwo);
+                    StepColor.Cause2);
                 lighter.HighlightPossibility(xyCell.YPossibility, xyCell.Row, xyCell.Column, 
-                    ChangeColoration.CauseOnOne);
+                    StepColor.On);
                 lighter.CreateLink(xyCell.XCellPossibility(), xyCell.YCellPossibility(), LinkStrength.Strong);
 
                 if (i > 0)

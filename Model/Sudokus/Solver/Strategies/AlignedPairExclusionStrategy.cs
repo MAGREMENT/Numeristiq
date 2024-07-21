@@ -178,19 +178,19 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
                                                     $"r{_row2 + 1}c{_col2 + 1} with {_als.ToStringSequence(", ")}",
             lighter =>
         {
-            lighter.HighlightCell(_row1, _col1, ChangeColoration.Neutral);
-            lighter.HighlightCell(_row2, _col2, ChangeColoration.Neutral);
+            lighter.HighlightCell(_row1, _col1, StepColor.Neutral);
+            lighter.HighlightCell(_row2, _col2, StepColor.Neutral);
 
             var removed = new ReadOnlyBitSet16();
             foreach (var change in changes) removed += change.Number;
             
-            int color = (int) ChangeColoration.CauseOffOne;
+            int color = (int) StepColor.Cause1;
             foreach (var als in _als)
             {
                 if (!removed.ContainsAny(als.Possibilities)) continue;
                 foreach (var coord in als.EnumerateCells())
                 {
-                    lighter.HighlightCell(coord.Row, coord.Column, (ChangeColoration) color);
+                    lighter.HighlightCell(coord.Row, coord.Column, (StepColor) color);
                 }
 
                 color++;

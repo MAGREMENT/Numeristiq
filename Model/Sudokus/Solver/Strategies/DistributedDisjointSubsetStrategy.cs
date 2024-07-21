@@ -144,7 +144,7 @@ public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<Numer
     {
         return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
-            int color = (int)ChangeColoration.CauseOffOne;
+            int color = (int)StepColor.Cause1;
             for(int i = 0; i < _covers.Length; i++)
             {
                 var cover = _covers[i];
@@ -153,7 +153,7 @@ public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<Numer
                 foreach (var cell in _positions)
                 {
                     if(snapshot.PossibilitiesAt(cell).Contains(i + 1)) 
-                        lighter.HighlightPossibility(i + 1, cell.Row, cell.Column, (ChangeColoration)color);
+                        lighter.HighlightPossibility(i + 1, cell.Row, cell.Column, (StepColor)color);
                 }
 
                 color++;

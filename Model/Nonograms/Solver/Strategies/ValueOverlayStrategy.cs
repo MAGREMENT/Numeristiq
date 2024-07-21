@@ -71,14 +71,14 @@ public class ValueOverlayReportBuilder : IChangeReportBuilder<DichotomousChange,
     {
         return new ChangeReport<INonogramHighlighter>("Value Overlay", lighter =>
         {
-            lighter.EncircleLineSection(_orientation, _unit, _space.Start, _space.End, ChangeColoration.CauseOnOne);
-            lighter.HighlightValues(_orientation, _unit, _valueIndex, _valueIndex, ChangeColoration.CauseOnOne);
+            lighter.EncircleLineSection(_orientation, _unit, _space.Start, _space.End, StepColor.On);
+            lighter.HighlightValues(_orientation, _unit, _valueIndex, _valueIndex, StepColor.On);
         }, lighter =>
         {
-            lighter.EncircleLineSection(_orientation, _unit, _space.Start, _space.Start + _space.Value - 1, ChangeColoration.CauseOnOne);
+            lighter.EncircleLineSection(_orientation, _unit, _space.Start, _space.Start + _space.Value - 1, StepColor.On);
         }, lighter =>
         {
-            lighter.EncircleLineSection(_orientation, _unit, _space.End - _space.Value + 1, _space.End, ChangeColoration.CauseOnOne);
+            lighter.EncircleLineSection(_orientation, _unit, _space.End - _space.Value + 1, _space.End, StepColor.On);
         });
     }
 

@@ -125,15 +125,15 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<Num
             lighter =>
             {
                 var coloring = _loop.Links[0] == LinkStrength.Strong
-                    ? ChangeColoration.CauseOffOne
-                    : ChangeColoration.CauseOnOne;
+                    ? StepColor.Cause1
+                    : StepColor.On;
                 
                 foreach (var element in _loop)
                 {
                     lighter.HighlightElement(element, coloring);
-                    coloring = coloring == ChangeColoration.CauseOnOne
-                        ? ChangeColoration.CauseOffOne
-                        : ChangeColoration.CauseOnOne;
+                    coloring = coloring == StepColor.On
+                        ? StepColor.Cause1
+                        : StepColor.On;
                 }
                 
                 _loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Strong), LinkStrength.Strong);
@@ -192,15 +192,15 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<Nu
             lighter =>
             {
                 var coloring = _chain.Links[0] == LinkStrength.Strong
-                    ? ChangeColoration.CauseOffOne
-                    : ChangeColoration.CauseOnOne;
+                    ? StepColor.Cause1
+                    : StepColor.On;
                 
                 foreach (var element in _chain)
                 {
                     lighter.HighlightElement(element, coloring);
-                    coloring = coloring == ChangeColoration.CauseOnOne
-                        ? ChangeColoration.CauseOffOne
-                        : ChangeColoration.CauseOnOne;
+                    coloring = coloring == StepColor.On
+                        ? StepColor.Cause1
+                        : StepColor.On;
                 }
 
                 for (int i = 0; i < _chain.Links.Length; i++)

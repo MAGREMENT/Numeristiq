@@ -209,13 +209,13 @@ public class AlternatingInferenceLoopReportBuilder : IChangeReportBuilder<Numeri
         return new ChangeReport<ITectonicHighlighter>(AlternatingInferenceReportBuilderHelper.Description(loop),
             lighter =>
             {
-                lighter.HighlightElement(loop.Elements[0], ChangeColoration.CauseOffOne);
+                lighter.HighlightElement(loop.Elements[0], StepColor.Cause1);
             
                 for (int i = 0; i < loop.Links.Length - 1; i++)
                 {
                     lighter.CreateLink(loop.Elements[i], loop.Elements[i + 1], loop.Links[i]);
-                    lighter.HighlightElement(loop.Elements[i + 1], loop.Links[i] == LinkStrength.Strong ? ChangeColoration.CauseOnOne :
-                        ChangeColoration.CauseOffOne);
+                    lighter.HighlightElement(loop.Elements[i + 1], loop.Links[i] == LinkStrength.Strong ? StepColor.On :
+                        StepColor.Cause1);
                 }
 
                 lighter.CreateLink(loop.Elements[^1], loop.Elements[0], loop.Links[^1]);
@@ -251,13 +251,13 @@ public class AlternatingInferenceChainReportBuilder : IChangeReportBuilder<Numer
         return new ChangeReport<ITectonicHighlighter>(AlternatingInferenceReportBuilderHelper.Description(chain),
             lighter =>
         {
-            lighter.HighlightElement(chain.Elements[0], ChangeColoration.CauseOffOne);
+            lighter.HighlightElement(chain.Elements[0], StepColor.Cause1);
             
             for (int i = 0; i < chain.Links.Length; i++)
             {
                 lighter.CreateLink(chain.Elements[i], chain.Elements[i + 1], chain.Links[i]);
-                lighter.HighlightElement(chain.Elements[i + 1], chain.Links[i] == LinkStrength.Strong ? ChangeColoration.CauseOnOne :
-                    ChangeColoration.CauseOffOne);
+                lighter.HighlightElement(chain.Elements[i + 1], chain.Links[i] == LinkStrength.Strong ? StepColor.On :
+                    StepColor.Cause1);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

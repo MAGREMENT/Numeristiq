@@ -83,8 +83,8 @@ public class ReverseBugReportBuilder : IChangeReportBuilder<NumericChange, ISudo
             foreach (var cell in _gp)
             {
                 lighter.HighlightCell(cell.Row, cell.Column, snapshot[cell.Row, cell.Column] == _n1
-                        ? ChangeColoration.CauseOffOne
-                        : ChangeColoration.CauseOffTwo);
+                        ? StepColor.Cause1
+                        : StepColor.Cause2);
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

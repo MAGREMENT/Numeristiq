@@ -22,13 +22,13 @@ public record Theme(string Name,
     RGB Disabled,
     RGB DifficultyBasic, RGB DifficultyEasy, RGB DifficultyMedium, RGB DifficultyHard,
     RGB DifficultyExtreme, RGB DifficultyInhuman, RGB DifficultyByTrial,
-    RGB ChangeColorationNeutral, RGB ChangeColorationChangeOne, RGB ChangeColorationChangeTwo,
-    RGB ChangeColorationCauseOffOne, RGB ChangeColorationCauseOffTwo, RGB ChangeColorationCauseOffThree,
-    RGB ChangeColorationCauseOffFour, RGB ChangeColorationCauseOffFive, RGB ChangeColorationCauseOffSix,
-    RGB ChangeColorationCauseOffSeven, RGB ChangeColorationCauseOffEight, RGB ChangeColorationCauseOffNine,
-    RGB ChangeColorationCauseOffTen, RGB ChangeColorationCauseOnOne,
-    RGB HighlightColorFirst, RGB HighlightColorSecond, RGB HighlightColorThird, RGB HighlightColorFourth,
-    RGB HighlightColorFifth, RGB HighlightColorSixth, RGB HighlightColorSeventh) : INamed, ICopyable<Theme>
+    RGB StepColorNeutral, RGB StepColorChange1, RGB StepColorChange2,
+    RGB StepColorCause1, RGB StepColorCause2, RGB StepColorCause3,
+    RGB StepColorCause4, RGB StepColorCause5, RGB StepColorCause6,
+    RGB StepColorCause7, RGB StepColorCause8, RGB StepColorCause9,
+    RGB StepColorCause10, RGB StepColorOn,
+    RGB HighlightColor1, RGB HighlightColor2, RGB HighlightColor3, RGB HighlightColor4,
+    RGB HighlightColor5, RGB HighlightColor6, RGB HighlightColor7) : INamed, ICopyable<Theme>
 {
     public IEnumerable<(string, RGB)> AllColors()
     {
@@ -52,12 +52,12 @@ public record Theme(string Name,
             , Disabled
             , DifficultyBasic, DifficultyEasy, DifficultyMedium, DifficultyHard
             , DifficultyExtreme, DifficultyInhuman, DifficultyByTrial
-            , ChangeColorationNeutral, ChangeColorationChangeOne, ChangeColorationChangeTwo
-            , ChangeColorationCauseOffOne, ChangeColorationCauseOffTwo, ChangeColorationCauseOffThree
-            , ChangeColorationCauseOffFour, ChangeColorationCauseOffFive, ChangeColorationCauseOffSix
-            , ChangeColorationCauseOffSeven, ChangeColorationCauseOffEight, ChangeColorationCauseOffNine
-            , ChangeColorationCauseOffTen, ChangeColorationCauseOnOne
-            , HighlightColorFirst, HighlightColorSecond, HighlightColorThird, HighlightColorFourth
-            , HighlightColorFifth, HighlightColorSixth, HighlightColorSeventh);
+            , StepColorNeutral, StepColorChange1, StepColorChange2
+            , StepColorCause1, StepColorCause2, StepColorCause3
+            , StepColorCause4, StepColorCause5, StepColorCause6
+            , StepColorCause7, StepColorCause8, StepColorCause9
+            , StepColorCause10, StepColorOn
+            , HighlightColor1, HighlightColor2, HighlightColor3, HighlightColor4
+            , HighlightColor5, HighlightColor6, HighlightColor7);
     }
 }

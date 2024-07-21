@@ -223,13 +223,13 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<NumericChange, ISud
                 {
                     lighter.CreateLink(current.Branch.Elements[j], current.Branch.Elements[j + 1], current.Branch.Links[j]);
                     var color = current.Branch.Links[j] == LinkStrength.Weak
-                        ? ChangeColoration.CauseOnOne
-                        : ChangeColoration.CauseOffOne;
+                        ? StepColor.On
+                        : StepColor.Cause1;
                     lighter.HighlightElement(current.Branch.Elements[j], color);
                     if (j == current.Branch.Links.Length - 1)
                     {
-                        lighter.HighlightElement(current.Branch.Elements[j + 1], color == ChangeColoration.CauseOnOne ?
-                            ChangeColoration.CauseOffOne : ChangeColoration.CauseOnOne);
+                        lighter.HighlightElement(current.Branch.Elements[j + 1], color == StepColor.On ?
+                            StepColor.Cause1 : StepColor.On);
                     }
                     
                     foreach (var cp in _cps)
@@ -245,15 +245,15 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<NumericChange, ISud
         return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
             var coloring = _loop.Links[0] == LinkStrength.Strong
-                ? ChangeColoration.CauseOffOne
-                : ChangeColoration.CauseOnOne;
+                ? StepColor.Cause1
+                : StepColor.On;
                 
             foreach (var element in _loop)
             {
                 lighter.HighlightElement(element, coloring);
-                coloring = coloring == ChangeColoration.CauseOnOne
-                    ? ChangeColoration.CauseOffOne
-                    : ChangeColoration.CauseOnOne;
+                coloring = coloring == StepColor.On
+                    ? StepColor.Cause1
+                    : StepColor.On;
             }
 
             for (int i = 0; i < _loop.Links.Length; i++)

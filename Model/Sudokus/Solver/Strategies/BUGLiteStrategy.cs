@@ -400,8 +400,8 @@ public class BUGLiteReportBuilder : IChangeReportBuilder<NumericChange, ISudokuS
             {
                 foreach (var p in b.Possibilities.EnumeratePossibilities())
                 {
-                    lighter.HighlightPossibility(p, b.One.Row, b.One.Column, ChangeColoration.CauseOffTwo);
-                    lighter.HighlightPossibility(p, b.Two.Row, b.Two.Column, ChangeColoration.CauseOffTwo);
+                    lighter.HighlightPossibility(p, b.One.Row, b.One.Column, StepColor.Cause2);
+                    lighter.HighlightPossibility(p, b.Two.Row, b.Two.Column, StepColor.Cause2);
                 }
             }
 

@@ -84,50 +84,50 @@ public class ThemeInformation
         Secondary1Brush = ToBrush(theme.Secondary1);
         TextBrush = ToBrush(theme.Text);
         
-        ChangeColorationNeutral = ToBrush(theme.ChangeColorationNeutral);
-        ChangeColorationChangeOne = ToBrush(theme.ChangeColorationChangeOne);
-        ChangeColorationChangeTwo = ToBrush(theme.ChangeColorationChangeTwo);
-        ChangeColorationCauseOffOne = ToBrush(theme.ChangeColorationCauseOffOne);
-        ChangeColorationCauseOffTwo = ToBrush(theme.ChangeColorationCauseOffTwo);
-        ChangeColorationCauseOffThree = ToBrush(theme.ChangeColorationCauseOffThree);
-        ChangeColorationCauseOffFour = ToBrush(theme.ChangeColorationCauseOffFour);
-        ChangeColorationCauseOffFive = ToBrush(theme.ChangeColorationCauseOffFive);
-        ChangeColorationCauseOffSix = ToBrush(theme.ChangeColorationCauseOffSix);
-        ChangeColorationCauseOffSeven = ToBrush(theme.ChangeColorationCauseOffSeven);
-        ChangeColorationCauseOffEight = ToBrush(theme.ChangeColorationCauseOffEight);
-        ChangeColorationCauseOffNine = ToBrush(theme.ChangeColorationCauseOffNine);
-        ChangeColorationCauseOffTen = ToBrush(theme.ChangeColorationCauseOffTen);
-        ChangeColorationCauseOnOne = ToBrush(theme.ChangeColorationCauseOnOne);
+        ChangeColorationNeutral = ToBrush(theme.StepColorNeutral);
+        ChangeColorationChangeOne = ToBrush(theme.StepColorChange1);
+        ChangeColorationChangeTwo = ToBrush(theme.StepColorChange2);
+        ChangeColorationCauseOffOne = ToBrush(theme.StepColorCause1);
+        ChangeColorationCauseOffTwo = ToBrush(theme.StepColorCause2);
+        ChangeColorationCauseOffThree = ToBrush(theme.StepColorCause3);
+        ChangeColorationCauseOffFour = ToBrush(theme.StepColorCause4);
+        ChangeColorationCauseOffFive = ToBrush(theme.StepColorCause5);
+        ChangeColorationCauseOffSix = ToBrush(theme.StepColorCause6);
+        ChangeColorationCauseOffSeven = ToBrush(theme.StepColorCause7);
+        ChangeColorationCauseOffEight = ToBrush(theme.StepColorCause8);
+        ChangeColorationCauseOffNine = ToBrush(theme.StepColorCause9);
+        ChangeColorationCauseOffTen = ToBrush(theme.StepColorCause10);
+        ChangeColorationCauseOnOne = ToBrush(theme.StepColorOn);
 
-        HighlightColorFirst = ToBrush(theme.HighlightColorFirst);
-        HighlightColorSecond = ToBrush(theme.HighlightColorSecond);
-        HighlightColorThird = ToBrush(theme.HighlightColorThird);
-        HighlightColorFourth = ToBrush(theme.HighlightColorFourth);
-        HighlightColorFifth = ToBrush(theme.HighlightColorFifth);
-        HighlightColorSixth = ToBrush(theme.HighlightColorSixth);
-        HighlightColorSeventh = ToBrush(theme.HighlightColorSeventh);
+        HighlightColorFirst = ToBrush(theme.HighlightColor1);
+        HighlightColorSecond = ToBrush(theme.HighlightColor2);
+        HighlightColorThird = ToBrush(theme.HighlightColor3);
+        HighlightColorFourth = ToBrush(theme.HighlightColor4);
+        HighlightColorFifth = ToBrush(theme.HighlightColor5);
+        HighlightColorSixth = ToBrush(theme.HighlightColor6);
+        HighlightColorSeventh = ToBrush(theme.HighlightColor7);
         
         ThemeChanged?.Invoke();
     }
 
-    public Brush ToBrush(ChangeColoration coloration)
+    public Brush ToBrush(StepColor color)
     {
-        return coloration switch
+        return color switch
         {
-            ChangeColoration.ChangeOne => ChangeColorationChangeOne,
-            ChangeColoration.ChangeTwo => ChangeColorationChangeTwo,
-            ChangeColoration.Neutral => ChangeColorationNeutral,
-            ChangeColoration.CauseOffOne => ChangeColorationCauseOffOne,
-            ChangeColoration.CauseOffTwo => ChangeColorationCauseOffTwo,
-            ChangeColoration.CauseOffThree => ChangeColorationCauseOffThree,
-            ChangeColoration.CauseOffFour => ChangeColorationCauseOffFour,
-            ChangeColoration.CauseOffFive => ChangeColorationCauseOffFive,
-            ChangeColoration.CauseOffSix => ChangeColorationCauseOffSix,
-            ChangeColoration.CauseOffSeven => ChangeColorationCauseOffSeven,
-            ChangeColoration.CauseOffEight => ChangeColorationCauseOffEight,
-            ChangeColoration.CauseOffNine => ChangeColorationCauseOffNine,
-            ChangeColoration.CauseOffTen => ChangeColorationCauseOffTen,
-            ChangeColoration.CauseOnOne => ChangeColorationCauseOnOne,
+            StepColor.Change1 => ChangeColorationChangeOne,
+            StepColor.Change2 => ChangeColorationChangeTwo,
+            StepColor.Neutral => ChangeColorationNeutral,
+            StepColor.Cause1 => ChangeColorationCauseOffOne,
+            StepColor.Cause2 => ChangeColorationCauseOffTwo,
+            StepColor.Cause3 => ChangeColorationCauseOffThree,
+            StepColor.Cause4 => ChangeColorationCauseOffFour,
+            StepColor.Cause5 => ChangeColorationCauseOffFive,
+            StepColor.Cause6 => ChangeColorationCauseOffSix,
+            StepColor.Cause7 => ChangeColorationCauseOffSeven,
+            StepColor.Cause8 => ChangeColorationCauseOffEight,
+            StepColor.Cause9 => ChangeColorationCauseOffNine,
+            StepColor.Cause10 => ChangeColorationCauseOffTen,
+            StepColor.On => ChangeColorationCauseOnOne,
             _ => ChangeColorationNeutral
         };
     }

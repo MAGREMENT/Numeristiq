@@ -65,7 +65,7 @@ public class ZoneInteractionReportBuilder : IChangeReportBuilder<NumericChange, 
                 foreach (var cell in _zone)
                 {
                     if(snapshot.PossibilitiesAt(cell).Contains(change.Number)) 
-                        lighter.HighlightPossibility(cell, change.Number, ChangeColoration.CauseOffOne);
+                        lighter.HighlightPossibility(cell, change.Number, StepColor.Cause1);
                 }
             }
             
