@@ -303,7 +303,7 @@ public class SudokuPlayPresenter
         else
         {
             _view.ShowClueText(_clueBuffer.Text);
-            _translator.Translate(_clueBuffer);
+            _translator.Translate(_clueBuffer, false);
         }
         
         _view.ShowClueState(_isClueShowing);

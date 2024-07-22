@@ -17,31 +17,28 @@ using Model.Utility.BitSets;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve;
 
-public class SudokuSolvePresenter : ICommitApplier
+public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, INumericStep<ISudokuHighlighter>,
+    INumericSolvingState>, ICommitApplier
 {
     private readonly ISudokuSolveView _view;
-    private readonly Disabler _enabler;
-    private readonly SudokuHighlighterTranslator _translator;
+    private readonly Disabler _disabler;
     private readonly Settings _settings;
     private readonly IStrategyRepository<SudokuStrategy> _repo;
     private readonly SudokuSolver _solver;
     
     private INumericSolvingState? _currentlyDisplayedState;
-    private int _currentlyOpenedStep = -1;
     private Cell? _selectedCell;
     private UIUpdaterTracker? _solveTracker;
-
-    private int _stepCount;
-    private StateShown _stateShown = StateShown.Before;
     
     public SettingsPresenter SettingsPresenter { get; }
+    protected override IReadOnlyList<INumericStep<ISudokuHighlighter>> Steps => _solver.Steps;
+    protected override ISolveWithStepsView View => _view;
 
     public SudokuSolvePresenter(ISudokuSolveView view, SudokuSolver solver, Settings settings,
-        IStrategyRepository<SudokuStrategy> repo)
+        IStrategyRepository<SudokuStrategy> repo) : base(new SudokuHighlighterTranslator(view.Drawer, settings))
     {
         _view = view;
-        _enabler = new Disabler(_view);
-        _translator = new SudokuHighlighterTranslator(_view.Drawer, settings);
+        _disabler = new Disabler(_view);
         _solver = solver;
         _settings = settings;
         _repo = repo;
@@ -63,8 +60,7 @@ public class SudokuSolvePresenter : ICommitApplier
         {
             if (_currentlyOpenedStep == -1) return;
             
-            _view.Drawer.ClearHighlights();
-            _translator.Translate(_solver.Steps[_currentlyOpenedStep].HighlightManager);
+            _translator.Translate(_solver.Steps[_currentlyOpenedStep].HighlightManager, true);
             _view.Drawer.Refresh();
         };
     }
@@ -81,7 +77,7 @@ public class SudokuSolvePresenter : ICommitApplier
 
     public async void Solve(bool stopAtProgress)
     {
-        _enabler.Disable(1);
+        _disabler.Disable(1);
         
         _solveTracker ??= new UIUpdaterTracker(this, true);
         _solveTracker.UpdateLogs = true;
@@ -89,12 +85,12 @@ public class SudokuSolvePresenter : ICommitApplier
         await Task.Run(() => _solver.Solve(stopAtProgress));
         _solveTracker.Detach();
 
-        _enabler.Enable(1);
+        _disabler.Enable(1);
     }
 
     public async Task<ChooseStepPresenterBuilder> ChooseStep()
     {
-        _enabler.Disable(2);
+        _disabler.Disable(2);
         
         _solveTracker ??= new UIUpdaterTracker(this, false);
         _solveTracker.UpdateLogs = false;
@@ -107,78 +103,19 @@ public class SudokuSolvePresenter : ICommitApplier
 
     public void OnStoppedChoosingStep()
     {
-        _enabler.Enable(2);
+        _disabler.Enable(2);
     }
 
     public void Clear()
     {
         _solver.SetSudoku(new Sudoku());
         SetShownState(_solver.StartState, true, false);
-        ClearLogs();
+        ClearSteps();
     }
 
     public void ShowCurrentState()
     {
         SetShownState(_solver, false, true);
-    }
-
-    public void UpdateLogs()
-    {
-        if (_solver.Steps.Count < _stepCount)
-        {
-            ClearLogs();
-            return;
-        }
-
-        for (;_stepCount < _solver.Steps.Count; _stepCount++)
-        {
-            _view.AddLog(_solver.Steps[_stepCount], _stateShown);
-        }
-    }
-
-    public void RequestLogOpening(int id)
-    {
-        var index = id - 1;
-        if (index < 0 || index >= _solver.Steps.Count) return;
-        
-        if(_currentlyOpenedStep != -1) _view.CloseLog(_currentlyOpenedStep);
-
-        if (_currentlyOpenedStep == index)
-        {
-            _currentlyOpenedStep = -1;
-            SetShownState(_solver, false, true);
-        }
-        else
-        {
-            _view.OpenLog(index);
-            _currentlyOpenedStep = index;
-
-            var log = _solver.Steps[index];
-            SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
-            _translator.Translate(log.HighlightManager); 
-        }
-    }
-
-    public void RequestStateShownChange(StateShown ss)
-    {
-        _stateShown = ss;
-        _view.SetLogsStateShown(ss);
-        if (_currentlyOpenedStep < 0 || _currentlyOpenedStep >= _solver.Steps.Count) return;
-        
-        var log = _solver.Steps[_currentlyOpenedStep];
-        SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
-        _translator.Translate(log.HighlightManager);
-    }
-
-    public void RequestHighlightChange(int newHighlight)
-    {
-        if (_currentlyOpenedStep < 0 || _currentlyOpenedStep >= _solver.Steps.Count) return;
-        
-        var log = _solver.Steps[_currentlyOpenedStep];
-        log.HighlightManager.GoTo(newHighlight - 1);
-        
-        _view.Drawer.ClearHighlights();
-        _translator.Translate(log.HighlightManager);
     }
     
     public StepExplanationPresenterBuilder? RequestExplanation()
@@ -221,7 +158,7 @@ public class SudokuSolvePresenter : ICommitApplier
         var c = _selectedCell.Value;
         _solver.SetSolutionByHand(n, c.Row, c.Column);
         SetShownState(_solver, !_solver.StartedSolving, true);
-        UpdateLogs();
+        UpdateSteps();
     }
 
     public void DeleteCurrentCell()
@@ -231,7 +168,7 @@ public class SudokuSolvePresenter : ICommitApplier
         var c = _selectedCell.Value;
         _solver.RemoveSolutionByHand(c.Row, c.Column);
         SetShownState(_solver, !_solver.StartedSolving, true);
-        UpdateLogs();
+        UpdateSteps();
     }
 
     public void HighlightStrategy(int index)
@@ -268,7 +205,7 @@ public class SudokuSolvePresenter : ICommitApplier
     {
         _solver.ApplyCommit(commit);
         ShowCurrentState();
-        UpdateLogs();
+        UpdateSteps();
     }
 
     public void OnShow()
@@ -303,13 +240,9 @@ public class SudokuSolvePresenter : ICommitApplier
         }
     }
 
-    private void ClearLogs()
-    {
-        _view.ClearLogs();
-        _stepCount = 0;
-    }
+    protected override INumericSolvingState GetCurrentState() => _solver;
 
-    private void SetShownState(INumericSolvingState numericSolvingState, bool solutionAsClues, bool showPossibilities)
+    protected override void SetShownState(INumericSolvingState numericSolvingState, bool solutionAsClues, bool showPossibilities)
     {
         _currentlyDisplayedState = numericSolvingState;
         var drawer = _view.Drawer;
@@ -341,14 +274,14 @@ public class SudokuSolvePresenter : ICommitApplier
     {
         _solver.SetSudoku(sudoku);
         SetShownState(_solver, true, true);
-        ClearLogs();
+        ClearSteps();
     }
 
     private void SetNewState(INumericSolvingState numericSolvingState)
     {
         _solver.SetState(numericSolvingState);
         SetShownState(_solver, true, true);
-        ClearLogs();
+        ClearSteps();
     }
 
     private void RedrawBoard()
@@ -372,7 +305,7 @@ public class SudokuSolvePresenter : ICommitApplier
 
         if (_currentlyOpenedStep != -1)
         {
-            _translator.Translate(_solver.Steps[_currentlyOpenedStep].HighlightManager);
+            _translator.Translate(_solver.Steps[_currentlyOpenedStep].HighlightManager, false);
         }
         
         drawer.Refresh();
@@ -429,7 +362,7 @@ public class UIUpdaterTracker : Tracker<object>
         if (UpdateLogs && solutionAdded + possibilitiesRemoved > 0)
         {
             _presenter.ShowCurrentState();
-            _presenter.UpdateLogs();
+            _presenter.UpdateSteps();
         }
     }
 }

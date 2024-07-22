@@ -8,7 +8,7 @@ using Model.Utility.BitSets;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve;
 
-public class SudokuHighlighterTranslator : ISudokuHighlighter
+public class SudokuHighlighterTranslator : IHighlighterTranslator<ISudokuHighlighter>, ISudokuHighlighter
 {
     private readonly ISudokuSolverDrawer _drawer;
     private readonly Settings _settings;
@@ -19,8 +19,9 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
         _settings = settings;
     }
 
-    public void Translate(IHighlightable<ISudokuHighlighter> lighter)
+    public void Translate(IHighlightable<ISudokuHighlighter> lighter, bool clear)
     {
+        if(clear) _drawer.ClearHighlights();
         lighter.Highlight(this);
         _drawer.Refresh();
     }

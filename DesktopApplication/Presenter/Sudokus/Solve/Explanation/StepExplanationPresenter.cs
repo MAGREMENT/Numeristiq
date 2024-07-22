@@ -36,7 +36,7 @@ public class StepExplanationPresenter
             }
         }
 
-        _translator.Translate(_numericStep.HighlightManager);
+        _translator.Translate(_numericStep.HighlightManager, false);
         _view.ShowExplanation(_numericStep.Explanation);
     }
 
@@ -46,7 +46,7 @@ public class StepExplanationPresenter
         
         _view.Drawer.ClearHighlights();
         _currentlyShown.Show(_view.ExplanationHighlighter);
-        if(_showHighlight) _translator.Translate(_numericStep.HighlightManager);
+        if(_showHighlight) _translator.Translate(_numericStep.HighlightManager, false);
         else _view.Drawer.Refresh();
     }
 
@@ -55,7 +55,7 @@ public class StepExplanationPresenter
         _currentlyShown = null;
         
         _view.Drawer.ClearHighlights();
-        if(_showHighlight) _translator.Translate(_numericStep.HighlightManager);
+        if(_showHighlight) _translator.Translate(_numericStep.HighlightManager, false);
         else _view.Drawer.Refresh();
     }
 
@@ -73,6 +73,6 @@ public class StepExplanationPresenter
         _showHighlight = true;
         
         _currentlyShown?.Show(_view.ExplanationHighlighter);
-        _translator.Translate(_numericStep.HighlightManager);
+        _translator.Translate(_numericStep.HighlightManager, false);
     }
 }

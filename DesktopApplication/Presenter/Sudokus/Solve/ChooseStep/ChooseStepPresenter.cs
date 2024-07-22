@@ -69,7 +69,7 @@ public class ChooseStepPresenter
         if (_shownStep != index)
         {
             _shownStep = index;
-            _translator.Translate(_commits[index].Report.HighlightManager);
+            _translator.Translate(_commits[index].Report.HighlightManager, false);
             _view.SelectStep(index % PageCount);
         }
         else _shownStep = -1;

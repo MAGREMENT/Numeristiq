@@ -17,12 +17,16 @@ public interface IStep
     string ChangesToString();
 }
 
-public interface IDichotomousStep<THighlighter> : IStep
+public interface IStep<THighlighter, out TState> : IStep
+{
+    TState From { get; }
+    TState To { get; }
+    HighlightManager<THighlighter> HighlightManager { get; }
+}
+
+public interface IDichotomousStep<THighlighter> : IStep<THighlighter, IDichotomousSolvingState>
 {
     IReadOnlyList<DichotomousChange> Changes { get; }
-    IDichotomousSolvingState From { get; }
-    IDichotomousSolvingState To { get; }
-    HighlightManager<THighlighter> HighlightManager { get; }
 
     int IStep.HighlightCount()
     {
@@ -35,12 +39,9 @@ public interface IDichotomousStep<THighlighter> : IStep
     }
 }
 
-public interface INumericStep<THighlighter> : IStep
+public interface INumericStep<THighlighter> : IStep<THighlighter, INumericSolvingState>
 {
     IReadOnlyList<NumericChange> Changes { get; }
-    INumericSolvingState From { get; }
-    INumericSolvingState To { get; }
-    HighlightManager<THighlighter> HighlightManager { get; }
 
     int IStep.HighlightCount()
     {

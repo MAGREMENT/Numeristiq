@@ -10,7 +10,6 @@ using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.HelperWindows.Dialog;
 using DesktopApplication.View.Sudokus.Controls;
 using Microsoft.Win32;
-using Model.Core.Highlighting;
 using Model.Core.Steps;
 using Model.Sudokus.Solver;
 
@@ -55,13 +54,13 @@ public partial class SolvePage : ISudokuSolveView
         _disabled = false;
     }
 
-    public void AddLog(INumericStep<ISudokuHighlighter> numericStep, StateShown stateShown)
+    public void AddStep(IStep step, StateShown stateShown)
     {
         LogPanel.Dispatcher.Invoke(() =>
         {
-            var lc = new StepControl(numericStep, stateShown);
+            var lc = new StepControl(step, stateShown);
             LogPanel.Children.Add(lc);
-            lc.OpenRequested += _presenter.RequestLogOpening;
+            lc.OpenRequested += _presenter.RequestStepOpening;
             lc.StateShownChanged += _presenter.RequestStateShownChange;
             lc.PageSelector.PageChanged += _presenter.RequestHighlightChange;
             lc.ExplanationAsked += () =>
@@ -76,12 +75,12 @@ public partial class SolvePage : ISudokuSolveView
         LogViewer.Dispatcher.Invoke(() => LogViewer.ScrollToEnd());
     }
 
-    public void ClearLogs()
+    public void ClearSteps()
     {
         LogPanel.Children.Clear();
     }
 
-    public void OpenLog(int index)
+    public void OpenStep(int index)
     {
         if (index < 0 || index > LogPanel.Children.Count) return;
         if (LogPanel.Children[index] is not StepControl lc) return;
@@ -89,7 +88,7 @@ public partial class SolvePage : ISudokuSolveView
         lc.Open();
     }
 
-    public void CloseLog(int index)
+    public void CloseStep(int index)
     {
         if (index < 0 || index > LogPanel.Children.Count) return;
         if (LogPanel.Children[index] is not StepControl lc) return;
@@ -97,7 +96,7 @@ public partial class SolvePage : ISudokuSolveView
         lc.Close();
     }
 
-    public void SetLogsStateShown(StateShown stateShown)
+    public void SetStepsStateShown(StateShown stateShown)
     {
         foreach (var child in LogPanel.Children)
         {
