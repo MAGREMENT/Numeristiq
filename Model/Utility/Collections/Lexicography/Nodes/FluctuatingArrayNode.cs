@@ -4,7 +4,7 @@ namespace Model.Utility.Collections.Lexicography.Nodes;
 
 public class FluctuatingArrayNode<T> : LexicographicNode<T>
 {
-    private int _count = 0;
+    private int _count;
     private int[] _indexes = Array.Empty<int>();
     private LexicographicNode<T>[] _nodes = Array.Empty<LexicographicNode<T>>();
     

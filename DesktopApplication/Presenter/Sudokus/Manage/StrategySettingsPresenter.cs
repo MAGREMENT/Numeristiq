@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Model;
 using Model.Core;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
@@ -27,9 +26,10 @@ public class StrategySettingsPresenter : IEnumerable<(ISetting, int)>, ISettingC
         yield return (new EnumSetting<InstanceHandling>("Instance handling", "Defines the way different instances" +
                                                                              "of the same strategy during the same search are handled",
             SpaceConverter.Instance, _strategy.InstanceHandling), -2);
-        for (int i = 0; i < _strategy.Settings.Count; i++)
+        int i = 0;
+        foreach (var setting in _strategy.EnumerateSettings())
         {
-            yield return (_strategy.Settings[i], i);
+            yield return (setting, i++);
         }
     }
 

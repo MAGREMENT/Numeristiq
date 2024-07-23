@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
+using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
@@ -48,8 +49,11 @@ public class FishStrategyV2 : SudokuStrategy
     {
         _unitCount = new MinMaxSetting("Unit count", "The minimum and maximum amount of units used for each set of the fish pattern",
             2, 4, 2, 5, 1, minUnitCount, maxUnitCount);
-
-        AddSetting(_unitCount);
+    }
+    
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _unitCount;
     }
 
     public override void Apply(ISudokuSolverData solverData)

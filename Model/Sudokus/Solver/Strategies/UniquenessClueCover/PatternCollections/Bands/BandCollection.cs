@@ -203,12 +203,6 @@ public class BandCollection : IPatternCollection
                 }
             }
         }
-
-        //Debug
-        if (solverData.ChangeBuffer.NotEmpty())
-        {
-            int a = 0;
-        }
         
         return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
             new BandUniquenessClueCoverReportBuilder(candidate)) && Strategy!.StopOnFirstPush;

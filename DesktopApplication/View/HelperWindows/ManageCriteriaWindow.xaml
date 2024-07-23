@@ -82,9 +82,9 @@
             </ScrollViewer>
             
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button FontSize="16" Style="{StaticResource BorderButton}" Background="{DynamicResource Primary1}"
+                <Button Style="{StaticResource BorderButton}" Background="{DynamicResource Primary1}"
                         Margin="5" Click="OnSave">Save</Button>
-                <Button FontSize="16" Style="{StaticResource BorderButton}" Background="{DynamicResource Off}"
+                <Button Style="{StaticResource BorderButton}" Background="{DynamicResource Off}"
                         Margin="5" Click="OnCancel">Cancel</Button>
             </StackPanel>
         </Grid>

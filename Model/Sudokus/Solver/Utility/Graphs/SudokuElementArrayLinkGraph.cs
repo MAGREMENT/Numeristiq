@@ -6,7 +6,7 @@ using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Utility.Graphs;
 
-public class SudokuElementArrayLinkGraph<T> : ILinkGraph<ISudokuElement>
+public class SudokuElementArrayLinkGraph : ILinkGraph<ISudokuElement>
 {
     private UniqueList<ISudokuElement>?[,,,] _cps = new UniqueList<ISudokuElement>[9, 9, 9, 2];
     private readonly Dictionary<ISudokuElement, UniqueList<ISudokuElement>[]> _others = new();

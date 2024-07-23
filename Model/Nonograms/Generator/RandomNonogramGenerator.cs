@@ -17,7 +17,7 @@ public class RandomNonogramGenerator : IPuzzleGenerator<Nonogram>
     public GridSizeRandomizer Randomizer { get; } = new(3, 20);
 
     public event OnNextStep? StepDone;
-    public bool KeepSymmetry { get; set; } //TODO
+    public bool KeepSymmetry { get; set; }
     public bool KeepUniqueness { get; set; } = true;
 
     public Nonogram Generate()
@@ -29,11 +29,35 @@ public class RandomNonogramGenerator : IPuzzleGenerator<Nonogram>
             var size = Randomizer.GenerateSize();
             var buffer = new CalibratedInfiniteBitmap(size.RowCount, size.ColumnCount);
 
-            for (int r = 0; r < size.RowCount; r++)
+            if (KeepSymmetry)
             {
-                for (int c = 0; c < size.ColumnCount; c++)
+                var isNotPair = size.RowCount % 2 == 1;
+                var rMax = size.RowCount / 2 + (isNotPair ? 1 : 0);
+                var cMax = 0;
+                if (isNotPair) cMax = size.ColumnCount / 2 + (size.ColumnCount % 2 == 1 ? 1 : 0);
+                
+                for (int r = 0; r < rMax; r++)
                 {
-                    if (Randomizer.GenerateChance(1, 2)) buffer.Add(r, c);
+                    for (int c = 0; c < size.ColumnCount; c++)
+                    {
+                        if (isNotPair && r == rMax - 1 && c >= cMax) break;
+                        
+                        if (Randomizer.GenerateChance(1, 2))
+                        {
+                            buffer.Add(r, c);
+                            buffer.Add(size.RowCount - 1 - r, size.ColumnCount - 1 - c);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int r = 0; r < size.RowCount; r++)
+                {
+                    for (int c = 0; c < size.ColumnCount; c++)
+                    {
+                        if (Randomizer.GenerateChance(1, 2)) buffer.Add(r, c);
+                    }
                 }
             }
 

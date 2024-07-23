@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
-using Model.Core;
 using Model.Core.Settings;
 using Model.Core.Trackers;
 using Model.Sudokus.Solver;

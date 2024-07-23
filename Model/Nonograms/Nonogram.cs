@@ -194,7 +194,7 @@ public class Nonogram : IReadOnlyNonogram
     public int GetRowSolutionCount(int row)
     {
         var current = 0;
-        for (int c = 0; c < RowCount; c++)
+        for (int c = 0; c < ColumnCount; c++)
         {
             if (this[row, c]) current++;
         }

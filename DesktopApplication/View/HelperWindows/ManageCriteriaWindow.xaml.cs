@@ -12,7 +12,7 @@ namespace DesktopApplication.View.HelperWindows;
 public partial class ManageCriteriaWindow : IManageCriteriaView
 {
     private readonly ManageCriteriaPresenter _presenter;
-    private bool _isSaved = false;
+    private bool _isSaved;
     
     public ManageCriteriaWindow(ManageCriteriaPresenterBuilder builder)
     {

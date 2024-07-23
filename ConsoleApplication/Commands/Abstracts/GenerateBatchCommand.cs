@@ -9,6 +9,8 @@ public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TSta
     private const int CountIndex = 0;
     private const int EvaluateIndex = 1;
     private const int SortIndex = 2;
+    private const int SymmetryIndex = 3;
+    private const int NotUniqueIndex = 4;
 
     private readonly IPuzzleGenerator<TPuzzle> _generator;
     
@@ -18,7 +20,9 @@ public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TSta
         : base("GenerateBatch", additionalOptions.MergeWithReverseOrder(
             new Option("-c", "Count", ValueRequirement.Mandatory, ValueType.Int),
             new Option("-e", "Evaluates puzzles"),
-            new Option("-s", "Sorts puzzles")))
+            new Option("-s", "Sorts puzzles"),
+            new Option("--symmetric", "Makes the puzzle symmetric around its center point"),
+            new Option("--not-unique", "Allows the puzzle to not necessarily be unique")))
     {
         Description = $"Generates a determined amount of {name}'s";
         _generator = generator;
@@ -28,6 +32,8 @@ public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TSta
     {
         var count = report.IsOptionUsed(CountIndex) ? (int)report.GetOptionValue(CountIndex)! : 1;
         SetUpGenerator(_generator, report);
+        _generator.KeepSymmetry = report.IsOptionUsed(SymmetryIndex);
+        _generator.KeepUniqueness = !report.IsOptionUsed(NotUniqueIndex);
         
         Console.WriteLine("Started generating...");
         var start = DateTimeOffset.Now.ToUnixTimeMilliseconds();

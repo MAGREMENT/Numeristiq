@@ -25,8 +25,11 @@ public class BUGLiteStrategy : SudokuStrategy
         _maxStructSize = new IntSetting("Maximum cell count", "The maximum amount of cell of a pattern",
             new SliderInteractionInterface(4, 20, 1), maxStructSize);
         UniquenessDependency = UniquenessDependency.FullyDependent;
-
-        AddSetting(_maxStructSize);
+    }
+    
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _maxStructSize;
     }
     
     public override void Apply(ISudokuSolverData solverData)

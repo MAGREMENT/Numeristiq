@@ -489,23 +489,10 @@ public interface IReadOnlyValueSpaceCollection : IReadOnlyList<ValueSpace>
 {
     public int FirstValueIndex { get; }
     public int LastValueIndex { get; }
-
-    public int MinValueForSpace(int start, int end);
-    public int MaxValueForSpace(int start, int end);
 }
 
 public class ValueSpaceCollection : List<ValueSpace>, IReadOnlyValueSpaceCollection
 {
     public int FirstValueIndex { get; set; }
     public int LastValueIndex { get; set; }
-
-    public int MinValueForSpace(int start, int end)
-    {
-        return 0; //TODO
-    }
-
-    public int MaxValueForSpace(int start, int end)
-    {
-        return 0; //TODO
-    }
 }

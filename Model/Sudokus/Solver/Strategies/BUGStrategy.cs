@@ -22,9 +22,12 @@ public class BUGStrategy : SudokuStrategy
     {
         _maxAdditionalCandidates = new IntSetting("Max additional candidates", "The maximum amount of cells with an additional candidate",
             new SliderInteractionInterface(1, 5, 1), maxAdditionalCandidates);
-        AddSetting(_maxAdditionalCandidates);
-        
         UniquenessDependency = UniquenessDependency.FullyDependent;
+    }
+    
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _maxAdditionalCandidates;
     }
     
     public override void Apply(ISudokuSolverData solverData)

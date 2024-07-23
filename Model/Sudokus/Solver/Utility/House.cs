@@ -31,7 +31,8 @@ public readonly struct House
         {
             Unit.Row => "r",
             Unit.Column => "c",
-            Unit.Box => "b"
+            Unit.Box => "b",
+            _ => throw new ArgumentOutOfRangeException()
         };
 
         return $"{s}{Number + 1}";

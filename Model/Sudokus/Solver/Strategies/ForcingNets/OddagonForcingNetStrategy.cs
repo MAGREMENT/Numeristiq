@@ -24,7 +24,11 @@ public class OddagonForcingNetStrategy : SudokuStrategy
     {
         _maxNumberOfGuardians = new IntSetting("Maximum number of guardians", "The maximum amount of guardians an oddagon can have",
             new SliderInteractionInterface(1, 20, 1), maxNumberOfGuardians);
-        AddSetting(_maxNumberOfGuardians);
+    }
+    
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _maxNumberOfGuardians;
     }
     
     public override void Apply(ISudokuSolverData solverData)

@@ -51,7 +51,7 @@ public class NotEnoughSpaceStrategy : Strategy<INonogramSolverData>
             if (TryProcessHorizontal(data, start, e + 1, min, row, ind)) return;
         }
         
-        for (int col = 0; col < data.Nonogram.RowCount; col++)
+        for (int col = 0; col < data.Nonogram.ColumnCount; col++)
         {
             int r, e, min, ind;
             var main = data.PreComputer.VerticalRemainingValuesSpace(col);

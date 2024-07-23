@@ -64,10 +64,14 @@ public class FishStrategy : SudokuStrategy
             new SliderInteractionInterface(0, 5, 1), maxNumberOfEndoFins);
         _allowCannibalism = new BooleanSetting("Cannibalism allowed", "Allows cannibalism",
             allowCannibalism);
-        AddSetting(_unitCount);
-        AddSetting(_maxNumberOfExoFins);
-        AddSetting(_maxNumberOfEndoFins);
-        AddSetting(_allowCannibalism);
+    }
+    
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _unitCount;
+        yield return _maxNumberOfExoFins;
+        yield return _maxNumberOfEndoFins;
+        yield return _allowCannibalism;
     }
     
     public override void Apply(ISudokuSolverData solverData)

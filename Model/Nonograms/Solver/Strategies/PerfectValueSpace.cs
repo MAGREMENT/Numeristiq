@@ -28,7 +28,7 @@ public class PerfectValueSpaceStrategy : Strategy<INonogramSolverData>
                 }
 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new PerfectValueSpaceStrategyReportBuilder(
-                        space, row, Orientation.Horizontal, spaces.FirstValueIndex + i))) ;
+                        space, row, Orientation.Horizontal, spaces.FirstValueIndex + i))) return;
             }
         }
         
@@ -46,7 +46,7 @@ public class PerfectValueSpaceStrategy : Strategy<INonogramSolverData>
                 }
 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new PerfectValueSpaceStrategyReportBuilder(
-                        space, col, Orientation.Vertical, spaces.FirstValueIndex + i))) ;
+                        space, col, Orientation.Vertical, spaces.FirstValueIndex + i))) return;
             }
         }
     }

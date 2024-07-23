@@ -118,7 +118,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder<
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>($"Almost Hidden Sets : {_one.ToString()} and {_two.ToString()}",
+        return new ChangeReport<ISudokuHighlighter>($"Almost Hidden Sets : {_one} and {_two}",
             lighter =>
         {
             foreach (var cell in _one.EnumerateCells())

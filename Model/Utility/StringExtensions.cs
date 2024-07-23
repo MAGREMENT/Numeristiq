@@ -1,5 +1,4 @@
-﻿using System.CodeDom;
-using System.Text;
+﻿using System.Text;
 
 namespace Model.Utility;
 
@@ -30,9 +29,9 @@ public static class StringExtensions
                     ok = false;
                     break;
                 }
-
-                if (ok) return true;
             }
+            
+            if (ok) return true;
         }
         
         return false;

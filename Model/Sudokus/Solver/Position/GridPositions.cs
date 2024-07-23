@@ -171,7 +171,7 @@ public class GridPositions : IReadOnlyGridPositions
     {
         var i = miniRow == 2 ? _second >> (miniCol * 3) : _first >> (miniRow * 27 + miniCol * 3);
         var j = (i & 0x7) | (i & 0xE00) >> 6 | (i & 0x1C0000) >> 12;
-        return Position.BoxPositions.FromBits(miniRow * 3, miniCol * 3, (int)j);
+        return BoxPositions.FromBits(miniRow * 3, miniCol * 3, (int)j);
     }
 
     public void Fill()

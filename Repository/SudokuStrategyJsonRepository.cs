@@ -87,7 +87,7 @@ public record StrategyDAO(string Name, bool Enabled, bool Locked, InstanceHandli
     {
         Dictionary<string, string> settings = new();
 
-        foreach (var s in strategy.Settings)
+        foreach (var s in strategy.EnumerateSettings())
         {
             settings.Add(s.Name, s.Get().ToString()!);
         }

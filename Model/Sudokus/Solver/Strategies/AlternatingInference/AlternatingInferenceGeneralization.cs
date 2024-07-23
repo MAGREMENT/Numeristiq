@@ -34,7 +34,7 @@ public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICommitComp
         if (first.TryGetBuilder<IReportBuilderWithChain>(out var r1) ||
             second.TryGetBuilder<IReportBuilderWithChain>(out var r2)) return 0;
 
-        var rankDiff = r2.MaxRank() - r1.MaxRank();
+        var rankDiff = r2!.MaxRank() - r1!.MaxRank();
         return rankDiff == 0 ? r2.Length() - r1.Length() : rankDiff;
     }
 }

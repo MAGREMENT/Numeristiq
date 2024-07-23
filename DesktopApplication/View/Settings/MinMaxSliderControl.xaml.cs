@@ -9,7 +9,7 @@ public partial class MinMaxSliderControl
 {
     private bool _raiseEvent;
     
-    public MinMaxSliderControl(ISettingCollection presenter, IReadOnlySetting setting, int index) : base(presenter, setting, index)
+    public MinMaxSliderControl(ISettingCollection presenter, IReadOnlySetting setting, int index) : base(presenter, index)
     {
         InitializeComponent();
 

@@ -3,7 +3,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Futoshikis;
 
-public class FutoshikiSolver
+public class FutoshikiSolver //TODO to "sudoku" with constraints
 {
     private Futoshiki _futoshiki = new();
     private ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[0, 0];

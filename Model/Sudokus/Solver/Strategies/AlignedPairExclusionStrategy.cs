@@ -24,7 +24,11 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
     {
         _maxAlsSize = new IntSetting("Max ALS Size", "The maximum size for the almost locked sets",
             new SliderInteractionInterface(2, 5, 1), maxAlsSize);
-        AddSetting(_maxAlsSize);
+    }
+
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _maxAlsSize;
     }
 
     public override void Apply(ISudokuSolverData solverData)

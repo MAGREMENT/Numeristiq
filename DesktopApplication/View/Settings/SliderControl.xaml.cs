@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using DesktopApplication.Presenter;
 using Model.Core.Settings;
 
 namespace DesktopApplication.View.Settings;
@@ -8,7 +7,7 @@ public partial class SliderControl
 {
     private readonly bool _raiseEvent;
     
-    public SliderControl(ISettingCollection presenter, IReadOnlySetting setting, int index) : base(presenter, setting, index)
+    public SliderControl(ISettingCollection presenter, IReadOnlySetting setting, int index) : base(presenter, index)
     {
         InitializeComponent();
 

@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using Model.Core.Settings;
+
 namespace Model.Core;
 
 public abstract class Strategy<T> : Strategy
@@ -10,7 +13,7 @@ public abstract class Strategy<T> : Strategy
     public abstract void Apply(T data);
 }
 
-public abstract class Strategy
+public abstract class Strategy : ISettingCollection
 {
     private bool _enabled = true;
     
@@ -38,6 +41,30 @@ public abstract class Strategy
         Difficulty = difficulty;
         UniquenessDependency = UniquenessDependency.NotDependent;
         InstanceHandling = defaultHandling;
+    }
+
+    public virtual IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield break;
+    }
+    
+    public void TrySetSetting(string name, SettingValue value)
+    {
+        foreach (var arg in EnumerateSettings())
+        {
+            if (!arg.Name.Equals(name)) continue;
+
+            arg.Set(value);
+        }
+    }
+
+    public void Set(int index, SettingValue value, bool checkValidity = true)
+    {
+        var ind = 0;
+        foreach (var setting in EnumerateSettings())
+        {
+            if (ind++ == index) setting.Set(value, checkValidity);
+        }
     }
 }
 

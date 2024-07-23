@@ -10,7 +10,7 @@ public partial class AutoFillingControl
     private readonly AutoFillingInteractionInterface _i;
     
     public AutoFillingControl(ISettingCollection presenter, IReadOnlySetting setting, int index)
-        : base(presenter, setting, index)
+        : base(presenter, index)
     {
         InitializeComponent();
 

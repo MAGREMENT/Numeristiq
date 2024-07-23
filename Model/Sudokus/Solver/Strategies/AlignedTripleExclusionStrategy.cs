@@ -28,13 +28,17 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         _minSharedSeenCells = new IntSetting("Minimum shared seen cells", "The minimum amount of cells" +
                                                                           "the base of the pattern must see together",
             new SliderInteractionInterface(5, 12, 1), minSharedSeenCells);
-        AddSetting(_minSharedSeenCells);
         _maxAlsSize = new IntSetting("Max ALS Size", "The maximum size for the almost locked sets",
             new SliderInteractionInterface(2, 5, 1), maxAlsSize);
-        AddSetting(_maxAlsSize);
         _maxAalsSize = new IntSetting("Max AALS Size", "The maximum size for the almost almost locked sets",
             new SliderInteractionInterface(2, 5, 1), maxAalsSize);
-        AddSetting(_maxAalsSize);
+    }
+    
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _minSharedSeenCells;
+        yield return _maxAlsSize;
+        yield return _maxAalsSize;
     }
 
     public override void Apply(ISudokuSolverData solverData)

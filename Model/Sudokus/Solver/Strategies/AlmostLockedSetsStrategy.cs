@@ -89,7 +89,7 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<NumericChange,
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>($"Almost Hidden Sets : {_one.ToString()} and {_two.ToString()}", lighter =>
+        return new ChangeReport<ISudokuHighlighter>($"Almost Hidden Sets : {_one} and {_two}", lighter =>
         {
             foreach (var coord in _one.EnumerateCells())
             {

@@ -23,7 +23,11 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
         _maxAlsSize = new IntSetting("Max ALS Size", "The maximum size for the almost locked sets",
             new SliderInteractionInterface(2, 5, 1), maxAlsSize);
-        AddSetting(_maxAlsSize);
+    }
+    
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _maxAlsSize;
     }
     
     public override void Apply(ISudokuSolverData solverData)
@@ -33,7 +37,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
             var row1 = i / 9;
             var col1 = i % 9;
 
-            if (solverData.Sudoku[row1, col1] == 0 || solverData.StartState![row1, col1] != 0) continue;
+            if (solverData.Sudoku[row1, col1] == 0 || solverData.StartState[row1, col1] != 0) continue;
             
             for (int j = i + 1; j < 81; j++)
             {
@@ -60,7 +64,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
 
     private bool Try(ISudokuSolverData solverData, BiValue values, Cell[] floor, Cell[] roof)
     {
-        if (solverData.StartState![roof[0].Row, roof[0].Column] != 0 || solverData.StartState[roof[1].Row, roof[1].Column] != 0) return false;
+        if (solverData.StartState[roof[0].Row, roof[0].Column] != 0 || solverData.StartState[roof[1].Row, roof[1].Column] != 0) return false;
         
         var solved1 = solverData.Sudoku[roof[0].Row, roof[0].Column];
         var solved2 = solverData.Sudoku[roof[1].Row, roof[1].Column];

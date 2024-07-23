@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using DesktopApplication.Presenter;
 using Model.Core.Settings;
 
 namespace DesktopApplication.View.Settings;
@@ -8,7 +7,7 @@ public partial class CheckBoxControl
 {
     private readonly bool _raiseEvent;
     
-    public CheckBoxControl(ISettingCollection presenter, IReadOnlySetting setting, int index) : base(presenter, setting, index)
+    public CheckBoxControl(ISettingCollection presenter, IReadOnlySetting setting, int index) : base(presenter, index)
     {
         InitializeComponent();
 

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows;
-using System.Windows.Media;
 using DesktopApplication.View.HelperWindows.Dialog;
-using DesktopApplication.View.Utility;
-using Model;
 using Model.Sudokus.Generator;
 
 namespace DesktopApplication.View.Sudokus.Controls;

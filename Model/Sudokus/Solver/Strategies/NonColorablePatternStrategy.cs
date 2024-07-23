@@ -27,8 +27,12 @@ public class NonColorablePatternStrategy : SudokuStrategy
         _maxUnPerfectPatternCell = new IntSetting("Max un-perfect pattern cells", "The maximum amount of cells with additional candidates",
             new SliderInteractionInterface(1, 5, 1),
             maxNotInPatternCell);
-        AddSetting(_possCount);
-        AddSetting(_maxUnPerfectPatternCell);
+    }
+    
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _possCount;
+        yield return _maxUnPerfectPatternCell;
     }
 
     

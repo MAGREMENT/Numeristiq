@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace DesktopApplication.View.Controls;
 
-public partial class PageSelectorControl //TODO improve
+public partial class PageSelectorControl
 {
     private int _max = 1;
     private int _current = 1;

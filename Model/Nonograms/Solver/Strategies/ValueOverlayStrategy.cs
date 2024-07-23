@@ -6,7 +6,7 @@ using Model.Utility;
 
 namespace Model.Nonograms.Solver.Strategies;
 
-public class ValueOverlayStrategy : Strategy<INonogramSolverData>
+public class ValueOverlayStrategy : Strategy<INonogramSolverData> //TODO FIX 3-1-3.1-1.3-3-3::1-1-1.1.1-1.2.1-1.3-3-1.1
 {
     public ValueOverlayStrategy() : base("Value Overlay", StepDifficulty.Medium, InstanceHandling.UnorderedAll)
     {

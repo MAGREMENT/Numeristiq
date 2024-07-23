@@ -39,7 +39,7 @@ public class UnreachableSquareStrategy : Strategy<INonogramSolverData>
             bitSet.Clear();
         }
         
-        for (int col = 0; col < data.Nonogram.RowCount; col++)
+        for (int col = 0; col < data.Nonogram.ColumnCount; col++)
         {
             var spaces = data.PreComputer.VerticalValueSpaces(col);
             if (spaces.Count == 0) continue;

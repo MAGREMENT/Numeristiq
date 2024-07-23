@@ -85,7 +85,7 @@ public class ArgumentInterpreter
 
                     if (!CheckValueType(args[cursor + 1], o.ValueType, out value))
                     {
-                        Console.WriteLine($"Value of the wrong type for : {args[cursor] + 1}\nExpected type '{o.ValueType}'");
+                        Console.WriteLine($"Value of the wrong type for : {args[cursor]}\nExpected type '{o.ValueType}'");
                         return;
                     }
 

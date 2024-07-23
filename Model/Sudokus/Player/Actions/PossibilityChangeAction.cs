@@ -19,7 +19,7 @@ public class PossibilityChangeAction : ICellAction
         return data.GetCellDataFor(cell).Editable;
     }
 
-    public IHistoricEvent? Execute(IPlayerData data, Cell cell)
+    public IHistoricEvent Execute(IPlayerData data, Cell cell)
     {
         var pc =  data.GetCellDataFor(cell);
         var old = pc;

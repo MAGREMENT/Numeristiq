@@ -4,7 +4,7 @@ public interface IChangeCommit<out T>
 {
     T[] Changes { get; }
 
-    bool TryGetBuilder<TBuilderType>(out TBuilderType builder) where TBuilderType : class;
+    bool TryGetBuilder<TBuilderType>(out TBuilderType? builder) where TBuilderType : class;
 }
 
 public class ChangeCommit<TChange, TVerifier, THighlighter> : IChangeCommit<TChange>
@@ -19,7 +19,7 @@ public class ChangeCommit<TChange, TVerifier, THighlighter> : IChangeCommit<TCha
         Builder = builder;
     }
     
-    public bool TryGetBuilder<TBuilderType>(out TBuilderType builder) where TBuilderType : class
+    public bool TryGetBuilder<TBuilderType>(out TBuilderType? builder) where TBuilderType : class
     {
         builder = Builder as TBuilderType;
         return builder is not null;
