@@ -400,7 +400,7 @@ public class StepExplanationPresenterBuilder
         _settings = settings;
     }
 
-    public StepExplanationPresenter Build(IStepExplanationView view)
+    public StepExplanationPresenter Build(IStepExplanationView<ISudokuSolverDrawer> view)
     {
         return new StepExplanationPresenter(view, _numericStep, _settings);
     }

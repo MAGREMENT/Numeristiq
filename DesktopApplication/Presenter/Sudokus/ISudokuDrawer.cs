@@ -1,6 +1,6 @@
 ﻿using Model.Utility;
 
-namespace DesktopApplication.Presenter;
+namespace DesktopApplication.Presenter.Sudokus;
 
 public interface ISudokuDrawer
 {

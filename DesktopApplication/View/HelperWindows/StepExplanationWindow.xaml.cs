@@ -7,7 +7,7 @@ using Model.Core.Explanation;
 
 namespace DesktopApplication.View.HelperWindows;
 
-public partial class StepExplanationWindow : IStepExplanationView
+public partial class StepExplanationWindow : IStepExplanationView<ISudokuSolverDrawer>
 {
     private readonly StepExplanationPresenter _presenter;
     private readonly bool _initialized;
@@ -16,7 +16,7 @@ public partial class StepExplanationWindow : IStepExplanationView
     {
         InitializeComponent();
         _presenter = builder.Build(this);
-        _presenter.Initialize();
+        _presenter.LoadStep();
         _initialized = true;
         
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
@@ -33,8 +33,8 @@ public partial class StepExplanationWindow : IStepExplanationView
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     }
 
-    public ISudokuSolverDrawer Drawer => Board;
-    public IExplanationHighlighter ExplanationHighlighter => Board;
+    public ISudokuSolverDrawer Drawer => (ISudokuSolverDrawer)Embedded.OptimizableContent!;
+    public IExplanationHighlighter ExplanationHighlighter => (IExplanationHighlighter)Embedded.OptimizableContent!;
 
     public void ShowExplanation(ExplanationElement? start)
     {
