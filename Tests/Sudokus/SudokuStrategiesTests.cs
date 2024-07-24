@@ -1,4 +1,5 @@
-﻿using Model.Core;
+﻿using System.Diagnostics;
+using Model.Core;
 using Model.Core.Changes;
 using Model.Sudokus;
 using Model.Sudokus.Solver;
@@ -9,11 +10,14 @@ using Model.Sudokus.Solver.Strategies.BlossomLoops.LoopFinders;
 using Model.Sudokus.Solver.Strategies.BlossomLoops.Types;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
+using Tests.Utility;
 
 namespace Tests.Sudokus;
 
 public class SudokuStrategiesTests
 {
+    private const bool AllowSpeedTests = true;
+    
     private readonly SudokuSolver _solver = new();
 
     [TearDown]
@@ -134,6 +138,21 @@ public class SudokuStrategiesTests
             "900h21g10984034114g105410h11038128289003092184410h14g109h00350218g05o04g05218103k0go11g84g41h00h1884oc28qaaa2181144803g8k00h140i48g1054g1168aaaa0i481481kg21k8140a",
             new NumericChange(ChangeType.PossibilityRemoval, 2, 5, 5),
             new NumericChange(ChangeType.PossibilityRemoval, 8, 5, 5));
+    }
+
+    /// <summary>
+    /// Total: 32,1354 ms
+    /// Average: 3,21354 ms
+    /// Minimum: 2,1444 ms on try #3
+    /// Maximum: 4,889 ms on try #6
+    /// Ignored: 1
+    /// </summary>
+    [Test]
+    public void BugLiteSpeedTest()
+    {
+        TestSudokuStrategySpeed(new BUGLiteStrategy(16),
+            "l8t8jcv406v2m8uoso0ht8j8v0u0v0m80305k0s2i6u4090hm0u011h8haha0hs005k2s82124ga41q811q80hocoa240h8103m0m8lclck8l8l8h8jc0hja81jcga8121holc06lalelskq0305hov8u0v8n8noko",
+            10);
     }
 
     #endregion
@@ -407,5 +426,36 @@ public class SudokuStrategiesTests
                 Assert.That(progresses, Does.Contain(progress));
             }
         });
+    }
+
+    private void TestSudokuStrategySpeed(SudokuStrategy strategy, string stateBefore32, int count)
+    {
+        if (!AllowSpeedTests)
+        {
+            Console.WriteLine("Speed test not allowed");
+            return;
+        }
+
+        _solver.StrategyManager.AddStrategy(strategy);
+        strategy.InstanceHandling = InstanceHandling.UnorderedAll;
+        
+        var stopWatch = new Stopwatch();
+        var result = new SpeedTestResult();
+        var nanosPerTick = 1000L * 1000L * 1000L / Stopwatch.Frequency;
+        var state = SudokuTranslator.TranslateBase32Format(stateBefore32,
+            new AlphabeticalBase32Translator());
+
+        for (int n = 0; n <= count; n++)
+        {
+            _solver.SetState(state);
+            
+            stopWatch.Restart();
+            _solver.Solve(true);
+            stopWatch.Stop();
+
+            result.AddEntry(n, stopWatch.ElapsedTicks);
+        }
+
+        result.ToConsole(nanosPerTick, count);
     }
 }

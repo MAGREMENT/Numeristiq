@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -16,9 +16,9 @@ public class AlmostNakedSetSearcher
         _solverData = solverData;
     }
     
-    public List<IPossibilitiesPositions> InCells(IReadOnlyList<Cell> coords, int maxSize, int difference)
+    public List<IPossibilitySet> InCells(IReadOnlyList<Cell> coords, int maxSize, int difference)
     {
-        List<IPossibilitiesPositions> result = new();
+        List<IPossibilitySet> result = new();
 
         _maxSize = maxSize;
         _difference = difference;
@@ -27,9 +27,9 @@ public class AlmostNakedSetSearcher
         return result;
     }
     
-    public List<IPossibilitiesPositions> FullGrid(int maxSize, int difference)
+    public List<IPossibilitySet> FullGrid(int maxSize, int difference)
     {
-        var result = new List<IPossibilitiesPositions>();
+        var result = new List<IPossibilitySet>();
         var possibilities = new ReadOnlyBitSet16();
         var cells = new List<Cell>();
         _maxSize = maxSize;
@@ -62,9 +62,9 @@ public class AlmostNakedSetSearcher
         return result;
     }
 
-    public List<IPossibilitiesPositions> InRow(int row, int maxSize, int difference)
+    public List<IPossibilitySet> InRow(int row, int maxSize, int difference)
     {
-        var result = new List<IPossibilitiesPositions>();
+        var result = new List<IPossibilitySet>();
 
         _maxSize = maxSize;
         _difference = difference;
@@ -73,9 +73,9 @@ public class AlmostNakedSetSearcher
         return result;
     }
 
-    public List<IPossibilitiesPositions> InColumn(int col, int maxSize, int difference)
+    public List<IPossibilitySet> InColumn(int col, int maxSize, int difference)
     {
-        var result = new List<IPossibilitiesPositions>();
+        var result = new List<IPossibilitySet>();
 
         _maxSize = maxSize;
         _difference = difference;
@@ -84,9 +84,9 @@ public class AlmostNakedSetSearcher
         return result;
     }
 
-    public List<IPossibilitiesPositions> InMiniGrid(int miniRow, int miniCol, int maxSize, int difference)
+    public List<IPossibilitySet> InMiniGrid(int miniRow, int miniCol, int maxSize, int difference)
     {
-        var result = new List<IPossibilitiesPositions>();
+        var result = new List<IPossibilitySet>();
 
         _maxSize = maxSize;
         _difference = difference;
@@ -96,7 +96,7 @@ public class AlmostNakedSetSearcher
     }
     
     private void InCells(IReadOnlyList<Cell> coords, List<Cell> visited,
-        ReadOnlyBitSet16 current, int start, List<IPossibilitiesPositions> result)
+        ReadOnlyBitSet16 current, int start, List<IPossibilitySet> result)
     {
         for (int i = start; i < coords.Count; i++)
         {
@@ -110,7 +110,7 @@ public class AlmostNakedSetSearcher
 
             if (or.Count == visited.Count + _difference)
             {
-                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), or, _solverData.CurrentState));
+                result.Add(new SnapshotPossibilitySet(visited.ToArray(), or, _solverData.CurrentState));
             }
 
             if (_maxSize > visited.Count) InCells(coords, visited, or, i + 1, result);
@@ -120,7 +120,7 @@ public class AlmostNakedSetSearcher
     }
     
     private void InRow(int row, int start, ReadOnlyBitSet16 current,
-        List<Cell> visited, List<IPossibilitiesPositions> result)
+        List<Cell> visited, List<IPossibilitySet> result)
     {
         for (int col = start; col < 9; col++)
         {
@@ -132,7 +132,7 @@ public class AlmostNakedSetSearcher
 
             if (mashed.Count == visited.Count + _difference)
             {
-                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _solverData.CurrentState));
+                result.Add(new SnapshotPossibilitySet(visited.ToArray(), mashed, _solverData.CurrentState));
             }
 
             if(_maxSize > visited.Count) InRow(row, col + 1, mashed, visited, result);
@@ -142,7 +142,7 @@ public class AlmostNakedSetSearcher
     }
     
     private void InColumn(int col, int start, ReadOnlyBitSet16 current,
-        List<Cell> visited, List<IPossibilitiesPositions> result, bool excludeSingles)
+        List<Cell> visited, List<IPossibilitySet> result, bool excludeSingles)
     {
         for (int row = start; row < 9; row++)
         {
@@ -154,7 +154,7 @@ public class AlmostNakedSetSearcher
 
             if (mashed.Count == visited.Count + _difference && (!excludeSingles || visited.Count > 1))
             {
-                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _solverData.CurrentState));
+                result.Add(new SnapshotPossibilitySet(visited.ToArray(), mashed, _solverData.CurrentState));
             }
 
             if(_maxSize > visited.Count) InColumn(col, row + 1, mashed, visited, result, excludeSingles);
@@ -164,7 +164,7 @@ public class AlmostNakedSetSearcher
     }
 
     private void InMiniGrid(int miniRow, int miniCol, int start,
-        ReadOnlyBitSet16 current, List<Cell> visited, List<IPossibilitiesPositions> result, bool excludeSameLine)
+        ReadOnlyBitSet16 current, List<Cell> visited, List<IPossibilitySet> result, bool excludeSameLine)
     {
         for (int n = start; n < 9; n++)
         {
@@ -179,7 +179,7 @@ public class AlmostNakedSetSearcher
 
             if (mashed.Count == visited.Count + _difference && (!excludeSameLine || NotInSameRowOrColumn(visited)))
             {
-                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _solverData.CurrentState));
+                result.Add(new SnapshotPossibilitySet(visited.ToArray(), mashed, _solverData.CurrentState));
             }
 
             if(_maxSize > visited.Count) InMiniGrid(miniRow, miniCol, n + 1, mashed, visited, result, excludeSameLine);

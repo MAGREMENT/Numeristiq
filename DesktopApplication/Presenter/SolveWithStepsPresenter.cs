@@ -52,7 +52,7 @@ public abstract class SolveWithStepsPresenter<THighlight, TStep, TState> where T
             _currentlyOpenedStep = index;
 
             var log = Steps[index];
-            SetShownState(log.To, false, true); 
+            SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
             _translator.Translate(log.HighlightManager, false); 
         }
     }

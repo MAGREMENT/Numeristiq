@@ -67,7 +67,7 @@ public class BandUniquenessStrategy : SudokuStrategy
                 }
 
                 if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                        new MiniUniquenessReportBuilder(mini, Unit.Row, presence)) &&
+                        new BandUniquenessReportBuilder(mini, Unit.Row, presence)) &&
                             StopOnFirstPush) return;
             }
 
@@ -112,20 +112,20 @@ public class BandUniquenessStrategy : SudokuStrategy
                 }
 
                 if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                        new MiniUniquenessReportBuilder(mini, Unit.Row, presence)) &&
+                        new BandUniquenessReportBuilder(mini, Unit.Row, presence)) &&
                     StopOnFirstPush) return;
             }
         }
     }
 }
 
-public class MiniUniquenessReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
+public class BandUniquenessReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _mini;
     private readonly Unit _unit;
     private readonly ReadOnlyBitSet16 _presence;
 
-    public MiniUniquenessReportBuilder(int mini, Unit unit, ReadOnlyBitSet16 presence)
+    public BandUniquenessReportBuilder(int mini, Unit unit, ReadOnlyBitSet16 presence)
     {
         _mini = mini;
         _unit = unit;

@@ -1,13 +1,10 @@
-﻿using Model.Core;
-using Model.Sudokus.Solver.Position;
-using Model.Sudokus.Solver.Utility;
-using Model.Utility;
+﻿using Model.Sudokus.Solver.Utility;
 
-namespace Model.Sudokus.Solver.PossibilityPosition;
+namespace Model.Sudokus.Solver.PossibilitySets;
 
 public static class RestrictedPossibilityAlgorithms
 {
-    public static bool ForeachSearch(IPossibilitiesPositions first, IPossibilitiesPositions second, int possibility)
+    public static bool ForeachSearch(IPossibilitySet first, IPossibilitySet second, int possibility)
     {
         foreach (var cell1 in first.EnumerateCells(possibility))
         {
@@ -20,7 +17,7 @@ public static class RestrictedPossibilityAlgorithms
         return true;
     }
 
-    public static bool GridPositionsSearch(IPossibilitiesPositions first, IPossibilitiesPositions second,
+    public static bool GridPositionsSearch(IPossibilitySet first, IPossibilitySet second,
         int possibility)
     {
         var result = first.PositionsFor(possibility);
@@ -28,7 +25,7 @@ public static class RestrictedPossibilityAlgorithms
         return result.CanBeCoveredByAUnit();
     }
 
-    public static bool CellEnumerationSearch(IPossibilitiesPositions first, IPossibilitiesPositions second,
+    public static bool CellEnumerationSearch(IPossibilitySet first, IPossibilitySet second,
         int possibility)
     {
         SharedHouses? sh = null;

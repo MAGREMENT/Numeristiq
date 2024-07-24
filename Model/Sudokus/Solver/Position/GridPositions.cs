@@ -504,21 +504,16 @@ public class GridPositions : IReadOnlyGridPositions
 
     public IEnumerable<Cell> AllSeenCells()
     {
-        var result = new GridPositions();
-
-        foreach (var cell in this)
+        for (int row = 0; row < 9; row++)
         {
-            result.FillRow(cell.Row);
-            result.FillColumn(cell.Column);
-            result.FillMiniGrid(cell.Row / 3, cell.Column / 3);
-        }
+            for (int col = 0; col < 9; col++)
+            {
+                if (Contains(row, col)) continue;
 
-        foreach (var cell in this)
-        {
-            result.Remove(cell);
+                if (IsRowNotEmpty(row) || IsColumnNotEmpty(col) || IsMiniGridNotEmpty(row / 3, col / 3))
+                    yield return new Cell(row, col);
+            }
         }
-
-        return result.ToArray();
     }
 
     public override int GetHashCode()

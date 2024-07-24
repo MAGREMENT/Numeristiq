@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
@@ -228,8 +228,8 @@ public class FireworksStrategy : SudokuStrategy
         
         //W-Wing
         var allAls = user.PreComputer.AlmostLockedSets();
-        List<IPossibilitiesPositions> alsListOne = new();
-        List<IPossibilitiesPositions> alsListTwo = new();
+        List<IPossibilitySet> alsListOne = new();
+        List<IPossibilitySet> alsListTwo = new();
         foreach (var df in fireworksList)
         {
             foreach (var als in allAls)
@@ -472,9 +472,9 @@ public class FireworksReportBuilder : IChangeReportBuilder<NumericChange, ISudok
 public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks _fireworks;
-    private readonly IPossibilitiesPositions[] _als;
+    private readonly IPossibilitySet[] _als;
 
-    public FireworksWithAlmostLockedSetsReportBuilder(Fireworks fireworks, params IPossibilitiesPositions[] als)
+    public FireworksWithAlmostLockedSetsReportBuilder(Fireworks fireworks, params IPossibilitySet[] als)
     {
         _fireworks = fireworks;
         _als = als;

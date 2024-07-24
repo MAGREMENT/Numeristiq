@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 
@@ -46,7 +46,7 @@ public abstract class ExplanationElement
     public ExplanationElement Append(params CellPossibility[] cps) =>
         Append(new MultiCellPossibilityExplanationElement(cps));
 
-    public ExplanationElement Append(IPossibilitiesPositions als) => Append(new AlmostLockedSetExplanationElement(als));
+    public ExplanationElement Append(IPossibilitySet als) => Append(new AlmostLockedSetExplanationElement(als));
 
     public static ExplanationElement operator +(ExplanationElement element, ExplanationElement s) => element.Append(s);
     public static ExplanationElement operator +(ExplanationElement element, Cell s) => element.Append(s);

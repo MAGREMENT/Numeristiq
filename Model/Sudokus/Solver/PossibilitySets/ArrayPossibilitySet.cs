@@ -4,13 +4,13 @@ using Model.Sudokus.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
 
-namespace Model.Sudokus.Solver.PossibilityPosition;
+namespace Model.Sudokus.Solver.PossibilitySets;
 
-public class CPPossibilitiesPositions : IPossibilitiesPositions
+public class ArrayPossibilitySet : IPossibilitySet
 {
     private readonly CellPossibilities[] _cps;
 
-    public CPPossibilitiesPositions(CellPossibilities[] cps)
+    public ArrayPossibilitySet(CellPossibilities[] cps)
     {
         _cps = cps;
     }
@@ -85,7 +85,7 @@ public class CPPossibilitiesPositions : IPossibilitiesPositions
         return _cps;
     }
 
-    public bool IsPossibilityRestricted(IPossibilitiesPositions other, int possibility)
+    public bool IsPossibilityRestricted(IPossibilitySet other, int possibility)
     {
         return RestrictedPossibilityAlgorithms.ForeachSearch(this, other, possibility);
     }

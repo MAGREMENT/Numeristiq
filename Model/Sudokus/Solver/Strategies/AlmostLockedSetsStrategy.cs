@@ -2,7 +2,7 @@
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -76,11 +76,11 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
 
 public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly IPossibilitiesPositions _one;
-    private readonly IPossibilitiesPositions _two;
+    private readonly IPossibilitySet _one;
+    private readonly IPossibilitySet _two;
     private readonly ReadOnlyBitSet16 _restrictedCommons;
 
-    public AlmostLockedSetsReportBuilder(IPossibilitiesPositions one, IPossibilitiesPositions two, ReadOnlyBitSet16 restrictedCommons)
+    public AlmostLockedSetsReportBuilder(IPossibilitySet one, IPossibilitySet two, ReadOnlyBitSet16 restrictedCommons)
     {
         _one = one;
         _two = two;

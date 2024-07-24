@@ -12,13 +12,7 @@ public static class ImplementationSpeedComparator
         for(int i = 0; i < implementations.Length; i++)
         {
             var implementation = implementations[i];
-
-            var minTicks = long.MaxValue;
-            var maxTicks = 0L;
-            var minIndex = -1;
-            var maxIndex = -1;
-            var totalTicks = 0L;
-            var ignored = 0;
+            var result = new SpeedTestResult();
             
             for (int n = 0; n <= repeatCount; n++)
             {
@@ -26,34 +20,54 @@ public static class ImplementationSpeedComparator
                 test(implementation);
                 stopWatch.Stop();
 
-                if (n == 0 || (maxTicks > 0 && stopWatch.ElapsedTicks > maxTicks * 3))
-                {
-                    ignored++;
-                    continue;
-                }
-                
-                totalTicks += stopWatch.ElapsedTicks;
-                if (stopWatch.ElapsedTicks < minTicks)
-                {
-                    minTicks = stopWatch.ElapsedTicks;
-                    minIndex = n;
-                }
-
-                if (stopWatch.ElapsedTicks > maxTicks)
-                {
-                    maxTicks = stopWatch.ElapsedTicks;
-                    maxIndex = n;
-                }
+                result.AddEntry(n, stopWatch.ElapsedTicks);
             }
             
             Console.WriteLine($"#{i + 1} {implementation!.GetType().Name}");
-            Console.WriteLine($"   Total: {TimeInNanosToString(totalTicks * nanosPerTick)}");
-            Console.WriteLine($"   Average: {TimeInNanosToString((double)(totalTicks * nanosPerTick) / repeatCount)}");
-            Console.WriteLine($"   Minimum: {TimeInNanosToString(minTicks * nanosPerTick)} on try #{minIndex + 1}");
-            Console.WriteLine($"   Maximum: {TimeInNanosToString(maxTicks * nanosPerTick)} on try #{maxIndex + 1}");
-            Console.WriteLine($"   Ignored: {ignored}");
+            result.ToConsole(nanosPerTick, repeatCount);
             Console.WriteLine();
         }
+    }
+}
+
+public class SpeedTestResult
+{
+    private long _minTicks = long.MaxValue;
+    private long _maxTicks;
+    private long _minIndex = -1;
+    private long _maxIndex = -1;
+    private long _totalTicks;
+    private int _ignored;
+
+    public void AddEntry(int entryNumber, long ticks)
+    {
+        if (entryNumber == 0 || (_maxTicks > 0 && ticks > _maxTicks * 3))
+        {
+            _ignored++;
+            return;
+        }
+                
+        _totalTicks += ticks;
+        if (ticks < _minTicks)
+        {
+            _minTicks = ticks;
+            _minIndex = entryNumber;
+        }
+
+        if (ticks > _maxTicks)
+        {
+            _maxTicks = ticks;
+            _maxIndex = entryNumber;
+        }
+    }
+
+    public void ToConsole(long nanosPerTick, int repeatCount)
+    {
+        Console.WriteLine($"   Total: {TimeInNanosToString(_totalTicks * nanosPerTick)}");
+        Console.WriteLine($"   Average: {TimeInNanosToString((double)(_totalTicks * nanosPerTick) / repeatCount)}");
+        Console.WriteLine($"   Minimum: {TimeInNanosToString(_minTicks * nanosPerTick)} on try #{_minIndex + 1}");
+        Console.WriteLine($"   Maximum: {TimeInNanosToString(_maxTicks * nanosPerTick)} on try #{_maxIndex + 1}");
+        Console.WriteLine($"   Ignored: {_ignored}");
     }
     
     private static string TimeInNanosToString(double nanos)

@@ -4,7 +4,7 @@ using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -24,7 +24,7 @@ public class DeathBlossomStrategy : SudokuStrategy
     public override void Apply(ISudokuSolverData solverData)
     {
         var allAls = solverData.PreComputer.AlmostLockedSets();
-        Dictionary<int, List<IPossibilitiesPositions>> concernedAls = new();
+        Dictionary<int, List<IPossibilitySet>> concernedAls = new();
 
         for (int row = 0; row < 9; row++)
         {
@@ -36,7 +36,7 @@ public class DeathBlossomStrategy : SudokuStrategy
                 var current = new Cell(row, col);
                 foreach (var possibility in possibilities.EnumeratePossibilities())
                 {
-                    concernedAls[possibility] = new List<IPossibilitiesPositions>();
+                    concernedAls[possibility] = new List<IPossibilitySet>();
                 }
 
                 foreach (var als in allAls)
@@ -68,7 +68,7 @@ public class DeathBlossomStrategy : SudokuStrategy
                 }
 
                 Dictionary<Cell, ReadOnlyBitSet16> eliminations = new();
-                Dictionary<Cell, HashSet<IPossibilitiesPositions>> eliminationsCauses = new();
+                Dictionary<Cell, HashSet<IPossibilitySet>> eliminationsCauses = new();
                 List<Cell> buffer = new();
                 
                 foreach (var possibility in possibilities.EnumeratePossibilities())
@@ -94,7 +94,7 @@ public class DeathBlossomStrategy : SudokuStrategy
                                 {
                                     value = solverData.PossibilitiesAt(seenCell);
                                     eliminations[seenCell] = value;
-                                    eliminationsCauses[seenCell] = new HashSet<IPossibilitiesPositions>();
+                                    eliminationsCauses[seenCell] = new HashSet<IPossibilitySet>();
                                 }
 
                                 if (value.Contains(alsPossibility))
@@ -123,7 +123,7 @@ public class DeathBlossomStrategy : SudokuStrategy
         }
     }
 
-    private void Process(ISudokuSolverData solverData, Cell stem, Cell target, HashSet<IPossibilitiesPositions> sets, int possibility)
+    private void Process(ISudokuSolverData solverData, Cell stem, Cell target, HashSet<IPossibilitySet> sets, int possibility)
     {
         List<Cell> buffer = new();
         solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, stem.Row, stem.Column);
@@ -155,9 +155,9 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder<NumericChange, ISu
 {
     private readonly IReadOnlyList<Cell> _stems;
     private readonly Cell _target;
-    private readonly IEnumerable<IPossibilitiesPositions> _als;
+    private readonly IEnumerable<IPossibilitySet> _als;
 
-    public DeathBlossomReportBuilder(IReadOnlyList<Cell> stems, Cell target, IEnumerable<IPossibilitiesPositions> als)
+    public DeathBlossomReportBuilder(IReadOnlyList<Cell> stems, Cell target, IEnumerable<IPossibilitySet> als)
     {
         _stems = stems;
         _target = target;

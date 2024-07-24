@@ -3,7 +3,7 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
@@ -29,13 +29,13 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
 
         foreach (var start in graph)
         {
-            if(Search(solverData, graph, start.Positions, new HashSet<IPossibilitiesPositions> {start},
-                   new ChainBuilder<IPossibilitiesPositions, int>(start))) return;
+            if(Search(solverData, graph, start.Positions, new HashSet<IPossibilitySet> {start},
+                   new ChainBuilder<IPossibilitySet, int>(start))) return;
         }
     }
 
-    private bool Search(ISudokuSolverData solverData, PossibilitiesGraph<IPossibilitiesPositions> graph,
-        GridPositions occupied, HashSet<IPossibilitiesPositions> explored, ChainBuilder<IPossibilitiesPositions, int> chain)
+    private bool Search(ISudokuSolverData solverData, PossibilitiesGraph<IPossibilitySet> graph,
+        GridPositions occupied, HashSet<IPossibilitySet> explored, ChainBuilder<IPossibilitySet, int> chain)
     {
         foreach (var friend in graph.GetLinks(chain.LastElement()))
         {
@@ -63,7 +63,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
         return false;
     }
 
-    private bool CheckForLoop(ISudokuSolverData solverData, ChainBuilder<IPossibilitiesPositions, int> builder,
+    private bool CheckForLoop(ISudokuSolverData solverData, ChainBuilder<IPossibilitySet, int> builder,
         ReadOnlyBitSet16 possibleLastLinks, GridPositions occupied)
     {
         foreach (var ll in possibleLastLinks.EnumeratePossibilities())
@@ -102,7 +102,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
         return false;
     }
 
-    private bool CheckForChain(ISudokuSolverData solverData, ChainBuilder<IPossibilitiesPositions, int> chain)
+    private bool CheckForChain(ISudokuSolverData solverData, ChainBuilder<IPossibilitySet, int> chain)
     {
         if (!_checkLength2 && chain.Count == 2) return false;
 
@@ -132,16 +132,16 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
 
 public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly Chain<IPossibilitiesPositions, int> _chain;
+    private readonly Chain<IPossibilitySet, int> _chain;
     private readonly int _possibleLastLink;
 
-    public AlmostLockedSetsChainReportBuilder(Chain<IPossibilitiesPositions, int> chain)
+    public AlmostLockedSetsChainReportBuilder(Chain<IPossibilitySet, int> chain)
     {
         _chain = chain;
         _possibleLastLink = -1;
     }
     
-    public AlmostLockedSetsChainReportBuilder(Chain<IPossibilitiesPositions, int> chain, int lastLink)
+    public AlmostLockedSetsChainReportBuilder(Chain<IPossibilitySet, int> chain, int lastLink)
     {
         _chain = chain;
         _possibleLastLink = lastLink;
@@ -174,7 +174,7 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<NumericCh
         });
     }
 
-    private void HighlightLink(ISudokuHighlighter lighter, int link, IPossibilitiesPositions elementBefore, IPossibilitiesPositions elementAfter)
+    private void HighlightLink(ISudokuHighlighter lighter, int link, IPossibilitySet elementBefore, IPossibilitySet elementAfter)
     {
         foreach (var cell in elementBefore.EnumerateCells(link))
         {

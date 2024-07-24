@@ -38,7 +38,10 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
                 if (solverData.Sudoku[row, col] != 0) continue;
 
                 var current = new Cell(row, col);
-                var positions = new GridPositions { { row, col } };
+                var positions = new GridPositions
+                {
+                    { row, col }
+                };
                 var covers = new CommonHouses[9];
                 var poss = solverData.PossibilitiesAt(row, col);
                 
@@ -55,8 +58,6 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
     private bool Search(ISudokuSolverData solverData, CommonHouses[] covers, int coverCount,
         GridPositions positions, HashSet<GridPositions> alreadyExplored)
     {
-        if (positions.Count == _maxSize.Value) return false;
-        
         Span<CommonHouses> old = stackalloc CommonHouses[9];
         covers.CopyTo(old);
         
@@ -99,7 +100,8 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
                 if (Process(solverData, positions, covers)) return true;
             }
             
-            if (Search(solverData, covers, newCoverCount, positions, alreadyExplored)) return true;
+            if (positions.Count < _maxSize.Value && 
+                Search(solverData, covers, newCoverCount, positions, alreadyExplored)) return true;
 
             old.CopyTo(covers);
             positions.Remove(cell);

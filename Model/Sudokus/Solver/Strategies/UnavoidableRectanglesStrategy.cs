@@ -4,7 +4,7 @@ using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -131,7 +131,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         return false;
     }
     
-    private void ProcessArWithAls(ISudokuSolverData solverData, Cell[] roof, IPossibilitiesPositions als)
+    private void ProcessArWithAls(ISudokuSolverData solverData, Cell[] roof, IPossibilitySet als)
     {
         List<Cell> buffer = new();
         foreach (var possibility in als.Possibilities.EnumeratePossibilities())
@@ -196,9 +196,9 @@ public class UnavoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeRepo
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
-    private readonly IPossibilitiesPositions _als;
+    private readonly IPossibilitySet _als;
 
-    public UnavoidableRectanglesWithAlmostLockedSetReportBuilder(Cell[] floor, Cell[] roof, IPossibilitiesPositions als)
+    public UnavoidableRectanglesWithAlmostLockedSetReportBuilder(Cell[] floor, Cell[] roof, IPossibilitySet als)
     {
         _floor = floor;
         _roof = roof;

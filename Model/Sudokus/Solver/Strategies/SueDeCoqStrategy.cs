@@ -4,7 +4,7 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -115,7 +115,7 @@ public class SueDeCoqStrategy : SudokuStrategy
                 if(unitPP.Possibilities.Count + boxPossibilities.Count + notDrawnPossibilities.Count 
                    != cells.Length + boxCombination.Length + unitPP.PositionsCount) continue;
 
-                var boxPP = new CAPPossibilitiesPositions(boxCombination, boxPossibilities, solverData.CurrentState);
+                var boxPP = new SnapshotPossibilitySet(boxCombination, boxPossibilities, solverData.CurrentState);
                 Process(solverData, boxPP, unitPP, cells, possibilities, cellsInBox, cellsInUnit);
 
                 if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
@@ -126,7 +126,7 @@ public class SueDeCoqStrategy : SudokuStrategy
         return false;
     }
 
-    private void Process(ISudokuSolverData solverData, IPossibilitiesPositions boxPP, IPossibilitiesPositions unitPP,
+    private void Process(ISudokuSolverData solverData, IPossibilitySet boxPP, IPossibilitySet unitPP,
         Cell[] center, ReadOnlyBitSet16 centerPossibilities, List<Cell> cellsInBox, List<Cell> cellsInUnit)
     {
         var centerGP = new GridPositions();
@@ -199,10 +199,10 @@ public class SueDeCoqStrategy : SudokuStrategy
         return result;
     }
     
-    private static List<IPossibilitiesPositions> Combinations(ISudokuSolverData solverData, GridPositions forbiddenPositions, 
+    private static List<IPossibilitySet> Combinations(ISudokuSolverData solverData, GridPositions forbiddenPositions, 
         ReadOnlyBitSet16 forbiddenPossibilities, int max, IReadOnlyList<Cell> sample)
     {
-        var result = new List<IPossibilitiesPositions>();
+        var result = new List<IPossibilitySet>();
 
         Combinations(solverData, forbiddenPositions, forbiddenPossibilities, max, 0, sample, result, new List<Cell>(),
             new ReadOnlyBitSet16());
@@ -212,7 +212,7 @@ public class SueDeCoqStrategy : SudokuStrategy
 
     private static void Combinations(ISudokuSolverData solverData, GridPositions forbiddenPositions, 
         ReadOnlyBitSet16 forbiddenPossibilities, int max, int start, IReadOnlyList<Cell> sample,
-        List<IPossibilitiesPositions> result, List<Cell> currentCells, ReadOnlyBitSet16 currentPossibilities)
+        List<IPossibilitySet> result, List<Cell> currentCells, ReadOnlyBitSet16 currentPossibilities)
     {
         for (int i = start; i < sample.Count; i++)
         {
@@ -225,7 +225,7 @@ public class SueDeCoqStrategy : SudokuStrategy
             currentCells.Add(c);
             var newPossibilities = poss | currentPossibilities;
             
-            result.Add(new CAPPossibilitiesPositions(currentCells.ToArray(), newPossibilities, solverData.CurrentState)); 
+            result.Add(new SnapshotPossibilitySet(currentCells.ToArray(), newPossibilities, solverData.CurrentState)); 
             if (currentCells.Count < max) Combinations(solverData, forbiddenPositions, forbiddenPossibilities, max,
                 i + 1, sample, result, currentCells, newPossibilities);
 
@@ -236,12 +236,12 @@ public class SueDeCoqStrategy : SudokuStrategy
 
 public class SueDeCoqReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly IPossibilitiesPositions _boxPP;
-    private readonly IPossibilitiesPositions _unitPP;
+    private readonly IPossibilitySet _boxPP;
+    private readonly IPossibilitySet _unitPP;
     private readonly Cell[] _centerCells;
 
 
-    public SueDeCoqReportBuilder(IPossibilitiesPositions boxPp, IPossibilitiesPositions unitPp, Cell[] centerCells)
+    public SueDeCoqReportBuilder(IPossibilitySet boxPp, IPossibilitySet unitPp, Cell[] centerCells)
     {
         _boxPP = boxPp;
         _unitPP = unitPp;

@@ -3,7 +3,7 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -153,7 +153,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
     }
 
     private void HandleAls(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities,
-        Cell[] centerCells, IPossibilitiesPositions als)
+        Cell[] centerCells, IPossibilitySet als)
     {
         List<Cell> total = new List<Cell>(centerCells);
         total.AddRange(als.EnumerateCells());
@@ -215,10 +215,10 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         return result;
     }
 
-    private List<IPossibilitiesPositions> SearchRowForAls(ISudokuSolverData solverData, int row,
+    private List<IPossibilitySet> SearchRowForAls(ISudokuSolverData solverData, int row,
         int miniColExcept)
     {
-        var result = new List<IPossibilitiesPositions>();
+        var result = new List<IPossibilitySet>();
 
         SearchRowForAls(solverData, row, miniColExcept, 0, new ReadOnlyBitSet16(), new LinePositions(), result);
         
@@ -226,7 +226,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
     }
 
     private void SearchRowForAls(ISudokuSolverData solverData, int row, int miniColExcept, int start,
-        ReadOnlyBitSet16 currentPossibilities, LinePositions currentPositions, List<IPossibilitiesPositions> result)
+        ReadOnlyBitSet16 currentPossibilities, LinePositions currentPositions, List<IPossibilitySet> result)
     {
         for (int col = start; col < 9; col++)
         {
@@ -241,7 +241,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
             currentPositions.Add(col);
             
             if(currentPositions.Count == _type - 1 && newPossibilities.Count == _type) result.Add(
-                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Row, row), newPossibilities, solverData.CurrentState));
+                new SnapshotPossibilitySet(currentPositions.ToCellArray(Unit.Row, row), newPossibilities, solverData.CurrentState));
             else if (currentPositions.Count < _type - 1) SearchRowForAls(solverData, row, miniColExcept, col + 1,
                     newPossibilities, currentPositions, result);
 
@@ -249,10 +249,10 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         }
     }
     
-    private List<IPossibilitiesPositions> SearchColumnForAls(ISudokuSolverData solverData, int col,
+    private List<IPossibilitySet> SearchColumnForAls(ISudokuSolverData solverData, int col,
         int miniRowExcept)
     {
-        var result = new List<IPossibilitiesPositions>();
+        var result = new List<IPossibilitySet>();
 
         SearchColumnForAls(solverData, col, miniRowExcept, 0, new ReadOnlyBitSet16(),
             new LinePositions(), result);
@@ -261,7 +261,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
     }
     
     private void SearchColumnForAls(ISudokuSolverData solverData, int col, int miniRowExcept, int start,
-        ReadOnlyBitSet16 currentPossibilities, LinePositions currentPositions, List<IPossibilitiesPositions> result)
+        ReadOnlyBitSet16 currentPossibilities, LinePositions currentPositions, List<IPossibilitySet> result)
     {
         for (int row = start; row < 9; row++)
         {
@@ -276,7 +276,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
             currentPositions.Add(row);
             
             if(currentPositions.Count == _type - 1 && newPossibilities.Count == _type) result.Add(
-                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Column, col), newPossibilities, solverData.CurrentState));
+                new SnapshotPossibilitySet(currentPositions.ToCellArray(Unit.Column, col), newPossibilities, solverData.CurrentState));
             else if (currentPositions.Count < _type - 1) SearchColumnForAls(solverData, col, miniRowExcept, row + 1,
                 newPossibilities, currentPositions, result);
 
@@ -284,10 +284,10 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         }
     }
 
-    private List<IPossibilitiesPositions> SearchMiniGridForAls(ISudokuSolverData solverData, int miniRow,
+    private List<IPossibilitySet> SearchMiniGridForAls(ISudokuSolverData solverData, int miniRow,
         int miniCol, int exceptNumber, Unit exceptUnit)
     {
-        var result = new List<IPossibilitiesPositions>();
+        var result = new List<IPossibilitySet>();
 
         SearchMiniGridForAls(solverData, miniRow, miniCol, exceptNumber, exceptUnit, 0, new ReadOnlyBitSet16(),
             new BoxPositions(miniRow, miniCol), result);
@@ -297,7 +297,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
 
     private void SearchMiniGridForAls(ISudokuSolverData solverData, int miniRow,
         int miniCol, int exceptNumber, Unit exceptUnit, int start, ReadOnlyBitSet16 currentPossibilities,
-        BoxPositions currentPositions, List<IPossibilitiesPositions> result)
+        BoxPositions currentPositions, List<IPossibilitySet> result)
     {
         for (int number = start; number < 9; number++)
         {
@@ -322,7 +322,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
             currentPositions.Add(number);
             
             if(currentPositions.Count == _type - 1 && newPossibilities.Count == _type) result.Add(
-                new CAPPossibilitiesPositions(currentPositions.ToCellArray(), newPossibilities, solverData.CurrentState));
+                new SnapshotPossibilitySet(currentPositions.ToCellArray(), newPossibilities, solverData.CurrentState));
             else if (currentPositions.Count < _type - 1) SearchMiniGridForAls(solverData, miniRow, miniCol,
                     exceptNumber, exceptUnit, number + 1, newPossibilities, currentPositions, result);
 
@@ -333,11 +333,11 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
 
 public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly IPossibilitiesPositions _als;
+    private readonly IPossibilitySet _als;
     private readonly IEnumerable<Cell> _correspondence;
     private readonly Cell[] _centerCells;
 
-    public AlmostLockedCandidatesReportBuilder(IPossibilitiesPositions als, IEnumerable<Cell> correspondence, Cell[] centerCells)
+    public AlmostLockedCandidatesReportBuilder(IPossibilitySet als, IEnumerable<Cell> correspondence, Cell[] centerCells)
     {
         _als = als;
         _correspondence = correspondence;

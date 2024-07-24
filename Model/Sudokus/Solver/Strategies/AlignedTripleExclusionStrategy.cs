@@ -6,7 +6,7 @@ using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -217,7 +217,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
 
         if (ssc.Length < poss1.Count || ssc.Length < poss2.Count || ssc.Length < poss3.Count) return false;
 
-        List<IPossibilitiesPositions> usefulThings = new();
+        List<IPossibilitySet> usefulThings = new();
         HashSet<TriValue> forbiddenTri = new();
         HashSet<BiValue> forbiddenBi = new();
 
@@ -355,9 +355,9 @@ public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder<NumericC
     private readonly Cell _c1;
     private readonly Cell _c2;
     private readonly Cell _c3;
-    private readonly List<IPossibilitiesPositions> _useful;
+    private readonly List<IPossibilitySet> _useful;
 
-    public AlignedTripleExclusionReportBuilder(Cell c1, Cell c2, Cell c3, List<IPossibilitiesPositions> useful)
+    public AlignedTripleExclusionReportBuilder(Cell c1, Cell c2, Cell c3, List<IPossibilitySet> useful)
     {
         _c1 = c1;
         _c2 = c2;

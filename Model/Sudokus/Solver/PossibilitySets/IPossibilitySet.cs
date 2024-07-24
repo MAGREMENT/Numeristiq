@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using System.Text;
 using Model.Sudokus.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
 
-namespace Model.Sudokus.Solver.PossibilityPosition;
+namespace Model.Sudokus.Solver.PossibilitySets;
 
-public interface IPossibilitiesPositions
+public interface IPossibilitySet
 {
     ReadOnlyBitSet16 Possibilities { get; }
     GridPositions Positions { get; }
@@ -21,9 +20,9 @@ public interface IPossibilitiesPositions
     ReadOnlyBitSet16 PossibilitiesInCell(Cell cell);
     CellPossibilities[] ToCellPossibilitiesArray();
     
-    bool IsPossibilityRestricted(IPossibilitiesPositions other, int possibility);
+    bool IsPossibilityRestricted(IPossibilitySet other, int possibility);
     
-    public ReadOnlyBitSet16 RestrictedCommons(IPossibilitiesPositions other)
+    public ReadOnlyBitSet16 RestrictedCommons(IPossibilitySet other)
     {
         ReadOnlyBitSet16 result = new();
 

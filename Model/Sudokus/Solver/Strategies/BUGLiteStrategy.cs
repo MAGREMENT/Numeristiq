@@ -54,7 +54,8 @@ public class BUGLiteStrategy : SudokuStrategy
                     for (int c = col % 3; c < 3; c++)
                     {
                         var col2 = startC + c;
-                        if ((row2 == row && col2 == col) || !solverData.PossibilitiesAt(row2, col2).Equals(poss)) continue;
+                        if ((row2 == row && col2 == col) 
+                            || !solverData.PossibilitiesAt(row2, col2).Equals(poss)) continue;
 
                         var second = new Cell(row2, col2);
                         var bcp = new BiCellPossibilities(first, second, poss);
@@ -77,7 +78,7 @@ public class BUGLiteStrategy : SudokuStrategy
                         
                         if (Search(solverData, new HashSet<BiCellPossibilities> {bcp},
                             new GridPositions {first, second}, conditionsToMeet,
-                            new HashSet<IBUGLiteCondition>(), structuresDone)) return;
+                            new ReadOnlyBUGLiteConditionSet(), structuresDone)) return;
                     }
                 }
             }
@@ -85,18 +86,19 @@ public class BUGLiteStrategy : SudokuStrategy
     }
 
     private bool Search(ISudokuSolverData solverData, HashSet<BiCellPossibilities> bcp, GridPositions structure, 
-        List<IBUGLiteCondition> conditionsToMeet, HashSet<IBUGLiteCondition> conditionsMet, HashSet<GridPositions> structuresDone)
+        List<IBUGLiteCondition> conditionsToMeet, ReadOnlyBUGLiteConditionSet conditionsMet, HashSet<GridPositions> structuresDone)
     {
         var current = conditionsToMeet[0];
         conditionsToMeet.RemoveAt(0);
-        conditionsMet.Add(current);
+
+        var newMet = conditionsMet + current;
 
         foreach (var match in current.ConditionMatches(solverData, structure))
         {
             bool ok = true;
             foreach (var otherCondition in match.OtherConditions)
             {
-                if (conditionsMet.Contains(otherCondition))
+                if (newMet.Contains(otherCondition))
                 {
                     ok = false;
                     break;
@@ -117,6 +119,7 @@ public class BUGLiteStrategy : SudokuStrategy
             structuresDone.Add(structure.Copy());
 
             List<IBUGLiteCondition> met = new();
+            var newMetForMatch = newMet;
             foreach (var otherCondition in match.OtherConditions)
             {
                 var i = conditionsToMeet.IndexOf(otherCondition);
@@ -124,35 +127,36 @@ public class BUGLiteStrategy : SudokuStrategy
                 else
                 {
                     conditionsToMeet.RemoveAt(i);
-                    conditionsMet.Add(otherCondition);
+                    newMetForMatch += otherCondition;
                     met.Add(otherCondition);
                 }
             }
 
-            bcp.Add(match.BiCellPossibilities);
-
-            if (conditionsToMeet.Count == 0)
+            if (conditionsToMeet.Count * 2 + structure.Count <= _maxStructSize.Value)
             {
-                if (Process(solverData, bcp)) return true;
+                bcp.Add(match.BiCellPossibilities);
+
+                if (conditionsToMeet.Count == 0)
+                {
+                    if (Process(solverData, bcp)) return true;
+                }
+                else if (Search(solverData, bcp, 
+                             structure, conditionsToMeet, newMetForMatch, structuresDone)) return true;
+                
+                bcp.Remove(match.BiCellPossibilities);
             }
-            else if (structure.Count < _maxStructSize.Value &&
-                      Search(solverData, bcp, structure, conditionsToMeet, conditionsMet, structuresDone)) return true;
-            
+
             structure.Remove(match.BiCellPossibilities.One);
             structure.Remove(match.BiCellPossibilities.Two);
-            bcp.Remove(match.BiCellPossibilities);
             var count = match.OtherConditions.Length - met.Count;
             conditionsToMeet.RemoveRange(conditionsToMeet.Count - count, count);
             foreach (var c in met)
             {
-                conditionsMet.Remove(c);
                 conditionsToMeet.Add(c);
             }
         }
 
         conditionsToMeet.Insert(0, current);
-        conditionsMet.Remove(current);
-        
         return false;
     }
 
@@ -241,9 +245,31 @@ public record BiCellPossibilities(Cell One, Cell Two, ReadOnlyBitSet16 Possibili
 
 public record BUGLiteConditionMatch(BiCellPossibilities BiCellPossibilities, params IBUGLiteCondition[] OtherConditions);
 
+public readonly struct ReadOnlyBUGLiteConditionSet
+{
+    private readonly uint _bits;
+
+    private ReadOnlyBUGLiteConditionSet(uint bits)
+    {
+        _bits = bits;
+    }
+
+    public bool Contains(IBUGLiteCondition condition)
+    {
+        return ((_bits >> condition.ToBitIndex()) & 1) > 0;
+    }
+
+    public static ReadOnlyBUGLiteConditionSet operator +(ReadOnlyBUGLiteConditionSet set, IBUGLiteCondition condition)
+        => new(set._bits | ((uint)1 << condition.ToBitIndex()));
+
+    public static ReadOnlyBUGLiteConditionSet operator -(ReadOnlyBUGLiteConditionSet set, IBUGLiteCondition condition)
+        => new(set._bits & ~((uint)1 << condition.ToBitIndex()));
+}
+
 public interface IBUGLiteCondition
 { 
     IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuSolverData solverData, GridPositions done);
+    int ToBitIndex();
 }
 
 public class RowBUGLiteCondition : IBUGLiteCondition
@@ -296,6 +322,11 @@ public class RowBUGLiteCondition : IBUGLiteCondition
                 }
             }
         }
+    }
+
+    public int ToBitIndex()
+    {
+        return _one.Row / 3 * 9 + _possibility;
     }
 
     public override bool Equals(object? obj)
@@ -368,7 +399,12 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
             }
         }
     }
-    
+
+    public int ToBitIndex()
+    {
+        return 27 + _one.Column / 3 * 9 + _possibility;
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is ColumnBUGLiteCondition cblc && cblc._possibility == _possibility &&

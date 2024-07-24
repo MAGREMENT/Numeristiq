@@ -1,6 +1,6 @@
 ﻿using Model.Sudokus;
 using Model.Sudokus.Solver;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Utility.BitSets;
 using Tests.Utility;
 
@@ -37,8 +37,8 @@ public class RestrictedPossibilityAlgorithmsTests
             {
                 for (int j = 0; j < als.Count; j++)
                 {
-                    if (als[i] is not CAPPossibilitiesPositions als1 
-                        || als[j] is not CAPPossibilitiesPositions als2) continue;
+                    if (als[i] is not SnapshotPossibilitySet als1 
+                        || als[j] is not SnapshotPossibilitySet als2) continue;
                     
                     foreach (var p in als1.Possibilities.EnumeratePossibilities())
                     {
@@ -53,4 +53,4 @@ public class RestrictedPossibilityAlgorithmsTests
     }
 }
 
-public delegate bool AreRestricted(IPossibilitiesPositions left, IPossibilitiesPositions right, int p);
+public delegate bool AreRestricted(IPossibilitySet left, IPossibilitySet right, int p);

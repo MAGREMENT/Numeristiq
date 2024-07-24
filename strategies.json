@@ -270,11 +270,11 @@
   },
   {
     "Name": "BUG-Lite",
-    "Enabled": false,
+    "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {
-      "Maximum cell count": "12"
+      "Maximum cell count": "18"
     }
   },
   {

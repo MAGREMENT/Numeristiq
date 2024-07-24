@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Model.Sudokus.Solver.Position;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Utility.AlmostLockedSets;
@@ -16,9 +16,9 @@ public class AlmostHiddenSetSearcher
         _solverData = solverData;
     }
 
-    public List<IPossibilitiesPositions> FullGrid(int maxSize, int difference)
+    public List<IPossibilitySet> FullGrid(int maxSize, int difference)
     {
-        List<IPossibilitiesPositions> result = new();
+        List<IPossibilitySet> result = new();
         var poss = new ReadOnlyBitSet16();
         _maxSize = maxSize;
         _difference = difference;
@@ -51,9 +51,9 @@ public class AlmostHiddenSetSearcher
         return result;
     }
 
-    public List<IPossibilitiesPositions> InRow(int row, int maxSize, int difference)
+    public List<IPossibilitySet> InRow(int row, int maxSize, int difference)
     {
-        List<IPossibilitiesPositions> result = new();
+        List<IPossibilitySet> result = new();
         
         _maxSize = maxSize;
         _difference = difference;
@@ -62,9 +62,9 @@ public class AlmostHiddenSetSearcher
         return result;
     }
 
-    public List<IPossibilitiesPositions> InColumn(int column, int maxSize, int difference)
+    public List<IPossibilitySet> InColumn(int column, int maxSize, int difference)
     {
-        List<IPossibilitiesPositions> result = new();
+        List<IPossibilitySet> result = new();
         
         _maxSize = maxSize;
         _difference = difference;
@@ -73,9 +73,9 @@ public class AlmostHiddenSetSearcher
         return result;
     }
     
-    public List<IPossibilitiesPositions> InMiniGrid(int miniRow, int miniCol, int maxSize, int difference)
+    public List<IPossibilitySet> InMiniGrid(int miniRow, int miniCol, int maxSize, int difference)
     {
-        List<IPossibilitiesPositions> result = new();
+        List<IPossibilitySet> result = new();
         
         _maxSize = maxSize;
         _difference = difference;
@@ -85,7 +85,7 @@ public class AlmostHiddenSetSearcher
     }
     
     private void InRow(int row, 
-        List<IPossibilitiesPositions> result, int start, LinePositions current, ReadOnlyBitSet16 possibilities)
+        List<IPossibilitySet> result, int start, LinePositions current, ReadOnlyBitSet16 possibilities)
     {
         for (int i = start; i <= 9; i++)
         {
@@ -95,7 +95,7 @@ public class AlmostHiddenSetSearcher
             var or = pos.Or(current);
             possibilities += i;
 
-            if (or.Count == possibilities.Count + _difference) result.Add(new CAPPossibilitiesPositions(
+            if (or.Count == possibilities.Count + _difference) result.Add(new SnapshotPossibilitySet(
                 or.ToCellArray(Unit.Row, row), possibilities, _solverData.CurrentState));
             
             if (possibilities.Count < _maxSize)
@@ -106,7 +106,7 @@ public class AlmostHiddenSetSearcher
     }
     
     private void InColumn(int column, 
-        List<IPossibilitiesPositions> result, int start, LinePositions current, ReadOnlyBitSet16 possibilities)
+        List<IPossibilitySet> result, int start, LinePositions current, ReadOnlyBitSet16 possibilities)
     {
         for (int i = start; i <= 9; i++)
         {
@@ -116,7 +116,7 @@ public class AlmostHiddenSetSearcher
             var or = pos.Or(current);
             possibilities += i;
 
-            if (or.Count == possibilities.Count + _difference) result.Add(new CAPPossibilitiesPositions(
+            if (or.Count == possibilities.Count + _difference) result.Add(new SnapshotPossibilitySet(
                 or.ToCellArray(Unit.Column, column), possibilities, _solverData.CurrentState));
             
             if (possibilities.Count < _maxSize)
@@ -127,7 +127,7 @@ public class AlmostHiddenSetSearcher
     }
     
     private void InMiniGrid(int miniRow, int miniCol, 
-        List<IPossibilitiesPositions> result, int start, BoxPositions current, ReadOnlyBitSet16 possibilities,
+        List<IPossibilitySet> result, int start, BoxPositions current, ReadOnlyBitSet16 possibilities,
         bool excludeSameLine = false)
     {
         for (int i = start; i <= 9; i++)
@@ -141,7 +141,7 @@ public class AlmostHiddenSetSearcher
             if (or.Count == possibilities.Count + _difference)
             {
                 if(!excludeSameLine || !(or.AreAllInSameColumn() || or.AreAllInSameColumn())) 
-                    result.Add(new CAPPossibilitiesPositions(or.ToCellArray(),
+                    result.Add(new SnapshotPossibilitySet(or.ToCellArray(),
                         possibilities, _solverData.CurrentState));
             }
 

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -35,8 +35,8 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
         }
     }
 
-    private bool Process2CommonCells(ISudokuSolverData solverData, IPossibilitiesPositions one,
-        IPossibilitiesPositions two)
+    private bool Process2CommonCells(ISudokuSolverData solverData, IPossibilitySet one,
+        IPossibilitySet two)
     {
         foreach (var cell in one.EnumerateCells())
         {
@@ -67,8 +67,8 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
                                                        && StopOnFirstPush;
     }
 
-    private bool Process1CommonCell(ISudokuSolverData solverData, IPossibilitiesPositions one,
-        IPossibilitiesPositions two, ILinkGraph<CellPossibility> graph)
+    private bool Process1CommonCell(ISudokuSolverData solverData, IPossibilitySet one,
+        IPossibilitySet two, ILinkGraph<CellPossibility> graph)
     {
         List<Link<CellPossibility>> links = new();
 
@@ -105,11 +105,11 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
 
 public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly IPossibilitiesPositions _one;
-    private readonly IPossibilitiesPositions _two;
+    private readonly IPossibilitySet _one;
+    private readonly IPossibilitySet _two;
     private readonly List<Link<CellPossibility>> _links;
 
-    public AlmostHiddenSetsAndStrongLinksReportBuilder(IPossibilitiesPositions one, IPossibilitiesPositions two, List<Link<CellPossibility>> links)
+    public AlmostHiddenSetsAndStrongLinksReportBuilder(IPossibilitySet one, IPossibilitySet two, List<Link<CellPossibility>> links)
     {
         _one = one;
         _two = two;

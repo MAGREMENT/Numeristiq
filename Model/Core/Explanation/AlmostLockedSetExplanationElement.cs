@@ -1,12 +1,12 @@
-﻿using Model.Sudokus.Solver.PossibilityPosition;
+﻿using Model.Sudokus.Solver.PossibilitySets;
 
 namespace Model.Core.Explanation;
 
 public class AlmostLockedSetExplanationElement : ExplanationElement
 {
-    private readonly IPossibilitiesPositions _als;
+    private readonly IPossibilitySet _als;
 
-    public AlmostLockedSetExplanationElement(IPossibilitiesPositions als)
+    public AlmostLockedSetExplanationElement(IPossibilitySet als)
     {
         _als = als;
     }

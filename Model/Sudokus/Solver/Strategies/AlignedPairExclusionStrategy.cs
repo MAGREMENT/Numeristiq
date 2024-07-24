@@ -5,7 +5,7 @@ using Model.Core.Explanation;
 using Model.Core.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
-using Model.Sudokus.Solver.PossibilityPosition;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -107,7 +107,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
 
         var inSameUnit = SudokuCellUtility.ShareAUnit(row1, col1, row2, col2);
         
-        List<IPossibilitiesPositions> usefulAls = new();
+        List<IPossibilitySet> usefulAls = new();
         HashSet<BiValue> forbidden = new();
 
         foreach (var als in solverData.AlmostNakedSetSearcher.InCells(shared, _maxAlsSize.Value, 1))
@@ -161,13 +161,13 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
 
 public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly List<IPossibilitiesPositions> _als;
+    private readonly List<IPossibilitySet> _als;
     private readonly int _row1;
     private readonly int _col1;
     private readonly int _row2;
     private readonly int _col2;
 
-    public AlignedPairExclusionReportBuilder(List<IPossibilitiesPositions> als, int row1, int col1, int row2, int col2)
+    public AlignedPairExclusionReportBuilder(List<IPossibilitySet> als, int row1, int col1, int row2, int col2)
     {
         _als = als;
         _row1 = row1;
