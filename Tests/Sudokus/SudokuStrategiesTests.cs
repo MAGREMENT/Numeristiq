@@ -141,10 +141,10 @@ public class SudokuStrategiesTests
     }
 
     /// <summary>
-    /// Total: 32,1354 ms
-    /// Average: 3,21354 ms
-    /// Minimum: 2,1444 ms on try #3
-    /// Maximum: 4,889 ms on try #6
+    /// Total: 9,5887 ms
+    /// Average: 958,87 mis
+    /// Minimum: 732,8 mis on try #8
+    /// Maximum: 1,8244 ms on try #10
     /// Ignored: 1
     /// </summary>
     [Test]

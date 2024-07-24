@@ -91,21 +91,10 @@ public class BUGLiteStrategy : SudokuStrategy
         var current = conditionsToMeet[0];
         conditionsToMeet.RemoveAt(0);
 
-        var newMet = conditionsMet + current;
-
-        foreach (var match in current.ConditionMatches(solverData, structure))
+        foreach (var match in current.SearchMatches(solverData, structure))
         {
-            bool ok = true;
-            foreach (var otherCondition in match.OtherConditions)
-            {
-                if (newMet.Contains(otherCondition))
-                {
-                    ok = false;
-                    break;
-                }
-            }
-
-            if (!ok) continue;
+            var newMet = conditionsMet + current;
+            if(newMet.Contains(match.OtherConditions)) continue;
             
             structure.Add(match.BiCellPossibilities.One);
             structure.Add(match.BiCellPossibilities.Two);
@@ -118,42 +107,49 @@ public class BUGLiteStrategy : SudokuStrategy
 
             structuresDone.Add(structure.Copy());
 
-            List<IBUGLiteCondition> met = new();
-            var newMetForMatch = newMet;
+            var toMeet = new List<IBUGLiteCondition>(conditionsToMeet);
+            bool valid = true;
             foreach (var otherCondition in match.OtherConditions)
             {
-                var i = conditionsToMeet.IndexOf(otherCondition);
-                if (i == -1) conditionsToMeet.Add(otherCondition);
-                else
+                bool stop = false;
+                for (int i = 0; i < toMeet.Count; i++)
                 {
-                    conditionsToMeet.RemoveAt(i);
-                    newMetForMatch += otherCondition;
-                    met.Add(otherCondition);
+                    var result = toMeet[i].DoesMatch(otherCondition);
+                    switch (result)
+                    {
+                        case MatchingResult.DoesNot : break;
+                        case MatchingResult.Does :
+                            toMeet.RemoveAt(i);
+                            newMet += otherCondition;
+                            stop = true;
+                            break;
+                        case MatchingResult.Incompatible :
+                            stop = true;
+                            valid = false;
+                            break;
+                    }
+                    
+                    if(stop) break;
                 }
+
+                if (!stop) toMeet.Add(otherCondition);
             }
 
-            if (conditionsToMeet.Count * 2 + structure.Count <= _maxStructSize.Value)
+            if (valid && toMeet.Count * 2 + structure.Count <= _maxStructSize.Value)
             {
                 bcp.Add(match.BiCellPossibilities);
 
-                if (conditionsToMeet.Count == 0)
+                if (toMeet.Count == 0)
                 {
                     if (Process(solverData, bcp)) return true;
                 }
-                else if (Search(solverData, bcp, 
-                             structure, conditionsToMeet, newMetForMatch, structuresDone)) return true;
+                else if (Search(solverData, bcp, structure, toMeet, newMet, structuresDone)) return true;
                 
                 bcp.Remove(match.BiCellPossibilities);
             }
 
             structure.Remove(match.BiCellPossibilities.One);
             structure.Remove(match.BiCellPossibilities.Two);
-            var count = match.OtherConditions.Length - met.Count;
-            conditionsToMeet.RemoveRange(conditionsToMeet.Count - count, count);
-            foreach (var c in met)
-            {
-                conditionsToMeet.Add(c);
-            }
         }
 
         conditionsToMeet.Insert(0, current);
@@ -259,6 +255,16 @@ public readonly struct ReadOnlyBUGLiteConditionSet
         return ((_bits >> condition.ToBitIndex()) & 1) > 0;
     }
 
+    public bool Contains(IEnumerable<IBUGLiteCondition> conditions)
+    {
+        foreach (var condition in conditions)
+        {
+            if (Contains(condition)) return true;
+        }
+
+        return false;
+    }
+
     public static ReadOnlyBUGLiteConditionSet operator +(ReadOnlyBUGLiteConditionSet set, IBUGLiteCondition condition)
         => new(set._bits | ((uint)1 << condition.ToBitIndex()));
 
@@ -268,8 +274,14 @@ public readonly struct ReadOnlyBUGLiteConditionSet
 
 public interface IBUGLiteCondition
 { 
-    IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuSolverData solverData, GridPositions done);
+    IEnumerable<BUGLiteConditionMatch> SearchMatches(ISudokuSolverData solverData, GridPositions done);
+    MatchingResult DoesMatch(IBUGLiteCondition condition);
     int ToBitIndex();
+}
+
+public enum MatchingResult
+{
+    Incompatible = -1, DoesNot = 0, Does = 1
 }
 
 public class RowBUGLiteCondition : IBUGLiteCondition
@@ -285,7 +297,7 @@ public class RowBUGLiteCondition : IBUGLiteCondition
         _possibility = possibility;
     }
 
-    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuSolverData solverData, GridPositions done)
+    public IEnumerable<BUGLiteConditionMatch> SearchMatches(ISudokuSolverData solverData, GridPositions done)
     {
         var miniCol = _one.Column / 3;
 
@@ -324,20 +336,22 @@ public class RowBUGLiteCondition : IBUGLiteCondition
         }
     }
 
+    public MatchingResult DoesMatch(IBUGLiteCondition condition)
+    {
+        if (condition is not RowBUGLiteCondition r) return MatchingResult.DoesNot;
+        if (r._possibility == _possibility && r._one.Row / 3 == _one.Row / 3)
+        {
+            return r._one.Row == _one.Row && r._two.Row == _two.Row && r._one.Column / 3 != _one.Column / 3
+                ? MatchingResult.Does
+                : MatchingResult.Incompatible;
+        }
+
+        return MatchingResult.DoesNot;
+    }
+
     public int ToBitIndex()
     {
         return _one.Row / 3 * 9 + _possibility;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is RowBUGLiteCondition rblc && rblc._possibility == _possibility &&
-               rblc._one.Row == _one.Row && rblc._two.Row == _two.Row;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_possibility, _one.Row, _two.Row);
     }
 
     public override string ToString()
@@ -359,7 +373,7 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
         _possibility = possibility;
     }
 
-    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuSolverData solverData, GridPositions done)
+    public IEnumerable<BUGLiteConditionMatch> SearchMatches(ISudokuSolverData solverData, GridPositions done)
     {
         var miniRow = _one.Row / 3;
 
@@ -400,20 +414,22 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
         }
     }
 
+    public MatchingResult DoesMatch(IBUGLiteCondition condition)
+    {
+        if (condition is not ColumnBUGLiteCondition c) return MatchingResult.DoesNot;
+        if (c._possibility == _possibility && c._one.Column / 3 == _one.Column / 3)
+        {
+            return c._one.Column == _one.Column && c._two.Column == _two.Column && c._one.Row / 3 != _one.Row / 3
+                ? MatchingResult.Does
+                : MatchingResult.Incompatible;
+        }
+
+        return MatchingResult.DoesNot;
+    }
+
     public int ToBitIndex()
     {
         return 27 + _one.Column / 3 * 9 + _possibility;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is ColumnBUGLiteCondition cblc && cblc._possibility == _possibility &&
-               cblc._one.Column == _one.Column && cblc._two.Column == _two.Column;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(_possibility, _one.Column, _two.Column);
     }
 
     public override string ToString()
