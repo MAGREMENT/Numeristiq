@@ -18,25 +18,29 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Width="220" Height="220">
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Width="220" Height="220" x:Name="SLWrapper">
             <Border VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="5"
-                    Width="200" Height="200" x:Name="SLMap">
+                    Width="200" Height="200" x:Name="SLMap" MouseLeftButtonDown="OnSLChange" MouseMove="OnSLDrag">
                 <Border.Background>
                     <ImageBrush Stretch="Fill"/>
                 </Border.Background>
             </Border>
+            
+            <Path Height="20" Width="20" Stroke="{DynamicResource Text}" StrokeThickness="4"
+                  Data="M 2,10 A 8,8 0 1 1 18,10 M 2,10 A 8,8 0 1 0 18,10" HorizontalAlignment="Left"
+                  VerticalAlignment="Top" x:Name="SLCursor"/>
         </Grid>
         
         <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Width="220" x:Name="HueWrapper">
-            <Path Height="45" Width="20" Fill="{DynamicResource Text}"
-                  Data="M 3,3 H 17 L 10,12 Z M 3,42 H 17 L 10,33 Z" HorizontalAlignment="Left" x:Name="HueCursor"/>
-        
             <Border HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="3"
-                    Height="15" Width="200" x:Name="HueSlider" MouseLeftButtonDown="OnHueChange">
+                    Height="15" Width="200" x:Name="HueSlider" MouseLeftButtonDown="OnHueChange" MouseMove="OnHueDrag">
                 <Border.Background>
                     <ImageBrush Stretch="Fill"/>
                 </Border.Background>
             </Border>
+            
+            <Path Height="45" Width="20" Fill="{DynamicResource Text}"
+                  Data="M 3,3 H 17 L 10,12 Z M 3,42 H 17 L 10,33 Z" HorizontalAlignment="Left" x:Name="HueCursor"/>
         </Grid>
         
         <TextBlock Grid.Row="2" Grid.Column="0" Foreground="{DynamicResource Text}"

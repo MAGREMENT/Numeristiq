@@ -28,6 +28,7 @@ public partial class ColorEditorControl
         InitializeHueSlider();
         UpdateHueCursor();
         UpdateSLMap(true);
+        UpdateSLCursor();
         
         _fireEvent = true;
     }
@@ -59,20 +60,22 @@ public partial class ColorEditorControl
 
         if (updateHSL)
         {
-            SetHSL(rgb.ToHSL(), true, true, false);
+            SetHSL(rgb.ToHSL(), true, true, true, false);
         }
 
         _fireEvent = true;
     }
 
-    private void SetHSL(HSL hsl, bool updateHueCursor, bool updateSLMap, bool updateColor)
+    private void SetHSL(HSL hsl, bool updateHueCursor, bool updateSLMap, bool updateSLCursor, bool updateColor)
     {
         _hsl = hsl;
         _fireEvent = false;
         
         if(updateHueCursor) UpdateHueCursor();
 
-        if (updateSLMap) UpdateSLMap(false);
+        if(updateSLMap) UpdateSLMap(false);
+        
+        if(updateSLCursor) UpdateSLCursor();
         
         if(updateColor) SetColor(_hsl.ToRGB(), true, false);
 
@@ -189,7 +192,7 @@ public partial class ColorEditorControl
 
                 for (int col = 0; col < w; col++)
                 {
-                    var hue = (double)col / (w - 1) * 360;
+                    var hue = (double)col / w * 360;
                     var hsl = new HSL((int)hue, 0.5, 0.5);
                     var rgb = hsl.ToRGB();
                     var colorData = (rgb.Red << 16) | (rgb.Green << 8) | rgb.Blue; 
@@ -264,12 +267,52 @@ public partial class ColorEditorControl
             + _hsl.Hue / 360.0 * HueSlider.Width - HueCursor.Width / 2;
         HueCursor.Margin = new Thickness(left, 0, 0, 0);
     }
+    
+    private void UpdateSLCursor()
+    {
+        SLCursor.Visibility = Visibility.Visible;
+        var left = (SLWrapper.Width - SLMap.Width) / 2 
+            + _hsl.Saturation * SLMap.Width - SLCursor.Width / 2;
+        //l = temp - 0.5 * s * temp;
+        //temp - l = 0.5 * s * temp
+        //1 - l / temp = 0.5 * s
+        //l / temp = 1 - 0.5 * s
+        //temp = l / (1 - 0.5 * s)
+        //temp = 1 - y
+        //y = 1 - l / (1 - 0.5 * s)
+        var y = 1 - _hsl.Lightness / (1 - 0.5 * _hsl.Saturation);
+        var top = (SLWrapper.Height - SLMap.Height) / 2 
+            + y * SLMap.Height - SLCursor.Height / 2;
+        SLCursor.Margin = new Thickness(left, top, 0, 0);
+    }
 
-    private void OnHueChange(object sender, MouseButtonEventArgs e)
+    private void OnHueChange(object sender, MouseEventArgs e)
     {
         var x = e.MouseDevice.GetPosition(HueSlider).X;
         SetHSL(_hsl.WithHue((int)Math.Round(x / (HueSlider.Width - 1) * 360)),
-            true, true, true);
+            true, true, false, true);
+        ColorChanged?.Invoke(Color);
+    }
+    
+    private void OnHueDrag(object sender, MouseEventArgs e)
+    {
+        if (e.LeftButton == MouseButtonState.Pressed) OnHueChange(sender, e);
+    }
+    
+    private void OnSLChange(object sender, MouseEventArgs e)
+    {
+        var p = e.MouseDevice.GetPosition(SLMap);
+        var s = p.X / SLMap.Width;
+        var temp = 1 - p.Y / SLMap.Height;
+        var l = temp - 0.5 * s * temp;
+        SetHSL(new HSL(_hsl.Hue, s, l),
+            true, false, true, true);
+        ColorChanged?.Invoke(Color);
+    }
+
+    private void OnSLDrag(object sender, MouseEventArgs e)
+    {
+        if (e.LeftButton == MouseButtonState.Pressed) OnSLChange(sender, e);
     }
 }
 
