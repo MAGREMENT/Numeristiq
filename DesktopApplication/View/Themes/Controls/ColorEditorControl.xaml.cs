@@ -174,10 +174,10 @@ public partial class ColorEditorControl
         var w = (int)HueSlider.Width;
         var h = (int)HueSlider.Height;
         
-        RenderOptions.SetBitmapScalingMode(HueSlider, BitmapScalingMode.NearestNeighbor);
+        RenderOptions.SetBitmapScalingMode(HueSlider, BitmapScalingMode.HighQuality);
         RenderOptions.SetEdgeMode(HueSlider, EdgeMode.Aliased);
         var bitmap = new WriteableBitmap(w, h, 96, 96, PixelFormats.Bgr32, null);
-        HueSlider.Source = bitmap;
+        ((ImageBrush)HueSlider.Background).ImageSource = bitmap;
 
         try
         {
@@ -217,12 +217,12 @@ public partial class ColorEditorControl
         WriteableBitmap bitmap;
         if (initialize)
         {
-            RenderOptions.SetBitmapScalingMode(SLMap, BitmapScalingMode.NearestNeighbor);
+            RenderOptions.SetBitmapScalingMode(SLMap, BitmapScalingMode.HighQuality);
             RenderOptions.SetEdgeMode(SLMap, EdgeMode.Aliased);
             bitmap = new WriteableBitmap(w, h, 96, 96, PixelFormats.Bgr32, null);
-            SLMap.Source = bitmap;
+            ((ImageBrush)SLMap.Background).ImageSource = bitmap;
         }
-        else bitmap = (WriteableBitmap)SLMap.Source;
+        else bitmap = (WriteableBitmap)((ImageBrush)SLMap.Background).ImageSource;
         
         try
         {
@@ -236,8 +236,9 @@ public partial class ColorEditorControl
                 {
                     for (int row = 0; row < h; row++)
                     {
-                        var l = 1 - (double)row / h;
                         var s = (double)col / w;
+                        var temp = 1 - (double)row / h;
+                        var l = temp - 0.5 * s * temp;
                         var hsl = new HSL(_hsl.Hue, s, l);
                         var rgb = hsl.ToRGB();
                         var colorData = (rgb.Red << 16) | (rgb.Green << 8) | rgb.Blue;  
@@ -259,8 +260,8 @@ public partial class ColorEditorControl
     private void UpdateHueCursor()
     {
         HueCursor.Visibility = Visibility.Visible;
-        var left = (HueWrapper.Width - HueSlider.Width - HueBorder.BorderThickness.Left
-                    - HueBorder.BorderThickness.Right) / 2 + _hsl.Hue / 360.0 * HueSlider.Width - HueCursor.Width / 2;
+        var left = (HueWrapper.Width - HueSlider.Width) / 2 
+            + _hsl.Hue / 360.0 * HueSlider.Width - HueCursor.Width / 2;
         HueCursor.Margin = new Thickness(left, 0, 0, 0);
     }
 

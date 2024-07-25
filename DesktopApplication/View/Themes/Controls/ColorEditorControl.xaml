@@ -18,20 +18,24 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Width="200" Height="200">
-            <Border VerticalAlignment="Center" HorizontalAlignment="Center" 
-                    BorderThickness="1" BorderBrush="{DynamicResource Text}">
-                <Image Width="180" Height="180" x:Name="SLMap"/>
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Width="220" Height="220">
+            <Border VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="5"
+                    Width="200" Height="200" x:Name="SLMap">
+                <Border.Background>
+                    <ImageBrush Stretch="Fill"/>
+                </Border.Background>
             </Border>
         </Grid>
         
-        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Width="200" x:Name="HueWrapper">
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Width="220" x:Name="HueWrapper">
             <Path Height="45" Width="20" Fill="{DynamicResource Text}"
                   Data="M 3,3 H 17 L 10,12 Z M 3,42 H 17 L 10,33 Z" HorizontalAlignment="Left" x:Name="HueCursor"/>
         
-            <Border HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="HueBorder"
-                     BorderBrush="{DynamicResource Text}" BorderThickness="1">
-                <Image Height="15" Width="180" x:Name="HueSlider" MouseLeftButtonDown="OnHueChange"/> 
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="3"
+                    Height="15" Width="200" x:Name="HueSlider" MouseLeftButtonDown="OnHueChange">
+                <Border.Background>
+                    <ImageBrush Stretch="Fill"/>
+                </Border.Background>
             </Border>
         </Grid>
         

@@ -6,7 +6,7 @@
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         xmlns:controls1="clr-namespace:DesktopApplication.View.Themes.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="730" Width="1250"
+        Title="MainWindow" Height="750" Width="1250"
         ResizeMode="NoResize"
         WindowStyle="None">
     
