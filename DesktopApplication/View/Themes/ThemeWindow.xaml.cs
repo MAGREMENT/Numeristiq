@@ -103,4 +103,9 @@ public partial class ThemeWindow : IThemeView
     {
         _presenter.SaveNewTheme(SaveAsName.Text);
     }
+
+    private void ChangeColor(RGB color)
+    {
+        _presenter.SetCurrentColor(color);
+    }
 }

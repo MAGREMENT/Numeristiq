@@ -1,4 +1,5 @@
 ﻿using Model.Core.Settings;
+using Model.Utility;
 
 namespace DesktopApplication.Presenter.Themes;
 
@@ -29,6 +30,17 @@ public class ThemePresenter
             _currentColor = name;
             _view.SelectColor(name, _themeManager.Themes[_settings.Theme].GetColor(name));
         }
+    }
+
+    public void SetCurrentColor(RGB value)
+    {
+        if(_currentColor is null) return;
+
+        var theme = _themeManager.Themes[_settings.Theme];
+        theme.SetColor(_currentColor, value);
+        //TODO update repo
+        _settings.TrySet("Theme", new IntSettingValue(_settings.Theme));
+        _view.SetColors(theme.AllColors(), _themeManager.IsEditable(_settings.Theme));
     }
 
     public void SetTheme(string name)

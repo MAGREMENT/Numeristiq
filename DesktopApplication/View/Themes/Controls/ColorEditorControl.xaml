@@ -31,20 +31,20 @@
             Blue
         </TextBlock>
         
-        <Border Grid.Row="1" Grid.Column="0" 
+        <Border Grid.Row="1" Grid.Column="0" Padding="5 0"
                 Background="{DynamicResource Background3}" CornerRadius="5" Width="60" Height="30">
-            <TextBlock x:Name="RedValue" Foreground="{DynamicResource Text}" VerticalAlignment="Center"
-                       HorizontalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+            <TextBox x:Name="RedValue" Style="{StaticResource SimpleTextBox}" VerticalAlignment="Center"
+                     HorizontalAlignment="Stretch" FontSize="18" FontWeight="Bold" TextChanged="ColorValueChanged"/>
         </Border>
-        <Border Grid.Row="1" Grid.Column="1" Margin="10 0"
+        <Border Grid.Row="1" Grid.Column="1" Margin="10 0" Padding="5 0"
                 Background="{DynamicResource Background3}" CornerRadius="5" Width="60" Height="30">
-            <TextBlock x:Name="GreenValue" Foreground="{DynamicResource Text}" VerticalAlignment="Center"
-                       HorizontalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+            <TextBox x:Name="GreenValue" Style="{StaticResource SimpleTextBox}" VerticalAlignment="Center"
+                     HorizontalAlignment="Stretch" FontSize="18" FontWeight="Bold" TextChanged="ColorValueChanged"/>
         </Border>
-        <Border Grid.Row="1" Grid.Column="2" 
+        <Border Grid.Row="1" Grid.Column="2" Padding="5 0" 
                 Background="{DynamicResource Background3}" CornerRadius="5" Width="60" Height="30">
-            <TextBlock x:Name="BlueValue" Foreground="{DynamicResource Text}" VerticalAlignment="Center"
-                       HorizontalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+            <TextBox x:Name="BlueValue" Style="{StaticResource SimpleTextBox}" VerticalAlignment="Center"
+                     HorizontalAlignment="Stretch" FontSize="18" FontWeight="Bold" TextChanged="ColorValueChanged"/>
         </Border>
     </Grid>
 </UserControl>

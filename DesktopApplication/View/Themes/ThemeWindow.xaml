@@ -132,7 +132,7 @@
                                FontWeight="SemiBold" HorizontalAlignment="Center" 
                                x:Name="CurrentColorName">None</TextBlock>
                     <controls1:ColorEditorControl Margin="0 5 0 0" x:Name="CurrentColorValue"
-                                                  HorizontalAlignment="Center"/>
+                                                  HorizontalAlignment="Center" ColorChanged="ChangeColor"/>
                 </StackPanel>
             </Border>
             
