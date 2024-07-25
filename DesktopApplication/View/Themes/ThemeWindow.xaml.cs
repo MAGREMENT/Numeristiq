@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Themes;
 using DesktopApplication.View.Themes.Controls;
@@ -23,6 +24,7 @@ public partial class ThemeWindow : IThemeView
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
 
         _presenter = GlobalApplicationPresenter.Instance.InitializeThemePresenter(this);
+        _presenter.EvaluateName(string.Empty);
     }
     
     private void Minimize()
@@ -63,15 +65,42 @@ public partial class ThemeWindow : IThemeView
         }
     }
 
-    public void SelectColor(string name)
+    public void SelectColor(string name, RGB value)
     {
-        CurrentColor.SetResourceReference(ForegroundProperty, "Text");
-        CurrentColor.Text = name;
+        CurrentColorName.SetResourceReference(ForegroundProperty, "Text");
+        CurrentColorName.Text = name;
+        CurrentColorValue.Color = value;
     }
 
     public void UnselectColor()
     {
-        CurrentColor.SetResourceReference(ForegroundProperty, "Disabled");
-        CurrentColor.Text = "None";
+        CurrentColorName.SetResourceReference(ForegroundProperty, "Disabled");
+        CurrentColorName.Text = "None";
+        CurrentColorValue.NoColor();
+    }
+
+    public void ShowNameError(string error)
+    {
+        NameFeedback.Text = error;
+        NameFeedback.SetResourceReference(ForegroundProperty, "Off");
+        SaveAsButton.IsEnabled = false;
+    }
+
+    public void ShowNameIsCorrect()
+    {
+        NameFeedback.Text = "This name is valid";
+        NameFeedback.SetResourceReference(ForegroundProperty, "On");
+        SaveAsButton.IsEnabled = true;
+    }
+
+    private void EvaluateName(object sender, TextChangedEventArgs e)
+    {
+        if (sender is not TextBox box) return;
+        _presenter.EvaluateName(box.Text);
+    }
+
+    private void SaveAs(object sender, RoutedEventArgs e)
+    {
+        _presenter.SaveNewTheme(SaveAsName.Text);
     }
 }

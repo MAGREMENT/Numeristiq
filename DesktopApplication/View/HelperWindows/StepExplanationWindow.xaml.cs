@@ -3,18 +3,21 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.Presenter.Sudokus.Solve.Explanation;
+using DesktopApplication.View.Controls;
 using Model.Core.Explanation;
 
 namespace DesktopApplication.View.HelperWindows;
 
-public partial class StepExplanationWindow : IStepExplanationView<ISudokuSolverDrawer>
+public partial class StepExplanationWindow : IStepExplanationView
 {
-    private readonly StepExplanationPresenter _presenter;
+    private readonly IStepExplanationPresenter _presenter;
     private readonly bool _initialized;
     
-    public StepExplanationWindow(StepExplanationPresenterBuilder builder)
+    public StepExplanationWindow(IStepExplanationPresenterBuilder builder, ISizeOptimizable optimizableContent)
     {
         InitializeComponent();
+        Embedded.OptimizableContent = optimizableContent;
+        
         _presenter = builder.Build(this);
         _presenter.LoadStep();
         _initialized = true;
@@ -32,8 +35,12 @@ public partial class StepExplanationWindow : IStepExplanationView<ISudokuSolverD
     {
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     }
+    
+    public T GetDrawer<T>() where T : IDrawer
+    {
+        return (T)Embedded.OptimizableContent!;
+    }
 
-    public ISudokuSolverDrawer Drawer => (ISudokuSolverDrawer)Embedded.OptimizableContent!;
     public IExplanationHighlighter ExplanationHighlighter => (IExplanationHighlighter)Embedded.OptimizableContent!;
 
     public void ShowExplanation(ExplanationElement? start)

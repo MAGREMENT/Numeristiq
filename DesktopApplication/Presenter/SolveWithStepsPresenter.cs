@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DesktopApplication.Presenter.Sudokus.Solve;
 using Model.Core.Highlighting;
 using Model.Core.Steps;
 
@@ -78,6 +79,7 @@ public abstract class SolveWithStepsPresenter<THighlight, TStep, TState> where T
         _translator.Translate(log.HighlightManager, true);
     }
 
+    public abstract IStepExplanationPresenterBuilder? RequestExplanation();
     protected abstract void SetShownState(TState numericSolvingState, bool solutionAsClues, bool showPossibilities);
     protected abstract TState GetCurrentState();
     

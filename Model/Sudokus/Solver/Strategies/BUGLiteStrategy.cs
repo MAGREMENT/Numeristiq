@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
@@ -76,7 +75,7 @@ public class BUGLiteStrategy : SudokuStrategy
                             }
                         }
                         
-                        if (Search(solverData, new HashSet<BiCellPossibilities> {bcp},
+                        if (Search(solverData, new List<BiCellPossibilities> {bcp},
                             new GridPositions {first, second}, conditionsToMeet,
                             new ReadOnlyBUGLiteConditionSet(), structuresDone)) return;
                     }
@@ -85,7 +84,7 @@ public class BUGLiteStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(ISudokuSolverData solverData, HashSet<BiCellPossibilities> bcp, GridPositions structure, 
+    private bool Search(ISudokuSolverData solverData, List<BiCellPossibilities> bcp, GridPositions structure, 
         List<IBUGLiteCondition> conditionsToMeet, ReadOnlyBUGLiteConditionSet conditionsMet, HashSet<GridPositions> structuresDone)
     {
         var current = conditionsToMeet[0];
@@ -145,7 +144,7 @@ public class BUGLiteStrategy : SudokuStrategy
                 }
                 else if (Search(solverData, bcp, structure, toMeet, newMet, structuresDone)) return true;
                 
-                bcp.Remove(match.BiCellPossibilities);
+                bcp.RemoveAt(bcp.Count - 1);
             }
 
             structure.Remove(match.BiCellPossibilities.One);
@@ -156,9 +155,9 @@ public class BUGLiteStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(ISudokuSolverData solverData, HashSet<BiCellPossibilities> bcp)
+    private bool Process(ISudokuSolverData solverData, IReadOnlyList<BiCellPossibilities> bcp)
     {
-        var cellsNotInStructure = new List<Cell>();
+        var cellsNotInStructure = new List<CellPossibilities>();
         var possibilitiesNotInStructure = new ReadOnlyBitSet16();
 
         foreach (var b in bcp)
@@ -166,14 +165,14 @@ public class BUGLiteStrategy : SudokuStrategy
             var no1 = solverData.PossibilitiesAt(b.One) - b.Possibilities;
             if (no1.Count > 0)
             {
-                cellsNotInStructure.Add(b.One);
+                cellsNotInStructure.Add(new CellPossibilities(b.One, b.Possibilities));
                 possibilitiesNotInStructure |= no1;
             }
 
             var no2 = solverData.PossibilitiesAt(b.Two) - b.Possibilities;
             if (no2.Count > 0)
             {
-                cellsNotInStructure.Add(b.Two);
+                cellsNotInStructure.Add(new CellPossibilities(b.Two, b.Possibilities));
                 possibilitiesNotInStructure |= no2;
             }
         }
@@ -181,27 +180,27 @@ public class BUGLiteStrategy : SudokuStrategy
         if (cellsNotInStructure.Count == 1)
         {
             var c = cellsNotInStructure[0];
-            foreach (var p in FindStructurePossibilitiesFor(c, bcp).EnumeratePossibilities())
+            foreach (var p in c.Possibilities.EnumeratePossibilities())
             {
-                solverData.ChangeBuffer.ProposePossibilityRemoval(p, c);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(p, c.Cell);
             }
         }
         else if (cellsNotInStructure.Count == 2)
         {
-            var p1 = FindStructurePossibilitiesFor(cellsNotInStructure[0], bcp);
-            var p2 = FindStructurePossibilitiesFor(cellsNotInStructure[1], bcp);
-            if(p1.Equals(p2))
+            var c1 = cellsNotInStructure[0];
+            var c2 = cellsNotInStructure[1];
+            if(c1.Possibilities == c2.Possibilities)
             {
-                var asArray = p1.ToArray();
+                var asArray = c1.Possibilities.ToArray();
                 for (int i = 0; i < 2; i++)
                 {
-                    var cp1 = new CellPossibility(cellsNotInStructure[0], asArray[i]);
-                    var cp2 = new CellPossibility(cellsNotInStructure[1], asArray[i]);
+                    var cp1 = new CellPossibility(c1.Cell, asArray[i]);
+                    var cp2 = new CellPossibility(c2.Cell, asArray[i]);
                     if (SudokuCellUtility.AreStronglyLinked(solverData, cp1, cp2))
                     {
                         var other = asArray[(i + 1) % 2];
-                        solverData.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[0]);
-                        solverData.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[1]);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(other, c1.Cell);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(other, c2.Cell);
                     }
                 }
             }
@@ -218,16 +217,6 @@ public class BUGLiteStrategy : SudokuStrategy
 
         return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
             new BUGLiteReportBuilder(bcp)) && StopOnFirstPush;
-    }
-
-    private static ReadOnlyBitSet16 FindStructurePossibilitiesFor(Cell cell, IEnumerable<BiCellPossibilities> bcp)
-    {
-        foreach (var b in bcp)
-        {
-            if (b.One == cell || b.Two == cell) return b.Possibilities;
-        }
-
-        return new ReadOnlyBitSet16();
     }
 }
 
@@ -401,11 +390,9 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
                         var poss = new ReadOnlyBitSet16(_possibility, p);
                         var bcp = new BiCellPossibilities(first, second, poss);
 
-                        if (first.Row == second.Row)
-                            yield return new BUGLiteConditionMatch(
+                        if (first.Row == second.Row) yield return new BUGLiteConditionMatch(
                                 bcp, new ColumnBUGLiteCondition(first, second, p));
-                        else
-                            yield return new BUGLiteConditionMatch(bcp, new ColumnBUGLiteCondition(
+                        else yield return new BUGLiteConditionMatch(bcp, new ColumnBUGLiteCondition(
                                     first, second, p), new RowBUGLiteCondition(first, second, p),
                                 new RowBUGLiteCondition(first, second, _possibility));
                     }

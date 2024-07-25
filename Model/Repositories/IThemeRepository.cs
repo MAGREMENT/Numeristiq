@@ -41,23 +41,22 @@ public record Theme(string Name,
         }
     }
 
+    public RGB GetColor(string name)
+    {
+        var p = GetType().GetProperty(name);
+        if (p is null) return new RGB();
+        
+        var v = p.GetValue(this);
+        return v is null ? new RGB() : (RGB)v;
+    }
+    
+    public Theme Copy(string name)
+    {
+        return this with { Name = name };
+    }
+
     public Theme Copy()
     {
-        return new Theme(Name, Background1, Background2, Background3
-            , Primary1, Primary2
-            , Secondary1, Secondary2
-            , Accent
-            , Text
-            , On, Off
-            , Disabled
-            , DifficultyBasic, DifficultyEasy, DifficultyMedium, DifficultyHard
-            , DifficultyExtreme, DifficultyInhuman, DifficultyByTrial
-            , StepColorNeutral, StepColorChange1, StepColorChange2
-            , StepColorCause1, StepColorCause2, StepColorCause3
-            , StepColorCause4, StepColorCause5, StepColorCause6
-            , StepColorCause7, StepColorCause8, StepColorCause9
-            , StepColorCause10, StepColorOn
-            , HighlightColor1, HighlightColor2, HighlightColor3, HighlightColor4
-            , HighlightColor5, HighlightColor6, HighlightColor7);
+        return Copy(Name);
     }
 }

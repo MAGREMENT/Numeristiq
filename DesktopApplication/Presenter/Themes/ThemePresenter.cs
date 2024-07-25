@@ -27,7 +27,7 @@ public class ThemePresenter
         else
         {
             _currentColor = name;
-            _view.SelectColor(name);
+            _view.SelectColor(name, _themeManager.Themes[_settings.Theme].GetColor(name));
         }
     }
 
@@ -39,6 +39,64 @@ public class ThemePresenter
 
         _settings.TrySet("Theme", new IntSettingValue(index));
         UpdateThemeStuff();
+    }
+
+    public void EvaluateName(string name)
+    {
+        if (IsNameCorrect(name, out var error)) _view.ShowNameIsCorrect();
+        else _view.ShowNameError(error);
+    }
+
+    public void SaveNewTheme(string name)
+    {
+        if (!IsNameCorrect(name, out _)) return;
+        var theme = _themeManager.Themes[_settings.Theme].Copy(name);
+        _themeManager.AddNewTheme(theme);
+        
+        _view.SetOtherThemes(_themeManager.EnumerateThemesAndState(_settings.Theme));
+        _view.ShowNameError("Name is already used");
+    }
+
+    private bool IsNameCorrect(string name, out string error)
+    {
+        error = string.Empty;
+        if (string.IsNullOrEmpty(name))
+        {
+            error = "Name cannot be empty";
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            error = "Name cannot only be spaces";
+            return false;
+        }
+
+        foreach (var c in name)
+        {
+            switch (c)
+            {
+                case '-' :
+                case ' ' :
+                    break;
+                default:
+                    if (!char.IsLetter(c) && !char.IsDigit(c))
+                    {
+                        error = $"Forbidden character : {c}";
+                        return false;
+                    }
+
+                    break;
+            }
+        }
+
+        if (_themeManager.IndexOf(name) != -1)
+        {
+            error = "Name is already used";
+            return false;
+        }
+
+        return true;
     }
 
     private void UpdateThemeStuff()

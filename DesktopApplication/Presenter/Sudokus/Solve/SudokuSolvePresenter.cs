@@ -118,11 +118,11 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
         SetShownState(_solver, false, true);
     }
     
-    public StepExplanationPresenterBuilder? RequestExplanation()
+    public override IStepExplanationPresenterBuilder? RequestExplanation()
     {
         if (_currentlyOpenedStep < 0 || _currentlyOpenedStep >= _solver.Steps.Count) return null;
 
-        return new StepExplanationPresenterBuilder(_solver.Steps[_currentlyOpenedStep], _settings);
+        return new SudokuStepExplanationPresenterBuilder(_solver.Steps[_currentlyOpenedStep], _settings);
     }
 
     public void EnableStrategy(int index, bool enabled)
@@ -389,20 +389,25 @@ public class ChooseStepPresenterBuilder
     }
 }
 
-public class StepExplanationPresenterBuilder
+public interface IStepExplanationPresenterBuilder
+{
+    public IStepExplanationPresenter Build(IStepExplanationView view);
+}
+
+public class SudokuStepExplanationPresenterBuilder : IStepExplanationPresenterBuilder
 {
     private readonly INumericStep<ISudokuHighlighter> _numericStep;
     private readonly Settings _settings;
 
-    public StepExplanationPresenterBuilder(INumericStep<ISudokuHighlighter> numericStep, Settings settings)
+    public SudokuStepExplanationPresenterBuilder(INumericStep<ISudokuHighlighter> numericStep, Settings settings)
     {
         _numericStep = numericStep;
         _settings = settings;
     }
 
-    public StepExplanationPresenter Build(IStepExplanationView<ISudokuSolverDrawer> view)
+    public IStepExplanationPresenter Build(IStepExplanationView view)
     {
-        return new StepExplanationPresenter(view, _numericStep, _settings);
+        return new SudokuStepExplanationPresenter(view, _numericStep, _settings);
     }
 }
 

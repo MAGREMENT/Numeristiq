@@ -3,9 +3,48 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
+             mc:Ignorable="d" Background="{DynamicResource Background2}">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{DynamicResource Text}"
+                   HorizontalAlignment="Center" FontSize="14" Margin="0 5">
+            Red
+        </TextBlock>
+        
+        <TextBlock Grid.Row="0" Grid.Column="1" Foreground="{DynamicResource Text}"
+                   HorizontalAlignment="Center" FontSize="14" Margin="0 5">
+            Green
+        </TextBlock>
+        
+        <TextBlock Grid.Row="0" Grid.Column="2" Foreground="{DynamicResource Text}"
+                   HorizontalAlignment="Center" FontSize="14" Margin="0 5">
+            Blue
+        </TextBlock>
+        
+        <Border Grid.Row="1" Grid.Column="0" 
+                Background="{DynamicResource Background3}" CornerRadius="5" Width="60" Height="30">
+            <TextBlock x:Name="RedValue" Foreground="{DynamicResource Text}" VerticalAlignment="Center"
+                       HorizontalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="1" Margin="10 0"
+                Background="{DynamicResource Background3}" CornerRadius="5" Width="60" Height="30">
+            <TextBlock x:Name="GreenValue" Foreground="{DynamicResource Text}" VerticalAlignment="Center"
+                       HorizontalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="2" 
+                Background="{DynamicResource Background3}" CornerRadius="5" Width="60" Height="30">
+            <TextBlock x:Name="BlueValue" Foreground="{DynamicResource Text}" VerticalAlignment="Center"
+                       HorizontalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+        </Border>
     </Grid>
 </UserControl>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Sudokus.Solve;
@@ -68,7 +69,7 @@ public partial class SolvePage : ISudokuSolveView
                 var builder = _presenter.RequestExplanation();
                 if (builder is null) return;
 
-                var window = new StepExplanationWindow(builder);
+                var window = new StepExplanationWindow(builder, GetSudokuDrawer());
                 window.Show();
             };
         });
@@ -164,6 +165,25 @@ public partial class SolvePage : ISudokuSolveView
     }
 
     #endregion
+
+    private static SudokuBoard GetSudokuDrawer()
+    {
+        var board = new SudokuBoard
+        {
+            PossibilitySize = 20, 
+            BigLineWidth = 3,
+            SmallLineWidth = 1,
+            BackgroundBrush = Brushes.Transparent
+        };
+
+        board.SetResourceReference(SudokuBoard.DefaultNumberBrushProperty, "Text");
+        board.SetResourceReference(SudokuBoard.LineBrushProperty, "Text");
+        board.SetResourceReference(SudokuBoard.CursorBrushProperty, "Secondary1");
+        board.SetResourceReference(SudokuBoard.SpecialNumberBrushProperty, "Primary1");
+        board.SetResourceReference(SudokuBoard.LinkBrushProperty, "Accent");
+
+        return board;
+    }
 
     private void SetNewSudoku(string s)
     {

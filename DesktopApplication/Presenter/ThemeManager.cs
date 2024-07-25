@@ -43,4 +43,10 @@ public class ThemeManager
 
         return -1;
     }
+
+    public void AddNewTheme(Theme theme)
+    {
+        _repository.AddTheme(theme);
+        _themes.Add(theme);
+    }
 }

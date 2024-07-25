@@ -158,6 +158,16 @@ public static class SudokuCellUtility
             _ => CheckedSeenCells(list)
         };
     }
+    
+    public static IEnumerable<Cell> SharedSeenCells(IReadOnlyList<CellPossibilities> list)
+    {
+        return list.Count switch
+        {
+            0 => new List<Cell>(),
+            1 => SeenCells(list[^1].Cell),
+            _ => CheckedSeenCells(list)
+        };
+    }
 
     private static IEnumerable<Cell> CheckedSeenCells(IReadOnlyList<Cell> list)
     {
@@ -167,6 +177,24 @@ public static class SudokuCellUtility
             for (int i = 2; i < list.Count; i++)
             {
                 if (!ShareAUnit(list[i], coord) || list[i] == coord)
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ok) yield return coord;
+        }
+    }
+    
+    private static IEnumerable<Cell> CheckedSeenCells(IReadOnlyList<CellPossibilities> list)
+    {
+        foreach (var coord in SharedSeenCells(list[0].Cell, list[1].Cell))
+        {
+            bool ok = true;
+            for (int i = 2; i < list.Count; i++)
+            {
+                if (!ShareAUnit(list[i].Cell, coord) || list[i].Cell == coord)
                 {
                     ok = false;
                     break;

@@ -2,9 +2,9 @@
 
 namespace DesktopApplication.Presenter.Sudokus.Solve.Explanation;
 
-public interface IStepExplanationView<out TDrawer>
+public interface IStepExplanationView
 {
-    public TDrawer Drawer { get; }
+    T GetDrawer<T>() where T : IDrawer;
     public IExplanationHighlighter ExplanationHighlighter { get; }
     public void ShowExplanation(ExplanationElement? start);
 }

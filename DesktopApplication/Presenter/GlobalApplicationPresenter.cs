@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using DesktopApplication.Presenter.Kakuros;
 using DesktopApplication.Presenter.Nonograms;
 using DesktopApplication.Presenter.Sudokus;

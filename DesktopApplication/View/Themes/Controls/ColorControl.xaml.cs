@@ -16,5 +16,7 @@ public partial class ColorControl
             MouseEnter += (_, _) => SetResourceReference(BackgroundProperty, "Background3");
             MouseLeave += (_, _) => SetResourceReference(BackgroundProperty, "Background2");
         }
+
+        IsEnabled = canBeSelected;
     }
 }
