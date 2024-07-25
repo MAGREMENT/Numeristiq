@@ -15,10 +15,12 @@ public readonly struct HSL
         Lightness = lightness;
     }
 
+    public HSL WithHue(int hue) => new(hue, Saturation, Lightness);
+
     public RGB ToRGB()
     {
         var c = (1 - Math.Abs(2 * Lightness - 1)) * Saturation;
-        var x = c * (1 - Math.Abs(Hue / 60 % 2 - 1));
+        var x = c * (1 - Math.Abs(Hue / 60.0 % 2 - 1));
         var m = Lightness - c / 2;
 
         double r, g, b;
@@ -56,6 +58,7 @@ public readonly struct HSL
                 break;
         }
 
-        return new RGB((byte)((r + m) * 255), (byte)((g + m) * 255), (byte)((b + m) * 255));
+        return new RGB((byte)Math.Round((r + m) * 255), 
+            (byte)Math.Round((g + m) * 255), (byte)Math.Round((b + m) * 255));
     }
 }

@@ -6,7 +6,7 @@
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         xmlns:controls1="clr-namespace:DesktopApplication.View.Themes.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1250"
+        Title="MainWindow" Height="730" Width="1250"
         ResizeMode="NoResize"
         WindowStyle="None">
     
@@ -102,27 +102,32 @@
         
         <Grid Grid.Row="1" Grid.Column="2" Width="300" Margin="0 10 10 10">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
             <Border Grid.Row="0" Background="{DynamicResource Background2}"
                     CornerRadius="5" Padding="5">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock FontSize="14" Margin="10 0 0 0" 
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" FontSize="14" Margin="10 0 0 0" 
                                Foreground="{DynamicResource Primary1}">
                         Current
                     </TextBlock>
-                    <TextBlock FontSize="24" Foreground="{DynamicResource Text}"
+                    <TextBlock Grid.Row="1" FontSize="24" Foreground="{DynamicResource Text}"
                                FontWeight="Bold" x:Name="CurrentName" Margin="5 0 0 0">
                         Light Theme
                     </TextBlock>
-                    <ScrollViewer Style="{StaticResource TransparentBarScrollViewer}" Margin="0 0 0 5">
-                        <StackPanel Orientation="Vertical" x:Name="OtherThemes" MinHeight="150"/>
+                    <ScrollViewer Grid.Row="2" Style="{StaticResource TransparentBarScrollViewer}" Margin="0 0 0 5">
+                        <StackPanel Orientation="Vertical" x:Name="OtherThemes"/>
                     </ScrollViewer>
-                </StackPanel>
+                </Grid>
             </Border>
             
             <Border Grid.Row="1" Background="{DynamicResource Background2}"

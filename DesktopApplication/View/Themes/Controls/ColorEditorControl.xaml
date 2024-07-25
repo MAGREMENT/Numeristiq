@@ -8,6 +8,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
@@ -16,35 +18,52 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{DynamicResource Text}"
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Width="200" Height="200">
+            <Border VerticalAlignment="Center" HorizontalAlignment="Center" 
+                    BorderThickness="1" BorderBrush="{DynamicResource Text}">
+                <Image Width="180" Height="180" x:Name="SLMap"/>
+            </Border>
+        </Grid>
+        
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Width="200" x:Name="HueWrapper">
+            <Path Height="45" Width="20" Fill="{DynamicResource Text}"
+                  Data="M 3,3 H 17 L 10,12 Z M 3,42 H 17 L 10,33 Z" HorizontalAlignment="Left" x:Name="HueCursor"/>
+        
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="HueBorder"
+                     BorderBrush="{DynamicResource Text}" BorderThickness="1">
+                <Image Height="15" Width="180" x:Name="HueSlider" MouseLeftButtonDown="OnHueChange"/> 
+            </Border>
+        </Grid>
+        
+        <TextBlock Grid.Row="2" Grid.Column="0" Foreground="{DynamicResource Text}"
                    HorizontalAlignment="Center" FontSize="14" Margin="0 5">
             Red
         </TextBlock>
         
-        <TextBlock Grid.Row="0" Grid.Column="1" Foreground="{DynamicResource Text}"
+        <TextBlock Grid.Row="2" Grid.Column="1" Foreground="{DynamicResource Text}"
                    HorizontalAlignment="Center" FontSize="14" Margin="0 5">
             Green
         </TextBlock>
         
-        <TextBlock Grid.Row="0" Grid.Column="2" Foreground="{DynamicResource Text}"
+        <TextBlock Grid.Row="2" Grid.Column="2" Foreground="{DynamicResource Text}"
                    HorizontalAlignment="Center" FontSize="14" Margin="0 5">
             Blue
         </TextBlock>
         
-        <Border Grid.Row="1" Grid.Column="0" Padding="5 0"
+        <Border Grid.Row="3" Grid.Column="0" Padding="5 0"
                 Background="{DynamicResource Background3}" CornerRadius="5" Width="60" Height="30">
             <TextBox x:Name="RedValue" Style="{StaticResource SimpleTextBox}" VerticalAlignment="Center"
-                     HorizontalAlignment="Stretch" FontSize="18" FontWeight="Bold" TextChanged="ColorValueChanged"/>
+                     HorizontalAlignment="Stretch" FontSize="18" FontWeight="Bold" TextChanged="OnRedChange"/>
         </Border>
-        <Border Grid.Row="1" Grid.Column="1" Margin="10 0" Padding="5 0"
+        <Border Grid.Row="3" Grid.Column="1" Margin="10 0" Padding="5 0"
                 Background="{DynamicResource Background3}" CornerRadius="5" Width="60" Height="30">
             <TextBox x:Name="GreenValue" Style="{StaticResource SimpleTextBox}" VerticalAlignment="Center"
-                     HorizontalAlignment="Stretch" FontSize="18" FontWeight="Bold" TextChanged="ColorValueChanged"/>
+                     HorizontalAlignment="Stretch" FontSize="18" FontWeight="Bold" TextChanged="OnGreenChange"/>
         </Border>
-        <Border Grid.Row="1" Grid.Column="2" Padding="5 0" 
+        <Border Grid.Row="3" Grid.Column="2" Padding="5 0" 
                 Background="{DynamicResource Background3}" CornerRadius="5" Width="60" Height="30">
             <TextBox x:Name="BlueValue" Style="{StaticResource SimpleTextBox}" VerticalAlignment="Center"
-                     HorizontalAlignment="Stretch" FontSize="18" FontWeight="Bold" TextChanged="ColorValueChanged"/>
+                     HorizontalAlignment="Stretch" FontSize="18" FontWeight="Bold" TextChanged="OnBlueChange"/>
         </Border>
     </Grid>
 </UserControl>
