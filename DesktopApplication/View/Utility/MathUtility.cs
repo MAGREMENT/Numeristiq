@@ -67,7 +67,7 @@ public static class MathUtility
         return (b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X) > 0;
     }
 
-    public static List<Point> GetMultiColorHighlightingPolygon(Point center, double width, double height,
+    public static IReadOnlyList<Point> GetMultiColorHighlightingPolygon(Point center, double width, double height,
         double firstAngle, double secondAngle, int rotationalFactor)
     {
         List<Point> result = new();
