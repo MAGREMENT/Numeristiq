@@ -84,10 +84,41 @@
                                        Foreground="{DynamicResource Accent}">Accent</TextBlock>
                         </Border>
                         
-                        <Border Grid.Row="5" Grid.Column="0" CornerRadius="5" Background="{DynamicResource Primary1}"
+                        <Border Grid.Row="5" Grid.Column="0" CornerRadius="5" MouseEnter="ToPrimary2"
+                                Background="{DynamicResource Primary1}" MouseLeave="ToPrimary1"
                                 HorizontalAlignment="Stretch" Height="50" Margin="10 0 5 10"/>
-                        <Border Grid.Row="5" Grid.Column="1" CornerRadius="5" Background="{DynamicResource Secondary1}"
+                        <Border Grid.Row="5" Grid.Column="1" CornerRadius="5" MouseEnter="ToSecondary2"
+                                Background="{DynamicResource Secondary1}" MouseLeave="ToSecondary1"
                                 HorizontalAlignment="Stretch" Height="50" Margin="5 0 10 10"/>
+                    </Grid>
+                </Border>
+                
+                <Border Grid.Row="0" Grid.Column="1" Padding="5" CornerRadius="5" 
+                        Margin="10, 10, 20, 40" Background="{DynamicResource Background2}">
+                    <ScrollViewer Style="{StaticResource TransparentBarScrollViewer}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock FontSize="17" Foreground="{DynamicResource DifficultyBasic}"
+                                       Padding="5">Basic</TextBlock>
+                            <TextBlock FontSize="17" Foreground="{DynamicResource DifficultyEasy}"
+                                       Padding="5">Easy</TextBlock>
+                            <TextBlock FontSize="17" Foreground="{DynamicResource DifficultyMedium}"
+                                       Padding="5">Medium</TextBlock>
+                            <TextBlock FontSize="17" Foreground="{DynamicResource DifficultyHard}"
+                                       Padding="5">Hard</TextBlock>
+                            <TextBlock FontSize="17" Foreground="{DynamicResource DifficultyExtreme}"
+                                       Padding="5">Extreme</TextBlock>
+                            <TextBlock FontSize="17" Foreground="{DynamicResource DifficultyInhuman}"
+                                       Padding="5">Inhuman</TextBlock>
+                            <TextBlock FontSize="17" Foreground="{DynamicResource DifficultyByTrial}"
+                                       Padding="5">By Trial</TextBlock>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+                
+                <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Background="{DynamicResource Background2}"
+                        CornerRadius="5" Margin="10">
+                    <Grid>
+                        
                     </Grid>
                 </Border>
             </Grid>

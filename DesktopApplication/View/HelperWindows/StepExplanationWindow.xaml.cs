@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Sudokus.Solve;
-using DesktopApplication.Presenter.Sudokus.Solve.Explanation;
 using DesktopApplication.View.Controls;
 using Model.Core.Explanation;
 

@@ -1,35 +1,13 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Explanation;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
+using Model.Sudokus.Solver.Utility;
 
 namespace Model.Sudokus.Solver.Strategies;
 
-/// <summary>
-/// Box line reduction is a pattern where a possibility in a row/column is restrained to a single mini grid. That means that,
-/// wherever this possibility ends up as a solution in that row or column, it will always remove the possibility from the
-/// remaining cells of the mini grid.
-///
-/// Example :
-///
-/// +-------+-------+-------+
-/// | x x x | . . . | . . . |
-/// | y y y | . . . | . . . |
-/// | y y y | . . . | . . . |
-/// +-------+-------+-------+
-/// | . . . | . . . | . . . |
-/// | . . . | . . . | . . . |
-/// | . . . | . . . | . . . |
-/// +-------+-------+-------+
-/// | . . . | . . . | . . . |
-/// | . . . | . . . | . . . |
-/// | . . . | . . . | . . . |
-/// +-------+-------+-------+
-///
-/// If a possibility is present in only the x-marked cells in the first row, then it can be removed from all
-/// y-marked cells
-/// </summary>
 public class ClaimingSetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Claiming Set";
@@ -116,6 +94,20 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<NumericChange,
     {
         var causes = _linePos.ToCellArray(_unit, _unitNumber);
 
+        var start = new StringExplanationElement($"All the possibilities for {_number} in ");
+        var buffer = start.Append(new House(_unit, _unitNumber)).Append(" are in ")
+            .Append(new House(Unit.Box, GetBoxNumber())).Append(". Which means that whatever possibility between ")
+            .Append(causes[0]);
+
+        for (int i = 1; i < causes.Length; i++)
+        {
+            buffer = buffer.Append(", ");
+            buffer = buffer.Append(causes[i]);
+        }
+
+        buffer.Append(" is the solution for ").Append(new House(_unit, _unitNumber))
+            .Append($", it will remove the other {_number}'s from ").Append(new House(Unit.Box, GetBoxNumber()));
+
         return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
             foreach (var coord in causes)
@@ -124,22 +116,30 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<NumericChange,
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
-        });
+        }, start);
     }
 
     private string Description()
     {
-        var box = _unit switch
-        {
-            Unit.Row => _unitNumber / 3 * 3 + _linePos.First() / 3 + 1,
-            Unit.Column => _linePos.First() / 3 * 3 + _unitNumber / 3 + 1,
-            _ => 0
-        };
-        return $"Claiming Set in box {box} because of {_unit.ToString().ToLower()} {_unitNumber + 1}";
+        return $"Claiming Set in box {GetBoxNumber() + 1} because of {_unit.ToString().ToLower()} {_unitNumber + 1}";
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return Clue<ISudokuHighlighter>.Default();
+        return new Clue<ISudokuHighlighter>(lighter =>
+            {
+                lighter.EncircleHouse(new House(_unit, _unitNumber), StepColor.Cause1);
+                lighter.EncircleHouse(new House(Unit.Box, GetBoxNumber()), StepColor.Cause2);
+            }, $"This box and that {_unit.ToString().ToLower()} have an interesting intersection");
+    }
+
+    private int GetBoxNumber()
+    {
+        return _unit switch
+        {
+            Unit.Row => _unitNumber / 3 * 3 + _linePos.First() / 3,
+            Unit.Column => _linePos.First() / 3 * 3 + _unitNumber / 3,
+            _ => 0
+        };
     }
 }

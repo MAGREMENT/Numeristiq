@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
@@ -23,19 +22,19 @@ public class BlossomLoopStrategy : SudokuStrategy
     private readonly IBlossomLoopBranchFinder _branchFinder;
     
     public BlossomLoopStrategy(IBlossomLoopLoopFinder loopFinder, IBlossomLoopBranchFinder branchFinder, IBlossomLoopType type)
-        : base("", StepDifficulty.Extreme, DefaultInstanceHandling)
+        : base(type.Name, StepDifficulty.Extreme, DefaultInstanceHandling)
     {
         _loopFinder = loopFinder;
         _branchFinder = branchFinder;
         _type = type;
-        Name = type.Name;
     }
 
     
     public override void Apply(ISudokuSolverData solverData)
     {
         solverData.PreComputer.Graphs.ConstructComplex(SudokuConstructRuleBank.PointingPossibilities,
-            SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink, SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
+            SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
+            SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
         var graph = solverData.PreComputer.Graphs.ComplexLinkGraph;
 
         foreach (var cps in _type.Candidates(solverData))
@@ -60,8 +59,7 @@ public class BlossomLoopStrategy : SudokuStrategy
                 }
 
                 if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                        new BlossomLoopReportBuilder(loop, branches, cps)) &&
-                            StopOnFirstPush) return;
+                        new BlossomLoopReportBuilder(loop, branches, cps)) && StopOnFirstPush) return;
             }
         }
     }

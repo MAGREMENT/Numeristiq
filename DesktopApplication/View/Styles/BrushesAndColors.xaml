@@ -14,7 +14,7 @@
     <Color x:Key="Secondary2Color">#E8280B</Color>
     <Brush x:Key="Accent">#F50EE2</Brush>
     <Brush x:Key="Text">White</Brush>
-    <Color x:Key="ThumbColor">White</Color>
+    <Color x:Key="TextColor">White</Color>
     <Brush x:Key="On">ForestGreen</Brush>
     <Color x:Key="OnColor">ForestGreen</Color>
     <Brush x:Key="Off">Red</Brush>

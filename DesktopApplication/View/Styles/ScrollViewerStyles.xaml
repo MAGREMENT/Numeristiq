@@ -6,7 +6,7 @@
 	    <Setter Property="Focusable" Value="False"/>
 	    <Setter Property="Background">
 		    <Setter.Value>
-			    <SolidColorBrush Color="{DynamicResource ThumbColor}" Opacity="0.1"/>
+			    <SolidColorBrush Color="{DynamicResource TextColor}" Opacity="0.1"/>
 		    </Setter.Value>
 	    </Setter>
 	    <Setter Property="Template">
@@ -20,7 +20,7 @@
 					    <Trigger Property="IsMouseOver" Value="True">
 						    <Setter Property="Background">
 							    <Setter.Value>
-								    <SolidColorBrush Color="{DynamicResource ThumbColor}"/>
+								    <SolidColorBrush Color="{DynamicResource TextColor}"/>
 							    </Setter.Value>
 						    </Setter>
 					    </Trigger>

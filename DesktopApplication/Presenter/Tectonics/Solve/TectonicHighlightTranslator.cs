@@ -6,7 +6,7 @@ using Model.Utility;
 
 namespace DesktopApplication.Presenter.Tectonics.Solve;
 
-public class TectonicHighlightTranslator : ITectonicHighlighter
+public class TectonicHighlightTranslator : ITectonicHighlighter, IHighlighterTranslator<ITectonicHighlighter>
 {
     private readonly ITectonicDrawer _drawer;
 
@@ -15,8 +15,9 @@ public class TectonicHighlightTranslator : ITectonicHighlighter
         _drawer = drawer;
     }
 
-    public void Translate(IHighlightable<ITectonicHighlighter> highlightable)
+    public void Translate(IHighlightable<ITectonicHighlighter> highlightable, bool clear)
     {
+        if(clear) _drawer.ClearHighlights();
         highlightable.Highlight(this);
         _drawer.Refresh();
     }

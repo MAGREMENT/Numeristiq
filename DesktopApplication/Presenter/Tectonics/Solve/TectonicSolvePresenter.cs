@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Model.Core;
-using Model.Core.Trackers;
+using Model.Core.Highlighting;
+using Model.Core.Steps;
 using Model.Tectonics;
 using Model.Tectonics.Solver;
 using Model.Utility;
@@ -8,28 +10,21 @@ using Model.Utility.Collections;
 
 namespace DesktopApplication.Presenter.Tectonics.Solve;
 
-public class TectonicSolvePresenter
+public class TectonicSolvePresenter : SolveWithStepsPresenter<ITectonicHighlighter, INumericStep<ITectonicHighlighter>,
+    INumericSolvingState>
 {
     private readonly TectonicSolver _solver;
     private readonly ITectonicSolveView _view;
-
-    private readonly TectonicHighlightTranslator _translator;
-    private readonly UIUpdateTracker _tracker;
     
-    private int _stepCount;
-    private int _currentlyOpenedStep = -1;
-    private StateShown _stateShown = StateShown.Before;
     private readonly ContainingList<Cell> _selectedCells = new();
     private IZone? _selectedZone;
     private SelectionMode _selectionMode = SelectionMode.Default;
 
-    public TectonicSolvePresenter(TectonicSolver solver, ITectonicSolveView view)
+    public TectonicSolvePresenter(TectonicSolver solver, ITectonicSolveView view) 
+        : base(new TectonicHighlightTranslator(view.Drawer))
     {
         _solver = solver;
         _view = view;
-
-        _translator = new TectonicHighlightTranslator(_view.Drawer);
-        _tracker = new UIUpdateTracker(this);
     }
 
     public void SetTectonicString()
@@ -71,11 +66,11 @@ public class TectonicSolvePresenter
 
     public async void Solve(bool stopAtProgress)
     {
-        _tracker.AttachTo(_solver);
+        _solver.StrategyEnded += OnStrategyEnd;
 
         await Task.Run(() => _solver.Solve(stopAtProgress));
 
-        _tracker.Detach();
+        _solver.StrategyEnded -= OnStrategyEnd;
     }
 
     public void Clear()
@@ -87,51 +82,6 @@ public class TectonicSolvePresenter
     public void Reset()
     {
         SetNewTectonic(_solver.Tectonic.CopyWithoutDigits(), false);
-    }
-    
-    public void RequestLogOpening(int id)
-    {
-        var index = id - 1;
-        if (index < 0 || index > _solver.Steps.Count) return;
-        
-        _view.CloseLogs();
-
-        if (_currentlyOpenedStep == index)
-        {
-            _currentlyOpenedStep = -1;
-            SetShownState(_solver, false, true);
-        }
-        else
-        {
-            _view.OpenLog(index);
-            _currentlyOpenedStep = index;
-
-            var log = _solver.Steps[index];
-            SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
-            _translator.Translate(log.HighlightManager); 
-        }
-    }
-
-    public void RequestStateShownChange(StateShown ss)
-    {
-        _stateShown = ss;
-        _view.SetLogsStateShown(ss);
-        if (_currentlyOpenedStep < 0 || _currentlyOpenedStep > _solver.Steps.Count) return;
-        
-        var log = _solver.Steps[_currentlyOpenedStep];
-        SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
-        _translator.Translate(log.HighlightManager);
-    }
-
-    public void RequestHighlightChange(int newHighlight)
-    {
-        if (_currentlyOpenedStep < 0 || _currentlyOpenedStep >= _solver.Steps.Count) return;
-        
-        var log = _solver.Steps[_currentlyOpenedStep];
-        log.HighlightManager.GoTo(newHighlight - 1);
-        
-        _view.Drawer.ClearHighlights();
-        _translator.Translate(log.HighlightManager);
     }
 
     public void SelectCell(Cell c)
@@ -211,7 +161,7 @@ public class TectonicSolvePresenter
         var c = _selectedCells[0];
         _solver.SetSolutionByHand(n, c.Row, c.Column);
         SetShownState(_solver, !_solver.StartedSolving, true);
-        UpdateLogs();
+        UpdateSteps();
     }
 
     public void DeleteCurrentCell()
@@ -221,15 +171,17 @@ public class TectonicSolvePresenter
         var c = _selectedCells[0];
         _solver.RemoveSolutionByHand(c.Row, c.Column);
         SetShownState(_solver, !_solver.StartedSolving, true);
-        UpdateLogs();
+        UpdateSteps();
     }
 
     #region Private
-
-    private void ClearLogs()
+    
+    private void OnStrategyEnd(Strategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
     {
-        _view.ClearLogs();
-        _stepCount = 0;
+        if (possibilitiesRemoved == 0 && solutionAdded == 0) return;
+        
+        SetShownState(_solver, false, true);
+        UpdateSteps();
     }
     
     private void SetNewTectonic(ITectonic tectonic, bool showPossibilities)
@@ -238,10 +190,20 @@ public class TectonicSolvePresenter
         _view.Drawer.ClearHighlights();
         SetUpNewTectonic();
         SetShownState(_solver, true, showPossibilities);
-        ClearLogs();
+        ClearSteps();
     }
 
-    private void SetShownState(INumericSolvingState state, bool asClue, bool showPossibilities)
+    protected override IReadOnlyList<INumericStep<ITectonicHighlighter>> Steps => _solver.Steps;
+    protected override ISolveWithStepsView View => _view;
+
+    public override IStepExplanationPresenterBuilder? RequestExplanation()
+    {
+        if (_currentlyOpenedStep >= 0 && _currentlyOpenedStep < _solver.Steps.Count)
+            return new TectonicStepExplanationPresenterBuilder(_solver.Steps[_currentlyOpenedStep], _solver.Tectonic);
+        return null;
+    }
+
+    protected override void SetShownState(INumericSolvingState state, bool asClue, bool showPossibilities)
     {
         var drawer = _view.Drawer;
 
@@ -267,9 +229,9 @@ public class TectonicSolvePresenter
         drawer.Refresh();
     }
 
-    public void ShowCurrentState()
+    protected override INumericSolvingState GetCurrentState()
     {
-        SetShownState(_solver, false, true);
+        return _solver;
     }
 
     private void SetUpNewTectonic()
@@ -300,50 +262,8 @@ public class TectonicSolvePresenter
         
         drawer.Refresh();
     }
-    
-    public void UpdateLogs()
-    {
-        if (_solver.Steps.Count < _stepCount)
-        {
-            ClearLogs();
-            return;
-        }
-
-        for (;_stepCount < _solver.Steps.Count; _stepCount++)
-        {
-            _view.AddLog(_solver.Steps[_stepCount], _stateShown);
-        }
-    }
 
     #endregion
-}
-
-public class UIUpdateTracker : Tracker<object>
-{
-    private readonly TectonicSolvePresenter _presenter;
-
-    public UIUpdateTracker(TectonicSolvePresenter presenter)
-    {
-        _presenter = presenter;
-    }
-
-    protected override void OnAttach(ITrackerAttachable<object> attachable)
-    {
-        attachable.StrategyEnded += OnStrategyEnd;
-    }
-
-    protected override void OnDetach(ITrackerAttachable<object> attachable)
-    {
-        attachable.StrategyEnded -= OnStrategyEnd;
-    }
-    
-    private void OnStrategyEnd(Strategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
-    {
-        if (possibilitiesRemoved == 0 && solutionAdded == 0) return;
-        
-        _presenter.ShowCurrentState();
-        _presenter.UpdateLogs();
-    }
 }
 
 public enum SelectionMode

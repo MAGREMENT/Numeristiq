@@ -1,10 +1,11 @@
-﻿<pages:SudokuPage x:Class="DesktopApplication.View.Sudokus.Pages.ManagePage"
+﻿<view:ManagedPage x:Class="DesktopApplication.View.Sudokus.Pages.ManagePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
       xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
+      xmlns:view="clr-namespace:DesktopApplication.View"
       mc:Ignorable="d"
       Title="ManagePage" d:DesignHeight="660" d:DesignWidth="1400">
     <Grid Background="{DynamicResource Background1}">
@@ -80,4 +81,4 @@
             </Border>
         </Border>
     </Grid>
-</pages:SudokuPage>
+</view:ManagedPage>

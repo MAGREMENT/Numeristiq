@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DesktopApplication.Presenter.Sudokus.Solve.ChooseStep;
-using DesktopApplication.Presenter.Sudokus.Solve.Explanation;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
@@ -386,28 +385,6 @@ public class ChooseStepPresenterBuilder
     public ChooseStepPresenter Build(IChooseStepView view)
     {
         return new ChooseStepPresenter(view, _currentState, _commits, _applier, _settings);
-    }
-}
-
-public interface IStepExplanationPresenterBuilder
-{
-    public IStepExplanationPresenter Build(IStepExplanationView view);
-}
-
-public class SudokuStepExplanationPresenterBuilder : IStepExplanationPresenterBuilder
-{
-    private readonly INumericStep<ISudokuHighlighter> _numericStep;
-    private readonly Settings _settings;
-
-    public SudokuStepExplanationPresenterBuilder(INumericStep<ISudokuHighlighter> numericStep, Settings settings)
-    {
-        _numericStep = numericStep;
-        _settings = settings;
-    }
-
-    public IStepExplanationPresenter Build(IStepExplanationView view)
-    {
-        return new SudokuStepExplanationPresenter(view, _numericStep, _settings);
     }
 }
 

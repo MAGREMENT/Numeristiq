@@ -1,5 +1,4 @@
-﻿using DesktopApplication.Presenter.Sudokus.Solve.Explanation;
-using Model.Utility;
+﻿using Model.Utility;
 
 namespace DesktopApplication.Presenter.Sudokus;
 

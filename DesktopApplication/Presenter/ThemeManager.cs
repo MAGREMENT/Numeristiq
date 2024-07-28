@@ -49,4 +49,9 @@ public class ThemeManager
         _repository.AddTheme(theme);
         _themes.Add(theme);
     }
+
+    public void UpdateTheme(int index)
+    {
+        _repository.ChangeTheme(index, _themes[index]);
+    }
 }

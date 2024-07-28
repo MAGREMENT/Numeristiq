@@ -1,20 +1,21 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Tectonics;
 using DesktopApplication.Presenter.Tectonics.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.Tectonics.Controls;
-using Model.Core.Highlighting;
-using Model.Core.Steps;
+using DesktopApplication.View.Utility;
 using Model.Utility;
+using SelectionMode = DesktopApplication.Presenter.Tectonics.Solve.SelectionMode;
 
 namespace DesktopApplication.View.Tectonics.Pages;
 
 public partial class SolvePage : ITectonicSolveView
 {
     private readonly TectonicSolvePresenter _presenter;
-
-    private int _logOpen;
     
     public SolvePage(TectonicApplicationPresenter appPresenter)
     {
@@ -30,52 +31,6 @@ public partial class SolvePage : ITectonicSolveView
     public void SetTectonicString(string s)
     {
         TextBox.SetText(s);
-    }
-
-    public void AddLog(IStep step, StateShown stateShown)
-    {
-        LogPanel.Dispatcher.Invoke(() =>
-        {
-            var lc = new StepControl(step, stateShown);
-            LogPanel.Children.Add(lc);
-            lc.OpenRequested += _presenter.RequestLogOpening;
-            lc.StateShownChanged += _presenter.RequestStateShownChange;
-            lc.PageSelector.PageChanged += _presenter.RequestHighlightChange;
-        });
-        LogViewer.Dispatcher.Invoke(() => LogViewer.ScrollToEnd());
-    }
-
-    public void ClearLogs()
-    {
-        LogPanel.Children.Clear();
-    }
-
-    public void OpenLog(int index)
-    {
-        if (index < 0 || index > LogPanel.Children.Count) return;
-        if (LogPanel.Children[index] is not StepControl lc) return;
-
-        _logOpen = index;
-        lc.Open();
-    }
-
-    public void CloseLogs()
-    {
-        if (_logOpen < 0 || _logOpen >= LogPanel.Children.Count) return;
-        if (LogPanel.Children[_logOpen] is not StepControl lc) return;
-
-        _logOpen = -1;
-        lc.Close();
-    }
-
-    public void SetLogsStateShown(StateShown stateShown)
-    {
-        foreach (var child in LogPanel.Children)
-        {
-            if (child is not StepControl lc) continue;
-
-            lc.SetStateShown(stateShown);
-        }
     }
 
     private void CreateNewTectonic(string s)
@@ -204,5 +159,59 @@ public partial class SolvePage : ITectonicSolveView
                 _presenter.DeleteCurrentCell();
                 break;
         }
+    }
+
+    public override void OnShow()
+    {
+        
+    }
+
+    public override void OnClose()
+    {
+        
+    }
+
+    public override object? TitleBarContent()
+    {
+        return null;
+    }
+
+    protected override StackPanel GetStepPanel()
+    {
+        return LogPanel;
+    }
+
+    protected override ScrollViewer GetStepViewer()
+    {
+        return LogViewer;
+    }
+
+    protected override ISolveWithStepsPresenter GetStepsPresenter()
+    {
+        return _presenter;
+    }
+
+    protected override ISizeOptimizable GetExplanationDrawer()
+    {
+        var board = new TectonicBoard
+        {
+            BackgroundBrush = Brushes.Transparent,
+            BigLineRange = new DependantThicknessRange
+            {
+                Minimum = 3,
+                Maximum = 5,
+                Floor = 50,
+                Roof = 100
+            },
+            SmallLineWidth=1,
+            CellSize = 50
+        };
+
+        board.SetResourceReference(TectonicBoard.LineBrushProperty, "Text");
+        board.SetResourceReference(TectonicBoard.DefaultNumberBrushProperty, "Text");
+        board.SetResourceReference(TectonicBoard.SpecialNumberBrushProperty, "Primary1");
+        board.SetResourceReference(TectonicBoard.LinkBrushProperty, "Accent");
+
+        return board;
     }
 }

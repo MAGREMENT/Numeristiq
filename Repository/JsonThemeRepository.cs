@@ -33,6 +33,15 @@ public class JsonThemeRepository : JsonRepository, IThemeRepository
         Upload(_buffer);
     }
 
+    public void ChangeTheme(int index, Theme newTheme)
+    {
+        _buffer ??= Download<List<ThemeDto>>();
+        if (_buffer is null || index < 0 || index >= _buffer.Count) return;
+
+        _buffer[index] = ThemeDto.From(newTheme);
+        Upload(_buffer);
+    }
+
     private static Theme[] To(IReadOnlyList<ThemeDto> dtos)
     {
         var result = new Theme[dtos.Count];

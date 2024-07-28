@@ -22,6 +22,12 @@
 			    <Setter Property="FontFamily" Value="{StaticResource Poppins}" />             
 		    </Style> 
 			
+			<Style TargetType="ToolTip">
+				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
+				<Setter Property="Background" Value="{DynamicResource Background1}"/>
+				<Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
+			</Style>
+			
 			<Style TargetType="Button" x:Key="ForegroundButton">
 				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
 				<Setter Property="Template">

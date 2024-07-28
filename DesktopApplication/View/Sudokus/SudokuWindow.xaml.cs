@@ -7,7 +7,7 @@ namespace DesktopApplication.View.Sudokus;
 
 public partial class SudokuWindow
 {
-    private readonly SudokuPage[] _pages;
+    private readonly ManagedPage[] _pages;
 
     private int _currentPage = -1;
     private bool _cancelNavigation = true;
@@ -20,7 +20,7 @@ public partial class SudokuWindow
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
 
         var presenter = GlobalApplicationPresenter.Instance.InitializeSudokuApplicationPresenter();
-        _pages = new SudokuPage[]
+        _pages = new ManagedPage[]
         {
             new SolvePage(presenter), new PlayPage(presenter), new ManagePage(presenter), new GeneratePage(presenter)
         };

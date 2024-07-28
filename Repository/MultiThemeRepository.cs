@@ -40,4 +40,9 @@ public class MultiThemeRepository : IThemeRepository
     {
         _repositories[0].AddTheme(theme);
     }
+
+    public void ChangeTheme(int index, Theme newTheme)
+    {
+        _repositories[0].ChangeTheme(index, newTheme);
+    }
 }

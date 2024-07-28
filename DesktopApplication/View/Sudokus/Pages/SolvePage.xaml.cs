@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.View.Controls;
@@ -11,7 +13,6 @@ using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.HelperWindows.Dialog;
 using DesktopApplication.View.Sudokus.Controls;
 using Microsoft.Win32;
-using Model.Core.Steps;
 using Model.Sudokus.Solver;
 
 namespace DesktopApplication.View.Sudokus.Pages;
@@ -53,58 +54,6 @@ public partial class SolvePage : ISudokuSolveView
         ChooseStepButton.IsEnabled = true;
         ClearButton.IsEnabled = true;
         _disabled = false;
-    }
-
-    public void AddStep(IStep step, StateShown stateShown)
-    {
-        LogPanel.Dispatcher.Invoke(() =>
-        {
-            var lc = new StepControl(step, stateShown);
-            LogPanel.Children.Add(lc);
-            lc.OpenRequested += _presenter.RequestStepOpening;
-            lc.StateShownChanged += _presenter.RequestStateShownChange;
-            lc.PageSelector.PageChanged += _presenter.RequestHighlightChange;
-            lc.ExplanationAsked += () =>
-            {
-                var builder = _presenter.RequestExplanation();
-                if (builder is null) return;
-
-                var window = new StepExplanationWindow(builder, GetSudokuDrawer());
-                window.Show();
-            };
-        });
-        LogViewer.Dispatcher.Invoke(() => LogViewer.ScrollToEnd());
-    }
-
-    public void ClearSteps()
-    {
-        LogPanel.Children.Clear();
-    }
-
-    public void OpenStep(int index)
-    {
-        if (index < 0 || index > LogPanel.Children.Count) return;
-        if (LogPanel.Children[index] is not StepControl lc) return;
-        
-        lc.Open();
-    }
-
-    public void CloseStep(int index)
-    {
-        if (index < 0 || index > LogPanel.Children.Count) return;
-        if (LogPanel.Children[index] is not StepControl lc) return;
-        
-        lc.Close();
-    }
-
-    public void SetStepsStateShown(StateShown stateShown)
-    {
-        foreach (var child in LogPanel.Children)
-        {
-            if (child is not StepControl lc) continue;
-
-            lc.SetStateShown(stateShown);
-        }
     }
 
     public void InitializeStrategies(IReadOnlyList<SudokuStrategy> strategies)
@@ -166,7 +115,13 @@ public partial class SolvePage : ISudokuSolveView
 
     #endregion
 
-    private static SudokuBoard GetSudokuDrawer()
+    protected override StackPanel GetStepPanel() => StepPanel;
+
+    protected override ScrollViewer GetStepViewer() => StepViewer;
+
+    protected override ISolveWithStepsPresenter GetStepsPresenter() => _presenter;
+
+    protected override ISizeOptimizable GetExplanationDrawer()
     {
         var board = new SudokuBoard
         {

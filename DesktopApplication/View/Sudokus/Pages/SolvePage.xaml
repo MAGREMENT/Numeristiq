@@ -1,10 +1,10 @@
-﻿<pages:SudokuPage x:Class="DesktopApplication.View.Sudokus.Pages.SolvePage"
+﻿<v:SolveWithStepsPage x:Class="DesktopApplication.View.Sudokus.Pages.SolvePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:v="clr-namespace:DesktopApplication.View"
       xmlns:global="clr-namespace:DesktopApplication.View.Controls"
-      xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       xmlns:controls="clr-namespace:DesktopApplication.View.Sudokus.Controls"
       mc:Ignorable="d"
       Title="SolvePage" d:DesignHeight="660" d:DesignWidth="1400">
@@ -42,9 +42,9 @@
                     <TextBlock Grid.Row="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
                                Foreground="{DynamicResource Text}" Margin="5, 0, 0, 0">Steps</TextBlock>
             
-                    <ScrollViewer Grid.Row="1" x:Name="LogViewer" Margin="0,0, 0, 10"
+                    <ScrollViewer Grid.Row="1" x:Name="StepViewer" Margin="0,0, 0, 10"
                                   Style="{StaticResource TransparentBarScrollViewer}" VerticalAlignment="Stretch">
-                        <StackPanel x:Name="LogPanel"/>
+                        <StackPanel x:Name="StepPanel"/>
                     </ScrollViewer>
                 </Grid>
             </Border>
@@ -88,4 +88,4 @@
         
         <global:HideableTextBox Grid.Column="0" Grid.ColumnSpan="3" x:Name="SudokuAsString" Showed="SudokuTextBoxShowed" TextChanged="SetNewSudoku"/>
     </Grid>
-</pages:SudokuPage>
+</v:SolveWithStepsPage>

@@ -6,12 +6,11 @@ using Model.Utility.Collections;
 
 namespace DesktopApplication.Presenter.Tectonics.Solve;
 
-public interface ITectonicDrawer
+public interface ITectonicDrawer : IDrawer
 {
     int RowCount { set; }
     int ColumnCount { set; }
-
-    void Refresh();
+    
     void ClearNumbers();
     void ShowSolution(int row, int column, int number);
     void ShowPossibilities(int row, int column, IEnumerable<int> possibilities);
@@ -21,7 +20,6 @@ public interface ITectonicDrawer
     void PutCursorOn(Cell cell);
     void PutCursorOn(IContainingEnumerable<Cell> cells);
     void ClearCursor();
-    void ClearHighlights();
     void FillPossibility(int row, int col, int possibility, StepColor color);
     void FillCell(int row, int col, StepColor color);
     void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,

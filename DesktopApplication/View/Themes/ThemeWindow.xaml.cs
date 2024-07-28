@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Themes;
 using DesktopApplication.View.Themes.Controls;
@@ -107,5 +108,25 @@ public partial class ThemeWindow : IThemeView
     private void ChangeColor(RGB color)
     {
         _presenter.SetCurrentColor(color);
+    }
+    
+    private void ToPrimary1(object sender, MouseEventArgs e)
+    {
+        if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "Primary1");
+    }
+    
+    private void ToPrimary2(object sender, MouseEventArgs e)
+    {
+        if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "Primary2");
+    }
+    
+    private void ToSecondary1(object sender, MouseEventArgs e)
+    {
+        if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "Secondary1");
+    }
+
+    private void ToSecondary2(object sender, MouseEventArgs e)
+    {
+        if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "Secondary2");
     }
 }

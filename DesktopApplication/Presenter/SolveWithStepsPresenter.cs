@@ -6,7 +6,8 @@ using Model.Core.Steps;
 namespace DesktopApplication.Presenter;
 
 //TODO implement for each game
-public abstract class SolveWithStepsPresenter<THighlight, TStep, TState> where TStep : IStep<THighlight, TState>
+public abstract class SolveWithStepsPresenter<THighlight, TStep, TState> : ISolveWithStepsPresenter
+    where TStep : IStep<THighlight, TState>
 {
     protected readonly IHighlighterTranslator<THighlight> _translator;
     protected int _currentlyOpenedStep = -1;
@@ -88,6 +89,14 @@ public abstract class SolveWithStepsPresenter<THighlight, TStep, TState> where T
         View.ClearSteps();
         _stepCount = 0;
     }
+}
+
+public interface ISolveWithStepsPresenter
+{
+    public void RequestStepOpening(int id);
+    public void RequestStateShownChange(StateShown ss);
+    public void RequestHighlightChange(int newHighlight);
+    public IStepExplanationPresenterBuilder? RequestExplanation();
 }
 
 public interface IHighlighterTranslator<out T>

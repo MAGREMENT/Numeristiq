@@ -10,6 +10,7 @@ public interface IThemeRepository
     IReadOnlyList<Theme> GetThemes();
     int Count();
     void AddTheme(Theme theme);
+    void ChangeTheme(int index, Theme newTheme);
 }
 
 public class Theme : INamed, ICopyable<Theme>

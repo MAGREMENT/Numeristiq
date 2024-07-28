@@ -155,6 +155,10 @@ public static class StrategyPool
         "If a group of all instances of N different digits in a band (aka 3 rows or 3 columns in the same 3 boxes) is spread" +
         " over N+1 or less mini-rows/-columns, then the group will contain at least one unavoidable set.");
 
+    private static readonly IDescription ClaimingSetDescription = new FullTextDescription("When all possibilities in a" +
+        " row/column are restrained to a single box, the solution, wherever it is is, will always remove the possibilities" +
+        " from the remaining cells of the box.");
+
     private static readonly Dictionary<string, IDescription> Descriptions = new()
     {
         {NakedSingleStrategy.OfficialName, NakedSingleDescription},
@@ -163,7 +167,8 @@ public static class StrategyPool
         {UniquenessClueCoverStrategy.OfficialName, UniquenessClueCoverDescription},
         {BUGStrategy.OfficialName, BUGDescription},
         {AlignedPairExclusionStrategy.OfficialName, APEDescription},
-        {BandUniquenessStrategy.OfficialName, BandUniquenessDescription}
+        {BandUniquenessStrategy.OfficialName, BandUniquenessDescription},
+        {ClaimingSetStrategy.OfficialName, ClaimingSetDescription}
     };
 
     #endregion

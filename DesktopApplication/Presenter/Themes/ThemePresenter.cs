@@ -38,7 +38,7 @@ public class ThemePresenter
 
         var theme = _themeManager.Themes[_settings.Theme];
         theme.SetColor(_currentColor, value);
-        //TODO update repo
+        _themeManager.UpdateTheme(_settings.Theme);
         _settings.TrySet("Theme", new IntSettingValue(_settings.Theme));
         _view.SetColors(theme.AllColors(), _themeManager.IsEditable(_settings.Theme));
     }

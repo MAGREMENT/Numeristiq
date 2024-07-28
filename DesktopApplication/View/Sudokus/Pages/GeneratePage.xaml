@@ -1,11 +1,11 @@
-﻿<pages:SudokuPage x:Class="DesktopApplication.View.Sudokus.Pages.GeneratePage"
+﻿<view:ManagedPage x:Class="DesktopApplication.View.Sudokus.Pages.GeneratePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
-      xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       xmlns:controls1="clr-namespace:DesktopApplication.View.Sudokus.Controls"
+      xmlns:view="clr-namespace:DesktopApplication.View"
       mc:Ignorable="d"
       Title="GeneratePage" d:DesignHeight="660" d:DesignWidth="1400">
     <Grid Background="{DynamicResource Background1}">
@@ -74,7 +74,8 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{DynamicResource Text}" FontSize="18" Margin="5,0,0,0" VerticalAlignment="Center"
                        FontWeight="Normal">Final List</TextBlock>
             
-            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource SimpleHoverButton}" Click="CopyAll">
+            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource SimpleHoverButton}" Click="CopyAll"
+                    ToolTip="Copy full list">
                 <Path Width="40" Height="40" Stroke="{DynamicResource Text}"
                       Data="M 7,35 V 10 H 27 V 35 H 7 M 15,10 V 5 H 35 V 30 H 27"/>
             </Button>
@@ -118,4 +119,4 @@
             <Image Grid.Row="1" Width="80" Height="80" Margin="10" Source="../../Images/bin.png" x:Name="Bin"/>
         </Grid>
     </Grid>
-</pages:SudokuPage>
+</view:ManagedPage>

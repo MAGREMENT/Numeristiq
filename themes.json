@@ -1,11 +1,11 @@
 [
   {
     "Name": "Test",
-    "Background1": 921109,
+    "Background1": 1118488,
     "Background2": 1842220,
     "Background3": 2565954,
     "Primary1": 9571314,
-    "Primary2": 8260560,
+    "Primary2": 11536366,
     "Secondary1": 15798227,
     "Secondary2": 12455334,
     "Accent": 762353,
@@ -13,7 +13,7 @@
     "On": 634121,
     "Off": 14552590,
     "Disabled": 8224125,
-    "DifficultyBasic": 4176607,
+    "DifficultyBasic": 8373978,
     "DifficultyEasy": 634121,
     "DifficultyMedium": 16753920,
     "DifficultyHard": 14552590,

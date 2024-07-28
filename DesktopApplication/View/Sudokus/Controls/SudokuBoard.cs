@@ -325,7 +325,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
     {
         var delta = _smallLineWidth / 2;
         Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col, possibility) - delta, GetTop(row, possibility) - delta,
-            _possibilitySize + _smallLineWidth, _possibilitySize + _smallLineWidth), new Pen(LinkBrush, _bigLineWidth)));
+            _possibilitySize + _smallLineWidth, _possibilitySize + _smallLineWidth), new Pen(LinkBrush, _smallLineWidth)));
     }
 
     public void EncircleCell(int row, int col)
@@ -371,7 +371,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         }
         
         Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
-            new Pen(App.Current.ThemeInformation.ToBrush(color), _bigLineWidth)));
+            new Pen(App.Current.ThemeInformation.ToBrush(color), _smallLineWidth)));
     }
 
     public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, StepColor color)

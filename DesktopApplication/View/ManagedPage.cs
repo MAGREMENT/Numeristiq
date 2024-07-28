@@ -1,8 +1,8 @@
 ﻿using System.Windows.Controls;
 
-namespace DesktopApplication.View.Sudokus.Pages;
+namespace DesktopApplication.View;
 
-public abstract class SudokuPage : Page
+public abstract class ManagedPage : Page
 {
     public abstract void OnShow();
     public abstract void OnClose();
