@@ -43,14 +43,19 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
         _repo = repo;
 
         _view.Drawer.FastPossibilityDisplay = _settings.FastPossibilityDisplay;
+        _view.Drawer.LinkOffsetSidePriority = _settings.LinkOffsetSidePriority;
 
         _settings.FastPossibilityDisplaySetting.ValueChanged += v =>
         {
             _view.Drawer.FastPossibilityDisplay = v.ToBool();
-            RedrawBoard();
+            _view.Drawer.Refresh();
         };
-        _settings.LinkOffsetSidePrioritySetting.ValueChanged += _ => RedrawBoard();
-        _settings.ShowSameCellsLinksSetting.ValueChanged += _ => RedrawBoard();
+        _settings.LinkOffsetSidePrioritySetting.ValueChanged += v =>
+        {
+            _view.Drawer.LinkOffsetSidePriority = (LinkOffsetSidePriority)v.ToInt();
+            _view.Drawer.Refresh();
+        };
+        _settings.ShowSameCellsLinksSetting.ValueChanged += _ => _view.Drawer.Refresh();
         _settings.AllowUniquenessSetting.ValueChanged += AllowUniqueness;
         
         SettingsPresenter = new SettingsPresenter(_settings, SettingCollections.SudokuSolvePage);
@@ -281,33 +286,6 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
         _solver.SetState(numericSolvingState);
         SetShownState(_solver, true, true);
         ClearSteps();
-    }
-
-    private void RedrawBoard()
-    {
-        if (_currentlyDisplayedState is null) return;
-        
-        var drawer = _view.Drawer;
-        drawer.ClearNumbers();
-        drawer.ClearHighlights();
-        
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                var number = _currentlyDisplayedState[row, col];
-                if (number == 0) drawer.ShowPossibilities(row, col, _currentlyDisplayedState
-                    .PossibilitiesAt(row, col).EnumeratePossibilities());
-                else drawer.ShowSolution(row, col, number);
-            }
-        }
-
-        if (_currentlyOpenedStep != -1)
-        {
-            _translator.Translate(_solver.Steps[_currentlyOpenedStep].HighlightManager, false);
-        }
-        
-        drawer.Refresh();
     }
 
     private void AllowUniqueness(SettingValue value)

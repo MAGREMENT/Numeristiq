@@ -105,7 +105,7 @@ public class SudokuHighlighterTranslator : IHighlighterTranslator<ISudokuHighlig
         if (!_settings.ShowSameCellLinks && from.ToCell() == to.ToCell()) return;
         
         _drawer.CreateLink(from.Row, from.Column, from.Possibility, to.Row, to.Column,
-            to.Possibility, linkStrength, _settings.LinkOffsetSidePriority);
+            to.Possibility, linkStrength);
     }
 
     public void CreateLink(ISudokuElement from, ISudokuElement to, LinkStrength linkStrength)

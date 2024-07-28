@@ -45,10 +45,20 @@ public class SudokuPlayPresenter
         _disabler = new Disabler(_view);
         
         _player.MainLocation = _settings.MainLocation;
-        
-        _settings.StartAngleSetting.ValueChanged += _ => RefreshHighlights();
-        _settings.RotationDirectionSetting.ValueChanged += _ => RefreshHighlights();
+        _view.Drawer.StartAngle = View.Utility.MathUtility.ToRadians(_settings.StartAngle);
+        _view.Drawer.RotationFactor = (int)_settings.RotationDirection;
+
         _settings.MainLocationSetting.ValueChanged += v => _player.MainLocation = (PossibilitiesLocation)v.ToInt();
+        _settings.StartAngleSetting.ValueChanged += v =>
+        {
+            _view.Drawer.StartAngle = View.Utility.MathUtility.ToRadians(v.ToDouble());
+            _view.Drawer.Refresh();
+        };
+        _settings.RotationDirectionSetting.ValueChanged += v =>
+        {
+            _view.Drawer.RotationFactor = v.ToInt();
+            _view.Drawer.Refresh();
+        };
 
         SettingsPresenter = new SettingsPresenter(_settings, SettingCollections.SudokuPlayPage);
 
@@ -56,7 +66,7 @@ public class SudokuPlayPresenter
 
         App.Current.ThemeInformation.ThemeChanged += () =>
         {
-            RefreshHighlights();
+            _view.Drawer.Refresh();
             _view.InitializeHighlightColorBoxes();
         };
     }
@@ -65,7 +75,7 @@ public class SudokuPlayPresenter
     {
         if (_cursor is AllPossibilitiesCursor aps && aps.Possibility == p)
         {
-            EnforceCellCursor(out var _);
+            EnforceCellCursor(out _);
             return;
         }
         
@@ -406,8 +416,7 @@ public class SudokuPlayPresenter
 
         foreach (var entry in _player.EnumerateHighlights())
         {
-            drawer.FillCell(entry.Key.Row, entry.Key.Column, View.Utility.MathUtility.ToRadians(
-                _settings.StartAngle), (int)_settings.RotationDirection, entry.Value.CellColorsToArray());
+            drawer.FillCell(entry.Key.Row, entry.Key.Column, entry.Value.CellColorsToArray());
         }
         
         drawer.Refresh();

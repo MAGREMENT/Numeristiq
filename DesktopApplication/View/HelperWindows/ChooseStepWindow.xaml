@@ -34,7 +34,7 @@
                 <controls1:SudokuBoard PossibilitySize="20" BigLineWidth="3"
                                        SmallLineWidth="1" BackgroundBrush="{DynamicResource Background2}" DefaultNumberBrush="{DynamicResource Text}"
                                        LineBrush="{DynamicResource Text}" CursorBrush="{DynamicResource Secondary1}"
-                                       SpecialNumberBrush="{DynamicResource Primary1}" LinkBrush="{DynamicResource Accent}"/>
+                                       ClueNumberBrush="{DynamicResource Primary1}" LinkBrush="{DynamicResource Accent}"/>
             </controls:SizeOptimizedContentControl.OptimizableContent>
         </controls:SizeOptimizedContentControl>
             

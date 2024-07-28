@@ -9,6 +9,8 @@ namespace DesktopApplication.Presenter.Sudokus.Solve;
 public interface ISudokuSolverDrawer : ISudokuDrawer
 {
     bool FastPossibilityDisplay { set; }
+    LinkOffsetSidePriority LinkOffsetSidePriority { set; }
+    
     void ShowPossibilities(int row, int col, IEnumerable<int> possibilities);
     void FillPossibility(int row, int col, int possibility, StepColor color);
     void FillCell(int row, int col, StepColor color);
@@ -19,5 +21,5 @@ public interface ISudokuSolverDrawer : ISudokuDrawer
         int possibilityTo, StepColor color);
     void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, StepColor color);
     void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
-        LinkStrength strength, LinkOffsetSidePriority priority);
+        LinkStrength strength);
 }

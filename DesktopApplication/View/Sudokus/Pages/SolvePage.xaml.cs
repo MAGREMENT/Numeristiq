@@ -134,7 +134,7 @@ public partial class SolvePage : ISudokuSolveView
         board.SetResourceReference(SudokuBoard.DefaultNumberBrushProperty, "Text");
         board.SetResourceReference(SudokuBoard.LineBrushProperty, "Text");
         board.SetResourceReference(SudokuBoard.CursorBrushProperty, "Secondary1");
-        board.SetResourceReference(SudokuBoard.SpecialNumberBrushProperty, "Primary1");
+        board.SetResourceReference(SudokuBoard.ClueNumberBrushProperty, "Primary1");
         board.SetResourceReference(SudokuBoard.LinkBrushProperty, "Accent");
 
         return board;

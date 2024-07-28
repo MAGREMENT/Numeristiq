@@ -320,6 +320,13 @@ public interface INinePossibilitiesGameDrawingData : ICellAndNumbersGameDrawingD
     Point GetCenterOfPossibility(int row, int col, int possibility);
 }
 
+public interface IVaryingPossibilitiesGameDrawingData : ICellAndNumbersGameDrawingData
+{
+    double GetLeftOfPossibility(int row, int col, int possibility);
+    double GetTopOfPossibility(int row, int col, int possibility);
+    double GetPossibilitySize(int row, int col);
+}
+
 public interface ISudokuDrawingData : INinePossibilitiesGameDrawingData
 {
     double StartAngle { get; }
@@ -535,15 +542,17 @@ public class CellRectangleDrawableComponent : IDC<ICellGameDrawingData>
     private readonly int _colFrom;
     private readonly int _rowTo;
     private readonly int _colTo;
-    private readonly StepColor _color;
+    private readonly int _colorAsInt;
+    private readonly FillColorType _colorType;
 
-    public CellRectangleDrawableComponent(int rowFrom, int colFrom, int rowTo, int colTo, StepColor color)
+    public CellRectangleDrawableComponent(int rowFrom, int colFrom, int rowTo, int colTo, int colorAsInt, FillColorType colorType)
     {
         _rowFrom = rowFrom;
         _colFrom = colFrom;
         _rowTo = rowTo;
         _colTo = colTo;
-        _color = color;
+        _colorAsInt = colorAsInt;
+        _colorType = colorType;
     }
 
     public void Draw(DrawingContext context, ICellGameDrawingData data)
@@ -560,7 +569,7 @@ public class CellRectangleDrawableComponent : IDC<ICellGameDrawingData>
         var (leftX, rightX) = DCHelper.OrderByAndAddToLast(xFrom, xTo, toAdd);
         var (topY, bottomY) = DCHelper.OrderByAndAddToLast(yFrom, yTo, toAdd);
         
-        context.DrawRectangle(null, new Pen(App.Current.ThemeInformation.ToBrush(_color), data.InwardCellLineWidth),
+        context.DrawRectangle(null, new Pen(DCHelper.GetBrush(_colorType, _colorAsInt), data.InwardCellLineWidth),
             new Rect(new Point(leftX, topY), new Point(rightX, bottomY)));
     }
 }
@@ -985,6 +994,10 @@ public class LinePossibilitiesDrawableComponent : IDC<ISudokuDrawingData>
         }
     }
 }
+
+
+
+//TODO remove this
 
 public interface IDrawableComponent
 { 

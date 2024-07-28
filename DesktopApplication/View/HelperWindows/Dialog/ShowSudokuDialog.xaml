@@ -10,7 +10,7 @@
     <Border Padding="20" BorderThickness="1" BorderBrush="{DynamicResource Text}"
             Background="{DynamicResource Background1}">
         <controls:SudokuBoard PossibilitySize="23" BackgroundBrush="{DynamicResource Background2}"
-                              LineBrush="{DynamicResource Text}" SpecialNumberBrush="{DynamicResource Primary1}"
+                              LineBrush="{DynamicResource Text}" ClueNumberBrush="{DynamicResource Primary1}"
                               DefaultNumberBrush="{DynamicResource Text}" x:Name="Board"
                               BigLineWidth="3" SmallLineWidth="1"/>
     </Border>
