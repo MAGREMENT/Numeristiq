@@ -25,7 +25,7 @@
                     RowCountChanged="OnRowCountChange" ColumnCountChanged="OnColumnCountChange"
                     CellAddedToSelection="OnCellAddedToSelection" SelectionEnded="OnSelectionEnd"
                     KeyDown="DoBoardInput"
-                    SpecialNumberBrush="{DynamicResource Primary1}"/>
+                    ClueNumberBrush="{DynamicResource Primary1}"/>
             </global:SizeOptimizedContentControl.OptimizableContent>
         </global:SizeOptimizedContentControl>
         

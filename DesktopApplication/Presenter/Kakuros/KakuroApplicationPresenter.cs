@@ -4,5 +4,12 @@ namespace DesktopApplication.Presenter.Kakuros;
 
 public class KakuroApplicationPresenter
 {
-    public KakuroSolvePresenter Initialize(IKakuroSolveView view) => new(view);
+    private readonly Settings _settings;
+
+    public KakuroApplicationPresenter(Settings settings)
+    {
+        _settings = settings;
+    }
+
+    public KakuroSolvePresenter Initialize(IKakuroSolveView view) => new(view, _settings);
 }

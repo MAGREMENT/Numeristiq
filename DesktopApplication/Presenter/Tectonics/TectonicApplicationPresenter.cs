@@ -1,5 +1,4 @@
 ﻿using DesktopApplication.Presenter.Tectonics.Solve;
-using Model.Tectonics;
 using Model.Tectonics.Solver;
 using Model.Tectonics.Solver.Strategies;
 using Model.Tectonics.Solver.Strategies.AlternatingInference;
@@ -26,6 +25,6 @@ public class TectonicApplicationPresenter
 
     public TectonicSolvePresenter Initialize(ITectonicSolveView view)
     {
-        return new TectonicSolvePresenter(_solver, view);
+        return new TectonicSolvePresenter(_solver, view, _settings);
     }
 }

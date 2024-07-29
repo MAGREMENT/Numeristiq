@@ -6,21 +6,21 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using DesktopApplication.Presenter.Tectonics.Solve;
+using DesktopApplication.View.Kakuros.Controls;
+using DesktopApplication.View.Tectonics.Controls;
 using DesktopApplication.View.Utility;
 using Model.Core.Changes;
 using Model.Core.Explanation;
 using Model.Sudokus.Player;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
+using Model.Utility.Collections;
 using MathUtility = DesktopApplication.View.Utility.MathUtility;
 using Point = System.Windows.Point;
 
 namespace DesktopApplication.View;
 
-/// <summary>
-/// TODO Change the way components work. Right now, Their information is fixed and they need to be cleared when
-/// updating size. Make them fetch their information from the drawing board when drawn.
-/// </summary>
 public abstract class DrawingBoard : FrameworkElement
 {
     private readonly DrawingVisual _visual = new();
@@ -28,7 +28,6 @@ public abstract class DrawingBoard : FrameworkElement
 
     protected IReadOnlyList<List<IDrawableComponent>> Layers => _layers;
     public bool RefreshAllowed { get; set; } = true;
-    public bool AntiAliasing { get; set; } = true;
 
     protected DrawingBoard(int layerCount)
     {
@@ -79,96 +78,6 @@ public abstract class DrawingBoard : FrameworkElement
             {
                 foreach (var component in list)
                 {
-                    component.Draw(context, !AntiAliasing);
-                }
-            }
-            
-            context.Close();
-            InvalidateVisual();
-        });
-    }
-
-    public void Clear()
-    {
-        foreach (var list in _layers)
-        {
-            list.Clear();
-        }
-    }
-    
-    public void SetLayerBrush(int index, Brush brush)
-    {
-        foreach (var comp in _layers[index])
-        {
-            comp.SetBrush(brush);
-        }
-    }
-    
-    public BitmapFrame AsImage()
-    {
-        var rtb = new RenderTargetBitmap((int)Width, (int)Height, 96, 96, PixelFormats.Pbgra32);
-        rtb.Render(_visual);
-        return BitmapFrame.Create(rtb);
-    }
-}
-
-public abstract class DB : FrameworkElement
-{
-    private readonly DrawingVisual _visual = new();
-    private readonly List<IDC>[] _layers;
-
-    protected IReadOnlyList<List<IDC>> Layers => _layers;
-    public bool RefreshAllowed { get; set; } = true;
-
-    protected DB(int layerCount)
-    {
-        Loaded += AddVisualToTree;
-        Unloaded += RemoveVisualFromTree;
-
-        _layers = new List<IDC>[layerCount];
-        for (int i = 0; i < _layers.Length; i++)
-        {
-            _layers[i] = new List<IDC>();
-        }
-    }
-
-    #region DrawingNecessities
-
-    // Provide a required override for the VisualChildrenCount property.
-    protected override int VisualChildrenCount => 1;
-
-    // Provide a required override for the GetVisualChild method.
-    protected override Visual GetVisualChild(int index)
-    {
-        return _visual;
-    }
-    
-    private void AddVisualToTree(object sender, RoutedEventArgs e)
-    {
-        AddVisualChild(_visual);
-        AddLogicalChild(_visual);
-    }
-
-    private void RemoveVisualFromTree(object sender, RoutedEventArgs e)
-    {
-        RemoveLogicalChild(_visual);
-        RemoveVisualChild(_visual);
-    }
-
-    #endregion
-    
-    public void Refresh()
-    {
-        Dispatcher.Invoke(() =>
-        {
-            if (!RefreshAllowed) return;
-            
-            var context = _visual.RenderOpen();
-
-            foreach (var list in _layers)
-            {
-                foreach (var component in list)
-                {
                     component.Draw(context, this);
                 }
             }
@@ -177,14 +86,6 @@ public abstract class DB : FrameworkElement
             InvalidateVisual();
         });
     }
-
-    public void Clear()
-    {
-        foreach (var list in _layers)
-        {
-            list.Clear();
-        }
-    }
     
     public BitmapFrame AsImage()
     {
@@ -194,22 +95,22 @@ public abstract class DB : FrameworkElement
     }
 }
 
-public interface IDC
+public interface IDrawableComponent
 {
     void Draw(DrawingContext context, object data);
 }
 
-public interface IDC<in T> : IDC
+public interface IDrawableComponent<in T> : IDrawableComponent
 {
     void Draw(DrawingContext context, T data);
 
-    void IDC.Draw(DrawingContext context, object data)
+    void IDrawableComponent.Draw(DrawingContext context, object data)
     {
         if (data is T t) Draw(context, t);
     }
 }
 
-public static class DCHelper
+public static class DrawableComponentHelper
 {
     public static void DrawTextInRectangle(DrawingContext context, FormattedText _text, Rect rect,
         ComponentHorizontalAlignment ha, ComponentVerticalAlignment va)
@@ -303,13 +204,22 @@ public interface ICellGameDrawingData : IDefaultDrawingData
     bool IsClue(int row, int col);
 }
 
-public interface ICellAndNumbersGameDrawingData : ICellGameDrawingData
+public interface IDichotomousCellGameDrawingData : ICellGameDrawingData
+{
+    Brush FillingBrush { get; }
+    Brush UnavailableBrush { get; }
+    
+    double FillingShift { get; }
+    double UnavailableThickness { get; }
+}
+
+public interface INumericCellGameDrawingData : ICellGameDrawingData
 {
     Brush DefaultNumberBrush { get; }
     Brush ClueNumberBrush { get; }
 }
 
-public interface INinePossibilitiesGameDrawingData : ICellAndNumbersGameDrawingData
+public interface INinePossibilitiesGameDrawingData : INumericCellGameDrawingData
 {
     bool FastPossibilityDisplay { get; }
     double InwardPossibilityLineWidth { get; }
@@ -320,10 +230,11 @@ public interface INinePossibilitiesGameDrawingData : ICellAndNumbersGameDrawingD
     Point GetCenterOfPossibility(int row, int col, int possibility);
 }
 
-public interface IVaryingPossibilitiesGameDrawingData : ICellAndNumbersGameDrawingData
+public interface IVaryingPossibilitiesGameDrawingData : INumericCellGameDrawingData
 {
     double GetLeftOfPossibility(int row, int col, int possibility);
     double GetTopOfPossibility(int row, int col, int possibility);
+    Point GetCenterOfPossibility(int row, int col, int possibility);
     double GetPossibilitySize(int row, int col);
 }
 
@@ -334,7 +245,112 @@ public interface ISudokuDrawingData : INinePossibilitiesGameDrawingData
     double LinePossibilitiesOutlineWidth { get; }
 }
 
-public class InwardCellDrawableComponent : IDC<ICellGameDrawingData>
+public interface ITectonicDrawingData : IVaryingPossibilitiesGameDrawingData
+{
+    int RowCount { get; }
+    int ColumnCount { get; }
+    NeighborBorder? GetBorder(BorderDirection direction, int row, int col);
+}
+
+public interface IKakuroDrawingData : INinePossibilitiesGameDrawingData
+{
+    Brush AmountBrush { get; }
+    Brush AmountLineBrush { get; }
+    
+    int RowCount { get; }
+    int ColumnCount { get; }
+    double AmountHeight { get; }
+    double AmountWidth { get; }
+
+    int GetAmount(int row, int col, Orientation orientation);
+    IEnumerable<AmountCell> EnumerateAmountCells();
+    bool IsPresent(int row, int col);
+}
+
+public interface INonogramDrawingData : IDichotomousCellGameDrawingData
+{
+    int RowCount { get; }
+    int ColumnCount { get; }
+    int MaxDepth { get; }
+    int MaxWideness { get; }
+
+    IReadOnlyList<int> GetRowValues(int row);
+    IReadOnlyList<int> GetColumnValues(int col);
+}
+
+public class InwardAmountCellDrawableComponent : IDrawableComponent<IKakuroDrawingData>
+{
+    private readonly int _row;
+    private readonly int _col;
+    private readonly Orientation _orientation;
+
+    public InwardAmountCellDrawableComponent(int row, int col, Orientation orientation)
+    {
+        _row = row;
+        _col = col;
+        _orientation = orientation;
+    }
+
+    public void Draw(DrawingContext context, IKakuroDrawingData data)
+    {
+        if (_orientation == Orientation.Vertical)
+        {
+            var xBr = data.GetLeftOfCell(_col) + data.CellSize - data.InwardCellLineWidth;
+            var yBr = _row < 0 
+                ? data.AmountHeight + data.BigLineWidth + data.InwardCellLineWidth - data.BigLineWidth
+                : data.GetTopOfCell(_row) + data.CellSize + data.InwardCellLineWidth - data.BigLineWidth;
+            
+            context.DrawLine(new Pen(data.CursorBrush, data.BigLineWidth),
+                new Point(xBr, yBr), new Point(data.GetLeftOfCellWithBorder(_col), yBr));
+        }
+        else
+        {
+            var xBr = data.GetLeftOfCell(_col) + data.CellSize + data.InwardCellLineWidth - data.BigLineWidth;
+            var yBr = data.GetTopOfCell(_row) + data.CellSize - data.InwardCellLineWidth;
+            
+            context.DrawLine(new Pen(data.CursorBrush, data.BigLineWidth),
+                new Point(xBr, yBr), new Point(xBr, data.GetTopOfCellWithBorder(_row)));
+        }
+    }
+}
+
+public class AmountDrawableComponent : IDrawableComponent<IKakuroDrawingData>
+{
+    private readonly int _row;
+    private readonly int _col;
+    private readonly Orientation _orientation;
+
+    public AmountDrawableComponent(int row, int col, Orientation orientation)
+    {
+        _row = row;
+        _col = col;
+        _orientation = orientation;
+    }
+
+    public void Draw(DrawingContext context, IKakuroDrawingData data)
+    {
+        var amount = data.GetAmount(_row, _col, _orientation);
+        var text = new FormattedText(amount.ToString(), data.CultureInfo, FlowDirection.LeftToRight,
+            data.Typeface, data.AmountHeight * 3 / 4, data.AmountBrush, 1);
+
+        double t, l;
+        if (_orientation == Orientation.Vertical)
+        {
+            t = _row < 0 ? data.BigLineWidth : data.GetTopOfCell(_row) + data.CellSize - data.AmountHeight;
+            l = data.GetLeftOfCell(_col);
+        }
+        else
+        {
+            t = data.GetTopOfCell(_row);
+            l = _col < 0 ? data.BigLineWidth : data.GetLeftOfCell(_col) + data.CellSize - data.AmountWidth;
+        }
+        
+        DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(l, t, data.AmountWidth, data.AmountHeight),
+            ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center);
+    }
+}
+
+public class InwardCellDrawableComponent : IDrawableComponent<ICellGameDrawingData>
 {
     private readonly int _row;
     private readonly int _col;
@@ -352,7 +368,7 @@ public class InwardCellDrawableComponent : IDC<ICellGameDrawingData>
         var delta = data.InwardCellLineWidth / 2;
         var left = data.GetLeftOfCell(_col);
         var top = data.GetTopOfCell(_row);
-        var pen = new Pen(DCHelper.GetBrush(_brushType, data), data.InwardCellLineWidth);
+        var pen = new Pen(DrawableComponentHelper.GetBrush(_brushType, data), data.InwardCellLineWidth);
 
         context.DrawLine(pen, new Point(left + delta, top), new Point(left + delta,
             top + data.CellSize));
@@ -365,12 +381,12 @@ public class InwardCellDrawableComponent : IDC<ICellGameDrawingData>
     }
 }
 
-public class InwardMultiCellDrawableComponent : IDC<ICellGameDrawingData>
+public class InwardMultiCellDrawableComponent : IDrawableComponent<ICellGameDrawingData>
 {
-    private readonly HashSet<Cell> _cells;
+    private readonly IContainingEnumerable<Cell> _cells;
     private readonly InwardBrushType _brushType;
 
-    public InwardMultiCellDrawableComponent(HashSet<Cell> cells, InwardBrushType brushType)
+    public InwardMultiCellDrawableComponent(IContainingEnumerable<Cell> cells, InwardBrushType brushType)
     {
         _cells = cells;
         _brushType = brushType;
@@ -379,7 +395,7 @@ public class InwardMultiCellDrawableComponent : IDC<ICellGameDrawingData>
     public void Draw(DrawingContext context, ICellGameDrawingData data)
     {
         var delta = data.InwardCellLineWidth / 2;
-        var brush = DCHelper.GetBrush(_brushType, data);
+        var brush = DrawableComponentHelper.GetBrush(_brushType, data);
         var pen = new Pen(brush, data.InwardCellLineWidth);
 
         foreach (var cell in _cells)
@@ -422,7 +438,7 @@ public class InwardMultiCellDrawableComponent : IDC<ICellGameDrawingData>
     }
 }
 
-public class InwardPossibilityDrawableComponent : IDC<INinePossibilitiesGameDrawingData>
+public class InwardPossibilityDrawableComponent : IDrawableComponent<INinePossibilitiesGameDrawingData>
 {
     private readonly int _possibility;
     private readonly int _row;
@@ -443,7 +459,7 @@ public class InwardPossibilityDrawableComponent : IDC<INinePossibilitiesGameDraw
         var delta = data.InwardPossibilityLineWidth / 2;
         var left = data.GetLeftOfPossibility(_col, _possibility);
         var top = data.GetTopOfPossibility(_row, _possibility);
-        var pen = new Pen(DCHelper.GetBrush(_brushType, data), data.InwardPossibilityLineWidth);
+        var pen = new Pen(DrawableComponentHelper.GetBrush(_brushType, data), data.InwardPossibilityLineWidth);
 
         context.DrawLine(pen, new Point(left + delta, top), new Point(left + delta,
             top + pSize));
@@ -461,7 +477,7 @@ public enum InwardBrushType
     Cursor, Link
 }
 
-public class SolutionDrawableComponent : IDC<ICellAndNumbersGameDrawingData>
+public class SolutionDrawableComponent : IDrawableComponent<INumericCellGameDrawingData>, IDrawableComponent<IDichotomousCellGameDrawingData>
 {
     private readonly int _solution;
     private readonly int _row;
@@ -474,18 +490,67 @@ public class SolutionDrawableComponent : IDC<ICellAndNumbersGameDrawingData>
         _col = col;
     }
 
-    public void Draw(DrawingContext context, ICellAndNumbersGameDrawingData data)
+    public SolutionDrawableComponent(int row, int col) : this(-1, row, col)
+    {
+        
+    }
+
+    public void Draw(DrawingContext context, INumericCellGameDrawingData data)
     {
         var brush = data.IsClue(_row, _col) ? data.ClueNumberBrush : data.DefaultNumberBrush;
         var text = new FormattedText(_solution.ToString(), data.CultureInfo, FlowDirection.LeftToRight, data.Typeface,
             data.CellSize / 4 * 3, brush, 1);
-        DCHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfCell(_col),
+        DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfCell(_col),
             data.GetTopOfCell(_row), data.CellSize, data.CellSize), ComponentHorizontalAlignment.Center,
             ComponentVerticalAlignment.Center);
     }
+
+    public void Draw(DrawingContext context, IDichotomousCellGameDrawingData data)
+    {
+        var size = data.CellSize - data.FillingShift * 2;
+        context.DrawRectangle(data.FillingBrush, null,
+            new Rect(data.GetLeftOfCell(_col) + data.FillingShift, data.GetTopOfCell(_row) + data.FillingShift,
+                size, size));
+    }
+
+    public void Draw(DrawingContext context, object data)
+    {
+        switch (data)
+        {
+            case INumericCellGameDrawingData nc : Draw(context, nc);
+                break;
+            case IDichotomousCellGameDrawingData dc : Draw(context, dc);
+                break;
+        }
+    }
 }
 
-public class NinePossibilitiesDrawableComponent : IDC<INinePossibilitiesGameDrawingData>
+public class UnavailabilityDrawableComponent : IDrawableComponent<IDichotomousCellGameDrawingData>
+{
+    private readonly int _row;
+    private readonly int _col;
+
+    public UnavailabilityDrawableComponent( int row, int col)
+    {
+        _col = col;
+        _row = row;
+    }
+
+    public void Draw(DrawingContext context, IDichotomousCellGameDrawingData data)
+    {
+        var shift = data.CellSize / 4;
+        var minX = data.GetLeftOfCell(_col) + shift;
+        var maxX = data.GetLeftOfCell(_col) + data.CellSize - shift;
+        var minY = data.GetTopOfCell(_row) + shift;
+        var maxY = data.GetTopOfCell(_row) + data.CellSize - shift;
+
+        var pen = new Pen(data.UnavailableBrush, data.UnavailableThickness);
+        context.DrawLine(pen, new Point(minX, minY), new Point(maxX, maxY));
+        context.DrawLine(pen, new Point(minX, maxY), new Point(maxX, minY));
+    }
+}
+
+public class NinePossibilitiesDrawableComponent : IDrawableComponent<INinePossibilitiesGameDrawingData>
 {
     private readonly IEnumerable<int> _possibilities;
     private readonly int _row;
@@ -517,7 +582,7 @@ public class NinePossibilitiesDrawableComponent : IDC<INinePossibilitiesGameDraw
             
             var text = new FormattedText(builder.ToString(), data.CultureInfo, FlowDirection.LeftToRight, data.Typeface,
                 data.CellSize / 4, data.DefaultNumberBrush, 1);
-            DCHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfCell(_col), 
+            DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfCell(_col), 
                 data.GetTopOfCell(_row), data.CellSize, data.CellSize), ComponentHorizontalAlignment.Center,
                 ComponentVerticalAlignment.Center);
         }
@@ -528,7 +593,7 @@ public class NinePossibilitiesDrawableComponent : IDC<INinePossibilitiesGameDraw
                 var text = new FormattedText(possibility.ToString(), data.CultureInfo, FlowDirection.LeftToRight,
                     data.Typeface, data.CellSize / 4, data.DefaultNumberBrush, 1);
                 var pSize = data.CellSize / 3;
-                DCHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfPossibility(_col, possibility),
+                DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfPossibility(_col, possibility),
                     data.GetTopOfPossibility(_row, possibility), pSize, pSize), ComponentHorizontalAlignment.Center,
                     ComponentVerticalAlignment.Center);
             }
@@ -536,7 +601,37 @@ public class NinePossibilitiesDrawableComponent : IDC<INinePossibilitiesGameDraw
     }
 }
 
-public class CellRectangleDrawableComponent : IDC<ICellGameDrawingData>
+public class VaryingPossibilitiesDrawableComponent : IDrawableComponent<IVaryingPossibilitiesGameDrawingData>
+{
+    private readonly IEnumerable<int> _possibilities;
+    private readonly int _row;
+    private readonly int _col;
+
+    public VaryingPossibilitiesDrawableComponent(IEnumerable<int> possibilities, int row, int col)
+    {
+        _possibilities = possibilities;
+        _row = row;
+        _col = col;
+    }
+
+    public void Draw(DrawingContext context, IVaryingPossibilitiesGameDrawingData data)
+    {
+        var posSize = data.GetPossibilitySize(_row, _col);
+        var textSize = posSize * 3 / 4;
+        
+        foreach (var possibility in _possibilities)
+        {
+            var brush = data.IsClue(_row, _col) ? data.ClueNumberBrush : data.DefaultNumberBrush;
+            var text = new FormattedText(possibility.ToString(), data.CultureInfo, FlowDirection.LeftToRight,
+                data.Typeface, textSize, brush, 1);
+            DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfPossibility(_row, _col,
+                possibility), data.GetTopOfPossibility(_row, _col, possibility), posSize, posSize),
+                ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center);
+        }
+    }
+}
+
+public class CellRectangleDrawableComponent : IDrawableComponent<ICellGameDrawingData>
 {
     private readonly int _rowFrom;
     private readonly int _colFrom;
@@ -566,15 +661,15 @@ public class CellRectangleDrawableComponent : IDC<ICellGameDrawingData>
         var yTo = data.GetTopOfCell(_rowTo) - delta;
 
         var toAdd = data.CellSize + data.InwardCellLineWidth;
-        var (leftX, rightX) = DCHelper.OrderByAndAddToLast(xFrom, xTo, toAdd);
-        var (topY, bottomY) = DCHelper.OrderByAndAddToLast(yFrom, yTo, toAdd);
+        var (leftX, rightX) = DrawableComponentHelper.OrderByAndAddToLast(xFrom, xTo, toAdd);
+        var (topY, bottomY) = DrawableComponentHelper.OrderByAndAddToLast(yFrom, yTo, toAdd);
         
-        context.DrawRectangle(null, new Pen(DCHelper.GetBrush(_colorType, _colorAsInt), data.InwardCellLineWidth),
+        context.DrawRectangle(null, new Pen(DrawableComponentHelper.GetBrush(_colorType, _colorAsInt), data.InwardCellLineWidth),
             new Rect(new Point(leftX, topY), new Point(rightX, bottomY)));
     }
 }
 
-public class PossibilityRectangleDrawableComponent : IDC<INinePossibilitiesGameDrawingData>
+public class PossibilityRectangleDrawableComponent : IDrawableComponent<INinePossibilitiesGameDrawingData>
 {
     private readonly int _rowFrom;
     private readonly int _colFrom;
@@ -607,15 +702,15 @@ public class PossibilityRectangleDrawableComponent : IDC<INinePossibilitiesGameD
         var yTo = data.GetTopOfPossibility(_rowTo, _possibilityTo) - delta;
 
         var toAdd = data.CellSize / 3 + data.InwardPossibilityLineWidth;
-        var (leftX, rightX) = DCHelper.OrderByAndAddToLast(xFrom, xTo, toAdd);
-        var (topY, bottomY) = DCHelper.OrderByAndAddToLast(yFrom, yTo, toAdd);
+        var (leftX, rightX) = DrawableComponentHelper.OrderByAndAddToLast(xFrom, xTo, toAdd);
+        var (topY, bottomY) = DrawableComponentHelper.OrderByAndAddToLast(yFrom, yTo, toAdd);
         
         context.DrawRectangle(null, new Pen(App.Current.ThemeInformation.ToBrush(_color), data.InwardPossibilityLineWidth),
             new Rect(new Point(leftX, topY), new Point(rightX, bottomY)));
     }
 }
 
-public class PossibilityPatchDrawableComponent : IDC<INinePossibilitiesGameDrawingData>
+public class PossibilityPatchDrawableComponent : IDrawableComponent<INinePossibilitiesGameDrawingData>
 {
     private readonly CellPossibility[] _cps;
     private readonly StepColor _color;
@@ -671,7 +766,8 @@ public class PossibilityPatchDrawableComponent : IDC<INinePossibilitiesGameDrawi
     }
 }
 
-public class PossibilityLinkDrawableComponent : IDC<INinePossibilitiesGameDrawingData>
+public class PossibilityLinkDrawableComponent : IDrawableComponent<INinePossibilitiesGameDrawingData>,
+    IDrawableComponent<IVaryingPossibilitiesGameDrawingData>
 {
     private readonly int _rowFrom;
     private readonly int _colFrom;
@@ -709,62 +805,106 @@ public class PossibilityLinkDrawableComponent : IDC<INinePossibilitiesGameDrawin
         }
 
         bool isWeak = _link == LinkStrength.Weak;
+        var pSize = data.CellSize / 3;
         switch (validOffsets.Count)
         {
             case 0 : 
-                AddShortenedLine(context, data, from, to, isWeak);
+                AddShortenedLine(context, data, from, pSize, to, pSize, isWeak);
                 break;
             case 1 :
-                AddShortenedLine(context, data, from, validOffsets[0], to, isWeak);
+                AddShortenedLine(context, data, from, pSize, validOffsets[0], to, pSize, isWeak);
                 break;
             case 2 :
                 if(data.LinkOffsetSidePriority == LinkOffsetSidePriority.Any) 
-                    AddShortenedLine(context, data, from, validOffsets[0], to, isWeak);
+                    AddShortenedLine(context, data, from, pSize, validOffsets[0], to, pSize, isWeak);
                 else
                 {
                     var left = MathUtility.IsLeft(from, to, validOffsets[0]) ? 0 : 1;
-                    AddShortenedLine(context, data, from, data.LinkOffsetSidePriority == LinkOffsetSidePriority.Left 
+                    AddShortenedLine(context, data, from, pSize, data.LinkOffsetSidePriority == LinkOffsetSidePriority.Left 
                         ? validOffsets[left] 
-                        : validOffsets[(left + 1) % 2], to, isWeak);
+                        : validOffsets[(left + 1) % 2], to, pSize, isWeak);
                 }
                 break;
         }
     }
     
-    private static void AddShortenedLine(DrawingContext context, INinePossibilitiesGameDrawingData data,
-        Point from, Point to, bool isWeak)
+    public void Draw(DrawingContext context, IVaryingPossibilitiesGameDrawingData data)
     {
-        var shortening = data.CellSize / 6;
+        var from = data.GetCenterOfPossibility(_rowFrom, _colFrom, _possibilityFrom);
+        var to = data.GetCenterOfPossibility(_rowTo, _colTo, _possibilityTo);
+        var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
+
+        var offsets = MathUtility.ShiftSecondPointPerpendicularly(from, middle, data.LinkOffset);
+
+        var validOffsets = new List<Point>();
+        for (int i = 0; i < 2; i++)
+        {
+            var p = offsets[i];
+            if(p.X > 0 && p.X < data.Width && p.Y > 0 && p.Y < data.Height) validOffsets.Add(p);
+        }
+
+        var isWeak = _link == LinkStrength.Weak;
+        var fromSize = data.GetPossibilitySize(_rowFrom, _colFrom);
+        var toSize = data.GetPossibilitySize(_rowTo, _colTo);
+        switch (validOffsets.Count)
+        {
+            case 0 : 
+                AddShortenedLine(context, data, from, fromSize, to, toSize, isWeak);
+                break;
+            case 1 :
+                AddShortenedLine(context, data, from, fromSize, validOffsets[0], to, toSize, isWeak);
+                break;
+            case 2 :
+                if(data.LinkOffsetSidePriority == LinkOffsetSidePriority.Any) 
+                    AddShortenedLine(context, data, from, fromSize, validOffsets[0], to, toSize, isWeak);
+                else
+                {
+                    var left = MathUtility.IsLeft(from, to, validOffsets[0]) ? 0 : 1;
+                    AddShortenedLine(context, data, from, fromSize,
+                        data.LinkOffsetSidePriority == LinkOffsetSidePriority.Left 
+                        ? validOffsets[left] 
+                        : validOffsets[(left + 1) % 2], to, toSize, isWeak);
+                }
+                break;
+        }
+    }
+    
+    private static void AddShortenedLine(DrawingContext context, ICellGameDrawingData data,
+        Point from, double fromSize, Point to, double toSize, bool isWeak)
+    {
+        var fromShortening = fromSize / 2;
+        var toShortening = toSize / 2;
 
         var dx = to.X - from.X;
         var dy = to.Y - from.Y;
         var mag = Math.Sqrt(dx * dx + dy * dy);
-        var newFrom = new Point(from.X + shortening * dx / mag, from.Y + shortening * dy / mag);
-        var newTo = new Point(to.X - shortening * dx / mag, to.Y - shortening * dy / mag);
+        var newFrom = new Point(from.X + fromShortening * dx / mag, from.Y + fromShortening * dy / mag);
+        var newTo = new Point(to.X - toShortening * dx / mag, to.Y - toShortening * dy / mag);
         
         AddLine(context, data, newFrom, newTo, isWeak);
     }
     
-    private static void AddShortenedLine(DrawingContext context, INinePossibilitiesGameDrawingData data,
-        Point from, Point middle, Point to, bool isWeak)
+    private static void AddShortenedLine(DrawingContext context, ICellGameDrawingData data,
+        Point from, double fromSize, Point middle, Point to, double toSize, bool isWeak)
     {
-        var shortening = data.CellSize / 6;
+        var fromShortening = fromSize / 2;
+        var toShortening = toSize / 2;
         
         var dxFrom = middle.X - from.X;
         var dyFrom = middle.Y - from.Y;
         var mag = Math.Sqrt(dxFrom * dxFrom + dyFrom * dyFrom);
-        var newFrom = new Point(from.X + shortening * dxFrom / mag, from.Y + shortening * dyFrom / mag);
+        var newFrom = new Point(from.X +fromShortening * dxFrom / mag, from.Y + fromShortening * dyFrom / mag);
 
         var dxTo = to.X - middle.X;
         var dyTo = to.Y - middle.Y;
         mag = Math.Sqrt(dxTo * dxTo + dyTo * dyTo);
-        var newTo = new Point(to.X - shortening * dxTo / mag, to.Y - shortening * dyTo / mag);
+        var newTo = new Point(to.X - toShortening * dxTo / mag, to.Y - toShortening * dyTo / mag);
             
         AddLine(context, data, newFrom, middle, isWeak);
-        AddLine(context, data,middle, newTo, isWeak);
+        AddLine(context, data, middle, newTo, isWeak);
     }
 
-    private static void AddLine(DrawingContext context, INinePossibilitiesGameDrawingData data,
+    private static void AddLine(DrawingContext context, ICellGameDrawingData data,
         Point from, Point to, bool isWeak)
     {
         context.DrawLine(new Pen(data.LinkBrush, 2)
@@ -772,9 +912,20 @@ public class PossibilityLinkDrawableComponent : IDC<INinePossibilitiesGameDrawin
             DashStyle = isWeak ? DashStyles.DashDot : DashStyles.Solid
         }, from, to);
     }
+
+    public void Draw(DrawingContext context, object data)
+    {
+        switch (data)
+        {
+            case IVaryingPossibilitiesGameDrawingData vd : Draw(context, vd);
+                break;
+            case INinePossibilitiesGameDrawingData nd : Draw(context, nd);
+                break;
+        }
+    }
 }
 
-public class CellFillDrawableComponent : IDC<ICellGameDrawingData>
+public class CellFillDrawableComponent : IDrawableComponent<ICellGameDrawingData>
 {
     private readonly int _row;
     private readonly int _col;
@@ -791,12 +942,12 @@ public class CellFillDrawableComponent : IDC<ICellGameDrawingData>
 
     public void Draw(DrawingContext context, ICellGameDrawingData data)
     {
-        context.DrawRectangle(DCHelper.GetBrush(_colorType, _colorAsInt), null,
+        context.DrawRectangle(DrawableComponentHelper.GetBrush(_colorType, _colorAsInt), null,
             new Rect(data.GetLeftOfCell(_col), data.GetTopOfCell(_row), data.CellSize, data.CellSize));
     }
 }
 
-public class MultiColorDrawableComponent : IDC<ISudokuDrawingData>
+public class MultiColorDrawableComponent : IDrawableComponent<ISudokuDrawingData>
 {
     private readonly int _row;
     private readonly int _col;
@@ -828,7 +979,7 @@ public class MultiColorDrawableComponent : IDC<ISudokuDrawingData>
                 foreach (var _color in _colors)
                 {
                     var next = angle + data.RotationFactor * angleDelta;
-                    DCHelper.DrawPolygon(context, MathUtility.GetMultiColorHighlightingPolygon(center, data.CellSize, 
+                    DrawableComponentHelper.DrawPolygon(context, MathUtility.GetMultiColorHighlightingPolygon(center, data.CellSize, 
                         data.CellSize, angle, next, data.RotationFactor),
                         App.Current.ThemeInformation.ToBrush(_color));
                     angle = next;
@@ -839,7 +990,8 @@ public class MultiColorDrawableComponent : IDC<ISudokuDrawingData>
     }
 }
 
-public class PossibilityFillDrawableComponent : IDC<INinePossibilitiesGameDrawingData>
+public class PossibilityFillDrawableComponent : IDrawableComponent<INinePossibilitiesGameDrawingData>,
+    IDrawableComponent<IVaryingPossibilitiesGameDrawingData>
 {
     private readonly int _possibility;
     private readonly int _row;
@@ -859,9 +1011,29 @@ public class PossibilityFillDrawableComponent : IDC<INinePossibilitiesGameDrawin
     public void Draw(DrawingContext context, INinePossibilitiesGameDrawingData data)
     {
         var pSize = data.CellSize / 3;
-        context.DrawRectangle(DCHelper.GetBrush(_colorType, _colorAsInt), null,
+        context.DrawRectangle(DrawableComponentHelper.GetBrush(_colorType, _colorAsInt), null,
             new Rect(data.GetLeftOfPossibility(_col, _possibility), data.GetTopOfPossibility(_row, _possibility),
                 pSize, pSize));
+    }
+
+    public void Draw(DrawingContext context, IVaryingPossibilitiesGameDrawingData data)
+    {
+        var pSize = data.GetPossibilitySize(_row, _col);
+        context.DrawRectangle(DrawableComponentHelper.GetBrush(_colorType, _colorAsInt), null,
+            new Rect(data.GetLeftOfPossibility(_row, _col, _possibility),
+                data.GetTopOfPossibility(_row, _col, _possibility),
+                pSize, pSize));
+    }
+
+    public void Draw(DrawingContext context, object data)
+    {
+        switch (data)
+        {
+            case IVaryingPossibilitiesGameDrawingData vd : Draw(context, vd);
+                break;
+            case INinePossibilitiesGameDrawingData nd : Draw(context, nd);
+                break;
+        }
     }
 }
 
@@ -870,7 +1042,7 @@ public enum FillColorType
     Step, Explanation
 }
 
-public class BackgroundDrawableComponent : IDC<IDefaultDrawingData>
+public class BackgroundDrawableComponent : IDrawableComponent<IDefaultDrawingData>
 {
     public void Draw(DrawingContext context, IDefaultDrawingData data)
     {
@@ -878,7 +1050,95 @@ public class BackgroundDrawableComponent : IDC<IDefaultDrawingData>
     }
 }
 
-public class SudokuGridDrawableComponent : IDC<ICellGameDrawingData>
+public class ValuesHighlightDrawableComponent : IDrawableComponent<INonogramDrawingData>
+{
+    private readonly int _unit;
+    private readonly int _startIndex;
+    private readonly int _endIndex;
+    private readonly StepColor _color;
+    private readonly Orientation _orientation;
+
+    public ValuesHighlightDrawableComponent(int unit, int startIndex, int endIndex, StepColor color, Orientation orientation)
+    {
+        _unit = unit;
+        _startIndex = startIndex;
+        _endIndex = endIndex;
+        _color = color;
+        _orientation = orientation;
+    }
+
+    public void Draw(DrawingContext context, INonogramDrawingData data)
+    {
+        double left, right, top, bottom, hShift, wShift;
+        
+        if (_orientation == Orientation.Horizontal)
+        {
+            left = (data.MaxWideness - data.GetRowValues(_unit).Count + _startIndex) * data.CellSize / 2;
+            right = left + (_endIndex - _startIndex + 1) * data.CellSize / 2;
+            top = data.GetTopOfCell(_unit);
+            bottom = top + data.CellSize;
+
+            hShift = data.CellSize / 4;
+            wShift = data.CellSize / 10;
+        }
+        else
+        {
+            top = (data.MaxDepth - data.GetColumnValues(_unit).Count + _startIndex) * data.CellSize / 2;
+            bottom = top + (_endIndex - _startIndex + 1) * data.CellSize / 2;
+            left = data.GetLeftOfCell(_unit);
+            right = left + data.CellSize;
+        
+            hShift = data.CellSize / 12;
+            wShift = data.CellSize / 3;
+        }
+        
+        context.DrawRectangle(App.Current.ThemeInformation.ToBrush(_color), null,
+            new Rect(new Point(left + wShift, top + hShift), 
+                new Point(right - wShift, bottom - hShift)));
+    }
+}
+
+public class CellSectionDrawableComponent : IDrawableComponent<INonogramDrawingData>
+{
+    private readonly int _unit;
+    private readonly int _startIndex;
+    private readonly int _endIndex;
+    private readonly StepColor _color;
+    private readonly Orientation _orientation;
+
+    public CellSectionDrawableComponent(int unit, int startIndex, int endIndex, StepColor color, Orientation orientation)
+    {
+        _unit = unit;
+        _startIndex = startIndex;
+        _endIndex = endIndex;
+        _color = color;
+        _orientation = orientation;
+    }
+
+    public void Draw(DrawingContext context, INonogramDrawingData data)
+    {
+        double left, top, bottom, right;
+        if (_orientation == Orientation.Horizontal)
+        {
+            left = data.GetLeftOfCell(_startIndex) - data.BigLineWidth / 2;
+            top = data.GetTopOfCell(_unit) - data.BigLineWidth / 2;
+            bottom = top + data.BigLineWidth + data.CellSize;
+            right = left + (_endIndex - _startIndex + 1) * (data.BigLineWidth + data.CellSize);
+        }
+        else
+        {
+            left = data.GetLeftOfCell(_unit) - data.BigLineWidth / 2;
+            top = data.GetTopOfCell(_startIndex) - data.BigLineWidth / 2;
+            bottom = top + (_endIndex - _startIndex + 1) * (data.BigLineWidth + data.CellSize);
+            right = left + data.BigLineWidth + data.CellSize;
+        }
+
+        context.DrawRectangle(null, new Pen(App.Current.ThemeInformation.ToBrush(_color), data.BigLineWidth),
+            new Rect(new Point(left, top), new Point(right, bottom)));
+    }
+}
+
+public class SudokuGridDrawableComponent : IDrawableComponent<ICellGameDrawingData>
 {
     public void Draw(DrawingContext context, ICellGameDrawingData data)
     {
@@ -907,7 +1167,227 @@ public class SudokuGridDrawableComponent : IDC<ICellGameDrawingData>
     }
 }
 
-public class LinePossibilitiesDrawableComponent : IDC<ISudokuDrawingData>
+public class TectonicGridDrawableComponent : IDrawableComponent<ITectonicDrawingData>
+{
+    public void Draw(DrawingContext context, ITectonicDrawingData data)
+    {
+        if (data.RowCount == 0 || data.ColumnCount == 0) return;
+        
+        var half = data.BigLineWidth / 2;
+        context.DrawRectangle(null, new Pen(data.LineBrush, data.BigLineWidth),
+            new Rect(half, half, data.Width - data.BigLineWidth, data.Height - data.BigLineWidth));
+
+        var diff = (data.BigLineWidth - data.SmallLineWidth) / 2;
+        var length = data.CellSize + data.BigLineWidth * 2;
+
+        //Horizontal
+        double deltaX;
+        double deltaY = data.CellSize + data.BigLineWidth;
+        
+        for (int row = 0; row < data.RowCount - 1; row++)
+        {
+            deltaX = 0;
+            
+            for (int col = 0; col < data.ColumnCount; col++)
+            {
+                var b = data.GetBorder(BorderDirection.Horizontal, row, col);
+
+                if (b is not null && b.IsThin)
+                {
+                    context.DrawRectangle(data.LineBrush, null,
+                        new Rect(deltaX, deltaY + diff, length, data.SmallLineWidth));
+                }
+                else
+                {
+                    context.DrawRectangle(data.LineBrush, null,
+                        new Rect(deltaX, deltaY, length, data.BigLineWidth));
+                }
+
+                deltaX += data.CellSize + data.BigLineWidth;
+            }
+
+            deltaY += data.CellSize + data.BigLineWidth;
+        }
+        
+        //Vertical
+        deltaY = 0;
+        
+        for (int row = 0; row < data.RowCount; row++)
+        {
+            deltaX = data.CellSize + data.BigLineWidth;
+            
+            for (int col = 0; col < data.ColumnCount - 1; col++)
+            {
+                var b = data.GetBorder(BorderDirection.Vertical, row, col);
+
+                if (b is not null && b.IsThin)
+                {
+                    context.DrawRectangle(data.LineBrush, null,
+                        new Rect(deltaX + diff, deltaY, data.SmallLineWidth, length));
+                }
+                else
+                {
+                    context.DrawRectangle(data.LineBrush, null,
+                        new Rect(deltaX, deltaY, data.BigLineWidth, length));
+                }
+
+                deltaX += data.CellSize + data.BigLineWidth;
+            }
+
+            deltaY += data.CellSize + data.BigLineWidth;
+        }
+    }
+}
+
+public class KakuroGridDrawableComponent : IDrawableComponent<IKakuroDrawingData> //TODO fix amount cell lines diagonal
+{ 
+    public void Draw(DrawingContext context, IKakuroDrawingData data)
+    {
+        if (data.RowCount == 0 || data.ColumnCount == 0) return;
+        
+        var pen = new Pen(data.AmountLineBrush, data.BigLineWidth);
+        foreach (var cell in data.EnumerateAmountCells())
+        {
+            var half = data.BigLineWidth / 2;
+            if (cell.Orientation == Orientation.Vertical)
+            {
+                var xBr = data.GetLeftOfCell(cell.Column) + data.CellSize + half;
+                var yBr = cell.Row < 0 
+                    ? data.AmountHeight + data.BigLineWidth + half
+                    : data.GetTopOfCell(cell.Row) + data.CellSize + half;
+                var xTr = xBr - data.AmountHeight;
+                var yTr = yBr - data.AmountWidth;
+                context.DrawLine(pen, new Point(xBr, yBr), new Point(xTr, yTr));
+
+                var xTl = data.GetLeftOfCell(cell.Column) - half;
+                if (cell.Column <= 0 || cell.Row < 0 || !data.IsPresent(cell.Row, cell.Column - 1))
+                {
+                    xTl -= data.AmountHeight;
+                    if (data.GetAmount(cell.Row, cell.Column - 1, Orientation.Vertical) != -1)
+                    {
+                        var xBl = data.GetLeftOfCell(cell.Column) - half;
+                        context.DrawLine(pen, new Point(xTl, yTr), new Point(xBl, yBr));
+                    }
+
+                    xTl -= data.BigLineWidth / 2;
+                }
+                    
+                context.DrawLine(pen, new Point(xTl, yTr), new Point(xTr, yTr));
+            }
+            else
+            {
+                var xBr = data.GetLeftOfCell(cell.Column) + data.CellSize + half;
+                var yBr = data.GetTopOfCell(cell.Row) + data.CellSize + half;
+                var xBl = xBr - data.AmountHeight;
+                var yBl = yBr - data.AmountHeight;
+                context.DrawLine(pen, new Point(xBr, yBr), new Point(xBl, yBl));
+
+                var yTl = data.GetTopOfCell(cell.Row) - half;
+                if (cell.Column < 0 || cell.Row <= 0 || !data.IsPresent(cell.Row - 1, cell.Column))
+                {
+                    yTl -= data.AmountWidth + data.BigLineWidth / 2;
+                }
+                    
+                context.DrawLine(pen, new Point(xBl, yBl), new Point(xBl, yTl));
+            }
+        }
+
+        var l = data.CellSize + data.BigLineWidth * 2;
+        for (int row = 0; row < data.RowCount; row++)
+        {
+            for (int col = 0; col < data.ColumnCount; col++)
+            {
+                if (!data.IsPresent(row, col)) continue;
+                
+                context.DrawRectangle(data.LineBrush, null,
+                    new Rect(data.GetLeftOfCell(col) + data.CellSize, data.GetTopOfCellWithBorder(row),
+                        data.BigLineWidth, l));
+                context.DrawRectangle(data.LineBrush, null,
+                    new Rect(data.GetLeftOfCellWithBorder(col), data.GetTopOfCell(row) + data.CellSize,
+                        l, data.BigLineWidth));
+                
+                if(row == 0 || !data.IsPresent(row - 1, col)) context.DrawRectangle(data.LineBrush, null,
+                        new Rect(data.GetLeftOfCellWithBorder(col), data.GetTopOfCellWithBorder(row),
+                            l, data.BigLineWidth));
+                
+                if(col == 0 || !data.IsPresent(row, col - 1)) context.DrawRectangle(data.LineBrush, null,
+                    new Rect(data.GetLeftOfCellWithBorder(col), data.GetTopOfCellWithBorder(row),
+                        data.BigLineWidth, l));
+            }
+        }
+    }
+}
+
+public class NonogramGridDrawableComponent : IDrawableComponent<INonogramDrawingData>
+{
+    public void Draw(DrawingContext context, INonogramDrawingData data)
+    {
+        if (data.RowCount == 0 || data.ColumnCount == 0) return;
+        
+        var yStart = data.MaxDepth * data.CellSize / 2;
+        var xStart = data.MaxWideness * data.CellSize / 2;
+
+        var currentY = yStart;
+        for (int row = 0; row <= data.RowCount; row++)
+        {
+            context.DrawRectangle(data.LineBrush, null,
+                new Rect(xStart, currentY, data.Width - xStart, data.BigLineWidth));
+
+            currentY += data.BigLineWidth + data.CellSize;
+        }
+        
+        var currentX = xStart;
+        for (int col = 0; col <= data.ColumnCount; col++)
+        {
+            context.DrawRectangle(data.LineBrush, null,
+                new Rect(currentX, yStart, data.BigLineWidth, data.Height - yStart));
+          
+            currentX += data.BigLineWidth + data.CellSize;
+        }
+    }
+}
+
+public class NonogramNumbersDrawableComponent : IDrawableComponent<INonogramDrawingData>
+{
+    public void Draw(DrawingContext context, INonogramDrawingData data)
+    {
+        var size = data.CellSize / 3;
+        
+        for (int col = 0; col < data.ColumnCount; col++)
+        {
+            var current = data.GetColumnValues(col);
+            var depth = data.MaxDepth;
+            for (int i = current.Count - 1; i >= 0; i--)
+            {
+                var text = new FormattedText(current[i].ToString(), data.CultureInfo, FlowDirection.LeftToRight,
+                    data.Typeface, size, data.LineBrush, 1);
+                DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfCell(col),
+                        data.CellSize / 2 * (depth - 1), data.CellSize, data.CellSize / 2),
+                    ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center);
+                
+                depth--;
+            }
+        }
+
+        for (int row = 0; row < data.RowCount; row++)
+        {
+            var current = data.GetRowValues(row);
+            var width = data.MaxWideness;
+            for (int i = current.Count - 1; i >= 0; i--)
+            {
+                var text = new FormattedText(current[i].ToString(), data.CultureInfo, FlowDirection.LeftToRight,
+                    data.Typeface, size, data.LineBrush, 1);
+                DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.CellSize / 2 * (width - 1),
+                        data.GetTopOfCell(row), data.CellSize / 2, data.CellSize),
+                    ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center);
+                
+                width--;
+            }
+        }
+    }
+}
+
+public class LinePossibilitiesDrawableComponent : IDrawableComponent<ISudokuDrawingData>
 {
     private readonly IEnumerable<int> _possibilities;
     private readonly int _row;
@@ -974,7 +1454,7 @@ public class LinePossibilitiesDrawableComponent : IDC<ISudokuDrawingData>
         }
 
         var rect = new Rect(left, data.GetTopOfPossibility(_row, n), width, data.CellSize / 3);
-        DCHelper.DrawTextInRectangle(context, text, rect, ha, ComponentVerticalAlignment.Center);
+        DrawableComponentHelper.DrawTextInRectangle(context, text, rect, ha, ComponentVerticalAlignment.Center);
 
         if (_outlinedPossibility == -1) return;
         
@@ -992,286 +1472,6 @@ public class LinePossibilitiesDrawableComponent : IDC<ISudokuDrawingData>
             var geometry = text.BuildHighlightGeometry(point, i, 1);
             context.DrawGeometry(null, new Pen(data.CursorBrush, data.LinePossibilitiesOutlineWidth), geometry);
         }
-    }
-}
-
-
-
-//TODO remove this
-
-public interface IDrawableComponent
-{ 
-    void Draw(DrawingContext context, bool withGuidelines);
-    void SetBrush(Brush brush);
-}
-
-public class FilledRectangleComponent : IDrawableComponent
-{
-    private readonly Rect _rect;
-    private Brush _brush;
-
-    public FilledRectangleComponent(Rect rect, Brush brush)
-    {
-        _rect = rect;
-        _brush = brush;
-    }
-
-    public void Draw(DrawingContext context, bool withGuidelines)
-    {
-        if (withGuidelines)
-        {
-            var gSet = new GuidelineSet();
-            gSet.GuidelinesX.Add(_rect.Left);
-            gSet.GuidelinesX.Add(_rect.Right);
-            gSet.GuidelinesY.Add(_rect.Top);
-            gSet.GuidelinesY.Add(_rect.Bottom);
-            context.PushGuidelineSet(gSet);
-        }
-        
-        context.DrawRectangle(_brush, null, _rect);
-        
-        if(withGuidelines) context.Pop();
-    }
-
-    public void SetBrush(Brush brush)
-    {
-        _brush = brush;
-    }
-}
-
-public class OutlinedRectangleComponent : IDrawableComponent
-{
-    private readonly Rect _rect;
-    private readonly Pen _pen;
-
-    public OutlinedRectangleComponent(Rect rect, Pen pen)
-    {
-        _rect = rect;
-        _pen = pen;
-    }
-
-    public void Draw(DrawingContext context, bool withGuidelines)
-    {
-        if (withGuidelines)
-        {
-            var gSet = new GuidelineSet();
-            var half = _pen.Thickness / 2;
-            gSet.GuidelinesX.Add(_rect.Left - half);
-            gSet.GuidelinesX.Add(_rect.Right + half);
-            gSet.GuidelinesY.Add(_rect.Top - half);
-            gSet.GuidelinesY.Add(_rect.Bottom + half);
-            context.PushGuidelineSet(gSet);
-        }
-        
-        context.DrawRectangle(null, _pen, _rect);
-        
-        if(withGuidelines) context.Pop();
-    }
-
-    public void SetBrush(Brush brush)
-    {
-        _pen.Brush = brush;
-    }
-}
-
-public class FilledPolygonComponent : IDrawableComponent
-{
-    private readonly Point[] _points;
-    private Brush _brush;
-
-    public FilledPolygonComponent(Brush brush, params Point[] points)
-    {
-        _brush = brush;
-        _points = points;
-    }
-
-    public FilledPolygonComponent(Brush brush, IEnumerable<Point> points)
-    {
-        _points = points.ToArray();
-        _brush = brush;
-    }
-
-    public void Draw(DrawingContext context, bool withGuidelines)
-    {
-        var segmentCollection = new PathSegmentCollection();
-        for (int i = 1; i < _points.Length; i++)
-        {
-            segmentCollection.Add(new LineSegment(_points[i], true));
-        }
-        
-        var geometry = new PathGeometry
-        {
-            Figures = new PathFigureCollection
-            {
-                new()
-                {
-                    IsClosed = true,
-                    StartPoint = _points[0],
-                    Segments = segmentCollection
-                }
-            }
-        };
-
-        context.DrawGeometry(_brush, null, geometry);
-    }
-
-    public void SetBrush(Brush brush)
-    {
-        _brush = brush;
-    }
-}
-
-public class LineComponent : IDrawableComponent
-{
-    private readonly Point _from;
-    private readonly Point _to;
-    private readonly Pen _pen;
-
-    public LineComponent(Point from, Point to, Pen pen)
-    {
-        _from = from;
-        _to = to;
-        _pen = pen;
-    }
-
-    public void Draw(DrawingContext context, bool withGuidelines)
-    {
-        if (withGuidelines)
-        {
-            var gSet = new GuidelineSet();
-            gSet.GuidelinesX.Add(_from.X);
-            gSet.GuidelinesX.Add(_to.X);
-            gSet.GuidelinesY.Add(_from.Y);
-            gSet.GuidelinesY.Add(_to.Y);
-            context.PushGuidelineSet(gSet);
-        }
-        
-        context.DrawLine(_pen, _from, _to);
-
-        if (withGuidelines) context.Pop();
-    }
-
-    public void SetBrush(Brush brush)
-    {
-        _pen.Brush = brush;
-    }
-}
-
-public class TextInRectangleComponent : IDrawableComponent
-{
-    protected static readonly CultureInfo Info = CultureInfo.CurrentUICulture;
-    protected const FlowDirection Flow = FlowDirection.LeftToRight;
-    protected static readonly Typeface Typeface =
-        new(new FontFamily(new Uri("pack://application:,,,/View/Fonts/"), "./#Roboto Mono"),
-        FontStyles.Normal, FontWeights.Regular, FontStretches.Normal);
-    
-    protected FormattedText _text;
-    protected readonly Rect _rect;
-    protected readonly ComponentHorizontalAlignment _horizontalAlignment;
-    protected readonly ComponentVerticalAlignment _verticalAlignment;
-
-    public string Text => _text.Text;
-
-    public TextInRectangleComponent(string text, double size, Brush foreground, Rect rect,
-        ComponentHorizontalAlignment horizontalAlignment, ComponentVerticalAlignment verticalAlignment)
-    {
-        _text = new FormattedText(text, Info, Flow, Typeface, size, foreground, 1);
-        _rect = rect;
-        _horizontalAlignment = horizontalAlignment;
-        _verticalAlignment = verticalAlignment;
-    }
-
-    protected TextInRectangleComponent(TextInRectangleComponent component)
-    {
-        _text = component._text;
-        _rect = component._rect;
-        _horizontalAlignment = component._horizontalAlignment;
-        _verticalAlignment = component._verticalAlignment;
-    }
-
-    public void SetForegroundFor(Brush brush, char letter)
-    {
-        for (int i = 0; i < _text.Text.Length; i++)
-        {
-            if(_text.Text[i] == letter) _text.SetForegroundBrush(brush, i, 1);
-        }
-    }
-
-    public virtual void Draw(DrawingContext context, bool withGuidelines)
-    {
-        var deltaX = (_rect.Width - _text.Width) / 2;
-        var deltaY = (_rect.Height - _text.Height) / 2;
-            
-        context.DrawText(_text, new Point(_rect.X + deltaX * (int)_horizontalAlignment, 
-            _rect.Y + deltaY * (int)_verticalAlignment));
-    }
-
-    public void SetBrush(Brush brush)
-    {
-        _text.SetForegroundBrush(brush);
-    }
-}
-
-public class OutlinedTextInRectangleComponent : TextInRectangleComponent
-{
-    private readonly Brush _borderBrush;
-    private readonly double _strokeWidth;
-    private readonly List<int> _indexes = new();
-    
-    public OutlinedTextInRectangleComponent(string text, double size, Brush foreground, Rect rect,
-        ComponentHorizontalAlignment horizontalAlignment, ComponentVerticalAlignment verticalAlignment,
-        Brush borderBrush, double strokeWidth, char letter)
-        : base(text, size, foreground, rect, horizontalAlignment, verticalAlignment)
-    {
-        _borderBrush = borderBrush;
-        _strokeWidth = strokeWidth;
-        
-        for (int i = 0; i < text.Length; i++)
-        {
-            if (text[i] == letter) _indexes.Add(i);
-        }
-    }
-
-    public OutlinedTextInRectangleComponent(TextInRectangleComponent baseComponent, Brush borderBrush,
-        double strokeWidth, char letter) : base(baseComponent)
-    {
-        _borderBrush = borderBrush;
-        _strokeWidth = strokeWidth;
-        
-        for (int i = 0; i < baseComponent.Text.Length; i++)
-        {
-            if (baseComponent.Text[i] == letter) _indexes.Add(i);
-        }
-    }
-
-    public override void Draw(DrawingContext context, bool withGuidelines)
-    {
-        var deltaX = (_rect.Width - _text.Width) / 2;
-        var deltaY = (_rect.Height - _text.Height) / 2;
-
-        base.Draw(context, withGuidelines);
-        
-        var point = new Point(_rect.X + deltaX * (int)_horizontalAlignment,
-            _rect.Y + deltaY * (int)_verticalAlignment);
-        foreach (var index in _indexes)
-        {
-            var geometry = _text.BuildHighlightGeometry(point, index, 1);
-            context.DrawGeometry(null, new Pen(_borderBrush, _strokeWidth), geometry);
-        }
-    }
-}
-
-public class SolutionComponent : TextInRectangleComponent
-{
-    public int Row { get; }
-    public int Column { get; }
-    
-    public SolutionComponent(string text, double size, Brush foreground, Rect rect, int row, int col
-        , ComponentHorizontalAlignment horizontalAlignment, ComponentVerticalAlignment verticalAlignment)
-        : base(text, size, foreground, rect, horizontalAlignment, verticalAlignment)
-    {
-        Row = row;
-        Column = col;
     }
 }
 

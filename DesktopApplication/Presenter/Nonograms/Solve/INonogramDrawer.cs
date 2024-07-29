@@ -15,8 +15,6 @@ public interface INonogramDrawer
     void ClearUnavailable();
     void ClearHighlights();
     void EncircleCells(HashSet<Cell> cells, StepColor color);
-    void HighlightHorizontalValues(int row, int startIndex, int endIndex, StepColor color);
-    void HighlightVerticalValues(int col, int startIndex, int endIndex, StepColor color);
-    void EncircleRowSection(int row, int startIndex, int endIndex, StepColor color);
-    void EncircleColumnSection(int col, int startIndex, int endIndex, StepColor color);
+    void HighlightValues(int unit, int startIndex, int endIndex, StepColor color, Orientation orientation);
+    void EncircleSection(int unit, int startIndex, int endIndex, StepColor color, Orientation orientation);
 }

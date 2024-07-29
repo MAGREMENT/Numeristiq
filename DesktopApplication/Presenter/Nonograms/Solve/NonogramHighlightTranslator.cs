@@ -22,8 +22,7 @@ public class NonogramHighlightTranslator : INonogramHighlighter
 
     public void HighlightValues(Orientation orientation, int unit, int startIndex, int endIndex, StepColor color)
     {
-        if (orientation == Orientation.Horizontal) _drawer.HighlightHorizontalValues(unit, startIndex, endIndex, color);
-        else _drawer.HighlightVerticalValues(unit, startIndex, endIndex, color);
+        _drawer.HighlightValues(unit, startIndex, endIndex, color, orientation);
     }
 
     public void EncircleCells(IEnumerable<Cell> cells, StepColor color)
@@ -33,7 +32,6 @@ public class NonogramHighlightTranslator : INonogramHighlighter
 
     public void EncircleLineSection(Orientation orientation, int unit, int startIndex, int endIndex, StepColor color)
     {
-        if (orientation == Orientation.Horizontal) _drawer.EncircleRowSection(unit, startIndex, endIndex, color);
-        else _drawer.EncircleColumnSection(unit, startIndex, endIndex, color);
+        _drawer.EncircleSection(unit, startIndex, endIndex, color, orientation);
     }
 }

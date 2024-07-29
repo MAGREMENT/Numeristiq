@@ -16,9 +16,9 @@
         <controls:SizeOptimizedContentControl Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"
                                               Width="740" Height="740" x:Name="ContentControl" MouseDown="CreateDefault">
             <controls:SizeOptimizedContentControl.OptimizableContent>
-                <c:KakuroBoard NumberLineBrush="{DynamicResource Text}" BackgroundBrush="Transparent"
+                <c:KakuroBoard LineBrush="{DynamicResource Text}" BackgroundBrush="Transparent"
                                DefaultNumberBrush="{DynamicResource Text}" AmountLineBrush="{DynamicResource Accent}"
-                               CellSize="20" LineWidth="3" AmountHeightFactor="0.5" AmountWidthFactor="0.5"
+                               CellSize="20" BigLineWidth="3" AmountHeightFactor="0.5" AmountWidthFactor="0.5"
                                CellSelected="OnCellSelection" CursorBrush="{DynamicResource Secondary1}"
                                KeyDown="DoBoardInput" LostFocus="OnLostFocus"/>
             </controls:SizeOptimizedContentControl.OptimizableContent>

@@ -11,6 +11,7 @@ using Model.Sudokus.Player;
 using Model.Sudokus.Player.Actions;
 using Model.Sudokus.Solver;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace DesktopApplication.Presenter.Sudokus.Play;
 
@@ -444,7 +445,7 @@ public interface ISudokuPlayerCursor
     bool ShouldHaveOutline(Cell cell, PossibilitiesLocation location, out int p);
 }
 
-public class CellsCursor : HashSet<Cell>, ISudokuPlayerCursor
+public class CellsCursor : ContainingHashSet<Cell>, ISudokuPlayerCursor
 {
     public bool ShouldHaveOutline(Cell cell, PossibilitiesLocation location, out int p)
     {

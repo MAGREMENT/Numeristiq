@@ -49,7 +49,7 @@ public class GlobalApplicationPresenter
 
     public KakuroApplicationPresenter InitializeKakuroApplicationPresenter()
     {
-        return new KakuroApplicationPresenter();
+        return new KakuroApplicationPresenter(_settings);
     }
 
     public NonogramApplicationPresenter InitializeNonogramApplicationPresenter()

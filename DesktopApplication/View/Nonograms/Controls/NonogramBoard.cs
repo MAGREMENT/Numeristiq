@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -10,24 +11,38 @@ using Model.Utility;
 
 namespace DesktopApplication.View.Nonograms.Controls;
 
-public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
+public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizable, INonogramDrawer
 {
     private const int BackgroundIndex = 0;
     private const int LineIndex = 1;
     private const int HighlightIndex = 2;
     private const int FillingIndex = 3;
     private const int UnavailableIndex = 4;
-    private const int NumberIndex = 5;
+    private const int NumbersIndex = 5;
 
-    private const int FillingShift = 3;
-    private const int UnavailableThickness = 3;
+    private readonly List<IReadOnlyList<int>> _rows = new();
+    private readonly List<IReadOnlyList<int>> _columns = new();
+    private double _cellSize;
+    private double _bigLineWidth;
+    
+    public NonogramBoard() : base(6)
+    {
+        Layers[BackgroundIndex].Add(new BackgroundDrawableComponent());
+        Layers[LineIndex].Add(new NonogramGridDrawableComponent());
+        Layers[NumbersIndex].Add(new NonogramNumbersDrawableComponent());
+    }
+
+    #region INonogramDrawingData
+    
+    public Typeface Typeface { get; } = new(new FontFamily(new Uri("pack://application:,,,/View/Fonts/"), "./#Roboto Mono"),
+        FontStyles.Normal, FontWeights.Regular, FontStretches.Normal);
+    public CultureInfo CultureInfo { get; } =  CultureInfo.CurrentUICulture;
     
     public static readonly DependencyProperty FillingBrushProperty =
         DependencyProperty.Register(nameof(FillingBrush), typeof(Brush), typeof(NonogramBoard),
-            new PropertyMetadata((obj, args) =>
+            new PropertyMetadata((obj, _) =>
             {
-                if(obj is not NonogramBoard board || args.NewValue is not Brush brush) return;
-                board.SetLayerBrush(FillingIndex, brush);
+                if(obj is not NonogramBoard board) return;
                 board.Refresh();
             }));
     
@@ -39,10 +54,9 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
     
     public static readonly DependencyProperty UnavailableBrushProperty =
         DependencyProperty.Register(nameof(UnavailableBrush), typeof(Brush), typeof(NonogramBoard),
-            new PropertyMetadata((obj, args) =>
+            new PropertyMetadata((obj, _) =>
             {
-                if(obj is not NonogramBoard board || args.NewValue is not Brush brush) return;
-                board.SetLayerBrush(UnavailableIndex, brush);
+                if(obj is not NonogramBoard board) return;
                 board.Refresh();
             }));
     
@@ -54,13 +68,15 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
     
     public static readonly DependencyProperty LineBrushProperty =
         DependencyProperty.Register(nameof(LineBrush), typeof(Brush), typeof(NonogramBoard),
-            new PropertyMetadata((obj, args) =>
+            new PropertyMetadata((obj, _) =>
             {
-                if(obj is not NonogramBoard board || args.NewValue is not Brush brush) return;
-                board.SetLayerBrush(LineIndex, brush);
+                if(obj is not NonogramBoard board) return;
                 board.Refresh();
             }));
-    
+
+    public Brush CursorBrush => Brushes.Transparent;
+    public Brush LinkBrush => Brushes.Transparent;
+
     public Brush LineBrush
     {
         set => SetValue(LineBrushProperty, value);
@@ -69,10 +85,9 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
     
     public static readonly DependencyProperty BackgroundBrushProperty =
         DependencyProperty.Register(nameof(BackgroundBrush), typeof(Brush), typeof(NonogramBoard),
-            new PropertyMetadata((obj, args) =>
+            new PropertyMetadata((obj, _) =>
             {
-                if(obj is not NonogramBoard board || args.NewValue is not Brush brush) return;
-                board.SetLayerBrush(BackgroundIndex, brush);
+                if(obj is not NonogramBoard board) return;
                 board.Refresh();
             }));
 
@@ -82,12 +97,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
         get => (Brush)GetValue(BackgroundBrushProperty);
     }
 
-    private readonly List<IReadOnlyList<int>> _rows = new();
-    private readonly List<IReadOnlyList<int>> _columns = new();
-    private int _maxDepth;
-    private int _maxWidth;
-    private double _cellSize;
-    private double _lineWidth;
+    public double InwardCellLineWidth => 3;
 
     public double CellSize
     {
@@ -99,28 +109,77 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
         }
     }
 
-    public double LineWidth
+    public double LinkOffset => 20;
+    public LinkOffsetSidePriority LinkOffsetSidePriority { get; set; } = LinkOffsetSidePriority.Any;
+
+    public double BigLineWidth
     {
-        get => _lineWidth;
+        get => _bigLineWidth;
         set
         {
-            _lineWidth = value;
+            _bigLineWidth = value;
             UpdateSize(true);
         }
     }
-    
-    public NonogramBoard() : base(6)
+
+    public double SmallLineWidth => BigLineWidth;
+    public double FillingShift => 3;
+    public double UnavailableThickness => 3;
+
+    public double GetLeftOfCellWithBorder(int col)
     {
+        return GetLeftOfCell(col) - _bigLineWidth;
     }
+
+    public double GetTopOfCell(int row)
+    {
+        return MaxDepth * _cellSize / 2 + _bigLineWidth + row * (_bigLineWidth + _cellSize);
+    }
+
+    public double GetTopOfCellWithBorder(int row)
+    {
+        return GetTopOfCell(row) - _bigLineWidth;
+    }
+
+    public Point GetCenterOfCell(int row, int col)
+    {
+        var delta = _cellSize / 2;
+        return new Point(GetLeftOfCell(col) + delta, GetTopOfCell(row) + delta);
+    }
+
+    public bool IsClue(int row, int col) => false;
+
+    public double GetLeftOfCell(int col)
+    {
+        return MaxWideness * _cellSize / 2 + _bigLineWidth + col * (_bigLineWidth + _cellSize);
+    }
+
+    public int RowCount => _rows.Count;
+    public int ColumnCount => _columns.Count;
+    public int MaxDepth { get; private set; }
+
+    public int MaxWideness { get; private set; }
+
+    public IReadOnlyList<int> GetRowValues(int row)
+    {
+        return _rows[row];
+    }
+
+    public IReadOnlyList<int> GetColumnValues(int col)
+    {
+        return _columns[col];
+    }
+
+    #endregion
 
     public void SetRows(IEnumerable<IEnumerable<int>> rows)
     {
         _rows.Clear();
-        _maxDepth = 0;
+        MaxDepth = 0;
         foreach (var r in rows)
         {
             var asArray = r.ToArray();
-            _maxDepth = Math.Max(asArray.Length, _maxDepth);
+            MaxDepth = Math.Max(asArray.Length, MaxDepth);
             _rows.Add(asArray);
         }
         
@@ -130,11 +189,11 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
     public void SetColumns(IEnumerable<IEnumerable<int>> cols)
     {
         _columns.Clear();
-        _maxWidth = 0;
+        MaxWideness = 0;
         foreach (var c in cols)
         {
             var asArray = c.ToArray();
-            _maxWidth = Math.Max(asArray.Length, _maxWidth);
+            MaxWideness = Math.Max(asArray.Length, MaxWideness);
             _columns.Add(asArray);
         }
         
@@ -145,9 +204,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
     {
         Dispatcher.Invoke(() =>
         {
-            var size = _cellSize - FillingShift * 2;
-            Layers[FillingIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col) + FillingShift,
-                GetTop(row) + FillingShift, size, size), FillingBrush));
+            Layers[FillingIndex].Add(new SolutionDrawableComponent(row, col));
         });
     }
 
@@ -160,17 +217,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
     {
         Dispatcher.Invoke(() =>
         {
-            var layer = Layers[UnavailableIndex];
-            var shift = _cellSize / 4;
-            var minX = GetLeft(col) + shift;
-            var maxX = GetLeft(col) + _cellSize - shift;
-            var minY = GetTop(row) + shift;
-            var maxY = GetTop(row) + _cellSize - shift;
-        
-            layer.Add(new LineComponent(new Point(minX, minY), new Point(maxX, maxY),
-                new Pen(UnavailableBrush, UnavailableThickness)));
-            layer.Add(new LineComponent(new Point(minX, maxY), new Point(maxX, minY),
-                new Pen(UnavailableBrush, UnavailableThickness)));
+            Layers[UnavailableIndex].Add(new UnavailabilityDrawableComponent(row, col));
         });
     }
 
@@ -189,139 +236,34 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
         //TODO
     }
 
-    public void HighlightHorizontalValues(int row, int startIndex, int endIndex, StepColor color)
+    public void HighlightValues(int unit, int startIndex, int endIndex, StepColor color, Orientation orientation)
     {
-        var left = (_maxWidth - _rows[row].Count + startIndex) * _cellSize / 2;
-        var right = left + (endIndex - startIndex + 1) * _cellSize / 2;
-        var top = GetTop(row);
-        var bottom = top + _cellSize;
-
-        var hShift = _cellSize / 4;
-        var wShift = _cellSize / 10;
-        Layers[HighlightIndex].Add(new FilledRectangleComponent(new Rect(new Point(left + wShift, top + hShift),
-            new Point(right - wShift, bottom - hShift)), App.Current.ThemeInformation.ToBrush(color)));
+        Layers[HighlightIndex].Add(new ValuesHighlightDrawableComponent(unit, startIndex, endIndex, color, orientation));
     }
 
-    public void HighlightVerticalValues(int col, int startIndex, int endIndex, StepColor color)
+    public void EncircleSection(int unit, int startIndex, int endIndex, StepColor color, Orientation orientation)
     {
-        var top = (_maxDepth - _columns[col].Count + startIndex) * _cellSize / 2;
-        var bottom = top + (endIndex - startIndex + 1) * _cellSize / 2;
-        var left = GetLeft(col);
-        var right = left + _cellSize;
-        
-        var hShift = _cellSize / 12;
-        var wShift = _cellSize / 3;
-        Layers[HighlightIndex].Add(new FilledRectangleComponent(new Rect(new Point(left + wShift, top + hShift),
-            new Point(right - wShift, bottom - hShift)), App.Current.ThemeInformation.ToBrush(color)));
+        Layers[HighlightIndex].Add(new CellSectionDrawableComponent(unit, startIndex, endIndex, color, orientation));
     }
 
-    public void EncircleRowSection(int row, int startIndex, int endIndex, StepColor color)
-    {
-        var left = GetLeft(startIndex) - _lineWidth / 2;
-        var top = GetTop(row) - _lineWidth / 2;
-        var bottom = top + _lineWidth + _cellSize;
-        var right = left + (endIndex - startIndex + 1) * (_lineWidth + _cellSize);
-        
-        Layers[HighlightIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(left, top),
-            new Point(right, bottom)), new Pen(App.Current.ThemeInformation.ToBrush(color), _lineWidth)));
-    }
-
-    public void EncircleColumnSection(int col, int startIndex, int endIndex, StepColor color)
-    {
-        var left = GetLeft(col) - _lineWidth / 2;
-        var top = GetTop(startIndex) - _lineWidth / 2;
-        var bottom = top + (endIndex - startIndex + 1) * (_lineWidth + _cellSize);
-        var right = left + _lineWidth + _cellSize;
-        
-        Layers[HighlightIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(left, top),
-            new Point(right, bottom)), new Pen(App.Current.ThemeInformation.ToBrush(color), _lineWidth)));
-    }
-
-    private double GetTop(int row)
-    {
-        return _maxDepth * _cellSize / 2 + _lineWidth + row * (_lineWidth + _cellSize);
-    }
-
-    private double GetLeft(int col)
-    {
-        return _maxWidth * _cellSize / 2 + _lineWidth + col * (_lineWidth + _cellSize);
-    }
+    #region Private
 
     private void UpdateSize(bool fireEvent)
     {
-        Width = _lineWidth + (_lineWidth + _cellSize) * _columns.Count + _cellSize * _maxWidth / 2;
-        Height = _lineWidth + (_lineWidth + _cellSize) * _rows.Count + _maxDepth * _cellSize / 2;
-        
-        Clear();
-        SetBackground();
-        SetNumbers();
-        SetLines();
+        var w = _bigLineWidth + (_bigLineWidth + _cellSize) * _columns.Count + _cellSize * MaxWideness / 2;
+        var h = _bigLineWidth + (_bigLineWidth + _cellSize) * _rows.Count + MaxDepth * _cellSize / 2;
+        if (Math.Abs(Width - w) < 0.01 && Math.Abs(Height - h) < 0.01) return;
+
+        Width = w;
+        Height = h;
         Refresh();
         
         if(fireEvent) OptimizableSizeChanged?.Invoke();
     }
 
-    private void SetNumbers()
-    {
-        var size = _cellSize / 3;
-        var layer = Layers[NumberIndex];
-        
-        for (int col = 0; col < _columns.Count; col++)
-        {
-            var current = _columns[col];
-            int depth = _maxDepth;
-            for (int i = current.Count - 1; i >= 0; i--)
-            {
-                layer.Add(new TextInRectangleComponent(current[i].ToString(), size, LineBrush,
-                    new Rect(GetLeft(col), _cellSize / 2 * (depth - 1), _cellSize, _cellSize / 2),
-                    ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
-                depth--;
-            }
-        }
+    #endregion
 
-        for (int row = 0; row < _rows.Count; row++)
-        {
-            var current = _rows[row];
-            int width = _maxWidth;
-            for (int i = current.Count - 1; i >= 0; i--)
-            {
-                layer.Add(new TextInRectangleComponent(current[i].ToString(), size, LineBrush,
-                    new Rect(_cellSize / 2 * (width - 1), GetTop(row), _cellSize / 2, _cellSize),
-                    ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
-                width--;
-            }
-        }
-    }
-
-    private void SetLines()
-    {
-        if (!HasSize()) return;
-        
-        var yStart = _maxDepth * _cellSize / 2;
-        var xStart = _maxWidth * _cellSize / 2;
-
-        var currentY = yStart;
-        for (int row = 0; row <= _rows.Count; row++)
-        {
-            Layers[LineIndex].Add(new FilledRectangleComponent(
-                new Rect(xStart, currentY, Width - xStart, _lineWidth), LineBrush));
-
-            currentY += _lineWidth + _cellSize;
-        }
-        
-        var currentX = xStart;
-        for (int col = 0; col <= _columns.Count; col++)
-        {
-            Layers[LineIndex].Add(new FilledRectangleComponent(
-                new Rect(currentX, yStart, _lineWidth, Height - yStart), LineBrush));
-            currentX += _lineWidth + _cellSize;
-        }
-    }
-    
-    private void SetBackground()
-    {
-        Layers[BackgroundIndex].Add(new FilledRectangleComponent(new Rect(0, 0, Width, Height), BackgroundBrush));
-    }
+    #region ISizeOptimizable
 
     public event OnSizeChange? OptimizableSizeChanged;
     public int WidthSizeMetricCount => _columns.Count;
@@ -329,12 +271,12 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
     
     public double GetHeightAdditionalSize()
     {
-        return _maxDepth * _cellSize / 2 + _lineWidth * (_rows.Count + 1);
+        return MaxDepth * _cellSize / 2 + _bigLineWidth * (_rows.Count + 1);
     }
 
     public double GetWidthAdditionalSize()
     {
-        return _maxWidth * _cellSize / 2 + _lineWidth * (_columns.Count + 1);
+        return MaxWideness * _cellSize / 2 + _bigLineWidth * (_columns.Count + 1);
     }
 
     public bool HasSize()
@@ -345,8 +287,8 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
     public double SimulateSizeMetric(int n, SizeType type)
     {
         return type == SizeType.Width
-            ? _lineWidth + (_lineWidth + n) * _columns.Count + (double)(n * _maxWidth) / 2
-            : _lineWidth + (_lineWidth + n) * _rows.Count + (double)(_maxDepth * n) / 2;
+            ? _bigLineWidth + (_bigLineWidth + n) * _columns.Count + (double)(n * MaxWideness) / 2
+            : _bigLineWidth + (_bigLineWidth + n) * _rows.Count + (double)(MaxDepth * n) / 2;
     }
 
     public void SetSizeMetric(int n)
@@ -354,4 +296,6 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
         _cellSize = n;
         UpdateSize(false);
     }
+
+    #endregion
 }

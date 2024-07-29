@@ -20,11 +20,18 @@ public class TectonicSolvePresenter : SolveWithStepsPresenter<ITectonicHighlight
     private IZone? _selectedZone;
     private SelectionMode _selectionMode = SelectionMode.Default;
 
-    public TectonicSolvePresenter(TectonicSolver solver, ITectonicSolveView view) 
+    public TectonicSolvePresenter(TectonicSolver solver, ITectonicSolveView view, Settings settings) 
         : base(new TectonicHighlightTranslator(view.Drawer))
     {
         _solver = solver;
         _view = view;
+
+        _view.Drawer.LinkOffsetSidePriority = settings.LinkOffsetSidePriority;
+        settings.LinkOffsetSidePrioritySetting.ValueChanged += v =>
+        {
+            _view.Drawer.LinkOffsetSidePriority = (LinkOffsetSidePriority)v.ToInt();
+            _view.Drawer.Refresh();
+        };
     }
 
     public void SetTectonicString()

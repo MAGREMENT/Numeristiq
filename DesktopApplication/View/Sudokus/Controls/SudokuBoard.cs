@@ -13,10 +13,11 @@ using Model.Sudokus.Player;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace DesktopApplication.View.Sudokus.Controls;
 
-public class SudokuBoard : DB, ISudokuDrawingData, ISudokuSolverDrawer, IExplanationHighlighter,
+public class SudokuBoard : DrawingBoard, ISudokuDrawingData, ISudokuSolverDrawer, IExplanationHighlighter,
     ISudokuPlayerDrawer, ISizeOptimizable
 {
     private const int BackgroundIndex = 0;
@@ -40,7 +41,7 @@ public class SudokuBoard : DB, ISudokuDrawingData, ISudokuSolverDrawer, IExplana
     public event OnCellSelection? CellSelected;
     public event OnCellSelection? CellAddedToSelection;
     
-    public SudokuBoard() : base(9)
+    public SudokuBoard() : base(8)
     {
         Focusable = true;
         
@@ -263,7 +264,6 @@ public class SudokuBoard : DB, ISudokuDrawingData, ISudokuSolverDrawer, IExplana
         return new Point(GetLeftOfCell(col) + delta, GetTopOfCell(row) + delta);
     }
 
-
     #endregion
 
     #region ISudokuDrawer
@@ -387,7 +387,7 @@ public class SudokuBoard : DB, ISudokuDrawingData, ISudokuSolverDrawer, IExplana
         Layers[CellsHighlightIndex].Add(new MultiColorDrawableComponent(row, col, colors));
     }
     
-    public void PutCursorOn(HashSet<Cell> cells)
+    public void PutCursorOn(IContainingEnumerable<Cell> cells)
     {
         ClearCursor();
         

@@ -10,6 +10,7 @@ public interface ITectonicDrawer : IDrawer
 {
     int RowCount { set; }
     int ColumnCount { set; }
+    LinkOffsetSidePriority LinkOffsetSidePriority { set; }
     
     void ClearNumbers();
     void ShowSolution(int row, int column, int number);

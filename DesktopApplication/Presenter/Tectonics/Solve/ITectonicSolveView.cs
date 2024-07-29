@@ -1,6 +1,4 @@
-﻿using Model.Core.Steps;
-
-namespace DesktopApplication.Presenter.Tectonics.Solve;
+﻿namespace DesktopApplication.Presenter.Tectonics.Solve;
 
 public interface ITectonicSolveView : ISolveWithStepsView
 {

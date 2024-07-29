@@ -18,13 +18,20 @@ public class KakuroSolvePresenter
     private int _bufferedAmount = -1;
     private EditMode _mode = EditMode.Default;
 
-    public KakuroSolvePresenter(IKakuroSolveView view)
+    public KakuroSolvePresenter(IKakuroSolveView view, Settings settings)
     {
         _view = view;
         _solver = new KakuroSolver(new RecursiveKakuroCombinationCalculator());
         _solver.StrategyManager.AddStrategies(new NakedSingleStrategy(),
             new AmountCoherencyStrategy(),
             new CombinationCoherencyStrategy());
+
+        _view.Drawer.FastPossibilityDisplay = settings.FastPossibilityDisplay;
+        settings.FastPossibilityDisplaySetting.ValueChanged += v =>
+        {
+            _view.Drawer.FastPossibilityDisplay = v.ToBool();
+            _view.Drawer.Refresh();
+        };
     }
     
     public void OnKakuroAsStringBoxShowed()
@@ -186,11 +193,9 @@ public class KakuroSolvePresenter
             }
 
             var c = sum.GetAmountCell();
-            drawer.SetPresence(c.Row, c.Column, sum.Orientation, true);
-            drawer.SetAmount(c.Row, c.Column, sum.Amount, sum.Orientation);
+            drawer.AddAmount(c.Row, c.Column, sum.Amount, sum.Orientation);
         }
         
-        drawer.RedrawLines();
         drawer.Refresh();
     }
 
