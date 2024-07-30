@@ -4,7 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
-      xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       xmlns:view="clr-namespace:DesktopApplication.View"
       mc:Ignorable="d"
       Title="ManagePage" d:DesignHeight="660" d:DesignWidth="1400">

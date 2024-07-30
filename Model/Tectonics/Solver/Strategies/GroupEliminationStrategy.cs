@@ -88,7 +88,7 @@ public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitCo
         if (first.TryGetBuilder<GroupEliminationReportBuilder>(out var gerp1)
             || second.TryGetBuilder<GroupEliminationReportBuilder>(out var gerp2)) return 0;
 
-        return gerp2.Cells.Length - gerp1.Cells.Length;
+        return gerp2!.Cells.Length - gerp1!.Cells.Length;
     }
 }
 

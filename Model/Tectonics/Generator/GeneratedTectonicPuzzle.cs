@@ -1,5 +1,4 @@
-﻿using Model.Core;
-using Model.Core.Generators;
+﻿using Model.Core.Generators;
 
 namespace Model.Tectonics.Generator;
 

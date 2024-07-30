@@ -188,7 +188,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer<NumericChange>
         if (first.TryGetBuilder<IReportBuilderWithChain>(out var f) ||
             second.TryGetBuilder<IReportBuilderWithChain>(out var s)) return 0;
 
-        return s.Length() - f.Length();
+        return s!.Length() - f!.Length();
     }
 }
 

@@ -1,6 +1,4 @@
-﻿using Model.Core.Generators;
-using Model.Tectonics;
-using Model.Tectonics.Generator;
+﻿using Model.Tectonics.Generator;
 
 namespace Tests.Tectonics;
 
@@ -11,7 +9,7 @@ public class TectonicPuzzleGeneratorTests
     [Test]
     public void Test()
     {
-        /*var generated = _generator.Generate(1);
+        /*var generated = _generator.Generate(1); TODO
 
         foreach (var t in generated)
         {

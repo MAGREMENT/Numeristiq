@@ -3,7 +3,6 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       xmlns:controls="clr-namespace:DesktopApplication.View.Sudokus.Controls"
       xmlns:global="clr-namespace:DesktopApplication.View.Controls"
       xmlns:view="clr-namespace:DesktopApplication.View"
@@ -16,78 +15,105 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="10,0,0,0">
-                <Grid Background="{DynamicResource Background2}" HorizontalAlignment="Left" Margin="0, 10, 0, 0">
+        <Border Grid.Column="0" Background="{DynamicResource Background2}" Margin="10 10 0 10"
+                CornerRadius="5" Padding="5" Width="350" VerticalAlignment="Center">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-            
-                <Button Grid.Column="0" Padding="5" Margin="5" Style="{StaticResource SimpleHoverButton}" x:Name="BackButton" Click="MoveBack">
+                
+                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="18" Margin="5 0 0 0"
+                           Foreground="{DynamicResource Text}"
+                           VerticalAlignment="Center">Edit</TextBlock>
+                
+                <Button Grid.Row="0" Grid.Column="2" Padding="5"
+                        Style="{StaticResource SimpleHoverButton}" 
+                        x:Name="BackButton" Click="MoveBack">
                     <Path Stroke="Gray" Width="30" Height="30" x:Name="BackArrow"
                           Data="M 5,15 H 25 M 5,15 14,7 M 5,15 14,23"/>
                 </Button>
             
-                <Button Grid.Column="1" Padding="5" Margin="5" Style="{StaticResource SimpleHoverButton}" x:Name="ForwardButton" Click="MoveForward">
+                <Button Grid.Row="0" Grid.Column="3" Padding="5" 
+                        Style="{StaticResource SimpleHoverButton}" 
+                        x:Name="ForwardButton" Click="MoveForward">
                     <Path Stroke="Gray" Width="30" Height="30" x:Name="ForwardArrow"
                           Data="M 5,15 H 25 M 25,15 16,7 M 25,15 16,23"/>
                 </Button>
-            </Grid>
-            
-            <StackPanel Orientation="Vertical" Margin="0,5">
-                <RadioButton IsChecked="True" Checked="ChangeLevelToSolution" Style="{StaticResource ChangeRadioButton}">Normal</RadioButton>
-                <RadioButton Checked="ChangeLevelToTop" Style="{StaticResource ChangeRadioButton}">Top</RadioButton>
-                <RadioButton Checked="ChangeLevelToCenter" Style="{StaticResource ChangeRadioButton}">Center</RadioButton>
-                <RadioButton Checked="ChangeLevelToBottom" Style="{StaticResource ChangeRadioButton}">Bottom</RadioButton>
-            </StackPanel>
-            
-            <Border Margin="0, 10, 0, 0" BorderBrush="{DynamicResource Text}" BorderThickness="1"
-                    HorizontalAlignment="Center" Background="{DynamicResource Background2}">
-                <Grid x:Name="ColorGrid">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
                 
+                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" Margin="0 10 0 0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                
-                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="{DynamicResource Background3}" Background="Transparent"
-                            Margin="10" BorderThickness="1" Width="30" Height="30" MouseLeftButtonDown="ClearHighlights">
-                        <Path Stroke="{DynamicResource Text}" StrokeThickness="3" Width="28" Height="28"
-                              Data="M 4,4 24,24 M 4,24 24,4"/>
+                    
+                    <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
+                        <RadioButton IsChecked="True" Checked="ChangeLevelToSolution" Margin="0 0 0 8"
+                                     Style="{StaticResource ChangeRadioButton}">Normal</RadioButton>
+                        <RadioButton Checked="ChangeLevelToTop" Margin="0 0 0 8"
+                                     Style="{StaticResource ChangeRadioButton}">Top</RadioButton>
+                        <RadioButton Checked="ChangeLevelToCenter" Margin="0 0 0 8"
+                                     Style="{StaticResource ChangeRadioButton}">Center</RadioButton>
+                        <RadioButton Checked="ChangeLevelToBottom" Margin="0 0 0 8"
+                                     Style="{StaticResource ChangeRadioButton}">Bottom</RadioButton>
+                    </StackPanel>
+                    
+                    <Border Grid.Column="2" Background="{DynamicResource Background3}"
+                            Padding="5" CornerRadius="5" VerticalAlignment="Center">
+                        <Grid x:Name="ColorGrid">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="52"/>
+                                <RowDefinition Height="52"/>
+                                <RowDefinition Height="52"/>
+                                <RowDefinition Height="52"/>
+                            </Grid.RowDefinitions>
+                        
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="52"/>
+                                <ColumnDefinition Width="52"/>
+                            </Grid.ColumnDefinitions>
+                        
+                            <Border Grid.Row="0" Grid.Column="0" BorderBrush="{DynamicResource Text}" Background="Transparent"
+                                    Margin="10" BorderThickness="1" Width="30" Height="30" MouseLeftButtonDown="ClearHighlights">
+                                <Path Stroke="{DynamicResource Text}" StrokeThickness="3" Width="28" Height="28"
+                                      Data="M 4,4 24,24 M 4,24 24,4"/>
+                            </Border>
+                        </Grid>
                     </Border>
                 </Grid>
-            </Border>
-            
-            <Border Margin="0,10,0,0" BorderBrush="{DynamicResource Text}" BorderThickness="1"
-                    Padding="10" Background="{DynamicResource Background2}">
-                <StackPanel Orientation="Horizontal">
-                    <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
-                            Click="Select1s">1</Button>
-                    <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
-                            Margin="5,0,0,0" Click="Select2s">2</Button>
-                    <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
-                            Margin="5,0,0,0" Click="Select3s">3</Button>
-                    <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
-                            Margin="5,0,0,0" Click="Select4s">4</Button>
-                    <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
-                            Margin="5,0,0,0" Click="Select5s">5</Button>
-                    <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
-                            Margin="5,0,0,0" Click="Select6s">6</Button>
-                    <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
-                            Margin="5,0,0,0" Click="Select7s">7</Button>
-                    <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
-                            Margin="5,0,0,0" Click="Select8s">8</Button>
-                    <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
-                            Margin="5,0,0,0" Click="Select9s">9</Button>
+                
+                <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center"
+                            Margin="0 10" Orientation="Horizontal">
+                    <RadioButton Style="{StaticResource PossibilitySelectRadioButton}"
+                            Click="Select1s">1</RadioButton>
+                    <RadioButton Style="{StaticResource PossibilitySelectRadioButton}"
+                                 Margin="5,0,0,0" Click="Select2s">2</RadioButton>
+                    <RadioButton Style="{StaticResource PossibilitySelectRadioButton}"
+                                 Margin="5,0,0,0" Click="Select3s">3</RadioButton>
+                    <RadioButton Style="{StaticResource PossibilitySelectRadioButton}"
+                                 Margin="5,0,0,0" Click="Select4s">4</RadioButton>
+                    <RadioButton Style="{StaticResource PossibilitySelectRadioButton}"
+                                 Margin="5,0,0,0" Click="Select5s">5</RadioButton>
+                    <RadioButton Style="{StaticResource PossibilitySelectRadioButton}"
+                                 Margin="5,0,0,0" Click="Select6s">6</RadioButton>
+                    <RadioButton Style="{StaticResource PossibilitySelectRadioButton}"
+                                 Margin="5,0,0,0" Click="Select7s">7</RadioButton>
+                    <RadioButton Style="{StaticResource PossibilitySelectRadioButton}"
+                                 Margin="5,0,0,0" Click="Select8s">8</RadioButton>
+                    <RadioButton Style="{StaticResource PossibilitySelectRadioButton}"
+                                 Margin="5,0,0,0" Click="Select9s">9</RadioButton>
                 </StackPanel>
-            </Border>
-        </StackPanel>
+            </Grid>
+        </Border>
         
         <global:SizeOptimizedContentControl Grid.Column="1" Margin="10" x:Name="Embedded">
             <global:SizeOptimizedContentControl.OptimizableContent>

@@ -195,13 +195,13 @@ public partial class PlayPage : ISudokuPlayView
     {
         ColorGrid.Children.RemoveRange(1, ColorGrid.Children.Count - 1);
         
-        for (int row = 0; row < 2; row++)
+        for (int row = 0; row < 4; row++)
         {
-            for (int col = 0; col < 4; col++)
+            for (int col = 0; col < 2; col++)
             {
                 if (row + col == 0) continue;
 
-                var color = (HighlightColor)(row * 4 + col - 1);
+                var color = (HighlightColor)(row * 2 + col - 1);
 
                 var border = new Border
                 {

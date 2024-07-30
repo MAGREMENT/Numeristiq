@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Explanation;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
@@ -129,11 +130,19 @@ public class EmptyRectangleReportBuilder : IChangeReportBuilder<NumericChange, I
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
+        var cps = new[]
         {
-            lighter.HighlightCell(_hinge, StepColor.Cause1);
-            lighter.HighlightCell(_one, StepColor.Cause2);
-            lighter.HighlightCell(_two, StepColor.Cause2);
+            new CellPossibility(_hinge, _possibility),
+            new CellPossibility(_one, _possibility),
+            new CellPossibility(_two, _possibility)
+        };
+        
+        return new ChangeReport<ISudokuHighlighter>($"Empty Rectangle in {_hinge}, {_one} and {_two}" +
+                                                    $"for {_possibility}", lighter =>
+        {
+            lighter.HighlightPossibility(cps[0], StepColor.Cause1);
+            lighter.HighlightPossibility(cps[1], StepColor.Cause2);
+            lighter.HighlightPossibility(cps[2], StepColor.Cause2);
 
             lighter.CreateLink(new CellPossibility(_hinge, _possibility), new CellPossibility(_one, _possibility),
                 _isOneLinkStrong ? LinkStrength.Strong : LinkStrength.Weak);
@@ -153,11 +162,29 @@ public class EmptyRectangleReportBuilder : IChangeReportBuilder<NumericChange, I
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
-        });
+        }, Explanation(cps));
+    }
+
+    private ExplanationElement Explanation(IReadOnlyList<CellPossibility> cps)
+    {
+        var order = _isOneLinkStrong ? new[] { cps[2], cps[1] } : new[] { cps[1], cps[2] };
+        var start = new StringExplanationElement("If ");
+        var current = start.Append(order[0]).Append(" is a solution, then ").Append(cps[0])
+            .Append(" will be removed. Which means that ")
+            .Append(order[1]).Append($" will also be a solution, removing every {_possibility} from ")
+            .Append(new House(Unit.Box, _miniRow * 3 + _miniCol)).Append(" and putting the Sudoku in a wrong state.");
+        if (_isOneLinkStrong && _isTwoLinkStrong) current.Append("This also applies to ").Append(order[1]).Append(".");
+
+        return start;
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return Clue<ISudokuHighlighter>.Default();
+        return new Clue<ISudokuHighlighter>(lighter =>
+        {
+            lighter.HighlightCell(_one, StepColor.Cause1);
+            lighter.HighlightCell(_two, StepColor.Cause1);
+            lighter.EncircleHouse(new House(Unit.Box, _miniRow * 3 + _miniCol), StepColor.Cause2);
+        }, "The 2 cells have a possibility in common that empties that box");
     }
 }
