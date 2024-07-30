@@ -4,6 +4,8 @@ namespace ConsoleApplication;
 
 public static class Program
 {
+    public const bool IsForProduction = false;
+    
     public static void Main(string[] args)
     {
         Interpreter().Execute(args);
@@ -42,6 +44,12 @@ public static class Program
             .AddCommand(new NonogramSolveBatchCommand())
             .AddCommand(new NonogramGenerateBatchCommand())
             .AddCommand(new NonogramSolutionCount());
+
+        if (!IsForProduction)
+        {
+            instance.Root.AddDirectory(new Directory("Developer"))
+                .AddCommand(new ThemeCommand());
+        }
 
         return instance;
     }

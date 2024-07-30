@@ -84,7 +84,14 @@
                 </Button>
             
                 <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource TransparentBarScrollViewer}">
-                    <StackPanel x:Name="Evaluated"/>
+                    <Grid x:Name="Evaluated">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
                 </ScrollViewer>
             </Grid>
         </Border>

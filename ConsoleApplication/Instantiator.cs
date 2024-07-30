@@ -14,8 +14,6 @@ namespace ConsoleApplication;
 
 public class Instantiator
 {
-    private const bool IsForProduction = false;
-    
     private IReadOnlyList<SudokuStrategy>? _sudokuStrategies;
     private bool _sudokuInstantiated;
 
@@ -24,7 +22,7 @@ public class Instantiator
         if (!_sudokuInstantiated)
         {
             _sudokuStrategies = new SudokuStrategyJsonRepository("strategies.json", 
-                !IsForProduction, true).GetStrategies();
+                !Program.IsForProduction, true).GetStrategies();
             _sudokuInstantiated = true;
         }
 
