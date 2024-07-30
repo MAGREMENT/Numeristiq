@@ -72,12 +72,12 @@ public class SudokuPlayPresenter
         };
     }
 
-    public void SelectAllPossibilities(int p)
+    public bool SelectAllPossibilities(int p)
     {
         if (_cursor is AllPossibilitiesCursor aps && aps.Possibility == p)
         {
             EnforceCellCursor(out _);
-            return;
+            return false;
         }
         
         var buffer = new AllPossibilitiesCursor(p, new HashSet<Cell>(), _player.MainLocation);
@@ -92,7 +92,9 @@ public class SudokuPlayPresenter
 
         _cursor = buffer;
         _view.Drawer.ClearCursor();
-        RefreshCursor();
+        RefreshCursor(); //TODO update the way this works so that changes to the player are also selected
+
+        return true;
     }
 
     public void SelectCell(Cell cell)

@@ -249,47 +249,65 @@ public partial class PlayPage : ISudokuPlayView
 
     private void Select1s(object sender, RoutedEventArgs e)
     {
-        _presenter.SelectAllPossibilities(1);
+        if (sender is not RadioButton rb) return;
+
+        rb.IsChecked = _presenter.SelectAllPossibilities(1);
     }
     
     private void Select2s(object sender, RoutedEventArgs e)
     {
-        _presenter.SelectAllPossibilities(2);
+        if (sender is not RadioButton rb) return;
+
+        rb.IsChecked = _presenter.SelectAllPossibilities(2);
     }
     
     private void Select3s(object sender, RoutedEventArgs e)
     {
-        _presenter.SelectAllPossibilities(3);
+        if (sender is not RadioButton rb) return;
+
+        rb.IsChecked = _presenter.SelectAllPossibilities(3);
     }
     
     private void Select4s(object sender, RoutedEventArgs e)
     {
-        _presenter.SelectAllPossibilities(4);
+        if (sender is not RadioButton rb) return;
+
+        rb.IsChecked = _presenter.SelectAllPossibilities(4);
     }
     
     private void Select5s(object sender, RoutedEventArgs e)
     {
-        _presenter.SelectAllPossibilities(5);
+        if (sender is not RadioButton rb) return;
+
+        rb.IsChecked = _presenter.SelectAllPossibilities(5);
     }
     
     private void Select6s(object sender, RoutedEventArgs e)
     {
-        _presenter.SelectAllPossibilities(6);
+        if (sender is not RadioButton rb) return;
+
+        rb.IsChecked = _presenter.SelectAllPossibilities(6);
     }
     
     private void Select7s(object sender, RoutedEventArgs e)
     {
-        _presenter.SelectAllPossibilities(7);
+        if (sender is not RadioButton rb) return;
+
+        rb.IsChecked = _presenter.SelectAllPossibilities(7);
     }
     
     private void Select8s(object sender, RoutedEventArgs e)
     {
-        _presenter.SelectAllPossibilities(8);
+        if (sender is not RadioButton rb) return;
+
+        rb.IsChecked = _presenter.SelectAllPossibilities(8);
     }
     
     private void Select9s(object sender, RoutedEventArgs e)
     {
-        _presenter.SelectAllPossibilities(9);
+        if (sender is not RadioButton rb) return;
+
+        rb.IsChecked = _presenter.SelectAllPossibilities(9);
     }
 
     public void Enable()

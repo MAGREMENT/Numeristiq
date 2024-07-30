@@ -17,7 +17,7 @@ public partial class SettingWindow
 
         _presenter = presenter;
 
-        var style = (Style)FindResource("SettingTitleStyle");
+        var style = (Style)FindResource("SettingTitleRadioButton");
         int count = 0;
         foreach (var list in presenter)
         {

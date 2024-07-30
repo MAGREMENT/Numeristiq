@@ -39,7 +39,7 @@ public class Settings
                 "Defines how empty cells are represented when translating a Sudoku to text",
                 SpaceConverter.Instance, SudokuLineFormatEmptyCellRepresentation.Shortcuts),
             new BooleanSetting("Convert solo candidate to given for grid format", "Tells the parser to" +
-                " convert cells with only one candidates to be converted to a solution with the grid format."),
+                " convert cells with only one candidates to a solution for the grid format."),
             new EnumSetting<PossibilitiesLocation>("Main possibilities location",
                 "Sets the main possibilities location, used for various operation like computing possibilities."
                 ,SpaceConverter.Instance, PossibilitiesLocation.Middle),
