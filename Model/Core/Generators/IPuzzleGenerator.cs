@@ -13,4 +13,9 @@ public interface IPuzzleGenerator<out T>
     public T[] Generate(int count);
 }
 
-public delegate void OnNextStep();
+public delegate void OnNextStep(StepType type);
+
+public enum StepType
+{
+    FilledGenerated, PuzzleGenerated
+}

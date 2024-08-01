@@ -120,8 +120,10 @@ public class SudokuGeneratePresenter
         _view.AllowCancel(false);
     }
 
-    private void OnFilledSudokuGenerated()
+    private void OnFilledSudokuGenerated(StepType type)
     {
+        if (type is not StepType.FilledGenerated) return;
+        
         _view.ActivateFilledSudokuGenerator(false);
         _view.ShowTransition(TransitionPlace.ToRDR);
         _view.ActivateRandomDigitRemover(true);

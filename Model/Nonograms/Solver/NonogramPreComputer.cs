@@ -70,10 +70,10 @@ public class NonogramPreComputer
         if (main.IsInvalid()) return list;
         
         var spaceBefore = 0;
-        var spaceAfter = _data.Nonogram.HorizontalLineCollection.NeededSpace(row, main.FirstValueIndex, main.LastValueIndex);
+        var spaceAfter = _data.Nonogram.HorizontalLines.NeededSpace(row, main.FirstValueIndex, main.LastValueIndex);
         for (int i = main.FirstValueIndex; i <= main.LastValueIndex; i++)
         {
-            var v = _data.Nonogram.HorizontalLineCollection.TryGetValue(row, i);
+            var v = _data.Nonogram.HorizontalLines.TryGetValue(row, i);
             spaceAfter -= Math.Min(v, spaceAfter);
 
             int start, end;
@@ -130,10 +130,10 @@ public class NonogramPreComputer
         if (main.IsInvalid()) return list;
 
         var spaceBefore = 0;
-        var spaceAfter = _data.Nonogram.VerticalLineCollection.NeededSpace(col, main.FirstValueIndex, main.LastValueIndex);
+        var spaceAfter = _data.Nonogram.VerticalLines.NeededSpace(col, main.FirstValueIndex, main.LastValueIndex);
         for (int i = main.FirstValueIndex; i <= main.LastValueIndex; i++)
         {
-            var v = _data.Nonogram.VerticalLineCollection.TryGetValue(col, i);
+            var v = _data.Nonogram.VerticalLines.TryGetValue(col, i);
             spaceAfter -= Math.Min(v, spaceAfter);
             
             int start, end;
@@ -185,7 +185,7 @@ public class NonogramPreComputer
     
     private MultiValueSpace DoHorizontalRemainingValuesSpace(int row)
     {
-        var list = _data.Nonogram.HorizontalLineCollection.AsList(row);
+        var list = _data.Nonogram.HorizontalLines.AsList(row);
         int sCursor = 0;
         int eCursor = list.Count - 1;
 
@@ -281,7 +281,7 @@ public class NonogramPreComputer
 
     private MultiValueSpace DoVerticalRemainingValuesSpace(int col)
     {
-        var list = _data.Nonogram.VerticalLineCollection.AsList(col);
+        var list = _data.Nonogram.VerticalLines.AsList(col);
         int sCursor = 0;
         int eCursor = list.Count - 1;
 

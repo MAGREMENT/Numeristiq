@@ -7,5 +7,5 @@ namespace Model.Kakuros;
 public interface IKakuroSolverData : INumericSolvingState
 {
     IReadOnlyKakuro Kakuro { get; }
-    IChangeBuffer<INumericSolvingState, INumericSolvingStateHighlighter> ChangeBuffer { get; }
+    NumericChangeBuffer<INumericSolvingState, INumericSolvingStateHighlighter> ChangeBuffer { get; }
 }

@@ -11,6 +11,7 @@ public interface IThemeRepository
     int Count();
     void AddTheme(Theme theme);
     void ChangeTheme(int index, Theme newTheme);
+    Theme? FindTheme(string name);
 }
 
 public class Theme : INamed, ICopyable<Theme>
@@ -112,15 +113,49 @@ public class Theme : INamed, ICopyable<Theme>
         HighlightColor6 = highlightColor6;
     }
     
+    //Tried using reflection but the order wouldn't stay the same so we have this stupid shit instead
     public IEnumerable<(string, RGB)> AllColors()
     {
-        foreach (var p in GetType().GetProperties())
-        {
-            var value = p.GetValue(this);
-            if(value is not RGB rgb) continue;
-
-            yield return (p.Name, rgb);
-        }
+        yield return (nameof(Background1), Background1);
+        yield return (nameof(Background2), Background2);
+        yield return (nameof(Background3), Background3);
+        yield return (nameof(Primary1), Primary1);
+        yield return (nameof(Primary2), Primary2);
+        yield return (nameof(Secondary1), Secondary1);
+        yield return (nameof(Secondary2), Secondary2);
+        yield return (nameof(Accent), Accent);
+        yield return (nameof(Text), Text);
+        yield return (nameof(On), On);
+        yield return (nameof(Off), Off);
+        yield return (nameof(Disabled), Disabled);
+        yield return (nameof(DifficultyBasic), DifficultyBasic);
+        yield return (nameof(DifficultyEasy), DifficultyEasy);
+        yield return (nameof(DifficultyMedium), DifficultyMedium);
+        yield return (nameof(DifficultyHard), DifficultyHard);
+        yield return (nameof(DifficultyExtreme), DifficultyExtreme);
+        yield return (nameof(DifficultyInhuman), DifficultyInhuman);
+        yield return (nameof(DifficultyByTrial), DifficultyByTrial);
+        yield return (nameof(StepColorNeutral), StepColorNeutral);
+        yield return (nameof(StepColorChange1), StepColorChange1);
+        yield return (nameof(StepColorChange2), StepColorChange2);
+        yield return (nameof(StepColorCause1), StepColorCause1);
+        yield return (nameof(StepColorCause2), StepColorCause2);
+        yield return (nameof(StepColorCause3), StepColorCause3);
+        yield return (nameof(StepColorCause4), StepColorCause4);
+        yield return (nameof(StepColorCause5), StepColorCause5);
+        yield return (nameof(StepColorCause6), StepColorCause6);
+        yield return (nameof(StepColorCause7), StepColorCause7);
+        yield return (nameof(StepColorCause8), StepColorCause8);
+        yield return (nameof(StepColorCause9), StepColorCause9);
+        yield return (nameof(StepColorCause10), StepColorCause10);
+        yield return (nameof(StepColorOn), StepColorOn);
+        yield return (nameof(HighlightColor1), HighlightColor1);
+        yield return (nameof(HighlightColor2), HighlightColor2);
+        yield return (nameof(HighlightColor3), HighlightColor3);
+        yield return (nameof(HighlightColor4), HighlightColor4);
+        yield return (nameof(HighlightColor5), HighlightColor5);
+        yield return (nameof(HighlightColor7), HighlightColor7);
+        yield return (nameof(HighlightColor6), HighlightColor6);
     }
 
     public RGB GetColor(string name)

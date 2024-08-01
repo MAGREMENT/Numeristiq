@@ -24,7 +24,7 @@ public class NonogramSolvePresenter
         _solver.StrategyManager.AddStrategies(new PerfectRemainingSpaceStrategy(), new NotEnoughSpaceStrategy(),
             new EdgeValueStrategy(), new PerfectValueSpaceStrategy(), new ValueCompletionStrategy(),
             new BridgingStrategy(), new SplittingStrategy(), new ValueOverlayStrategy(),
-            new UnreachableSquareStrategy(), new BruteForceStrategy());
+            new UnreachableSquaresStrategy(), new BruteForceStrategy());
     }
 
     public void SetNewNonogram(string s)
@@ -123,8 +123,8 @@ public class NonogramSolvePresenter
     private void SetUpNewNonogram()
     {
         var drawer = _view.Drawer;
-        drawer.SetRows(_solver.Nonogram.HorizontalLineCollection);
-        drawer.SetColumns(_solver.Nonogram.VerticalLineCollection);
+        drawer.SetRows(_solver.Nonogram.HorizontalLines);
+        drawer.SetColumns(_solver.Nonogram.VerticalLines);
         ShowCurrentState();
     }
 

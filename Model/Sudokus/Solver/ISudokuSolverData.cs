@@ -16,7 +16,7 @@ public interface ISudokuSolverData : ISudokuSolvingState, IPossibilitiesGiver
     
     ISudokuSolvingState StartState { get; }
 
-    IChangeBuffer<ISudokuSolvingState, ISudokuHighlighter> ChangeBuffer { get; }
+    NumericChangeBuffer<ISudokuSolvingState, ISudokuHighlighter> ChangeBuffer { get; }
     
     SudokuPreComputer PreComputer { get; }
     

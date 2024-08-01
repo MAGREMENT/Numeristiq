@@ -1,6 +1,7 @@
 ﻿using ConsoleApplication.Commands.Abstracts;
 using Model.Core.BackTracking;
 using Model.Nonograms;
+using Model.Nonograms.BackTrackers;
 using Model.Nonograms.Solver;
 
 namespace ConsoleApplication.Commands;

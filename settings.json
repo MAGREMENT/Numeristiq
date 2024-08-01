@@ -1,7 +1,7 @@
 {
   "Theme": "3",
   "Show same cell links": "False",
-  "Link offset side priority": "0",
+  "Link offset side priority": "1",
   "Unique solution": "True",
   "Start angle": "160",
   "Rotation direction": "1",

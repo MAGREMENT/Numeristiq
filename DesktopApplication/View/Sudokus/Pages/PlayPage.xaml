@@ -92,7 +92,7 @@
                 </Grid>
                 
                 <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center"
-                            Margin="0 10" Orientation="Horizontal">
+                            Margin="0 10" Orientation="Horizontal" x:Name="PossibilityCursorPanel">
                     <RadioButton Style="{StaticResource PossibilitySelectRadioButton}"
                             Click="Select1s">1</RadioButton>
                     <RadioButton Style="{StaticResource PossibilitySelectRadioButton}"

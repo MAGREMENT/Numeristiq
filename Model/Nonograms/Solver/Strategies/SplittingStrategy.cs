@@ -19,7 +19,7 @@ public class SplittingStrategy : Strategy<INonogramSolverData>
             var space = data.PreComputer.HorizontalRemainingValuesSpace(row);
             if (space.IsInvalid()) continue;
 
-            var (ind, max) = data.Nonogram.HorizontalLineCollection.MaxValue(row, space.FirstValueIndex, space.LastValueIndex);
+            var (ind, max) = data.Nonogram.HorizontalLines.MaxValue(row, space.FirstValueIndex, space.LastValueIndex);
             for (int c = 0; c < data.Nonogram.ColumnCount; c++)
             {
                 if (!data.IsAvailable(row, c)) continue;
@@ -43,7 +43,7 @@ public class SplittingStrategy : Strategy<INonogramSolverData>
             var space = data.PreComputer.VerticalRemainingValuesSpace(col);
             if (space.IsInvalid()) continue;
 
-            var (ind, max) = data.Nonogram.VerticalLineCollection.MaxValue(col, space.FirstValueIndex, space.LastValueIndex);
+            var (ind, max) = data.Nonogram.VerticalLines.MaxValue(col, space.FirstValueIndex, space.LastValueIndex);
             for (int r = 0; r < data.Nonogram.RowCount; r++)
             {
                 if (!data.IsAvailable(r, col)) continue;

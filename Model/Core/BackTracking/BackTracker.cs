@@ -54,8 +54,24 @@ public abstract class BackTracker<TPuzzle, TData> where TPuzzle : ICopyable<TPuz
         return Search(0);
     }
 
+    /// <summary>
+    /// Continue backtracking from the current position without putting the current puzzle in its original state
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
     protected abstract bool Search(int position);
+    /// <summary>
+    /// Continue backtracking from the current position, adding the solutions to the result object and putting the
+    /// current puzzle in its original state
+    /// </summary>
+    /// <param name="result"></param>
+    /// <param name="position"></param>
+    /// <returns></returns>
     protected abstract bool Search(IBackTrackingResult<TPuzzle> result, int position);
+    /// <summary>
+    /// Called every time the current puzzle is changed
+    /// </summary>
+    /// <param name="reset"></param>
     protected abstract void Initialize(bool reset);
 }
 

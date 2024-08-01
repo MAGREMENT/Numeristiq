@@ -2,6 +2,11 @@
 
 namespace Model.Core.Changes;
 
+public enum ChangeType
+{
+    PossibilityRemoval = 0, SolutionAddition = 1
+}
+
 public readonly struct NumericChange
 {
     private readonly int _bits;
@@ -53,7 +58,26 @@ public readonly struct DichotomousChange
     }
 }
 
-public enum ChangeType
+public readonly struct BinaryChange
 {
-    PossibilityRemoval = 0, SolutionAddition = 1
+    private readonly int _bits;
+
+    public BinaryChange(int number, int row, int column)
+    {
+        _bits = column & 0x1F | ((row & 0x1F) << 5) | ((number & 0x1F) << 10);
+    }
+    
+    public BinaryChange(CellPossibility cp) : this(cp.Possibility, cp.Row, cp.Column)
+    {
+        
+    }
+    
+    public int Number => (_bits >> 10) & 0x1F;
+    public int Row => (_bits >> 5) & 0x1F;
+    public int Column => _bits & 0x1F;
+
+    public override string ToString()
+    {
+        return $"r{Row + 1}c{Column + 1} == {Number}";
+    }
 }

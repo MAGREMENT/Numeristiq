@@ -16,8 +16,8 @@ public class Nonogram : IReadOnlyNonogram
 
     public int RowCount => _cells.GetLength(0);
     public int ColumnCount => _cells.GetLength(1);
-    public IReadOnlyNonogramLineCollection HorizontalLineCollection => _horizontalCollection;
-    public IReadOnlyNonogramLineCollection VerticalLineCollection => _verticalCollection;
+    public IReadOnlyNonogramLineCollection HorizontalLines => _horizontalCollection;
+    public IReadOnlyNonogramLineCollection VerticalLines => _verticalCollection;
 
     public Nonogram()
     {
@@ -122,7 +122,7 @@ public class Nonogram : IReadOnlyNonogram
         set => _cells[row, col] = value;
     }
 
-    public bool IsHorizontalLineCorrect(int index)
+    public bool IsRowCorrect(int index)
     {
         using var enumerator = _horizontalCollection[index].GetEnumerator();
 
@@ -149,7 +149,7 @@ public class Nonogram : IReadOnlyNonogram
         return !enumerator.MoveNext();
     }
 
-    public bool IsVerticalLineCorrect(int index)
+    public bool IsColumnCorrect(int index)
     {
         using var enumerator = _verticalCollection[index].GetEnumerator();
 
@@ -180,12 +180,12 @@ public class Nonogram : IReadOnlyNonogram
     {
         for (int row = 0; row < RowCount; row++)
         {
-            if (!IsHorizontalLineCorrect(row)) return false;
+            if (!IsRowCorrect(row)) return false;
         }
 
         for (int col = 0; col < ColumnCount; col++)
         {
-            if (!IsVerticalLineCorrect(col)) return false;
+            if (!IsColumnCorrect(col)) return false;
         }
 
         return true;
@@ -288,6 +288,20 @@ public class Nonogram : IReadOnlyNonogram
         return builder.ToString();
     }
 
+    public bool SamePattern(Nonogram n)
+    {
+        if (n.RowCount != RowCount || n.ColumnCount != ColumnCount) return false;
+        for (int row = 0; row < RowCount; row++)
+        {
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                if (n[row, col] != this[row, col]) return false;
+            }
+        }
+
+        return true;
+    }
+
     private string ToStringHorizontalLine(int maxTotalWidth, int maxWidth)
     {
         return ' '.Repeat(maxTotalWidth) + ("+" + '-'.Repeat(maxWidth)).Repeat(ColumnCount) + '+';
@@ -313,11 +327,11 @@ public interface IReadOnlyNonogram : ICopyable<Nonogram>
 {
     int RowCount { get; }
     int ColumnCount { get; }
-    IReadOnlyNonogramLineCollection HorizontalLineCollection { get; }
-    IReadOnlyNonogramLineCollection VerticalLineCollection { get; }
+    IReadOnlyNonogramLineCollection HorizontalLines { get; }
+    IReadOnlyNonogramLineCollection VerticalLines { get; }
     bool this[int row, int col] { get; }
-    bool IsHorizontalLineCorrect(int index);
-    bool IsVerticalLineCorrect(int index);
+    bool IsRowCorrect(int index);
+    bool IsColumnCorrect(int index);
     bool IsCorrect();
     public int GetRowSolutionCount(int row);
     public int GetColumnSolutionCount(int column);

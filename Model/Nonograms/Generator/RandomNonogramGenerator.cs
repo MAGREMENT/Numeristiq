@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core.BackTracking;
 using Model.Core.Generators;
-using Model.Nonograms.Solver;
+using Model.Nonograms.BackTrackers;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -9,7 +9,8 @@ namespace Model.Nonograms.Generator;
 
 public class RandomNonogramGenerator : IPuzzleGenerator<Nonogram>
 {
-    private readonly NaiveNonogramBackTracker _backTracker = new(new Nonogram(), ConstantAvailabilityChecker.Instance)
+    private readonly BackTracker<Nonogram, IAvailabilityChecker> _backTracker 
+        = new SpareSpaceNonogramBackTracker(new Nonogram(), ConstantAvailabilityChecker.Instance)
     {
         StopAt = 2
     };
@@ -128,6 +129,7 @@ public class RandomNonogramGenerator : IPuzzleGenerator<Nonogram>
         for (int i = 0; i < result.Length; i++)
         {
             result[i] = Generate();
+            StepDone?.Invoke(StepType.PuzzleGenerated);
         }
 
         return result;

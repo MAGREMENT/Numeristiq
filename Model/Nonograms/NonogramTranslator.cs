@@ -17,9 +17,12 @@ public static class NonogramTranslator
             var currentCollection = vValues;
             var currentValues = new List<int>();
             int buffer = 0;
+            bool cells = false;
+            int i = 0;
             
-            for(int i = 0; i < s.Length; i++)
+            for(; i < s.Length; i++)
             {
+                if (cells) break;
                 var c = s[i];
                 switch (c)
                 {
@@ -39,8 +42,10 @@ public static class NonogramTranslator
                         currentCollection.Add(currentValues.ToArray());
                         buffer = 0;
                         currentValues.Clear();
-                        currentCollection = hValues;
+                        
                         i++;
+                        if (hValues == currentCollection) cells = true;
+                        else currentCollection = hValues;
                         break;
                     default:
                         buffer *= 10;
@@ -54,8 +59,18 @@ public static class NonogramTranslator
                 currentValues.Add(buffer);
                 currentCollection.Add(currentValues.ToArray());
             }
-
             result.Add(hValues, vValues);
+
+            if (cells)
+            {
+                foreach (var cell in s[i..].Split('-'))
+                {
+                    var index = cell.IndexOf('.');
+                    if(index == -1) continue;
+
+                    result[int.Parse(cell[..index]), int.Parse(cell[(index + 1)..])] = true;
+                }
+            }
             return result;
         }
         catch (Exception)
@@ -71,8 +86,8 @@ public static class NonogramTranslator
         for (int i = 0; i < 2; i++)
         {
             var data = i == 0 
-                ? nonogram.VerticalLineCollection 
-                : nonogram.HorizontalLineCollection;
+                ? nonogram.VerticalLines 
+                : nonogram.HorizontalLines;
 
             for (int j = 0; j < data.Count; j++)
             {
@@ -86,6 +101,22 @@ public static class NonogramTranslator
                 
                 if (j != data.Count - 1) builder.Append('-');
                 else if(i == 0) builder.Append("::");
+            }
+        }
+
+        var atLeastOne = false;
+        for (int row = 0; row < nonogram.RowCount; row++)
+        {
+            for (int col = 0; col < nonogram.ColumnCount; col++)
+            {
+                if (!nonogram[row, col]) continue;
+
+                if (atLeastOne) builder.Append($"-{row}.{col}");
+                else
+                {
+                    builder.Append($"::{row}.{col}");
+                    atLeastOne = true;
+                }
             }
         }
         

@@ -16,4 +16,5 @@ public interface ISudokuPlayView : ICanBeDisabled
     void ShowClueState(bool isShowing);
     void ShowClueText(string text);
     void OpenOptionDialog(string name, OptionChosen callback, params string[] options);
+    void UnselectPossibilityCursor();
 }

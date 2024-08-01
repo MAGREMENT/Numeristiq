@@ -16,7 +16,7 @@
         <global:SizeOptimizedContentControl Grid.Column="0" Width="640" Height="640" x:Name="EmbeddedDrawer">
             <global:SizeOptimizedContentControl.OptimizableContent>
                 <controls:NonogramBoard CellSize="50" LineBrush="{DynamicResource Text}"
-                                        BackgroundBrush="{DynamicResource Background2}"
+                                        BackgroundBrush="Transparent"
                                         BigLineWidth="3" FillingBrush="{DynamicResource Primary1}"
                                         UnavailableBrush="{DynamicResource Secondary1}"/>
             </global:SizeOptimizedContentControl.OptimizableContent>

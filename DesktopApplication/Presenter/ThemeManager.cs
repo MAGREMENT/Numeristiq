@@ -6,12 +6,12 @@ namespace DesktopApplication.Presenter;
 
 public class ThemeManager
 {
-    private readonly MultiThemeRepository _repository;
+    private readonly ThemeMultiRepository _repository;
     private readonly List<Theme> _themes;
 
     public IReadOnlyList<Theme> Themes => _themes;
 
-    public ThemeManager(MultiThemeRepository repository)
+    public ThemeManager(ThemeMultiRepository repository)
     {
         _repository = repository;
         _themes = new List<Theme>(_repository.GetThemes());

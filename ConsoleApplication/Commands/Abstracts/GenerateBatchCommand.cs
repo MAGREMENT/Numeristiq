@@ -11,6 +11,7 @@ public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TSta
     private const int SortIndex = 2;
     private const int SymmetryIndex = 3;
     private const int NotUniqueIndex = 4;
+    private const int FeedbackIndex = 5;
 
     private readonly IPuzzleGenerator<TPuzzle> _generator;
     
@@ -22,7 +23,8 @@ public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TSta
             new Option("-e", "Evaluates puzzles"),
             new Option("-s", "Sorts puzzles"),
             new Option("--symmetric", "Makes the puzzle symmetric around its center point"),
-            new Option("--not-unique", "Allows the puzzle to not necessarily be unique")))
+            new Option("--not-unique", "Allows the puzzle to not necessarily be unique"),
+            new Option("--feedback", "Gives feedback on the generation")))
     {
         Description = $"Generates a determined amount of {name}'s";
         _generator = generator;
@@ -34,6 +36,8 @@ public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TSta
         SetUpGenerator(_generator, report);
         _generator.KeepSymmetry = report.IsOptionUsed(SymmetryIndex);
         _generator.KeepUniqueness = !report.IsOptionUsed(NotUniqueIndex);
+
+        if (report.IsOptionUsed(FeedbackIndex)) _generator.StepDone += OnStepDone;
         
         Console.WriteLine("Started generating...");
         var start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -101,6 +105,15 @@ public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TSta
             }
             Console.WriteLine();
         }
+
+        _generator.StepDone -= OnStepDone;
+    }
+
+    private static void OnStepDone(StepType type)
+    {
+        if (type != StepType.PuzzleGenerated) return;
+
+        Console.WriteLine("Done !");
     }
 
     protected virtual void SetUpGenerator(IPuzzleGenerator<TPuzzle> generator, IReadOnlyCallReport report)

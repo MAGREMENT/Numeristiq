@@ -42,6 +42,18 @@ public class JsonThemeRepository : JsonRepository, IThemeRepository
         Upload(_buffer);
     }
 
+    public Theme? FindTheme(string name)
+    {
+        _buffer ??= Download<List<ThemeDto>>();
+        if (_buffer is null) return null;
+        foreach (var theme in _buffer)
+        {
+            if (theme.Name.Equals(name)) return theme.To();
+        }
+
+        return null;
+    }
+
     private static Theme[] To(IReadOnlyList<ThemeDto> dtos)
     {
         var result = new Theme[dtos.Count];

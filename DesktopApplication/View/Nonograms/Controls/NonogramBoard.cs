@@ -126,6 +126,11 @@ public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizabl
     public double FillingShift => 3;
     public double UnavailableThickness => 3;
 
+    public double GetLeftOfCell(int col)
+    {
+        return MaxWideness * _cellSize / 2.0 + _bigLineWidth + col * (_bigLineWidth + _cellSize);
+    }
+    
     public double GetLeftOfCellWithBorder(int col)
     {
         return GetLeftOfCell(col) - _bigLineWidth;
@@ -133,7 +138,7 @@ public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizabl
 
     public double GetTopOfCell(int row)
     {
-        return MaxDepth * _cellSize / 2 + _bigLineWidth + row * (_bigLineWidth + _cellSize);
+        return MaxDepth * _cellSize / 2.0 + _bigLineWidth + row * (_bigLineWidth + _cellSize);
     }
 
     public double GetTopOfCellWithBorder(int row)
@@ -148,11 +153,6 @@ public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizabl
     }
 
     public bool IsClue(int row, int col) => false;
-
-    public double GetLeftOfCell(int col)
-    {
-        return MaxWideness * _cellSize / 2 + _bigLineWidth + col * (_bigLineWidth + _cellSize);
-    }
 
     public int RowCount => _rows.Count;
     public int ColumnCount => _columns.Count;
@@ -175,11 +175,11 @@ public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizabl
     public void SetRows(IEnumerable<IEnumerable<int>> rows)
     {
         _rows.Clear();
-        MaxDepth = 0;
+        MaxWideness = 0;
         foreach (var r in rows)
         {
             var asArray = r.ToArray();
-            MaxDepth = Math.Max(asArray.Length, MaxDepth);
+            MaxWideness = Math.Max(asArray.Length, MaxWideness);
             _rows.Add(asArray);
         }
         
@@ -189,11 +189,11 @@ public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizabl
     public void SetColumns(IEnumerable<IEnumerable<int>> cols)
     {
         _columns.Clear();
-        MaxWideness = 0;
+        MaxDepth = 0;
         foreach (var c in cols)
         {
             var asArray = c.ToArray();
-            MaxWideness = Math.Max(asArray.Length, MaxWideness);
+            MaxDepth = Math.Max(asArray.Length, MaxDepth);
             _columns.Add(asArray);
         }
         
@@ -250,8 +250,8 @@ public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizabl
 
     private void UpdateSize(bool fireEvent)
     {
-        var w = _bigLineWidth + (_bigLineWidth + _cellSize) * _columns.Count + _cellSize * MaxWideness / 2;
-        var h = _bigLineWidth + (_bigLineWidth + _cellSize) * _rows.Count + MaxDepth * _cellSize / 2;
+        var w = _bigLineWidth + (_bigLineWidth + _cellSize) * _columns.Count + _cellSize * MaxWideness / 2.0;
+        var h = _bigLineWidth + (_bigLineWidth + _cellSize) * _rows.Count + _cellSize * MaxDepth / 2.0;
         if (Math.Abs(Width - w) < 0.01 && Math.Abs(Height - h) < 0.01) return;
 
         Width = w;
@@ -287,8 +287,8 @@ public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizabl
     public double SimulateSizeMetric(int n, SizeType type)
     {
         return type == SizeType.Width
-            ? _bigLineWidth + (_bigLineWidth + n) * _columns.Count + (double)(n * MaxWideness) / 2
-            : _bigLineWidth + (_bigLineWidth + n) * _rows.Count + (double)(MaxDepth * n) / 2;
+            ? _bigLineWidth + (_bigLineWidth + n) * _columns.Count + n * MaxWideness / 2.0
+            : _bigLineWidth + (_bigLineWidth + n) * _rows.Count + n * MaxDepth / 2.0;
     }
 
     public void SetSizeMetric(int n)

@@ -79,20 +79,11 @@ public class SudokuPlayPresenter
             EnforceCellCursor(out _);
             return false;
         }
-        
-        var buffer = new AllPossibilitiesCursor(p, new HashSet<Cell>(), _player.MainLocation);
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (_player.GetCellDataFor(row, col).PeekPossibility(p, buffer.Location))
-                    buffer.Cells.Add(new Cell(row, col));
-            }
-        }
 
-        _cursor = buffer;
+        var cells = _cursor is CellsCursor cc && cc.Count != 0 ? cc : null;
+        _cursor = new AllPossibilitiesCursor(p, cells, _player.MainLocation);
         _view.Drawer.ClearCursor();
-        RefreshCursor(); //TODO update the way this works so that changes to the player are also selected
+        RefreshCursor();
 
         return true;
     }
@@ -152,9 +143,8 @@ public class SudokuPlayPresenter
                 }
                 break;
             case AllPossibilitiesCursor aps :
-                if (aps.Cells.Count == 0) return;
                 if (_player.Execute(new CellPossibilityHighlightChangeAction(color, _player.MainLocation,
-                        aps.Possibility), aps.Cells))
+                        aps.Possibility), aps.EnumerateCells(_player)))
                 {
                     RefreshNumbers();
                     _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
@@ -350,6 +340,8 @@ public class SudokuPlayPresenter
                     default : drawer.PutCursorOn(set);
                         break;
                 }
+                
+                _view.UnselectPossibilityCursor();
                 break;
             case AllPossibilitiesCursor :
                 RefreshNumbers();
@@ -458,20 +450,44 @@ public class CellsCursor : ContainingHashSet<Cell>, ISudokuPlayerCursor
 
 public class AllPossibilitiesCursor : ISudokuPlayerCursor
 {
-    public AllPossibilitiesCursor(int possibility, HashSet<Cell> cells, PossibilitiesLocation location)
+    private readonly PossibilitiesLocation _location;
+    private readonly HashSet<Cell>? _cells;
+    
+    public int Possibility { get; }
+    
+    public AllPossibilitiesCursor(int possibility, HashSet<Cell>? cells, PossibilitiesLocation location)
     {
         Possibility = possibility;
-        Cells = cells;
-        Location = location;
+        _cells = cells;
+        _location = location;
     }
 
-    public int Possibility { get; }
-    public HashSet<Cell> Cells { get; }
-    public PossibilitiesLocation Location { get; }
+    public IEnumerable<Cell> EnumerateCells(SudokuPlayer player)
+    {
+        if (_cells is null)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                for (int col = 0; col < 9; col++)
+                {
+                    if (player.GetCellDataFor(row, col).PeekPossibility(Possibility, player.MainLocation))
+                        yield return new Cell(row, col);
+                }
+            }
+        }
+        else
+        {
+            foreach (var cell in _cells)
+            {
+                if (player.GetCellDataFor(cell).PeekPossibility(Possibility, player.MainLocation))
+                    yield return cell;
+            }
+        }
+    }
 
     public bool ShouldHaveOutline(Cell cell, PossibilitiesLocation location, out int p)
     {
-        if (location == Location && Cells.Contains(cell))
+        if (location == _location && (_cells is null || _cells.Contains(cell)))
         {
             p = Possibility;
             return true;

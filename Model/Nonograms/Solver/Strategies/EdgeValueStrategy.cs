@@ -16,9 +16,42 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
     {
         for (int row = 0; row < data.Nonogram.RowCount; row++)
         {
+            var remaining = data.PreComputer.HorizontalRemainingValuesSpace(row);
+            if (!remaining.IsInvalid() && remaining.FirstValueIndex == remaining.LastValueIndex)
+            {
+                for (int col = remaining.Start; col <= remaining.End; col++)
+                {
+                    if(!data.Nonogram[row, col]) continue;
+
+                    var v = data.Nonogram.HorizontalLines.TryGetValue(row, remaining.FirstValueIndex);
+                    if (col == 0 || (!data.Nonogram[row, col - 1] && !data.IsAvailable(row, col - 1)))
+                    {
+                        for (int current = col + 1; current < col + v; current++)
+                        {
+                            data.ChangeBuffer.ProposeSolutionAddition(row, current);
+                        }
+
+                        if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
+                                Orientation.Horizontal, row, col, remaining.FirstValueIndex)) && StopOnFirstPush) return;
+                    }
+
+                    if (col == data.Nonogram.ColumnCount - 1 || (!data.Nonogram[row, col + 1] 
+                                                                 && !data.IsAvailable(row, col + 1)))
+                    {
+                        for (int current = col - 1; current > col - v; current--)
+                        {
+                            data.ChangeBuffer.ProposeSolutionAddition(row, current);
+                        }
+                
+                        if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
+                                Orientation.Horizontal, row, col, remaining.LastValueIndex)) && StopOnFirstPush) return;
+                    }
+                }
+            }
+            
             var spaces = data.PreComputer.HorizontalValueSpaces(row);
             if (spaces.Count == 0) continue;
-            
+
             var space = spaces[0];
             if (space.IsValid() && data.Nonogram[row, space.Start])
             {
@@ -46,6 +79,39 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
         
         for (int col = 0; col < data.Nonogram.ColumnCount; col++)
         {
+            var remaining = data.PreComputer.VerticalRemainingValuesSpace(col);
+            if (!remaining.IsInvalid() && remaining.FirstValueIndex == remaining.LastValueIndex)
+            {
+                for (int row = remaining.Start; row <= remaining.End; row++)
+                {
+                    if(!data.Nonogram[row, col]) continue;
+
+                    var v = data.Nonogram.VerticalLines.TryGetValue(col, remaining.FirstValueIndex);
+                    if (row == 0 || (!data.Nonogram[row - 1, col] && !data.IsAvailable(row - 1, col)))
+                    {
+                        for (int current = row + 1; current < row + v; current++)
+                        {
+                            data.ChangeBuffer.ProposeSolutionAddition(current, col);
+                        }
+
+                        if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
+                                Orientation.Vertical, col, row, remaining.FirstValueIndex)) && StopOnFirstPush) return;
+                    }
+
+                    if (row == data.Nonogram.RowCount - 1 || (!data.Nonogram[row + 1, col] 
+                                                              && !data.IsAvailable(row + 1, col)))
+                    {
+                        for (int current = row - 1; current > row - v; current--)
+                        {
+                            data.ChangeBuffer.ProposeSolutionAddition(current, col);
+                        }
+                
+                        if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
+                                Orientation.Vertical, col, row, remaining.LastValueIndex)) && StopOnFirstPush) return;
+                    }
+                }
+            }
+            
             var spaces = data.PreComputer.VerticalValueSpaces(col);
             if (spaces.Count == 0) continue;
             
@@ -80,14 +146,25 @@ public class EdgeValueReportBuilder : IChangeReportBuilder<DichotomousChange, IN
 {
     private readonly Orientation _orientation;
     private readonly int _unit;
-    private readonly ValueSpace _space;
+    private readonly int _start;
+    private readonly int _end;
     private readonly int _valueIndex;
 
     public EdgeValueReportBuilder(Orientation orientation, int unit, ValueSpace space, int valueIndex)
     {
         _orientation = orientation;
         _unit = unit;
-        _space = space;
+        _start = space.Start;
+        _end = space.End;
+        _valueIndex = valueIndex;
+    }
+
+    public EdgeValueReportBuilder(Orientation orientation, int unit, int pos, int valueIndex)
+    {
+        _orientation = orientation;
+        _unit = unit;
+        _start = pos;
+        _end = pos;
         _valueIndex = valueIndex;
     }
 
@@ -95,7 +172,7 @@ public class EdgeValueReportBuilder : IChangeReportBuilder<DichotomousChange, IN
     {
         return new ChangeReport<INonogramHighlighter>("Edge Value", lighter =>
         {
-            lighter.EncircleLineSection(_orientation, _unit, _space.Start, _space.End, StepColor.On);
+            lighter.EncircleLineSection(_orientation, _unit, _start, _end, StepColor.On);
             lighter.HighlightValues(_orientation, _unit, _valueIndex, _valueIndex, StepColor.On);
         });
     }

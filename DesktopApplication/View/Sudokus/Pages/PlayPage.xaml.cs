@@ -78,6 +78,14 @@ public partial class PlayPage : ISudokuPlayView
         dialog.Show();
     }
 
+    public void UnselectPossibilityCursor()
+    {
+        foreach (var child in PossibilityCursorPanel.Children)
+        {
+            if (child is RadioButton rb) rb.IsChecked = false;
+        }
+    }
+
     #endregion
 
     public override void OnShow()

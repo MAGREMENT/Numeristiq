@@ -32,7 +32,7 @@ public class SudokuPlayer : IPlayerData, INumericSolvingState, IPossibilitiesGiv
     public bool Execute(ICellAction action, IEnumerable<Cell> on)
     {
         var collection = new EventCollection();
-        bool changeMade = false;
+        var changeMade = false;
 
         foreach (var cell in on)
         {
@@ -43,7 +43,7 @@ public class SudokuPlayer : IPlayerData, INumericSolvingState, IPossibilitiesGiv
             }
         }
         
-        _actionHistory.AddNewEvent(collection);
+        if(changeMade) _actionHistory.AddNewEvent(collection);
         return changeMade;
     }
 
@@ -70,7 +70,7 @@ public class SudokuPlayer : IPlayerData, INumericSolvingState, IPossibilitiesGiv
             }
         }
         
-        _actionHistory.AddNewEvent(collection);
+        if(changeMade) _actionHistory.AddNewEvent(collection);
         return changeMade;
     }
     

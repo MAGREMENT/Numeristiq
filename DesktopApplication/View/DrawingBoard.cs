@@ -693,15 +693,15 @@ public class PossibilityRectangleDrawableComponent : IDrawableComponent<INinePos
 
     public void Draw(DrawingContext context, INinePossibilitiesGameDrawingData data)
     {
-        var delta = data.InwardPossibilityLineWidth / 2;
+        var half = data.InwardPossibilityLineWidth / 2;
         
-        var xFrom = data.GetLeftOfPossibility(_colFrom, _possibilityFrom) - delta;
-        var yFrom = data.GetTopOfPossibility(_rowFrom, _possibilityFrom) - delta;
+        var xFrom = data.GetLeftOfPossibility(_colFrom, _possibilityFrom) + half;
+        var yFrom = data.GetTopOfPossibility(_rowFrom, _possibilityFrom) + half;
         
-        var xTo = data.GetLeftOfPossibility(_colTo, _possibilityTo) - delta;
-        var yTo = data.GetTopOfPossibility(_rowTo, _possibilityTo) - delta;
+        var xTo = data.GetLeftOfPossibility(_colTo, _possibilityTo) + half;
+        var yTo = data.GetTopOfPossibility(_rowTo, _possibilityTo) + half;
 
-        var toAdd = data.CellSize / 3 + data.InwardPossibilityLineWidth;
+        var toAdd = data.CellSize / 3 - data.InwardPossibilityLineWidth;
         var (leftX, rightX) = DrawableComponentHelper.OrderByAndAddToLast(xFrom, xTo, toAdd);
         var (topY, bottomY) = DrawableComponentHelper.OrderByAndAddToLast(yFrom, yTo, toAdd);
         

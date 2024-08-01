@@ -17,13 +17,13 @@ public class PerfectRemainingSpaceStrategy : Strategy<INonogramSolverData>
         for (int row = 0; row < data.Nonogram.RowCount; row++)
         {
             var space = data.PreComputer.HorizontalRemainingValuesSpace(row);
-            if (space.IsInvalid() || data.Nonogram.HorizontalLineCollection.NeededSpace(row,
+            if (space.IsInvalid() || data.Nonogram.HorizontalLines.NeededSpace(row,
                     space.FirstValueIndex, space.LastValueIndex) != space.End - space.Start + 1) continue;
             
             var cursor = space.Start;
             for(int index = space.FirstValueIndex; index <= space.LastValueIndex; index++)
             {
-                var limit = cursor + data.Nonogram.HorizontalLineCollection.TryGetValue(row, index);
+                var limit = cursor + data.Nonogram.HorizontalLines.TryGetValue(row, index);
                 for (; cursor < limit; cursor++)
                 {
                     data.ChangeBuffer.ProposeSolutionAddition(row, cursor);
@@ -39,13 +39,13 @@ public class PerfectRemainingSpaceStrategy : Strategy<INonogramSolverData>
         for (int col = 0; col < data.Nonogram.ColumnCount; col++)
         {
             var space = data.PreComputer.VerticalRemainingValuesSpace(col);
-            if (space.IsInvalid() ||data.Nonogram.VerticalLineCollection.NeededSpace(col,
+            if (space.IsInvalid() ||data.Nonogram.VerticalLines.NeededSpace(col,
                     space.FirstValueIndex, space.LastValueIndex) != space.End - space.Start + 1) continue;
             
             var cursor = space.Start;
             for(int index = space.FirstValueIndex; index <= space.LastValueIndex; index++)
             {
-                var limit = cursor + data.Nonogram.VerticalLineCollection.TryGetValue(col, index);
+                var limit = cursor + data.Nonogram.VerticalLines.TryGetValue(col, index);
                 for (; cursor < limit; cursor++)
                 {
                     data.ChangeBuffer.ProposeSolutionAddition(cursor, col);

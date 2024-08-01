@@ -28,7 +28,6 @@ public interface INumericSolvingState
 }
 
 
-
 public interface ISudokuSolvingState : INumericSolvingState
 {
     public bool ContainsAny(int row, int col, ReadOnlyBitSet16 possibilities)
@@ -123,7 +122,10 @@ public class DefaultNumericSolvingState : ISudokuSolvingState
         _bits[row, col] = bitSet.Bits;
     }
 
-    public void RemovePossibility(int p, int row, int col) => _bits[row, col] &= (ushort)~(1 << p);
+    public void RemovePossibility(int p, int row, int col)
+    {
+        if((_bits[row, col] & 1) == 0) _bits[row, col] &= (ushort)~(1 << p);
+    } 
 
     public DefaultNumericSolvingState Copy() => new(_bits);
     

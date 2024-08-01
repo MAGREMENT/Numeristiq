@@ -15,13 +15,13 @@ public class NonogramTests
         n[1, 2] = true;
         n[3, 2] = true;
 
-        Assert.That(n.IsHorizontalLineCorrect(4), Is.False);
-        Assert.That(n.IsVerticalLineCorrect(2), Is.True);
+        Assert.That(n.IsRowCorrect(4), Is.False);
+        Assert.That(n.IsColumnCorrect(2), Is.True);
 
         copy[1, 2] = true;
         copy[3, 2] = true;
         copy[4, 2] = true;
 
-        Assert.That(copy.IsVerticalLineCorrect(2), Is.False);
+        Assert.That(copy.IsColumnCorrect(2), Is.False);
     }
 }

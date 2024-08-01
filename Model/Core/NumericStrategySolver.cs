@@ -8,16 +8,16 @@ namespace Model.Core;
 
 public abstract class NumericStrategySolver<TStrategy, TSolvingState, THighlighter> : 
     StrategySolver<TStrategy, TSolvingState, THighlighter, NumericChange,
-        IChangeBuffer<TSolvingState, THighlighter>, INumericStep<THighlighter>>, INumericChangeProducer
+        NumericChangeBuffer<TSolvingState, THighlighter>, INumericStep<THighlighter>>, INumericChangeProducer
     where TSolvingState : INumericSolvingState where THighlighter : INumericSolvingStateHighlighter where TStrategy : Strategy
 {
     protected int _solutionCount;
 
-    public override IChangeBuffer<TSolvingState, THighlighter> ChangeBuffer { get; }
+    public override NumericChangeBuffer<TSolvingState, THighlighter> ChangeBuffer { get; }
 
     protected NumericStrategySolver()
     {
-        ChangeBuffer = new IChangeBuffer<TSolvingState, THighlighter>(this);
+        ChangeBuffer = new NumericChangeBuffer<TSolvingState, THighlighter>(this);
     }
     
     public void SetSolutionByHand(int number, int row, int col)

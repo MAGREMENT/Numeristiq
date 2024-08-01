@@ -17,6 +17,8 @@ public class Instantiator
     private IReadOnlyList<SudokuStrategy>? _sudokuStrategies;
     private bool _sudokuInstantiated;
 
+    private ThemeMultiRepository? _themeRepository;
+
     public SudokuSolver InstantiateSudokuSolver()
     {
         if (!_sudokuInstantiated)
@@ -67,9 +69,16 @@ public class Instantiator
             new BridgingStrategy(),
             new SplittingStrategy(),
             new ValueOverlayStrategy(),
-            new UnreachableSquareStrategy(),
+            new UnreachableSquaresStrategy(),
             new Model.Nonograms.Solver.Strategies.BruteForceStrategy());
         
         return solver;
+    }
+
+    public ThemeMultiRepository InstantiateThemeRepository()
+    {
+        _themeRepository ??= new ThemeMultiRepository(new JsonThemeRepository("themes.json",
+            !Program.IsForProduction, true), new HardCodedThemeRepository());
+        return _themeRepository;
     }
 }

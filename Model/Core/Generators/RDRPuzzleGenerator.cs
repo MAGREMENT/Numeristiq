@@ -24,7 +24,7 @@ public abstract class RDRPuzzleGenerator<T> : IPuzzleGenerator<T> where T : ICel
     public T Generate()
     {
         var filled = FilledGenerator.Generate(out var list);
-        StepDone?.Invoke();
+        StepDone?.Invoke(StepType.FilledGenerated);
 
         return RemoveRandomDigits(filled, list);
     }
@@ -36,6 +36,7 @@ public abstract class RDRPuzzleGenerator<T> : IPuzzleGenerator<T> where T : ICel
         for (int i = 0; i < count; i++)
         {
             result[i] = Generate();
+            StepDone?.Invoke(StepType.PuzzleGenerated);
         }
 
         return result;

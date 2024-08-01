@@ -2,11 +2,11 @@
 
 namespace Repository;
 
-public class MultiThemeRepository : IThemeRepository
+public class ThemeMultiRepository : IThemeRepository
 {
     private readonly List<IThemeRepository> _repositories = new();
 
-    public MultiThemeRepository(IThemeRepository writable, params IThemeRepository[] others)
+    public ThemeMultiRepository(IThemeRepository writable, params IThemeRepository[] others)
     {
         _repositories.Add(writable);
         _repositories.AddRange(others);
@@ -44,5 +44,16 @@ public class MultiThemeRepository : IThemeRepository
     public void ChangeTheme(int index, Theme newTheme)
     {
         _repositories[0].ChangeTheme(index, newTheme);
+    }
+
+    public Theme? FindTheme(string name)
+    {
+        foreach (var repo in _repositories)
+        {
+            var t = repo.FindTheme(name);
+            if (t is not null) return t;
+        }
+
+        return null;
     }
 }

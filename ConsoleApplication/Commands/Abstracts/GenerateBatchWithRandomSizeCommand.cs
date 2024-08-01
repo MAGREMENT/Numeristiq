@@ -5,12 +5,12 @@ namespace ConsoleApplication.Commands.Abstracts;
 
 public abstract class GenerateBatchWithRandomSizeCommand<TPuzzle, TState> : GenerateBatchCommand<TPuzzle, TState> where TState : class
 {
-    private const int RowCountIndex = 5;
-    private const int ColumnCountIndex = 6;
-    private const int MinRowCountIndex = 7;
-    private const int MaxRowCountIndex = 8;
-    private const int MinColumnCountIndex = 9;
-    private const int MaxColumnCountIndex = 10;
+    private const int RowCountIndex = 6;
+    private const int ColumnCountIndex = 7;
+    private const int MinRowCountIndex = 8;
+    private const int MaxRowCountIndex = 9;
+    private const int MinColumnCountIndex = 10;
+    private const int MaxColumnCountIndex = 11;
     
     protected GenerateBatchWithRandomSizeCommand(string name, IPuzzleGenerator<TPuzzle> generator) : base(name, generator, 
         new Option("--rc", "Row count, has priority over min and max value", ValueRequirement.Mandatory, ValueType.Int),

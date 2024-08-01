@@ -82,4 +82,8 @@ public class HardCodedThemeRepository : IThemeRepository
 
     public void AddTheme(Theme theme) { }
     public void ChangeTheme(int index, Theme newTheme) { }
+    public Theme? FindTheme(string name)
+    {
+        return _themes.FirstOrDefault(t => t is not null && t.Name.Equals(name), null);
+    }
 }

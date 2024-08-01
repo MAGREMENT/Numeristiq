@@ -22,13 +22,13 @@ public class NotEnoughSpaceStrategy : Strategy<INonogramSolverData>
             {
                 c = 0;
                 e = data.Nonogram.ColumnCount - 1;
-                (ind, min) = data.Nonogram.HorizontalLineCollection.MinValue(row);
+                (ind, min) = data.Nonogram.HorizontalLines.MinValue(row);
             }
             else
             {
                 c = main.Start;
                 e = main.End;
-                (ind, min) = data.Nonogram.HorizontalLineCollection.MinValue(row,
+                (ind, min) = data.Nonogram.HorizontalLines.MinValue(row,
                     main.FirstValueIndex, main.LastValueIndex);
             }
         
@@ -59,13 +59,13 @@ public class NotEnoughSpaceStrategy : Strategy<INonogramSolverData>
             {
                 r = 0;
                 e = data.Nonogram.ColumnCount - 1;
-                (ind, min) = data.Nonogram.VerticalLineCollection.MinValue(col);
+                (ind, min) = data.Nonogram.VerticalLines.MinValue(col);
             }
             else
             {
                 r = main.Start;
                 e = main.End;
-                (ind, min) = data.Nonogram.VerticalLineCollection.MinValue(col,
+                (ind, min) = data.Nonogram.VerticalLines.MinValue(col,
                     main.FirstValueIndex, main.LastValueIndex);
             }
             

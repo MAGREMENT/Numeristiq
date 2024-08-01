@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Model.Core.Highlighting;
 using Model.Utility;
 
 namespace Model.Core.Changes;
@@ -103,9 +102,7 @@ public class DichotomousChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<Di
     }
 }
 
-public class IChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<NumericChange, TVerifier, THighlighter>
-    where TVerifier : INumericSolvingState
-    where THighlighter : INumericSolvingStateHighlighter
+public class NumericChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<NumericChange, TVerifier, THighlighter>
 {
     private readonly HashSet<CellPossibility> _possibilitiesRemoved = new();
     private readonly HashSet<CellPossibility> _solutionsAdded = new();
@@ -114,7 +111,7 @@ public class IChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<NumericChang
 
     private readonly INumericChangeProducer _producer;
 
-    public IChangeBuffer(INumericChangeProducer producer)
+    public NumericChangeBuffer(INumericChangeProducer producer)
     {
         _producer = producer;
     }
@@ -201,6 +198,72 @@ public class IChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<NumericChang
     }
 }
 
+public class BinaryChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<BinaryChange, TVerifier, THighlighter>
+{
+    private readonly HashSet<CellPossibility> _added = new();
+
+    public List<ChangeCommit<BinaryChange, TVerifier, THighlighter>> Commits { get; } = new();
+
+    private readonly IBinaryChangeProducer _producer;
+
+    public BinaryChangeBuffer(IBinaryChangeProducer producer)
+    {
+        _producer = producer;
+    }
+
+    public void ProposeSolutionAddition(int number, int row, int col)
+    {
+        ProposeSolutionAddition(new CellPossibility(row, col, number));
+    }
+
+    public void ProposeSolutionAddition(int number, Cell cell)
+    {
+        ProposeSolutionAddition(new CellPossibility(cell, number));
+    }
+
+    public void ProposeSolutionAddition(CellPossibility cp)
+    {
+        if (_producer.CanAddSolution(cp)) _added.Add(cp);
+    }
+
+    public bool NotEmpty()
+    {
+        return _added.Count > 0;
+    }
+
+    public bool Commit(IChangeReportBuilder<BinaryChange, TVerifier, THighlighter> builder)
+    {
+        if (_producer.FastMode || _added.Count == 0) return false;
+
+        Commits.Add(new ChangeCommit<BinaryChange, TVerifier, THighlighter>(EstablishChangeList(), builder));
+        return true;
+    }
+
+    public IEnumerable<BinaryChange> DumpChanges()
+    {
+        foreach (var solution in _added)
+        {
+            yield return new BinaryChange(solution);
+        }
+        
+        _added.Clear();
+    }
+    
+    private BinaryChange[] EstablishChangeList()
+    {
+        var count = 0;
+        var changes = new BinaryChange[_added.Count];
+        
+        foreach (var solution in _added)
+        {
+            changes[count++] = new BinaryChange(solution);
+        }
+        
+        _added.Clear();
+        return changes;
+    }
+}
+
 public interface IDichotomousChangeProducer
 {
     public bool FastMode { get; }
@@ -212,5 +275,11 @@ public interface INumericChangeProducer
 {
     public bool FastMode { get; }
     public bool CanRemovePossibility(CellPossibility cp);
+    public bool CanAddSolution(CellPossibility cp);
+}
+
+public interface IBinaryChangeProducer
+{
+    public bool FastMode { get; }
     public bool CanAddSolution(CellPossibility cp);
 }

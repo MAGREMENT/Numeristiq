@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
-using Model.Core.BackTracking;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Utility;
@@ -48,7 +47,7 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
     {
         for (int row = 0; row < _nonogram.RowCount; row++)
         {
-            var expected = _nonogram.HorizontalLineCollection.TotalExpected(row);
+            var expected = _nonogram.HorizontalLines.TotalExpected(row);
             var remaining = _nonogram.ColumnCount;
             var current = 0;
             for (int col = 0; col < _nonogram.ColumnCount; col++)
@@ -64,7 +63,7 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
         
         for (int col = 0; col < _nonogram.RowCount; col++)
         {
-            var expected = _nonogram.VerticalLineCollection.TotalExpected(col);
+            var expected = _nonogram.VerticalLines.TotalExpected(col);
             var remaining = _nonogram.RowCount;
             var current = 0;
             for (int row = 0; row < _nonogram.RowCount; row++)
@@ -107,7 +106,7 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
             
             result[change.Row, change.Column] = true;
             if (_nonogram.GetRowSolutionCount(change.Row) ==
-                _nonogram.HorizontalLineCollection.TotalExpected(change.Row))
+                _nonogram.HorizontalLines.TotalExpected(change.Row))
             {
                 for (int col = 0; col < state.ColumnCount; col++)
                 {
@@ -117,7 +116,7 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
 
 
             if (_nonogram.GetColumnSolutionCount(change.Column) ==
-                _nonogram.VerticalLineCollection.TotalExpected(change.Column))
+                _nonogram.VerticalLines.TotalExpected(change.Column))
             {
                 for (int row = 0; row < state.RowCount; row++)
                 {
@@ -147,10 +146,10 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
         _nonogram[row, col] = true;
         _availability[row, col] = false;
         
-        if (_nonogram.GetRowSolutionCount(row) == _nonogram.HorizontalLineCollection.TotalExpected(row))
+        if (_nonogram.GetRowSolutionCount(row) == _nonogram.HorizontalLines.TotalExpected(row))
             OnHorizontalLineCompletion(row);
 
-        if (_nonogram.GetColumnSolutionCount(col) == _nonogram.VerticalLineCollection.TotalExpected(col))
+        if (_nonogram.GetColumnSolutionCount(col) == _nonogram.VerticalLines.TotalExpected(col))
             OnVerticalLineCompletion(col);
 
         return true;
@@ -177,7 +176,7 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
     {
         for (int row = 0; row < _nonogram.RowCount; row++)
         {
-            var expected = _nonogram.HorizontalLineCollection.TotalExpected(row);
+            var expected = _nonogram.HorizontalLines.TotalExpected(row);
             var current = 0;
             for (int col = 0; col < _nonogram.ColumnCount; col++)
             {
@@ -194,7 +193,7 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
 
         for (int col = 0; col < _nonogram.ColumnCount; col++)
         {
-            var expected = _nonogram.VerticalLineCollection.TotalExpected(col);
+            var expected = _nonogram.VerticalLines.TotalExpected(col);
             var current = 0;
             for (int row = 0; row < _nonogram.RowCount; row++)
             {

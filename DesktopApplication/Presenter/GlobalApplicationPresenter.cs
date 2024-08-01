@@ -17,11 +17,11 @@ public class GlobalApplicationPresenter
     private readonly IGlobalApplicationView _view;
     private readonly ThemeManager _themeManager;
 
-    private GlobalApplicationPresenter(IGlobalApplicationView view, MultiThemeRepository themeRepository,
+    private GlobalApplicationPresenter(IGlobalApplicationView view, ThemeMultiRepository repository,
         ISettingRepository settingsRepository)
     {
         _view = view;
-        _themeManager = new ThemeManager(themeRepository);
+        _themeManager = new ThemeManager(repository);
         _settings = new Settings(_themeManager.Themes, settingsRepository);
         foreach (var entry in settingsRepository.GetSettings())
         {
@@ -82,7 +82,7 @@ public class GlobalApplicationPresenter
 
     public static void InitializeInstance(IGlobalApplicationView view)
     {
-        var themeRepository = new MultiThemeRepository(new JsonThemeRepository("themes.json",
+        var themeRepository = new ThemeMultiRepository(new JsonThemeRepository("themes.json",
                 !IsForProduction, true),
             new HardCodedThemeRepository());
         var settingsRepository = new SettingsJsonRepository("settings.json", 
