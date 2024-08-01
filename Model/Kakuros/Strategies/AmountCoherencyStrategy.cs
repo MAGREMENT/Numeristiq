@@ -8,7 +8,7 @@ namespace Model.Kakuros.Strategies;
 
 public class AmountCoherencyStrategy : Strategy<IKakuroSolverData>
 {
-    public AmountCoherencyStrategy() : base("Amount Coherency", StepDifficulty.Easy, InstanceHandling.UnorderedAll)
+    public AmountCoherencyStrategy() : base("Amount Coherency", Difficulty.Easy, InstanceHandling.UnorderedAll)
     {
     }
 

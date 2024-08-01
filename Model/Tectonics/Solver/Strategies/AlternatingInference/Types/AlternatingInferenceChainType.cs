@@ -8,7 +8,7 @@ public class AlternatingInferenceChainType : IAlternatingInferenceType
 {
     public string Name => "Alternating Inference Chains";
 
-    public StepDifficulty Difficulty => StepDifficulty.Extreme;
+    public Difficulty Difficulty => Difficulty.Extreme;
     
     public ILinkGraph<ITectonicElement> GetGraph(ITectonicSolverData solverData)
     {

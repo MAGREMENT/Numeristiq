@@ -19,7 +19,7 @@ public class BUGLiteStrategy : SudokuStrategy
 
     private readonly IntSetting _maxStructSize;
     
-    public BUGLiteStrategy(int maxStructSize) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
+    public BUGLiteStrategy(int maxStructSize) : base(OfficialName, Difficulty.Hard, DefaultInstanceHandling)
     {
         _maxStructSize = new IntSetting("Maximum cell count", "The maximum amount of cell of a pattern",
             new SliderInteractionInterface(4, 20, 1), maxStructSize);

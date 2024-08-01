@@ -11,7 +11,7 @@ public class BruteForceStrategy : Strategy<ITectonicSolverData>
         StopAt = 1
     };
     
-    public BruteForceStrategy() : base("Brute Force", StepDifficulty.ByTrial, InstanceHandling.FirstOnly)
+    public BruteForceStrategy() : base("Brute Force", Difficulty.ByTrial, InstanceHandling.FirstOnly)
     {
     }
 

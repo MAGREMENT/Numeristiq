@@ -12,7 +12,7 @@ public class XYWingStrategy : SudokuStrategy
     public const string OfficialName = "XY-Wing";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public XYWingStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling) {}
+    public XYWingStrategy() : base(OfficialName, Difficulty.Medium, DefaultInstanceHandling) {}
 
     public override void Apply(ISudokuSolverData solverData)
     {

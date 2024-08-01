@@ -10,7 +10,7 @@ public class ByHandNumericStep<THighlighter> : INumericStep<THighlighter> where 
 {
     public int Id { get; }
     public string Title { get; }
-    public StepDifficulty Difficulty => StepDifficulty.None;
+    public Difficulty Difficulty => Difficulty.None;
     public IReadOnlyList<NumericChange> Changes => new[] { _progress };
     public string Description { get; }
     public ExplanationElement? Explanation => null;

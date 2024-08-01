@@ -6,7 +6,7 @@ namespace Model.Tectonics.Solver.Strategies;
 
 public class HiddenSingleStrategy : Strategy<ITectonicSolverData>
 {
-    public HiddenSingleStrategy() : base("Hidden Single", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
+    public HiddenSingleStrategy() : base("Hidden Single", Difficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
     

@@ -14,7 +14,7 @@ public class BandUniquenessStrategy : SudokuStrategy
     public const string OfficialName = "Band-Uniqueness";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public BandUniquenessStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling)
+    public BandUniquenessStrategy() : base(OfficialName, Difficulty.Medium, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }

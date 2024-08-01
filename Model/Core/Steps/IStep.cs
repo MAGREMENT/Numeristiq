@@ -10,7 +10,7 @@ public interface IStep
 {
     int Id { get; }
     string Title { get; }
-    StepDifficulty Difficulty { get; }
+    Difficulty Difficulty { get; }
     string Description { get; }
     ExplanationElement? Explanation { get; }
     int HighlightCount();

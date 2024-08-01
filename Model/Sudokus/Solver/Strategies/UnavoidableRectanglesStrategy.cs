@@ -18,7 +18,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
 
     private readonly IntSetting _maxAlsSize;
 
-    public UnavoidableRectanglesStrategy(int maxAlsSize) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
+    public UnavoidableRectanglesStrategy(int maxAlsSize) : base(OfficialName, Difficulty.Hard, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
         _maxAlsSize = new IntSetting("Max ALS Size", "The maximum size for the almost locked sets",

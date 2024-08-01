@@ -14,7 +14,7 @@ public class HiddenSingleStrategy : SudokuStrategy
     public const string OfficialName = "Hidden Single";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public HiddenSingleStrategy() : base(OfficialName, StepDifficulty.Basic, DefaultInstanceHandling){}
+    public HiddenSingleStrategy() : base(OfficialName, Difficulty.Basic, DefaultInstanceHandling){}
     
     public override void Apply(ISudokuSolverData solverData)
     {

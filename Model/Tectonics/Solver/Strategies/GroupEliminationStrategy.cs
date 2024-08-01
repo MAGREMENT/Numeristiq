@@ -11,7 +11,7 @@ public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitCo
 {
     private const int Limit = 4;
     
-    public GroupEliminationStrategy() : base("Group Elimination", StepDifficulty.Hard, InstanceHandling.BestOnly)
+    public GroupEliminationStrategy() : base("Group Elimination", Difficulty.Hard, InstanceHandling.BestOnly)
     {
     }
 

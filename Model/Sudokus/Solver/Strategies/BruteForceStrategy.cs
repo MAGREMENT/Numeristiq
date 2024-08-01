@@ -14,7 +14,7 @@ public class BruteForceStrategy : SudokuStrategy
         StopAt = 1
     };
 
-    public BruteForceStrategy() : base(OfficialName, StepDifficulty.ByTrial, DefaultInstanceHandling) { }
+    public BruteForceStrategy() : base(OfficialName, Difficulty.ByTrial, DefaultInstanceHandling) { }
 
     public override void Apply(ISudokuSolverData solverData)
     {

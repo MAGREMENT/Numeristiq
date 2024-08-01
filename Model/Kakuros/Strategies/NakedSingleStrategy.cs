@@ -8,7 +8,7 @@ namespace Model.Kakuros.Strategies;
 
 public class NakedSingleStrategy : Strategy<IKakuroSolverData>
 {
-    public NakedSingleStrategy() : base("Naked Single", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
+    public NakedSingleStrategy() : base("Naked Single", Difficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
 

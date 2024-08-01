@@ -15,7 +15,7 @@ public class JuniorExocetStrategy : SudokuStrategy
     public const string OfficialName = "Junior Exocet";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public JuniorExocetStrategy() : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
+    public JuniorExocetStrategy() : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.PartiallyDependent;
     }

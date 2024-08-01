@@ -43,7 +43,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
 {
     public string LoopName { get; }
     public string ChainName { get; }
-    public StepDifficulty Difficulty { get; }
+    public Difficulty Difficulty { get; }
     SudokuStrategy? Strategy { set; get; }
     
     ILinkGraph<T> GetGraph(ISudokuSolverData solverData);

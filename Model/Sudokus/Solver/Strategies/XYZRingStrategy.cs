@@ -14,7 +14,7 @@ public class XYZRingStrategy : SudokuStrategy
 {
     public const string OfficialName = "XYZ-Ring";
     
-    public XYZRingStrategy() : base(OfficialName, StepDifficulty.Hard, InstanceHandling.UnorderedAll)
+    public XYZRingStrategy() : base(OfficialName, Difficulty.Hard, InstanceHandling.UnorderedAll)
     {
     }
 

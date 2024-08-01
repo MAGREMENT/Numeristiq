@@ -20,19 +20,19 @@ public class HiddenSetStrategy : SudokuStrategy
 
     private readonly int _type;
 
-    public HiddenSetStrategy(int type) : base("", StepDifficulty.None, DefaultInstanceHandling)
+    public HiddenSetStrategy(int type) : base("", Difficulty.None, DefaultInstanceHandling)
     {
         _type = type;
         switch (type)
         {
             case 2 : Name = OfficialNameForType2;
-                Difficulty = StepDifficulty.Easy;
+                Difficulty = Difficulty.Easy;
                 break;
             case 3 : Name = OfficialNameForType3;
-                Difficulty = StepDifficulty.Easy;
+                Difficulty = Difficulty.Easy;
                 break;
             case 4 : Name = OfficialNameForType4;
-                Difficulty = StepDifficulty.Easy;
+                Difficulty = Difficulty.Easy;
                 break;
             default : throw new ArgumentException("Type not valid");
         }

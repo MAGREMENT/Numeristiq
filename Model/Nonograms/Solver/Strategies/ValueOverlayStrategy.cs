@@ -8,7 +8,7 @@ namespace Model.Nonograms.Solver.Strategies;
 
 public class ValueOverlayStrategy : Strategy<INonogramSolverData>
 {
-    public ValueOverlayStrategy() : base("Value Overlay", StepDifficulty.Medium, InstanceHandling.UnorderedAll)
+    public ValueOverlayStrategy() : base("Value Overlay", Difficulty.Medium, InstanceHandling.UnorderedAll)
     {
     }
 

@@ -5,7 +5,7 @@ namespace Model.Sudokus.Solver;
 
 public abstract class SudokuStrategy : Strategy<ISudokuSolverData>
 { 
-    protected SudokuStrategy(string name, StepDifficulty difficulty, InstanceHandling defaultHandling) 
+    protected SudokuStrategy(string name, Difficulty difficulty, InstanceHandling defaultHandling) 
         : base(name, difficulty, defaultHandling) { }
     
     public virtual void OnNewSudoku(IReadOnlySudoku s) { }

@@ -18,7 +18,7 @@ public static class Program
         instance.Root.AddCommand(new HelpCommand(), true)
             .AddCommand(new SessionCommand());
 
-        instance.Root.AddDirectory(new Directory("Sudoku"))
+        var sDir = instance.Root.AddDirectory(new Directory("Sudoku"))
             .AddCommand(new HelpCommand(), true)
             .AddCommand(new SudokuSolveCommand())
             .AddCommand(new SudokuSolveBatchCommand())
@@ -47,6 +47,11 @@ public static class Program
 
         if (!IsForProduction)
         {
+            sDir.AddDirectory(new Directory("Bank"))
+                .AddCommand(new SudokuBankInitializeCommand())
+                .AddCommand(new SudokuAddBatchInitializeCommand())
+                .AddCommand(new SudokuBankClearCommand());
+            
             instance.Root.AddDirectory(new Directory("Developer"))
                 .AddCommand(new ThemeCommand());
         }

@@ -13,7 +13,7 @@ public class OddagonStrategy : SudokuStrategy
     public const string OfficialName = "Oddagon";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public OddagonStrategy() : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
+    public OddagonStrategy() : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
     {
     }
     

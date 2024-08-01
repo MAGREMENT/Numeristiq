@@ -5,7 +5,7 @@ namespace Model.Core;
 
 public abstract class Strategy<T> : Strategy
 {
-    protected Strategy(string name, StepDifficulty difficulty, InstanceHandling defaultHandling) 
+    protected Strategy(string name, Difficulty difficulty, InstanceHandling defaultHandling) 
         : base(name, difficulty, defaultHandling)
     {
     }
@@ -18,7 +18,7 @@ public abstract class Strategy : ISettingCollection
     private bool _enabled = true;
     
     public string Name { get; protected init; }
-    public StepDifficulty Difficulty { get; protected init; }
+    public Difficulty Difficulty { get; protected init; }
     public UniquenessDependency UniquenessDependency { get; protected init; }
     public InstanceHandling InstanceHandling { get; set; }
     
@@ -35,7 +35,7 @@ public abstract class Strategy : ISettingCollection
 
     public bool StopOnFirstPush => InstanceHandling == InstanceHandling.FirstOnly;
     
-    protected Strategy(string name, StepDifficulty difficulty, InstanceHandling defaultHandling)
+    protected Strategy(string name, Difficulty difficulty, InstanceHandling defaultHandling)
     {
         Name = name;
         Difficulty = difficulty;
@@ -68,7 +68,7 @@ public abstract class Strategy : ISettingCollection
     }
 }
 
-public enum StepDifficulty
+public enum Difficulty
 {
     None, Basic, Easy, Medium, Hard, Extreme, Inhuman, ByTrial
 }

@@ -23,7 +23,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
     private readonly IntSetting _maxAlsSize;
     private readonly IntSetting _maxAalsSize;
     
-    public AlignedTripleExclusionStrategy(int minSharedSeenCells, int maxAlsSize, int maxAalsSize) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
+    public AlignedTripleExclusionStrategy(int minSharedSeenCells, int maxAlsSize, int maxAalsSize) : base(OfficialName, Difficulty.Hard, DefaultInstanceHandling)
     {
         _minSharedSeenCells = new IntSetting("Minimum shared seen cells", "The minimum amount of cells" +
                                                                           "the base of the pattern must see together",

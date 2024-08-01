@@ -2,6 +2,7 @@
 using Model.Kakuros.Strategies;
 using Model.Nonograms.Solver;
 using Model.Nonograms.Solver.Strategies;
+using Model.Repositories;
 using Model.Sudokus.Solver;
 using Model.Tectonics.Solver;
 using Model.Tectonics.Solver.Strategies;
@@ -81,4 +82,6 @@ public class Instantiator
             !Program.IsForProduction, true), new HardCodedThemeRepository());
         return _themeRepository;
     }
+
+    public ISudokuBankRepository InstantiateBankRepository() => new MySqlSudokuBankRepository();
 }

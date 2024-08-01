@@ -14,7 +14,7 @@ public class SingleTargetExocetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Single Target Exocet";
     
-    public SingleTargetExocetStrategy() : base(OfficialName, StepDifficulty.Extreme, InstanceHandling.UnorderedAll)
+    public SingleTargetExocetStrategy() : base(OfficialName, Difficulty.Extreme, InstanceHandling.UnorderedAll)
     {
     }
 

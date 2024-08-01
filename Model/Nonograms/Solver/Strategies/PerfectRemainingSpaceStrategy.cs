@@ -8,7 +8,7 @@ namespace Model.Nonograms.Solver.Strategies;
 
 public class PerfectRemainingSpaceStrategy : Strategy<INonogramSolverData>
 {
-    public PerfectRemainingSpaceStrategy() : base("Perfect Remaining Space", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
+    public PerfectRemainingSpaceStrategy() : base("Perfect Remaining Space", Difficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
 

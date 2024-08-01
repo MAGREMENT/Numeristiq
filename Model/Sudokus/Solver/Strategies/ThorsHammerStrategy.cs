@@ -19,7 +19,7 @@ public class ThorsHammerStrategy : SudokuStrategy
 
     private readonly IBoxLoopFinder _finder;
     
-    public ThorsHammerStrategy(IBoxLoopFinder finder) : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
+    public ThorsHammerStrategy(IBoxLoopFinder finder) : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
     {
         _finder = finder;
     }

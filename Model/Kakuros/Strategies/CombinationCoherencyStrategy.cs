@@ -9,7 +9,7 @@ namespace Model.Kakuros.Strategies;
 
 public class CombinationCoherencyStrategy : Strategy<IKakuroSolverData>
 {
-    public CombinationCoherencyStrategy() : base("Combination Coherency", StepDifficulty.Medium, InstanceHandling.UnorderedAll)
+    public CombinationCoherencyStrategy() : base("Combination Coherency", Difficulty.Medium, InstanceHandling.UnorderedAll)
     {
     }
 

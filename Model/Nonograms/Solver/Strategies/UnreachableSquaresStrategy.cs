@@ -9,7 +9,7 @@ namespace Model.Nonograms.Solver.Strategies;
 
 public class UnreachableSquaresStrategy : Strategy<INonogramSolverData>
 {
-    public UnreachableSquaresStrategy() : base("Unreachable Squares", StepDifficulty.Medium, InstanceHandling.UnorderedAll)
+    public UnreachableSquaresStrategy() : base("Unreachable Squares", Difficulty.Medium, InstanceHandling.UnorderedAll)
     {
     }
 

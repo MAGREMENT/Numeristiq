@@ -15,7 +15,7 @@ public class EmptyRectangleStrategy : SudokuStrategy
     public const string OfficialName = "Empty Rectangle";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public EmptyRectangleStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling)
+    public EmptyRectangleStrategy() : base(OfficialName, Difficulty.Medium, DefaultInstanceHandling)
     {
     }
 

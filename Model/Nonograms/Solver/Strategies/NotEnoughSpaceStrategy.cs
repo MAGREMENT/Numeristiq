@@ -8,7 +8,7 @@ namespace Model.Nonograms.Solver.Strategies;
 
 public class NotEnoughSpaceStrategy : Strategy<INonogramSolverData>
 {
-    public NotEnoughSpaceStrategy() : base("Not Enough Space", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
+    public NotEnoughSpaceStrategy() : base("Not Enough Space", Difficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
 

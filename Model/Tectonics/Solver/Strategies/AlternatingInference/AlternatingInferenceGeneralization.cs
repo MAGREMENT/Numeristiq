@@ -116,7 +116,7 @@ public interface IAlternatingInferenceType
 {
     string Name { get; }
     
-    StepDifficulty Difficulty { get; }
+    Difficulty Difficulty { get; }
 
     ILinkGraph<ITectonicElement> GetGraph(ITectonicSolverData solverData);
 }

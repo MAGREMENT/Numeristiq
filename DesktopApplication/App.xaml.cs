@@ -181,9 +181,9 @@ public class ThemeInformation
         };
     }
 
-    public static string ResourceNameFor(StepDifficulty difficulty)
+    public static string ResourceNameFor(Difficulty difficulty)
     {
-        if (difficulty == StepDifficulty.None) return "Disabled";
+        if (difficulty == Difficulty.None) return "Disabled";
         return "Difficulty" + difficulty;
     }
     

@@ -8,7 +8,7 @@ namespace Model.Nonograms.Solver.Strategies;
 
 public class BridgingStrategy : Strategy<INonogramSolverData>
 {
-    public BridgingStrategy() : base("Bridging", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
+    public BridgingStrategy() : base("Bridging", Difficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
 

@@ -18,7 +18,7 @@ public class BUGStrategy : SudokuStrategy
 
     private readonly IntSetting _maxAdditionalCandidates;
     
-    public BUGStrategy(int maxAdditionalCandidates) : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling)
+    public BUGStrategy(int maxAdditionalCandidates) : base(OfficialName, Difficulty.Medium, DefaultInstanceHandling)
     {
         _maxAdditionalCandidates = new IntSetting("Max additional candidates", "The maximum amount of cells with an additional candidate",
             new SliderInteractionInterface(1, 5, 1), maxAdditionalCandidates);

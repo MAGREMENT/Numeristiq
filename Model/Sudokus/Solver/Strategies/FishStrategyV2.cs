@@ -45,7 +45,7 @@ public class FishStrategyV2 : SudokuStrategy
         new(Unit.Box, 8),
     };
 
-    public FishStrategyV2(int minUnitCount, int maxUnitCount) : base("Fish", StepDifficulty.Extreme, DefaultInstanceHandling)
+    public FishStrategyV2(int minUnitCount, int maxUnitCount) : base("Fish", Difficulty.Extreme, DefaultInstanceHandling)
     {
         _unitCount = new MinMaxSetting("Unit count", "The minimum and maximum amount of units used for each set of the fish pattern",
             2, 4, 2, 5, 1, minUnitCount, maxUnitCount);

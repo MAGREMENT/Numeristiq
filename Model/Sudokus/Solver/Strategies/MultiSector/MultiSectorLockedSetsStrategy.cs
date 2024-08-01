@@ -19,7 +19,7 @@ public class MultiSectorLockedSetsStrategy : SudokuStrategy
     private readonly IMultiSectorCellsSearcher[] _cellsSearchers;
     
     public MultiSectorLockedSetsStrategy(params IMultiSectorCellsSearcher[] searchers) : base(OfficialName,
-        StepDifficulty.Extreme, DefaultInstanceHandling)
+        Difficulty.Extreme, DefaultInstanceHandling)
     {
         _cellsSearchers = searchers;
     }

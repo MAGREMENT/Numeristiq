@@ -15,7 +15,7 @@ public class WXYZWingStrategy : SudokuStrategy
     public const string OfficialName = "WXYZ-Wing";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public WXYZWingStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling) {}
+    public WXYZWingStrategy() : base(OfficialName, Difficulty.Hard, DefaultInstanceHandling) {}
     
     public override void Apply(ISudokuSolverData solverData)
     {

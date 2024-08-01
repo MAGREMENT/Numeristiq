@@ -7,3 +7,5 @@
 *.user
 *.cache
 *.DotSettings
+
+MySqlConnectionManager.cs

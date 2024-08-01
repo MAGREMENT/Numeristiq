@@ -17,7 +17,7 @@ public class CellForcingNetStrategy : SudokuStrategy
 
     private readonly int _max;
 
-    public CellForcingNetStrategy(int maxPossibilities) : base(OfficialName,  StepDifficulty.Inhuman, DefaultInstanceHandling)
+    public CellForcingNetStrategy(int maxPossibilities) : base(OfficialName,  Difficulty.Inhuman, DefaultInstanceHandling)
     {
         _max = maxPossibilities;
     }

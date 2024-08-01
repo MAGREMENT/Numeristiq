@@ -8,7 +8,7 @@ namespace Model.Nonograms.Solver.Strategies;
 
 public class PerfectValueSpaceStrategy : Strategy<INonogramSolverData>
 {
-    public PerfectValueSpaceStrategy() : base("Perfect Value Space", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
+    public PerfectValueSpaceStrategy() : base("Perfect Value Space", Difficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
 

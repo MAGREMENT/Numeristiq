@@ -11,7 +11,7 @@ public class UniquenessClueCoverStrategy : SudokuStrategy
     private bool _needFilter = true;
     
     public UniquenessClueCoverStrategy(params IPatternCollection[] collections)
-        : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
+        : base(OfficialName, Difficulty.Hard, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
         _collections = collections;

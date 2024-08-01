@@ -8,7 +8,7 @@ namespace Model.Nonograms.Solver.Strategies;
 
 public class EdgeValueStrategy : Strategy<INonogramSolverData>
 {
-    public EdgeValueStrategy() : base("Edge Value", StepDifficulty.Easy, InstanceHandling.UnorderedAll)
+    public EdgeValueStrategy() : base("Edge Value", Difficulty.Easy, InstanceHandling.UnorderedAll)
     {
     }
 

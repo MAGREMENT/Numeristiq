@@ -18,7 +18,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
 
     private readonly bool _checkLength2;
 
-    public AlmostLockedSetsChainStrategy(bool checkLength2) : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
+    public AlmostLockedSetsChainStrategy(bool checkLength2) : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
     {
         _checkLength2 = checkLength2;
     }

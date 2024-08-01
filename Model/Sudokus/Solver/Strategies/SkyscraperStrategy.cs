@@ -11,7 +11,7 @@ public class SkyscraperStrategy : SudokuStrategy
     public const string OfficialName = "Skyscraper";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public SkyscraperStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
+    public SkyscraperStrategy() : base(OfficialName, Difficulty.Hard, DefaultInstanceHandling)
     {
     }
 

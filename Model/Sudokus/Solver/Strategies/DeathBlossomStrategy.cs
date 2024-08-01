@@ -17,7 +17,7 @@ public class DeathBlossomStrategy : SudokuStrategy
     public const string OfficialName = "Death Blossom";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public DeathBlossomStrategy() : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
+    public DeathBlossomStrategy() : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
     {
     }
 

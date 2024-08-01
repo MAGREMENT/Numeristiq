@@ -11,7 +11,7 @@ public class BruteForceStrategy : Strategy<INonogramSolverData>
     private readonly BackTracker<Nonogram, IAvailabilityChecker> _backTracker
         = new NaiveNonogramBackTracker();
     
-    public BruteForceStrategy() : base("Brute Force", StepDifficulty.ByTrial, InstanceHandling.FirstOnly)
+    public BruteForceStrategy() : base("Brute Force", Difficulty.ByTrial, InstanceHandling.FirstOnly)
     {
     }
 

@@ -12,7 +12,7 @@ public class SKLoopsStrategy : SudokuStrategy
     public const string OfficialName = "SK-Loops";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public SKLoopsStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling) { }
+    public SKLoopsStrategy() : base(OfficialName, Difficulty.Hard, DefaultInstanceHandling) { }
 
     public override void Apply(ISudokuSolverData solverData)
     {

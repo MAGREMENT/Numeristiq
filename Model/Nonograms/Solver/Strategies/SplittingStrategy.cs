@@ -8,7 +8,7 @@ namespace Model.Nonograms.Solver.Strategies;
 
 public class SplittingStrategy : Strategy<INonogramSolverData>
 {
-    public SplittingStrategy() : base("Splitting", StepDifficulty.Easy, InstanceHandling.UnorderedAll)
+    public SplittingStrategy() : base("Splitting", Difficulty.Easy, InstanceHandling.UnorderedAll)
     {
     }
 

@@ -14,7 +14,7 @@ public class NakedDoublesStrategy : SudokuStrategy
     public const string OfficialName = "Naked Doubles";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public NakedDoublesStrategy() : base(OfficialName, StepDifficulty.Easy, DefaultInstanceHandling){}
+    public NakedDoublesStrategy() : base(OfficialName, Difficulty.Easy, DefaultInstanceHandling){}
 
     public override void Apply(ISudokuSolverData solverData)
     {

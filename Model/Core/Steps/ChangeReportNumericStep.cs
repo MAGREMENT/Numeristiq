@@ -9,7 +9,7 @@ public class ChangeReportNumericStep<THighlighter> : INumericStep<THighlighter>
 {
     public int Id { get; }
     public string Title { get; }
-    public StepDifficulty Difficulty { get; }
+    public Difficulty Difficulty { get; }
     public IReadOnlyList<NumericChange> Changes { get; }
     public string Description { get; }
     public ExplanationElement? Explanation { get; }

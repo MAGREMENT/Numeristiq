@@ -18,7 +18,7 @@ public class PatternOverlayStrategy : SudokuStrategy
     private readonly int _maxPatternNumber;
 
     public PatternOverlayStrategy(int maxCombinationSize, int maxPatternNumber)
-        : base(OfficialName, StepDifficulty.Inhuman, DefaultInstanceHandling)
+        : base(OfficialName, Difficulty.Inhuman, DefaultInstanceHandling)
     {
         _maxCombinationSize = maxCombinationSize;
         _maxPatternNumber = maxPatternNumber;

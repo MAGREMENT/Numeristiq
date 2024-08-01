@@ -9,7 +9,7 @@ public class ChangeReportDichotomousStep<THighlighter> : IDichotomousStep<THighl
 {
     public int Id { get; }
     public string Title { get; }
-    public StepDifficulty Difficulty { get; }
+    public Difficulty Difficulty { get; }
     public string Description { get; }
     public ExplanationElement? Explanation { get; }
     public IReadOnlyList<DichotomousChange> Changes { get; }

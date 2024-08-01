@@ -16,7 +16,7 @@ public class SetEquivalenceStrategy : SudokuStrategy
     private readonly ISetEquivalenceSearcher[] _searchers;
     
     public SetEquivalenceStrategy(params ISetEquivalenceSearcher[] searchers)
-        : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
+        : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
     {
         _searchers = searchers;
     }

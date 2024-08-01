@@ -4,7 +4,6 @@ using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.PossibilitySets;
-using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -18,7 +17,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
 
     private readonly bool _checkLength2;
     
-    public AlmostHiddenSetsChainStrategy(bool checkLength2) : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
+    public AlmostHiddenSetsChainStrategy(bool checkLength2) : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
     {
         _checkLength2 = checkLength2;
     }

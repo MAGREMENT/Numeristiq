@@ -16,7 +16,7 @@ public class FinnedGridFormationStrategy : SudokuStrategy
 
     private readonly int _type;
 
-    public FinnedGridFormationStrategy(int type) : base("", StepDifficulty.Hard, DefaultInstanceHandling)
+    public FinnedGridFormationStrategy(int type) : base("", Difficulty.Hard, DefaultInstanceHandling)
     {
         _type = type;
         Name = type switch

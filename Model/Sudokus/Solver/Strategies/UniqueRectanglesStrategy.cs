@@ -20,7 +20,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
     private readonly BooleanSetting _allowMissingCandidates;
     private readonly IntSetting _maxAlsSize;
     
-    public UniqueRectanglesStrategy(bool allowMissingCandidates, int maxAlsSize) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
+    public UniqueRectanglesStrategy(bool allowMissingCandidates, int maxAlsSize) : base(OfficialName, Difficulty.Hard, DefaultInstanceHandling)
     {
         _allowMissingCandidates = new BooleanSetting("Missing candidates allowed", "Allows missing candidates in patterns",
             allowMissingCandidates);

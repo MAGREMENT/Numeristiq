@@ -8,7 +8,7 @@ public class SeniorExocetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Senior Exocet";
     
-    public SeniorExocetStrategy() : base(OfficialName, StepDifficulty.Extreme, InstanceHandling.FirstOnly)
+    public SeniorExocetStrategy() : base(OfficialName, Difficulty.Extreme, InstanceHandling.FirstOnly)
     {
     }
 

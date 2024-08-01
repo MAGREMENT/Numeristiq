@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
@@ -14,7 +13,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
     public const string OfficialName = "Hidden Doubles";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public HiddenDoublesStrategy() : base(OfficialName, StepDifficulty.Easy, DefaultInstanceHandling){}
+    public HiddenDoublesStrategy() : base(OfficialName, Difficulty.Easy, DefaultInstanceHandling){}
     
     public override void Apply(ISudokuSolverData solverData)
     {
@@ -122,7 +121,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
         }
 
         return solverData.ChangeBuffer.Commit(
-            new MiniGridHiddenDoublesReportBuilder(positions, n1, n2)) && StopOnFirstPush;
+            new BoxHiddenDoublesReportBuilder(positions, n1, n2)) && StopOnFirstPush;
     }
 }
 
@@ -137,7 +136,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<NumericChange
     public LineHiddenDoublesReportBuilder(int unitNumber, IReadOnlyLinePositions pos, int n1, int n2, Unit unit)
     {
         _unitNumber = unitNumber;
-        _pos = pos;
+        _pos = pos.Copy();
         _n1 = n1;
         _n2 = n2;
         _unit = unit;
@@ -161,15 +160,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<NumericChange
 
     private string Description(IReadOnlyList<Cell> cells)
     {
-        var builder = new StringBuilder($"Hidden Doubles in {cells[0]}, {cells[1]} for ");
-
-        var n = 0;
-        _pos.Next(ref n);
-        var f = n;
-        _pos.Next(ref n);
-        builder.Append(f + ", " + n);
-
-        return builder.ToString();
+        return $"Hidden Doubles in {cells[0]}, {cells[1]} for {_n1} and {_n2}";
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
@@ -178,15 +169,15 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<NumericChange
     }
 }
 
-public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
+public class BoxHiddenDoublesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyBoxPositions _pos;
     private readonly int _n1;
     private readonly int _n2;
 
-    public MiniGridHiddenDoublesReportBuilder(IReadOnlyBoxPositions pos, int n1, int n2)
+    public BoxHiddenDoublesReportBuilder(IReadOnlyBoxPositions pos, int n1, int n2)
     {
-        _pos = pos;
+        _pos = pos.Copy();
         _n1 = n1;
         _n2 = n2;
     }
@@ -209,15 +200,7 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<NumericCh
     
     private string Description(IReadOnlyList<Cell> cells)
     {
-        var builder = new StringBuilder($"Hidden Doubles in {cells[0]}, {cells[1]} for ");
-
-        var n = 0;
-        _pos.Next(ref n);
-        var f = n;
-        _pos.Next(ref n);
-        builder.Append(f + ", " + n);
-
-        return builder.ToString();
+        return $"Hidden Doubles in {cells[0]}, {cells[1]} for {_n1} and {_n2}";
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

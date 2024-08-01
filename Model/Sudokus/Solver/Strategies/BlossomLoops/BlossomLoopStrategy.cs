@@ -22,7 +22,7 @@ public class BlossomLoopStrategy : SudokuStrategy
     private readonly IBlossomLoopBranchFinder _branchFinder;
     
     public BlossomLoopStrategy(IBlossomLoopLoopFinder loopFinder, IBlossomLoopBranchFinder branchFinder, IBlossomLoopType type)
-        : base(type.Name, StepDifficulty.Extreme, DefaultInstanceHandling)
+        : base(type.Name, Difficulty.Extreme, DefaultInstanceHandling)
     {
         _loopFinder = loopFinder;
         _branchFinder = branchFinder;

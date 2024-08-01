@@ -21,7 +21,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
 
     private readonly IntSetting _maxSize;
 
-    public DistributedDisjointSubsetStrategy(int maxSize) : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
+    public DistributedDisjointSubsetStrategy(int maxSize) : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
     {
         _maxSize = new IntSetting("Maximum Size", "The maximum amount of cells in the pattern",
             new SliderInteractionInterface(2, 9, 1), maxSize);

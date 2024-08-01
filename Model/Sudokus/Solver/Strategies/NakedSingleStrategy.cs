@@ -13,7 +13,7 @@ public class NakedSingleStrategy : SudokuStrategy
     public const string OfficialName = "Naked Single";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public NakedSingleStrategy() : base(OfficialName, StepDifficulty.Basic, DefaultInstanceHandling) {}
+    public NakedSingleStrategy() : base(OfficialName, Difficulty.Basic, DefaultInstanceHandling) {}
     
     public override void Apply(ISudokuSolverData solverData)
     {

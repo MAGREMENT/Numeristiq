@@ -15,7 +15,7 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
     public const string OfficialName = "3D Medusa";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public ThreeDimensionMedusaStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling) {}
+    public ThreeDimensionMedusaStrategy() : base(OfficialName, Difficulty.Hard, DefaultInstanceHandling) {}
     
     public override void Apply(ISudokuSolverData solverData)
     {

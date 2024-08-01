@@ -8,7 +8,7 @@ namespace Model.Nonograms.Solver.Strategies;
 
 public class ValueCompletionStrategy : Strategy<INonogramSolverData>
 {
-    public ValueCompletionStrategy() : base("Value Completion", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
+    public ValueCompletionStrategy() : base("Value Completion", Difficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
 

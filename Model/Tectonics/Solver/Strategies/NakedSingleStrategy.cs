@@ -6,7 +6,7 @@ namespace Model.Tectonics.Solver.Strategies;
 
 public class NakedSingleStrategy : Strategy<ITectonicSolverData>
 {
-    public NakedSingleStrategy() : base("Naked Single", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
+    public NakedSingleStrategy() : base("Naked Single", Difficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
     

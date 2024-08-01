@@ -12,7 +12,7 @@ public class TwoStringKiteStrategy : SudokuStrategy
     public const string OfficialName = "Two-String Kite";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public TwoStringKiteStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
+    public TwoStringKiteStrategy() : base(OfficialName, Difficulty.Hard, DefaultInstanceHandling)
     {
     }
 
