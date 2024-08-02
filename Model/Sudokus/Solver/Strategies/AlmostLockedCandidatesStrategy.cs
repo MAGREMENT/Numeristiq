@@ -346,17 +346,18 @@ public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericC
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>($"Almost Locked Candidates in " +
+        var type = _als.Possibilities.Count == 2 ? "Pair" : "Triple";
+        return new ChangeReport<ISudokuHighlighter>($"Almost Locked {type} in " +
                                                     $"{_centerCells.ToStringSequence(", ")}", lighter =>
         {
             foreach (var cell in _centerCells)
             {
-                lighter.HighlightCell(cell, StepColor.Neutral);
+                lighter.HighlightCell(cell, StepColor.Cause1);
             }
             
             foreach (var cell in _als.EnumerateCells())
             {
-                lighter.HighlightCell(cell, StepColor.Cause1);
+                lighter.HighlightCell(cell, StepColor.Cause2);
             }
 
             foreach (var cell in _correspondence)
@@ -364,7 +365,7 @@ public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericC
                 foreach (var p in _als.Possibilities.EnumeratePossibilities())
                 {
                     if (snapshot.PossibilitiesAt(cell).Contains(p))
-                        lighter.HighlightPossibility(p, cell.Row, cell.Column, StepColor.Cause1);
+                        lighter.HighlightPossibility(p, cell.Row, cell.Column, StepColor.Cause2);
                 }
             }
 

@@ -134,11 +134,13 @@
 		    
 		    <Style TargetType="Button" x:Key="PrimaryGradientButton">
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
-			    <Setter Property="FontWeight" Value="SemiBold"></Setter>
+			    <Setter Property="FontWeight" Value="SemiBold"/>
+			    <Setter Property="Padding" Value="10, 6"/>
 			    <Setter Property="Template">
 				    <Setter.Value>
 					    <ControlTemplate TargetType="Button">
-						    <Border CornerRadius="3" Padding="10, 6" x:Name="Border">
+						    <Border CornerRadius="3" Padding="{TemplateBinding Padding}" x:Name="Border"
+						            Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
 							    <Border.Background>
 								    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
 									    <GradientStop Color="{DynamicResource Primary1Color}" Offset="0.0"/>

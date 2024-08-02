@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -9,6 +10,7 @@ using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.HelperWindows.Dialog;
+using Model.Core;
 using Model.Sudokus.Player;
 using Model.Utility;
 
@@ -29,6 +31,7 @@ public partial class PlayPage : ISudokuPlayView
         InitializeComponent();
         _presenter = appPresenter.Initialize(this);
         
+        InitializeDifficultyComboBox();
         InitializeHighlightColorBoxes();
         _initialized = true;
     }
@@ -85,6 +88,37 @@ public partial class PlayPage : ISudokuPlayView
             if (child is RadioButton rb) rb.IsChecked = false;
         }
     }
+    
+    public void InitializeHighlightColorBoxes()
+    {
+        ColorGrid.Children.RemoveRange(1, ColorGrid.Children.Count - 1);
+        
+        for (int row = 0; row < 4; row++)
+        {
+            for (int col = 0; col < 2; col++)
+            {
+                if (row + col == 0) continue;
+
+                var color = (HighlightColor)(row * 2 + col - 1);
+
+                var border = new Border
+                {
+                    Margin = new Thickness(10),
+                    BorderThickness = new Thickness(1),
+                    Width = 30,
+                    Height = 30,
+                    Background = App.Current.ThemeInformation.ToBrush(color)
+                };
+
+                border.SetResourceReference(Border.BorderBrushProperty, "Background3");
+                Grid.SetRow(border, row);
+                Grid.SetColumn(border, col);
+                
+                border.MouseLeftButtonDown += (_, _) => _presenter.HighlightCurrentCells(color);
+                ColorGrid.Children.Add(border);
+            }
+        }
+    }
 
     #endregion
 
@@ -108,6 +142,26 @@ public partial class PlayPage : ISudokuPlayView
         };
 
         return settings;
+    }
+
+    private void InitializeDifficultyComboBox()
+    {
+        foreach (var v in Enum.GetValues<Difficulty>())
+        {
+            if(v == Difficulty.None) continue;
+
+            var item = new ComboBoxItem
+            {
+                Content = SpaceConverter.Instance.Convert(v.ToString()),
+                VerticalContentAlignment = VerticalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                FontSize = 16
+            };
+            item.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(v));
+            
+            DifficultyComboBox.Items.Add(item);
+        }
     }
 
     private void SelectCell(int row, int col)
@@ -181,9 +235,7 @@ public partial class PlayPage : ISudokuPlayView
                 break;
         }
     }
-
     
-
     private void Start(object sender, RoutedEventArgs e)
     {
         _presenter.Start();
@@ -197,37 +249,6 @@ public partial class PlayPage : ISudokuPlayView
     private void Stop(object sender, RoutedEventArgs e)
     {
         _presenter.Stop();
-    }
-
-    public void InitializeHighlightColorBoxes()
-    {
-        ColorGrid.Children.RemoveRange(1, ColorGrid.Children.Count - 1);
-        
-        for (int row = 0; row < 4; row++)
-        {
-            for (int col = 0; col < 2; col++)
-            {
-                if (row + col == 0) continue;
-
-                var color = (HighlightColor)(row * 2 + col - 1);
-
-                var border = new Border
-                {
-                    Margin = new Thickness(10),
-                    BorderThickness = new Thickness(1),
-                    Width = 30,
-                    Height = 30,
-                    Background = App.Current.ThemeInformation.ToBrush(color)
-                };
-
-                border.SetResourceReference(Border.BorderBrushProperty, "Background3");
-                Grid.SetRow(border, row);
-                Grid.SetColumn(border, col);
-                
-                border.MouseLeftButtonDown += (_, _) => _presenter.HighlightCurrentCells(color);
-                ColorGrid.Children.Add(border);
-            }
-        }
     }
 
     private void ClearHighlights(object sender, MouseButtonEventArgs e)
@@ -358,5 +379,12 @@ public partial class PlayPage : ISudokuPlayView
     private void ChangeLevelToBottom(object sender, RoutedEventArgs e)
     {
         if(_initialized) _presenter.SetChangeLevel(ChangeLevel.BottomPossibilities);
+    }
+
+    private void LoadFromBank(object sender, RoutedEventArgs e)
+    {
+        if (DifficultyComboBox.SelectedIndex == -1) return;
+        
+        _presenter.LoadFromBank((Difficulty)(DifficultyComboBox.SelectedIndex + 1));
     }
 }

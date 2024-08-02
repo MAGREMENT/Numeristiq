@@ -6,12 +6,14 @@ using DesktopApplication.Presenter.Sudokus.Solve;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Repositories;
 using Model.Sudokus;
 using Model.Sudokus.Player;
 using Model.Sudokus.Player.Actions;
 using Model.Sudokus.Solver;
 using Model.Utility;
 using Model.Utility.Collections;
+using Repository;
 
 namespace DesktopApplication.Presenter.Sudokus.Play;
 
@@ -24,6 +26,7 @@ public class SudokuPlayPresenter
     private readonly SudokuBackTracker _backTracker;
     private readonly SudokuHighlighterTranslator _translator;
     private readonly Disabler _disabler;
+    private readonly ISudokuBankRepository _repository;
 
     private ISudokuPlayerCursor _cursor = new CellsCursor();
     private ChangeLevel _changeLevel = ChangeLevel.Solution;
@@ -44,6 +47,7 @@ public class SudokuPlayPresenter
         };
         _translator = new SudokuHighlighterTranslator(_view.ClueShower, _settings);
         _disabler = new Disabler(_view);
+        _repository = new MySqlSudokuBankRepository();
         
         _player.MainLocation = _settings.MainLocation;
         _view.Drawer.StartAngle = View.Utility.MathUtility.ToRadians(_settings.StartAngle);
@@ -230,6 +234,21 @@ public class SudokuPlayPresenter
         else ShowClue();
     }
 
+    public void LoadFromBank(Difficulty difficulty)
+    {
+        try
+        {
+            var s = _repository.FindRandom(difficulty);
+            if (s is null) return;
+
+            if (_player.Execute(new PasteAction(s, _player.MainLocation))) OnCellDataChange();
+        }
+        catch
+        {
+            //ignored
+        }
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -251,7 +270,7 @@ public class SudokuPlayPresenter
     
     private void Paste(string s, SudokuStringFormat format)
     {
-        INumericSolvingState state = format switch
+        var state = format switch
         {
             SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(s),
             SudokuStringFormat.Grid => SudokuTranslator.TranslateGridFormat(s, _settings.SoloToGiven),

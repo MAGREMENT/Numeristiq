@@ -8,4 +8,4 @@
 *.cache
 *.DotSettings
 
-MySqlConnectionManager.cs
+MySqlCredentials.cs

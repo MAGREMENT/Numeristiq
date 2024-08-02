@@ -30,7 +30,7 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
     {
         try
         {
-            using var conn = MySqlConnectionManager.Open();
+            using var conn = Open();
             try
             {
                 var cmdDrop = new MySqlCommand(DropQuery, conn);
@@ -54,7 +54,7 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
     {
         try
         {
-            using var conn = MySqlConnectionManager.Open();
+            using var conn = Open();
             var cmd = new MySqlCommand(FindRandomQuery, conn);
             cmd.Parameters.AddWithValue("@difficulty", (int)difficulty);
             
@@ -73,7 +73,7 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
     {
         try
         {
-            using var conn = MySqlConnectionManager.Open();
+            using var conn = Open();
             var cmd = new MySqlCommand(DeleteQuery, conn);
             cmd.ExecuteNonQuery();
         }
@@ -87,7 +87,7 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
     {
         try
         {
-            using var conn = MySqlConnectionManager.Open();
+            using var conn = Open();
             var cmd = new MySqlCommand(InsertQuery, conn);
             cmd.Parameters.AddWithValue("@id",
                 SudokuTranslator.TranslateLineFormat(sudoku, SudokuLineFormatEmptyCellRepresentation.Points));
@@ -113,8 +113,8 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
                 builder.Append(query);
                 builder.Append('\n');
             }
-            
-            using var conn = MySqlConnectionManager.Open();
+
+            using var conn = Open();
             var cmd = new MySqlCommand(builder.ToString(), conn);
             return cmd.ExecuteNonQuery();
         }
@@ -122,6 +122,14 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
         {
             throw new SudokuBankException("Couldn't add the Sudoku's");
         }
+    }
+
+    private static MySqlConnection Open()
+    {
+        const string s = $"server={MySqlCredentials.Host};user={MySqlCredentials.User};database={MySqlCredentials.Database};port={MySqlCredentials.Port};password={MySqlCredentials.Password}";
+        var conn = new MySqlConnection(s);
+        conn.Open();
+        return conn;
     }
 }
 
