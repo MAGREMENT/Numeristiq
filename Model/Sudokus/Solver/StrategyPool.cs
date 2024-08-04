@@ -100,8 +100,8 @@ public static class StrategyPool
         {MultiSectorLockedSetsStrategy.OfficialName, () => new MultiSectorLockedSetsStrategy(new RowsAndColumnsSearcher(
             3, 5, 1))},
         {DistributedDisjointSubsetStrategy.OfficialName, () => new DistributedDisjointSubsetStrategy(8)},
-        {AlmostLockedCandidatesStrategy.OfficialNameForType2, () => new AlmostLockedCandidatesStrategy(2)},
-        {AlmostLockedCandidatesStrategy.OfficialNameForType3, () => new AlmostLockedCandidatesStrategy(3)},
+        {AlmostClaimingSetStrategy.OfficialNameForType2, () => new AlmostClaimingPairStrategy()},
+        {AlmostClaimingSetStrategy.OfficialNameForType3, () => new AlmostClaimingSetStrategy(3)},
         {OddagonStrategy.OfficialName, () => new OddagonStrategy()},
         {OddagonForcingNetStrategy.OfficialName, () => new OddagonForcingNetStrategy(3)},
         {BlossomLoopStrategy.OfficialNameForCell, () => new BlossomLoopStrategy(new BLLoopFinderV1(12), new BLBranchFinderV1(), new CellType())},

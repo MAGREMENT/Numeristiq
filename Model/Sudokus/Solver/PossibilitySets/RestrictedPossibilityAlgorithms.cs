@@ -4,7 +4,7 @@ namespace Model.Sudokus.Solver.PossibilitySets;
 
 public static class RestrictedPossibilityAlgorithms
 {
-    public static bool ForeachSearch(IPossibilitySet first, IPossibilitySet second, int possibility)
+    public static bool EachCaseSearch(IPossibilitySet first, IPossibilitySet second, int possibility)
     {
         foreach (var cell1 in first.EnumerateCells(possibility))
         {
@@ -25,25 +25,59 @@ public static class RestrictedPossibilityAlgorithms
         return result.CanBeCoveredByAUnit();
     }
 
-    public static bool CellEnumerationSearch(IPossibilitySet first, IPossibilitySet second,
+    public static bool CommonHouseSearch(IPossibilitySet first, IPossibilitySet second,
         int possibility)
     {
-        SharedHouses? sh = null;
+        CommonHouses ch = new();
 
         foreach (var cell in first.EnumerateCells(possibility))
         {
-            if (sh is null) sh = new SharedHouses(cell);
-            else
-            {
-                sh.Share(cell);
-                if (sh.Count == 0) return false;
-            }
+            ch = ch.Adapt(cell);
         }
 
         foreach (var cell in second.EnumerateCells(possibility))
         {
-            sh!.Share(cell);
-            if (sh.Count == 0) return false;
+            ch = ch.Adapt(cell);
+            if (!ch.IsValid()) return false;
+        }
+
+        return true;
+    }
+    
+    public static bool AlternatingCommonHouseSearch(IPossibilitySet first, IPossibilitySet second,
+        int possibility)
+    {
+        CommonHouses ch = new();
+        using var enum1 = first.EnumerateCells(possibility).GetEnumerator();
+        using var enum2 = second.EnumerateCells(possibility).GetEnumerator();
+
+        var n1 = enum1.MoveNext();
+        var n2 = enum2.MoveNext();
+        while (n1 && n2)
+        {
+            ch = ch.Adapt(enum1.Current);
+            ch = ch.Adapt(enum2.Current);
+
+            if (!ch.IsValid()) return false;
+
+            n1 = enum1.MoveNext();
+            n2 = enum2.MoveNext();
+        }
+
+        while (n1)
+        {
+            ch = ch.Adapt(enum1.Current);
+            if (!ch.IsValid()) return false;
+
+            n1 = enum1.MoveNext();
+        }
+
+        while (n2)
+        {
+            ch = ch.Adapt(enum2.Current);
+            if (!ch.IsValid()) return false;
+            
+            n2 = enum2.MoveNext();
         }
 
         return true;

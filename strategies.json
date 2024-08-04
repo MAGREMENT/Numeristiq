@@ -135,14 +135,14 @@
     "Settings": {}
   },
   {
-    "Name": "Almost Locked Pair",
+    "Name": "Almost Claiming Pair",
     "Enabled": true,
     "Locked": false,
     "InstanceHandling": 1,
     "Settings": {}
   },
   {
-    "Name": "Almost Locked Triple",
+    "Name": "Almost Claiming Triple",
     "Enabled": true,
     "Locked": false,
     "InstanceHandling": 1,
@@ -302,7 +302,7 @@
     "Name": "WXYZ-Wing",
     "Enabled": true,
     "Locked": false,
-    "InstanceHandling": 0,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {

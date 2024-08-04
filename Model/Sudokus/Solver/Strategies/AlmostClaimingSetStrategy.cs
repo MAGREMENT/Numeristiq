@@ -11,15 +11,15 @@ using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies;
 
-public class AlmostLockedCandidatesStrategy : SudokuStrategy
+public class AlmostClaimingSetStrategy : SudokuStrategy
 {
-    public const string OfficialNameForType2 = "Almost Locked Pair";
-    public const string OfficialNameForType3 = "Almost Locked Triple";
+    public const string OfficialNameForType2 = "Almost Claiming Pair";
+    public const string OfficialNameForType3 = "Almost Claiming Triple";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
     private readonly int _type;
     
-    public AlmostLockedCandidatesStrategy(int type) : base("", Difficulty.Medium, DefaultInstanceHandling)
+    public AlmostClaimingSetStrategy(int type) : base("", Difficulty.Medium, DefaultInstanceHandling)
     {
         _type = type;
         switch (type)
@@ -76,7 +76,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
                         HandleAls(solverData, als.Possibilities, rowCenterCells, als);
 
                         if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                                new AlmostLockedCandidatesReportBuilder(als, correspondence, rowCenterCells)) &&
+                                new AlmostClaimingSetReportBuilder(als, correspondence, rowCenterCells)) &&
                             StopOnFirstPush) return;
                     }
 
@@ -92,7 +92,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
                         HandleAls(solverData, als.Possibilities, colCenterCells, als);
                         
                         if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                                new AlmostLockedCandidatesReportBuilder(als, correspondence, colCenterCells)) &&
+                                new AlmostClaimingSetReportBuilder(als, correspondence, colCenterCells)) &&
                             StopOnFirstPush) return;
                     }
 
@@ -112,7 +112,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
                         HandleAls(solverData, als.Possibilities, rowCenterCells, als);
                         
                         if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                                new AlmostLockedCandidatesReportBuilder(als, cells, rowCenterCells)) &&
+                                new AlmostClaimingSetReportBuilder(als, cells, rowCenterCells)) &&
                             StopOnFirstPush) return;
                     }
                     
@@ -132,7 +132,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
                         HandleAls(solverData, als.Possibilities, colCenterCells, als);
                         
                         if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                                new AlmostLockedCandidatesReportBuilder(als, cells, colCenterCells)) &&
+                                new AlmostClaimingSetReportBuilder(als, cells, colCenterCells)) &&
                             StopOnFirstPush) return;
                     }
                 }
@@ -331,13 +331,13 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
     }
 }
 
-public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
+public class AlmostClaimingSetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IPossibilitySet _als;
     private readonly IEnumerable<Cell> _correspondence;
     private readonly Cell[] _centerCells;
 
-    public AlmostLockedCandidatesReportBuilder(IPossibilitySet als, IEnumerable<Cell> correspondence, Cell[] centerCells)
+    public AlmostClaimingSetReportBuilder(IPossibilitySet als, IEnumerable<Cell> correspondence, Cell[] centerCells)
     {
         _als = als;
         _correspondence = correspondence;
@@ -347,7 +347,7 @@ public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericC
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         var type = _als.Possibilities.Count == 2 ? "Pair" : "Triple";
-        return new ChangeReport<ISudokuHighlighter>($"Almost Locked {type} in " +
+        return new ChangeReport<ISudokuHighlighter>($"Almost Claiming {type} in " +
                                                     $"{_centerCells.ToStringSequence(", ")}", lighter =>
         {
             foreach (var cell in _centerCells)

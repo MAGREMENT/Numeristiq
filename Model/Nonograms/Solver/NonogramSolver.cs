@@ -35,7 +35,7 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
     
     protected override INonogramSolvingState GetSolvingState()
     {
-        return new DefaultDichotomousSolvingState(_nonogram.RowCount, _nonogram.ColumnCount, this);
+        return new DefaultDichotomousSolvingState(this);
     }
 
     public override bool IsResultCorrect()

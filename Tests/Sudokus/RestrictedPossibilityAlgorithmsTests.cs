@@ -8,6 +8,36 @@ namespace Tests.Sudokus;
 
 public class RestrictedPossibilityAlgorithmsTests
 {
+    /*
+        ALS count : 133
+        #1 AreRestricted
+           Total: 6,4386448 s
+           Average: 321,93224 ms
+           Minimum: 295,5487 ms on try #11
+           Maximum: 412,5708 ms on try #19
+           Ignored: 1
+
+        #2 AreRestricted
+           Total: 13,39854 s
+           Average: 669,927 ms
+           Minimum: 533,4868 ms on try #21
+           Maximum: 791,1527 ms on try #10
+           Ignored: 1
+
+        #3 AreRestricted
+           Total: 6,5743071 s
+           Average: 328,715355 ms
+           Minimum: 237,862 ms on try #8
+           Maximum: 522,6523 ms on try #4
+           Ignored: 1
+
+        #4 AreRestricted
+           Total: 6,3653595 s
+           Average: 318,267975 ms
+           Minimum: 235,4947 ms on try #14
+           Maximum: 426,0083 ms on try #10
+           Ignored: 1
+     */
     [Test]
     public void Test()
     {
@@ -26,7 +56,7 @@ public class RestrictedPossibilityAlgorithmsTests
             {
                 foreach (var p in als[i].Possibilities.EnumeratePossibilities())
                 {
-                    expected[i, j, p - 1] = RestrictedPossibilityAlgorithms.ForeachSearch(als[i], als[j], p);
+                    expected[i, j, p - 1] = RestrictedPossibilityAlgorithms.EachCaseSearch(als[i], als[j], p);
                 }
             }
         }
@@ -47,9 +77,10 @@ public class RestrictedPossibilityAlgorithmsTests
                     }
                 }
             }
-        }, 20, RestrictedPossibilityAlgorithms.ForeachSearch,
+        }, 20, RestrictedPossibilityAlgorithms.EachCaseSearch,
             RestrictedPossibilityAlgorithms.GridPositionsSearch,
-            RestrictedPossibilityAlgorithms.CellEnumerationSearch);
+            RestrictedPossibilityAlgorithms.CommonHouseSearch,
+            RestrictedPossibilityAlgorithms.AlternatingCommonHouseSearch);
     }
 }
 

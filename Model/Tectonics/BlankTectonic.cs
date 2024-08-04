@@ -49,6 +49,11 @@ public class BlankTectonic : ITectonic
         return true;
     }
 
+    public bool SameDigits(ITectonic tectonic)
+    {
+        return tectonic is { RowCount: 0, ColumnCount: 0 };
+    }
+
     public ITectonic Copy()
     {
         return new BlankTectonic();

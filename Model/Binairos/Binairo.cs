@@ -4,14 +4,14 @@ using Model.Utility;
 
 namespace Model.Binairos;
 
-public class Binairo
+public class Binairo : IReadOnlyBinairo
 {
     private readonly int[,] _cells;
     private readonly ReadOnlyBinairoUnitBitSet[] _rowSets;
     private readonly ReadOnlyBinairoUnitBitSet[] _colSets;
     
-    public int RowCount { get; private set; }
-    public int ColumnCount { get; private set; }
+    public int RowCount { get; }
+    public int ColumnCount { get; }
 
     public Binairo(int rowCount, int colCount)
     {
@@ -120,6 +120,17 @@ public class Binairo
         return IsCorrect(_rowSets) && IsCorrect(_colSets);
     }
 
+    public int GetSolutionCount()
+    {
+        var total = 0;
+        foreach (var set in _rowSets)
+        {
+            total += set.Count;
+        }
+
+        return total;
+    }
+
     public override string ToString()
     {
         var builder = new StringBuilder(ColumnLineString());
@@ -203,4 +214,18 @@ public readonly struct ReadOnlyBinairoUnitBitSet
     {
         return set1._bits != set2._bits;
     }
+}
+
+public interface IReadOnlyBinairo
+{
+    public int RowCount { get; }
+    public int ColumnCount { get; }
+
+    public ReadOnlyBinairoUnitBitSet RowSetAt(int row);
+    public ReadOnlyBinairoUnitBitSet ColumnSetAt(int col);
+    
+    public int this[int row, int col] { get; }
+
+    public bool IsCorrect();
+    public int GetSolutionCount();
 }

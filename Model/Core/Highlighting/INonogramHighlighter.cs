@@ -10,3 +10,8 @@ public interface INonogramHighlighter
     void EncircleCells(IEnumerable<Cell> cells, StepColor color);
     void EncircleLineSection(Orientation orientation, int unit, int startIndex, int endIndex, StepColor color);
 }
+
+public interface IBinairoHighlighter
+{
+    
+}

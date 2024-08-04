@@ -96,8 +96,7 @@ public class SnapshotPossibilitySet : IPossibilitySet
 
     public bool IsPossibilityRestricted(IPossibilitySet other, int possibility)
     {
-        return RestrictedPossibilityAlgorithms.ForeachSearch(this, other, possibility);
-        //return RestrictedPossibilityAlgorithms.GridPositionsSearch(Positions, other.Positions, Snapshot, possibility);
+        return RestrictedPossibilityAlgorithms.AlternatingCommonHouseSearch(this, other, possibility);
     }
 
     public override bool Equals(object? obj)

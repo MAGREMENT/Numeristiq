@@ -6,7 +6,7 @@ namespace Model.Tectonics;
 
 public class TectonicBackTracker : BackTracker<ITectonic, IPossibilitiesGiver>
 {
-    private readonly Dictionary<IZone, ReadOnlyBitSet8> _zones = new();
+    private readonly Dictionary<IZone, BitSet8> _zones = new();
     private readonly InfiniteBitmap[] _neighbors = new InfiniteBitmap[5];
     
     public TectonicBackTracker() : base(new BlankTectonic(), new EmptyPossibilitiesGiver()){}
@@ -24,20 +24,25 @@ public class TectonicBackTracker : BackTracker<ITectonic, IPossibilitiesGiver>
             if (Current[row, col] != 0) continue;
 
             var zone = Current.GetZone(row, col);
-            var bitSet = _zones.TryGetValue(zone, out var bs) ? bs : new ReadOnlyBitSet8();
+            if (!_zones.TryGetValue(zone, out var bs))
+            {
+                bs = new BitSet8();
+                _zones[zone] = bs;
+            }
+            
             foreach (var possibility in _giver.EnumeratePossibilitiesAt(row, col))
             {
                 var n = _neighbors[possibility - 1];
-                if(bitSet.Contains(possibility) || n.HasNeighbor(row, col)) continue;
+                if(bs.Contains(possibility) || n.HasNeighbor(row, col)) continue;
 
                 Current[row, col] = possibility;
-                _zones[zone] = bitSet + possibility;
+                bs.Add(possibility);
                 n.Add(row, col);
 
                 if (Search(position + 1)) return true;
                 
                 Current[row, col] = 0;
-                _zones[zone] = bitSet;
+                bs.Remove(possibility);
                 n.Remove(row, col);
             }
 
@@ -58,21 +63,25 @@ public class TectonicBackTracker : BackTracker<ITectonic, IPossibilitiesGiver>
             if (Current[row, col] != 0) continue;
 
             var zone = Current.GetZone(row, col);
-            var bitSet = _zones.TryGetValue(zone, out var bs) ? bs : new ReadOnlyBitSet8();
+            if (!_zones.TryGetValue(zone, out var bs))
+            {
+                bs = new BitSet8();
+                _zones[zone] = bs;
+            }
+            
             foreach (var possibility in _giver.EnumeratePossibilitiesAt(row, col))
             {
                 var n = _neighbors[possibility - 1];
-                if(bitSet.Contains(possibility) || n.HasNeighbor(row, col)) continue;
+                if(bs.Contains(possibility) || n.HasNeighbor(row, col)) continue;
 
                 Current[row, col] = possibility;
-                //TODO non readonly bit set ?
-                _zones[zone] = bitSet + possibility;
+                bs.Add(possibility);
                 n.Add(row, col);
 
-                bool search = Search(result, position + 1);
+                var search = Search(result, position + 1);
                 
                 Current[row, col] = 0;
-                _zones[zone] = bitSet;
+                bs.Remove(possibility);
                 n.Remove(row, col);
 
                 if (search) return true;
@@ -87,7 +96,7 @@ public class TectonicBackTracker : BackTracker<ITectonic, IPossibilitiesGiver>
     
     protected override void Initialize(bool reset)
     {
-        if(reset)_zones.Clear();
+        if(reset) _zones.Clear();
         if (Current.RowCount == 0 || Current.ColumnCount == 0) return;
         
         for (int i = 0; i < 5; i++)
@@ -99,16 +108,18 @@ public class TectonicBackTracker : BackTracker<ITectonic, IPossibilitiesGiver>
         {
             for (int col = 0; col < Current.ColumnCount; col++)
             {
-                var zone = Current.GetZone(row, col);
-                var bitSet = _zones.TryGetValue(zone, out var bs) ? bs : new ReadOnlyBitSet8();
                 var number = Current[row, col];
-                if (number != 0)
+                if(number == 0) continue;
+                
+                var zone = Current.GetZone(row, col);
+                if (!_zones.TryGetValue(zone, out var bs))
                 {
-                    _neighbors[number - 1].Add(row, col);
-                    bitSet += number;
+                    bs = new BitSet8();
+                    _zones[zone] = bs;
                 }
                 
-                _zones[zone] = bitSet;
+                _neighbors[number - 1].Add(row, col);
+                bs.Add(number);
             }
         }
     }

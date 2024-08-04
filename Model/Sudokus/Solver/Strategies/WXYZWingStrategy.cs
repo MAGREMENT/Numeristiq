@@ -177,32 +177,28 @@ public class WXYZWingStrategy : SudokuStrategy
 
         foreach (var possibility in possibilities.EnumeratePossibilities())
         {
-            SharedHouses? sharedUnits = null;
+            var ch = new CommonHouses();
             bool nope = false;
             
             foreach (var current in miniPositions)
             {
                 if (!solverData.PossibilitiesAt(current.Row, current.Column).Contains(possibility)) continue;
 
-                if (sharedUnits is null) sharedUnits = new SharedHouses(current);
-                else
-                {
-                    sharedUnits.Share(current);
-                    if (sharedUnits.Count != 0) continue;
+                ch = ch.Adapt(current);
+                if (ch.IsValid()) continue;
 
-                    if (buffer != -1) return false;
+                if (buffer != -1) return false;
                     
-                    buffer = possibility;
-                    nope = true;
-                    break;
-                }
+                buffer = possibility;
+                nope = true;
+                break;
             }
 
             if (nope) break;
 
             foreach (var other in linePositions)
             {
-                Cell current = unit switch
+                var current = unit switch
                 {
                     Unit.Row => new Cell(unitNumber, other),
                     Unit.Column => new Cell(other, unitNumber),
@@ -211,18 +207,13 @@ public class WXYZWingStrategy : SudokuStrategy
                 
                 if (!solverData.PossibilitiesAt(current.Row, current.Column).Contains(possibility)) continue;
 
-                if (sharedUnits is null) sharedUnits = new SharedHouses(current);
-                else
-                {
-                    sharedUnits.Share(current);
-                    if (sharedUnits.Count != 0) continue;
+                ch = ch.Adapt(current);
+                if (ch.IsValid()) continue;
 
-                    if (buffer != -1) return false;
+                if (buffer != -1) return false;
                     
-                    buffer = possibility;
-                    break;
-
-                }
+                buffer = possibility;
+                break;
             }
         }
 

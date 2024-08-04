@@ -66,3 +66,22 @@ public class DefaultDichotomousCommitComparer : ICommitComparer<DichotomousChang
         return first.Changes.Length - second.Changes.Length;
     }
 }
+
+public class DefaultBinaryCommitComparer : ICommitComparer<BinaryChange>
+{
+    private static DefaultBinaryCommitComparer? _instance;
+
+    public static DefaultBinaryCommitComparer Instance
+    {
+        get
+        {
+            _instance ??= new DefaultBinaryCommitComparer();
+            return _instance;
+        }
+    }
+
+    public int Compare(IChangeCommit<BinaryChange> first, IChangeCommit<BinaryChange> second)
+    {
+        return first.Changes.Length - second.Changes.Length;
+    }
+}

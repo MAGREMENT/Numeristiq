@@ -24,7 +24,7 @@ public class DefaultDichotomousSolvingState : INonogramSolvingState
     {
         return state is DefaultDichotomousSolvingState s
             ? s.Copy()
-            : new DefaultDichotomousSolvingState(state.RowCount, state.ColumnCount, state);
+            : new DefaultDichotomousSolvingState(state);
     }
     
     public DefaultDichotomousSolvingState(int rowCount, int colCount)
@@ -32,12 +32,12 @@ public class DefaultDichotomousSolvingState : INonogramSolvingState
         _bits = new ushort[rowCount, colCount];
     }
     
-    public DefaultDichotomousSolvingState(int rowCount, int colCount, IDichotomousSolvingState state)
+    public DefaultDichotomousSolvingState(IDichotomousSolvingState state)
     {
-        _bits = new ushort[rowCount, colCount];
-        for (int row = 0; row < rowCount; row++)
+        _bits = new ushort[state.RowCount, state.ColumnCount];
+        for (int row = 0; row < state.RowCount; row++)
         {
-            for (int col = 0; col < colCount; col++)
+            for (int col = 0; col < state.ColumnCount; col++)
             {
                 this[row, col] = state[row, col];
                 SetAvailability(row, col, state.IsAvailable(row, col));

@@ -264,6 +264,20 @@ public class ArrayTectonic : ITectonic
 
         return result;
     }
+
+    public bool SameDigits(ITectonic tectonic)
+    {
+        if (tectonic.RowCount != RowCount || tectonic.ColumnCount != ColumnCount) return false;
+        for (int row = 0; row < RowCount; row++)
+        {
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                if (tectonic[row, col] != this[row, col]) return false;
+            }
+        }
+
+        return true;
+    }
     
     public override string ToString()
     {

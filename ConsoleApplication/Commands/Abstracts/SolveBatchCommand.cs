@@ -4,14 +4,15 @@ using Model.Core.Trackers;
 
 namespace ConsoleApplication.Commands.Abstracts;
 
-public abstract class SolveBatchCommand<TState> : Command where TState : class
+public abstract class SolveBatchCommand<TState> : Command where TState : class //TODO output
 {
     private const int FileIndex = 0;
     private const int FeedbackIndex = 0;
     private const int UnorderedIndex = 1;
     private const int FailsIndex = 2;
     private const int InstancesIndex = 3;
-    private const int LimitIndex = 4;
+    private const int AbsencesIndex = 4;
+    private const int LimitIndex = 5;
     
     public override string Description { get; }
 
@@ -29,6 +30,8 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
             new Option("-u", "Sets all strategies instance handling to unordered all"),
             new Option("--list-fails", "Lists all solver fails"),
             new Option("--list-instances", $"Lists all {name}'s that presented the strategy in their solution path",
+                ValueRequirement.Mandatory, ValueType.String),
+            new Option("--list-absences", $"Lists all {name}'s that did not present the strategy in their solution path",
                 ValueRequirement.Mandatory, ValueType.String),
             new Option("--limit", $"Limits the number of {name} solved", ValueRequirement.Mandatory,
                 ValueType.Int)
@@ -56,9 +59,10 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
 
         List<string> fails = new();
         List<string> instances = new();
+        List<string> absences = new();
         UsedStrategiesTracker? usedTracker = null;
 
-        if (report.IsOptionUsed(InstancesIndex))
+        if (report.IsOptionUsed(InstancesIndex) || report.IsOptionUsed(AbsencesIndex))
         {
             usedTracker = new UsedStrategiesTracker();
             usedTracker.AttachTo(solver);
@@ -84,9 +88,10 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
                 fails.Add(s);
             }
 
-            if (usedTracker is not null && usedTracker.WasUsed((string)report.GetOptionValue(InstancesIndex)!))
+            if (usedTracker is not null)
             {
-                instances.Add(s);
+                if(usedTracker.WasUsed((string)report.GetOptionValue(InstancesIndex)!)) instances.Add(s);
+                if(!usedTracker.WasUsed((string)report.GetOptionValue(AbsencesIndex)!)) absences.Add(s);
             }
 
             if (++count >= limit) break;
@@ -114,9 +119,22 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
             else
             {
                 Console.WriteLine($"\n{instances.Count} instances detected");
-                for (int i = 0; i < instances.Count; i++)
+                foreach (var i in instances)
                 {
-                    Console.WriteLine($"   {i + 1}: {instances[i]}");
+                    Console.WriteLine(i);
+                }
+            }
+        }
+        
+        if (report.IsOptionUsed(AbsencesIndex))
+        {
+            if(absences.Count == 0) Console.WriteLine("\nNo absence detected");
+            else
+            {
+                Console.WriteLine($"\n{absences.Count} absences detected");
+                foreach (var a in absences)
+                {
+                    Console.WriteLine(a);
                 }
             }
         }

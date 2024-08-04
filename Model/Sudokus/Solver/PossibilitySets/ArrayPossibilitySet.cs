@@ -87,7 +87,7 @@ public class ArrayPossibilitySet : IPossibilitySet
 
     public bool IsPossibilityRestricted(IPossibilitySet other, int possibility)
     {
-        return RestrictedPossibilityAlgorithms.ForeachSearch(this, other, possibility);
+        return RestrictedPossibilityAlgorithms.AlternatingCommonHouseSearch(this, other, possibility);
     }
 
     public GridPositions PositionsFor(int p)
