@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Navigation;
 using DesktopApplication.Presenter;
 using DesktopApplication.View.Sudokus.Pages;
@@ -25,7 +27,7 @@ public partial class SudokuWindow
             new SolvePage(presenter), new PlayPage(presenter), new ManagePage(presenter), new GeneratePage(presenter)
         };
 
-        SwapPage(0);
+        SudokuRadioButton.IsChecked = true;
     }
     
     private void Minimize()
@@ -38,12 +40,14 @@ public partial class SudokuWindow
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     }
 
-    private void SwapPage(int number)
+    private void SwapPage(object sender, EventArgs args)
     {
+        if (sender is not FrameworkElement fe) return;
+        
         _cancelNavigation = false;
         if(_currentPage != -1) _pages[_currentPage].OnClose();
-        
-        _currentPage = number;
+
+        _currentPage = Grid.GetColumn(fe) - 1;
         var newOne = _pages[_currentPage];
 
         TitleBar.InsideContent = newOne.TitleBarContent();

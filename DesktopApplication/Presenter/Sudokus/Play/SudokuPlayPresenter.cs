@@ -234,19 +234,24 @@ public class SudokuPlayPresenter
         else ShowClue();
     }
 
-    public void LoadFromBank(Difficulty difficulty)
+    public async void LoadFromBank(Difficulty difficulty)
     {
-        try
+        _disabler.Disable(2);
+        var sudoku = await Task.Run(() =>
         {
-            var s = _repository.FindRandom(difficulty);
-            if (s is null) return;
+            //TODO add loading
+            try
+            {
+                return _repository.FindRandom(difficulty);
+            }
+            catch
+            {
+                return null;
+            }
+        });
 
-            if (_player.Execute(new PasteAction(s, _player.MainLocation))) OnCellDataChange();
-        }
-        catch
-        {
-            //ignored
-        }
+        if (sudoku is not null && _player.Execute(new PasteAction(sudoku, _player.MainLocation))) OnCellDataChange();
+        _disabler.Enable(2);
     }
 
     /// <summary>

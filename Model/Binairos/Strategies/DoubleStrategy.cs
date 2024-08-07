@@ -5,13 +5,13 @@ using Model.Core.Highlighting;
 
 namespace Model.Binairos.Strategies;
 
-public class DoubleStrategy : Strategy<IBinarySolverData>
+public class DoubleStrategy : Strategy<IBinairoSolverData>
 {
     public DoubleStrategy() : base("Double", Difficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
 
-    public override void Apply(IBinarySolverData data)
+    public override void Apply(IBinairoSolverData data)
     {
         for (int row = 0; row < data.RowCount; row++)
         {
@@ -63,7 +63,7 @@ public class DoubleReportBuilder : IChangeReportBuilder<BinaryChange, IBinarySol
 {
     public ChangeReport<IBinairoHighlighter> BuildReport(IReadOnlyList<BinaryChange> changes, IBinarySolvingState snapshot)
     {
-        return new ChangeReport<IBinairoHighlighter>("");
+        return new ChangeReport<IBinairoHighlighter>("Double");
     }
 
     public Clue<IBinairoHighlighter> BuildClue(IReadOnlyList<BinaryChange> changes, IBinarySolvingState snapshot)

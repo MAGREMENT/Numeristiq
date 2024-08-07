@@ -23,7 +23,6 @@ namespace DesktopApplication.View;
 
 public abstract class DrawingBoard : FrameworkElement
 {
-    private readonly DrawingVisual _visual = new();
     private readonly List<IDrawableComponent>[] _layers;
 
     protected IReadOnlyList<List<IDrawableComponent>> Layers => _layers;
@@ -31,9 +30,6 @@ public abstract class DrawingBoard : FrameworkElement
 
     protected DrawingBoard(int layerCount)
     {
-        Loaded += AddVisualToTree;
-        Unloaded += RemoveVisualFromTree;
-
         _layers = new List<IDrawableComponent>[layerCount];
         for (int i = 0; i < _layers.Length; i++)
         {
@@ -44,53 +40,38 @@ public abstract class DrawingBoard : FrameworkElement
     #region DrawingNecessities
 
     // Provide a required override for the VisualChildrenCount property.
-    protected override int VisualChildrenCount => 1;
+    protected override int VisualChildrenCount => 0;
 
     // Provide a required override for the GetVisualChild method.
     protected override Visual GetVisualChild(int index)
     {
-        return _visual;
+        return null!;
     }
     
-    private void AddVisualToTree(object sender, RoutedEventArgs e)
+    protected override void OnRender(DrawingContext context)
     {
-        AddVisualChild(_visual);
-        AddLogicalChild(_visual);
-    }
-
-    private void RemoveVisualFromTree(object sender, RoutedEventArgs e)
-    {
-        RemoveLogicalChild(_visual);
-        RemoveVisualChild(_visual);
+        if (!RefreshAllowed) return;
+            
+        foreach (var list in _layers)
+        {
+            foreach (var component in list)
+            {
+                component.Draw(context, this);
+            }
+        }
     }
 
     #endregion
     
     public void Refresh()
     {
-        Dispatcher.Invoke(() =>
-        {
-            if (!RefreshAllowed) return;
-            
-            var context = _visual.RenderOpen();
-
-            foreach (var list in _layers)
-            {
-                foreach (var component in list)
-                {
-                    component.Draw(context, this);
-                }
-            }
-            
-            context.Close();
-            InvalidateVisual();
-        });
+        Dispatcher.Invoke(InvalidateVisual);
     }
     
     public BitmapFrame AsImage()
     {
         var rtb = new RenderTargetBitmap((int)Width, (int)Height, 96, 96, PixelFormats.Pbgra32);
-        rtb.Render(_visual);
+        rtb.Render(this);
         return BitmapFrame.Create(rtb);
     }
 }

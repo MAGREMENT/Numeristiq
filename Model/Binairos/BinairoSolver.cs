@@ -6,8 +6,8 @@ using Model.Utility;
 
 namespace Model.Binairos;
 
-public class BinairoSolver : BinaryStrategySolver<Strategy<IBinarySolverData>, IBinarySolvingState,
-    IBinairoHighlighter>, IBinarySolverData
+public class BinairoSolver : BinaryStrategySolver<Strategy<IBinairoSolverData>, IBinarySolvingState,
+    IBinairoHighlighter>, IBinairoSolverData
 {
     private Binairo _binairo = new();
     private int _solutionCount;
@@ -42,7 +42,7 @@ public class BinairoSolver : BinaryStrategySolver<Strategy<IBinarySolverData>, I
         
     }
 
-    protected override void ApplyStrategy(Strategy<IBinarySolverData> strategy)
+    protected override void ApplyStrategy(Strategy<IBinairoSolverData> strategy)
     {
         strategy.Apply(this);
     }
@@ -85,7 +85,7 @@ public class BinairoSolver : BinaryStrategySolver<Strategy<IBinarySolverData>, I
     public IReadOnlyBinairo Binairo => _binairo;
 }
 
-public interface IBinarySolverData : IBinarySolvingState
+public interface IBinairoSolverData : IBinarySolvingState
 {
     BinaryChangeBuffer<IBinarySolvingState, IBinairoHighlighter> ChangeBuffer { get; }
     IReadOnlyBinairo Binairo { get; }

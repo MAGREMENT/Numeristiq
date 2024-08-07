@@ -125,7 +125,7 @@ public class Binairo : IReadOnlyBinairo
         var total = 0;
         foreach (var set in _rowSets)
         {
-            total += set.Count;
+            total += set.GetTotalCount();
         }
 
         return total;
@@ -171,15 +171,19 @@ public class Binairo : IReadOnlyBinairo
 public readonly struct ReadOnlyBinairoUnitBitSet
 {
     private readonly ulong _bits;
-    public int Count { get; }
+    public int OnesCount { get; }
+    public int TwosCount { get; }
 
-    private ReadOnlyBinairoUnitBitSet(ulong bits, int count)
+    private ReadOnlyBinairoUnitBitSet(ulong bits, int onesCount, int twosCount)
     {
         _bits = bits;
-        Count = count;
+        OnesCount = onesCount;
+        TwosCount = twosCount;
     }
 
     public int this[int index] => (int)((_bits >> (index * 2)) & 3);
+
+    public int GetTotalCount() => OnesCount + TwosCount;
     
     public override bool Equals(object? obj)
     {
@@ -188,21 +192,37 @@ public readonly struct ReadOnlyBinairoUnitBitSet
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_bits, Count);
+        return (int)_bits;
     }
 
     public ReadOnlyBinairoUnitBitSet Add(int index, int value)
     {
-        if (value == 0) return this - index;
-        
-        var added = this[index] == 0;
-        return new ReadOnlyBinairoUnitBitSet(_bits | ((ulong)value << (index * 2)), Count + (added ? 1 : 0));
+        switch (value)
+        {
+            case 0 : return this - index;
+            case 1 : 
+                var added1 = this[index] == 0;
+                return new ReadOnlyBinairoUnitBitSet(_bits | ((ulong)value << (index * 2)), 
+                    OnesCount + (added1 ? 1 : 0), TwosCount);
+            case 2 :
+                var added2 = this[index] == 0;
+                return new ReadOnlyBinairoUnitBitSet(_bits | ((ulong)value << (index * 2)), 
+                    OnesCount, TwosCount + (added2 ? 1 : 0));
+            default: return this;
+        }
     }
 
     public static ReadOnlyBinairoUnitBitSet operator -(ReadOnlyBinairoUnitBitSet set, int index)
     {
-        var removed = set[index] != 0;
-        return new ReadOnlyBinairoUnitBitSet(set._bits & ~(1ul << (index * 2)), set.Count - (removed ? 1 : 0));
+        var removed = set[index];
+        return removed switch
+        {
+            1 => new ReadOnlyBinairoUnitBitSet(set._bits & ~(1ul << (index * 2)),
+                set.OnesCount - 1, set.TwosCount),
+            2 => new ReadOnlyBinairoUnitBitSet(set._bits & ~(1ul << (index * 2)),
+                set.OnesCount, set.TwosCount - 1),
+            _ => set
+        };
     }
 
     public static bool operator ==(ReadOnlyBinairoUnitBitSet set1, ReadOnlyBinairoUnitBitSet set2)

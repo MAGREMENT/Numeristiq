@@ -347,6 +347,7 @@ public partial class PlayPage : ISudokuPlayView
         ColorGrid.IsEnabled = true;
         ForwardButton.IsEnabled = true;
         BackButton.IsEnabled = true;
+        LoadButton.IsEnabled = true;
         _disabled = false;
     }
 
@@ -358,6 +359,7 @@ public partial class PlayPage : ISudokuPlayView
         ColorGrid.IsEnabled = false;
         ForwardButton.IsEnabled = false;
         BackButton.IsEnabled = false;
+        LoadButton.IsEnabled = false;
         _disabled = true;
     }
 

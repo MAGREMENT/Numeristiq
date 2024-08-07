@@ -27,9 +27,10 @@
 		
 		<TextBlock
 			Grid.Column="1"
-			Margin="10 0 10 0"
+			Margin="5 0 10 0"
 			VerticalAlignment="Center"
-			FontSize="24"
+			FontSize="22"
+			FontWeight="SemiBold"
 			Foreground="{DynamicResource Text}"
 			x:Name="Title"
 			Visibility="Collapsed">

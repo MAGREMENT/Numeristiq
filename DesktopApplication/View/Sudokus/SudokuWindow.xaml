@@ -4,7 +4,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
-        xmlns:controls1="clr-namespace:DesktopApplication.View.Sudokus.Controls"
         mc:Ignorable="d"
         Height="750" Width="1400"
         MinHeight="750" MinWidth="1400"
@@ -16,18 +15,36 @@
         <WindowChrome CaptionHeight="40"/>
     </WindowChrome.WindowChrome>
     
-    <Grid Background="{DynamicResource Background1}">
+    <Grid Background="{DynamicResource Background2}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         
-        <controls:TitleBarControl Grid.Row="0" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
-                                AllowResize="True" AppIcon="../Images/appicon.png" AppTitle="Numeristiq"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
         
-        <Frame NavigationUIVisibility="Hidden" Grid.Row="1" x:Name="Frame" Navigating="CancelNavigation"/>
+        <controls:TitleBarControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6"
+                                  x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
+                                  AllowResize="True" AppIcon="../Images/appicon.png" AppTitle="Numeristiq"/>
         
-        <controls1:BottomSelectionControl PageSwapped="SwapPage" Grid.Row="2" Height="50"/>
+        <Frame NavigationUIVisibility="Hidden" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6"
+               x:Name="Frame" Navigating="CancelNavigation" Background="{DynamicResource Background1}"/>
+        
+        <RadioButton Grid.Row="2" Grid.Column="1" Style="{StaticResource BottomSelectionRadioButtonStyle}"
+                     x:Name="SudokuRadioButton" Checked="SwapPage">Solve</RadioButton>
+        <RadioButton Grid.Row="2" Grid.Column="2" Style="{StaticResource BottomSelectionRadioButtonStyle}"
+                     Checked="SwapPage">Play</RadioButton>
+        <RadioButton Grid.Row="2" Grid.Column="3" Style="{StaticResource BottomSelectionRadioButtonStyle}"
+                     Checked="SwapPage">Manage</RadioButton>
+        <RadioButton Grid.Row="2" Grid.Column="4" Style="{StaticResource BottomSelectionRadioButtonStyle}"
+                     Checked="SwapPage">Generate</RadioButton>
     </Grid>
 </Window>
