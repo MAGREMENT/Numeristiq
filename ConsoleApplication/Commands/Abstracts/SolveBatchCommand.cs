@@ -8,11 +8,10 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class /
 {
     private const int FileIndex = 0;
     private const int FeedbackIndex = 0;
-    private const int UnorderedIndex = 1;
-    private const int FailsIndex = 2;
-    private const int InstancesIndex = 3;
-    private const int AbsencesIndex = 4;
-    private const int LimitIndex = 5;
+    private const int FailsIndex = 1;
+    private const int InstancesIndex = 2;
+    private const int AbsencesIndex = 3;
+    private const int LimitIndex = 4;
     
     public override string Description { get; }
 
@@ -27,7 +26,6 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class /
         new[]
         {
             new Option("--feedback", $"Gives feedback for each {name}"),
-            new Option("-u", "Sets all strategies instance handling to unordered all"),
             new Option("--list-fails", "Lists all solver fails"),
             new Option("--list-instances", $"Lists all {name}'s that presented the strategy in their solution path",
                 ValueRequirement.Mandatory, ValueType.String),
@@ -49,10 +47,7 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class /
         var solver = GetSolver(interpreter.Instantiator);
         solver.FastMode = true;
 
-        int limit = report.IsOptionUsed(LimitIndex) ? (int)report.GetOptionValue(LimitIndex)! : int.MaxValue;
-
-        if (report.IsOptionUsed(UnorderedIndex)) solver.SetAllStrategiesHandlingTo(InstanceHandling.UnorderedAll);
-        
+        var limit = report.IsOptionUsed(LimitIndex) ? (int)report.GetOptionValue(LimitIndex)! : int.MaxValue;
         _statistics.AttachTo(solver);
 
         if (report.IsOptionUsed(FeedbackIndex)) solver.SolveDone += OnSolveDone;

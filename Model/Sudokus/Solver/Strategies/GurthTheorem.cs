@@ -29,7 +29,7 @@ public class GurthTheorem : SudokuStrategy
     {
         foreach (var symmetry in _symmetries)
         {
-            symmetry.Run(solverData);
+            if (symmetry.Run(solverData, StopOnFirstCommit)) return;
         }
     }
 
@@ -50,7 +50,7 @@ public abstract class Symmetry
     private bool _isSymmetric;
     private bool _appliedOnce;
 
-    public void Run(ISudokuSolverData solverData)
+    public bool Run(ISudokuSolverData solverData, bool stopOnFirstCommit)
     {
         if (!_isSymmetric)
         {
@@ -58,7 +58,7 @@ public abstract class Symmetry
             {
                 _isSymmetric = true;
             }
-            else return;
+            else return false;
         }
 
         if (!_appliedOnce)
@@ -69,8 +69,9 @@ public abstract class Symmetry
 
         ApplyEveryTime(solverData);
 
-        if (solverData.ChangeBuffer.NeedCommit())
-            solverData.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<ISudokuSolvingState, ISudokuHighlighter>.Instance);
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<ISudokuSolvingState, ISudokuHighlighter>.Instance);
+        return stopOnFirstCommit;
     }
 
     public void Reset()

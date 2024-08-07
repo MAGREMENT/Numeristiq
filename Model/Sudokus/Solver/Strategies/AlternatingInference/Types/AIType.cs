@@ -29,8 +29,10 @@ public class AIType : IAlternatingInferenceType<CellPossibility>
         loop.ForEachLink((one, two)
             => ProcessWeakLink(solverData, one, two), LinkStrength.Weak);
         
-        return solverData.ChangeBuffer.Commit(
-            new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.NiceLoop));
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+
+        solverData.ChangeBuffer.Commit(new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.NiceLoop));
+        return Strategy!.StopOnFirstCommit;
     }
 
     private void ProcessWeakLink(ISudokuSolverData view, CellPossibility one, CellPossibility two)
@@ -62,15 +64,19 @@ public class AIType : IAlternatingInferenceType<CellPossibility>
     public bool ProcessWeakInferenceLoop(ISudokuSolverData solverData, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
     {
         solverData.ChangeBuffer.ProposePossibilityRemoval(inference.Possibility, inference.Row, inference.Column);
-        return solverData.ChangeBuffer.Commit(
-            new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.WeakInference));
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+
+        solverData.ChangeBuffer.Commit(new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.WeakInference));
+        return Strategy!.StopOnFirstCommit;
     }
 
     public bool ProcessStrongInferenceLoop(ISudokuSolverData solverData, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
     {
         solverData.ChangeBuffer.ProposeSolutionAddition(inference.Possibility, inference.Row, inference.Column);
-        return solverData.ChangeBuffer.Commit(
-            new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.StrongInference));
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+
+        solverData.ChangeBuffer.Commit(new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.StrongInference));
+        return Strategy!.StopOnFirstCommit;
     }
 
     public bool ProcessChain(ISudokuSolverData solverData, LinkGraphChain<CellPossibility> chain, ILinkGraph<CellPossibility> graph)

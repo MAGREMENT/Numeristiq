@@ -77,8 +77,10 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
                 if (solved2 == values.One)
                 {
                    solverData.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
-                   return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                              new UnavoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstCommit;
+                   if(!solverData.ChangeBuffer.NeedCommit()) return false;
+                   
+                   solverData.ChangeBuffer.Commit(new UnavoidableRectanglesReportBuilder(floor, roof));
+                   return StopOnFirstCommit;
                 }
 
                 return false;
@@ -86,8 +88,10 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
                 if (solved1 == values.Two)
                 {
                     solverData.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
-                    return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                        new UnavoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstCommit;
+                    if (!solverData.ChangeBuffer.NeedCommit()) return false;
+                    
+                    solverData.ChangeBuffer.Commit(new UnavoidableRectanglesReportBuilder(floor, roof));
+                    return StopOnFirstCommit;
                 }
                 
                 return false;
@@ -111,8 +115,11 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
             }
         }
 
-        if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                new UnavoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstCommit) return true;
+        if (solverData.ChangeBuffer.NeedCommit())
+        {
+            solverData.ChangeBuffer.Commit(new UnavoidableRectanglesReportBuilder(floor, roof));
+            if (StopOnFirstCommit) return true;
+        }
 
         var notBiValuePossibilities = possibilitiesRoofOne | possibilitiesRoofTwo;
         notBiValuePossibilities -= values.One;
@@ -123,9 +130,11 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
             if (!als.Possibilities.ContainsAll(notBiValuePossibilities)) continue;
 
             ProcessArWithAls(solverData, roof, als);
-            if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                    new UnavoidableRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als)) &&
-                        StopOnFirstCommit) return true;
+            if (solverData.ChangeBuffer.NeedCommit())
+            {
+                solverData.ChangeBuffer.Commit(new UnavoidableRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als));
+                if (StopOnFirstCommit) return true;
+            }
         }
 
         return false;

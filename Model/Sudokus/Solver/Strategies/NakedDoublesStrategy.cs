@@ -98,9 +98,9 @@ public class NakedDoublesStrategy : SudokuStrategy
             }
         }
 
-        return solverData.ChangeBuffer.Commit(
-            new LineNakedDoublesReportBuilder(possibilities, row, col1, col2, Unit.Row))
-            && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(new LineNakedDoublesReportBuilder(possibilities, row, col1, col2, Unit.Row));
+        return StopOnFirstCommit;
     }
 
     private bool ProcessColumn(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities, int col,
@@ -116,9 +116,10 @@ public class NakedDoublesStrategy : SudokuStrategy
             }
         }
 
-        return solverData.ChangeBuffer.Commit(
-            new LineNakedDoublesReportBuilder(possibilities, col, row1, row2, Unit.Column))
-            && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(
+            new LineNakedDoublesReportBuilder(possibilities, col, row1, row2, Unit.Column));
+        return StopOnFirstCommit;
     }
 
     private bool ProcessMiniGrid(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities,
@@ -140,9 +141,10 @@ public class NakedDoublesStrategy : SudokuStrategy
             }
         }
 
-        return solverData.ChangeBuffer.Commit(
-            new MiniGridNakedDoublesReportBuilder(possibilities, miniRow, miniCol, gridNumber1, gridNumber2))
-            && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(
+            new MiniGridNakedDoublesReportBuilder(possibilities, miniRow, miniCol, gridNumber1, gridNumber2));
+        return StopOnFirstCommit;
     }
 
 }

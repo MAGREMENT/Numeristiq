@@ -82,14 +82,14 @@ public class UnitForcingNetStrategy : SudokuStrategy
         }
     }
 
-    private bool Process(ISudokuSolverData view, ColoringDictionary<ISudokuElement>[] colorings)
+    private bool Process(ISudokuSolverData solverData, ColoringDictionary<ISudokuElement>[] colorings)
     {
         foreach (var element in colorings[0])
         {
             if (element.Key is not CellPossibility current) continue;
 
-            bool sameInAll = true;
-            Coloring col = element.Value;
+            var sameInAll = true;
+            var col = element.Value;
 
             for (int i = 1; i < colorings.Length && sameInAll; i++)
             {
@@ -104,17 +104,23 @@ public class UnitForcingNetStrategy : SudokuStrategy
             {
                 if (col == Coloring.On)
                 {
-                    view.ChangeBuffer.ProposeSolutionAddition(current.Possibility, current.Row, current.Column);
-                    if (view.ChangeBuffer.NeedCommit() && view.ChangeBuffer.Commit(
-                            new UnitForcingNetReportBuilder(colorings, current, Coloring.On, view.PreComputer.Graphs.ComplexLinkGraph)) &&
-                                StopOnFirstCommit) return true;
+                    solverData.ChangeBuffer.ProposeSolutionAddition(current.Possibility, current.Row, current.Column);
+                    if (solverData.ChangeBuffer.NeedCommit())
+                    {
+                        solverData.ChangeBuffer.Commit(new UnitForcingNetReportBuilder(colorings, current, Coloring.On,
+                            solverData.PreComputer.Graphs.ComplexLinkGraph));
+                        if (StopOnFirstCommit) return true;
+                    }
                 }
                 else
                 {
-                    view.ChangeBuffer.ProposePossibilityRemoval(current.Possibility, current.Row, current.Column);
-                    if (view.ChangeBuffer.NeedCommit() && view.ChangeBuffer.Commit(
-                            new UnitForcingNetReportBuilder(colorings, current, Coloring.Off, view.PreComputer.Graphs.ComplexLinkGraph)) &&
-                                StopOnFirstCommit) return true;
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(current.Possibility, current.Row, current.Column);
+                    if (solverData.ChangeBuffer.NeedCommit())
+                    {
+                        solverData.ChangeBuffer.Commit(new UnitForcingNetReportBuilder(colorings, current, Coloring.Off,
+                            solverData.PreComputer.Graphs.ComplexLinkGraph));
+                        if (StopOnFirstCommit) return true;
+                    }
                 }
             }
         }

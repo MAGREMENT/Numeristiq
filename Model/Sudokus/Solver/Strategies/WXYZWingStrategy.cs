@@ -244,10 +244,9 @@ public class WXYZWingStrategy : SudokuStrategy
             solverData.ChangeBuffer.ProposePossibilityRemoval(buffer, coord.Row, coord.Column);
         }
 
-        return solverData.ChangeBuffer.Commit(
-            new WXYZWingReportBuilder(miniPositions, linePositions, unit, unitNumber))
-            && StopOnFirstCommit;
-        
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(new WXYZWingReportBuilder(miniPositions, linePositions, unit, unitNumber));
+        return StopOnFirstCommit;
     }
 }
 

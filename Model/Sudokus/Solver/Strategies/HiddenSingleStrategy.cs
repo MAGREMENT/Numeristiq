@@ -30,16 +30,22 @@ public class HiddenSingleStrategy : SudokuStrategy
                     if (rp.Count == 1)
                     {
                         solverData.ChangeBuffer.ProposeSolutionAddition(number, u, rp.First());
-                        solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Row));
-                        if (StopOnFirstCommit) return;
+                        if (solverData.ChangeBuffer.NeedCommit())
+                        {
+                            solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Row));
+                            if (StopOnFirstCommit) return;
+                        }
                     }
                     
                     var cp = solverData.ColumnPositionsAt(u, number);
                     if (cp.Count == 1)
                     {
                         solverData.ChangeBuffer.ProposeSolutionAddition(number, cp.First(), u);
-                        solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Column));
-                        if (StopOnFirstCommit) return;
+                        if (solverData.ChangeBuffer.NeedCommit())
+                        {
+                            solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Column));
+                            if (StopOnFirstCommit) return;
+                        }
                     }
                     
                     var mp = solverData.MiniGridPositionsAt(i, j, number);
@@ -47,8 +53,11 @@ public class HiddenSingleStrategy : SudokuStrategy
                     
                     var pos = mp.First();
                     solverData.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
-                    solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Box));
-                    if (StopOnFirstCommit) return;
+                    if (solverData.ChangeBuffer.NeedCommit())
+                    {
+                        solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Box));
+                        if (StopOnFirstCommit) return;
+                    }
                 }
             }
         }

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
@@ -104,10 +103,9 @@ public class DeathBlossomStrategy : SudokuStrategy
                                     eliminationsCauses[seenCell].Add(als);
                                 }
                                 if (value.Count != 0) continue;
-                                
-                                Process(solverData, current, seenCell, eliminationsCauses[seenCell],
-                                    possibility);
-                                if (StopOnFirstCommit) return;
+
+                                if (Process(solverData, current, seenCell, eliminationsCauses[seenCell],
+                                        possibility)) return;
                             }
                             
                             buffer.Clear();
@@ -123,7 +121,7 @@ public class DeathBlossomStrategy : SudokuStrategy
         }
     }
 
-    private void Process(ISudokuSolverData solverData, Cell stem, Cell target, HashSet<IPossibilitySet> sets, int possibility)
+    private bool Process(ISudokuSolverData solverData, Cell stem, Cell target, HashSet<IPossibilitySet> sets, int possibility)
     {
         List<Cell> buffer = new();
         solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, stem.Row, stem.Column);
@@ -147,7 +145,13 @@ public class DeathBlossomStrategy : SudokuStrategy
             }
         }
         
-        solverData.ChangeBuffer.Commit( new DeathBlossomReportBuilder(allStems, target, sets));
+        if (solverData.ChangeBuffer.NeedCommit())
+        {
+            solverData.ChangeBuffer.Commit(new DeathBlossomReportBuilder(allStems, target, sets));
+            if (StopOnFirstCommit) return true;
+        }
+
+        return false;
     }
 }
 

@@ -31,7 +31,7 @@ public class AlmostClaimingSetStrategy : SudokuStrategy
         }
     }
     
-    public override void Apply(ISudokuSolverData solverData)
+    public override void Apply(ISudokuSolverData data)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
@@ -56,84 +56,92 @@ public class AlmostClaimingSetStrategy : SudokuStrategy
 
                     foreach (var cell in rowCenterCells)
                     {
-                        rowPossibilities += solverData.PossibilitiesAt(cell);
+                        rowPossibilities += data.PossibilitiesAt(cell);
                     }
 
                     foreach (var cell in colCenterCells)
                     {
-                        colPossibilities += solverData.PossibilitiesAt(cell);
+                        colPossibilities += data.PossibilitiesAt(cell);
                     }
                     
-                    foreach (var als in SearchRowForAls(solverData, miniRow * 3 + u, miniCol))
+                    foreach (var als in SearchRowForAls(data, miniRow * 3 + u, miniCol))
                     {
                         if(!rowPossibilities.ContainsAll(als.Possibilities)) continue;
                         
-                        var correspondence = MiniGridCorrespondence(solverData, als.Possibilities,
+                        var correspondence = MiniGridCorrespondence(data, als.Possibilities,
                             u, Unit.Row, miniRow, miniCol);
                         if (correspondence.Count != als.PositionsCount) continue;
 
-                        HandleCorrespondence(solverData, als.Possibilities, correspondence);
-                        HandleAls(solverData, als.Possibilities, rowCenterCells, als);
+                        HandleCorrespondence(data, als.Possibilities, correspondence);
+                        HandleAls(data, als.Possibilities, rowCenterCells, als);
 
-                        if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                                new AlmostClaimingSetReportBuilder(als, correspondence, rowCenterCells)) &&
-                            StopOnFirstCommit) return;
+                        if (data.ChangeBuffer.NeedCommit())
+                        {
+                            data.ChangeBuffer.Commit( new AlmostClaimingSetReportBuilder(als, correspondence, rowCenterCells));
+                            if(StopOnFirstCommit) return;
+                        }
                     }
 
-                    foreach (var als in SearchColumnForAls(solverData, miniCol * 3 + u, miniRow))
+                    foreach (var als in SearchColumnForAls(data, miniCol * 3 + u, miniRow))
                     {
                         if(!colPossibilities.ContainsAll(als.Possibilities)) continue;
                         
-                        var correspondence = MiniGridCorrespondence(solverData, als.Possibilities,
+                        var correspondence = MiniGridCorrespondence(data, als.Possibilities,
                             u, Unit.Column, miniRow, miniCol);
                         if (correspondence.Count != als.PositionsCount) continue;
 
-                        HandleCorrespondence(solverData, als.Possibilities, correspondence);
-                        HandleAls(solverData, als.Possibilities, colCenterCells, als);
+                        HandleCorrespondence(data, als.Possibilities, correspondence);
+                        HandleAls(data, als.Possibilities, colCenterCells, als);
                         
-                        if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                                new AlmostClaimingSetReportBuilder(als, correspondence, colCenterCells)) &&
-                            StopOnFirstCommit) return;
+                        if (data.ChangeBuffer.NeedCommit())
+                        {
+                            data.ChangeBuffer.Commit(new AlmostClaimingSetReportBuilder(als, correspondence, colCenterCells));
+                            if(StopOnFirstCommit) return;
+                        }
                     }
 
-                    foreach (var als in SearchMiniGridForAls(solverData, miniRow, miniCol,
+                    foreach (var als in SearchMiniGridForAls(data, miniRow, miniCol,
                                  u, Unit.Row))
                     {
                         if(!rowPossibilities.ContainsAll(als.Possibilities)) continue;
                         
                         var row = miniRow * 3 + u;
                         
-                        var correspondence = RowCorrespondence(solverData, als.Possibilities, miniCol,
+                        var correspondence = RowCorrespondence(data, als.Possibilities, miniCol,
                             row);
                         if (correspondence.Count != als.PositionsCount) continue;
 
                         var cells = correspondence.ToCellArray(Unit.Row, row);
-                        HandleCorrespondence(solverData, als.Possibilities, cells);
-                        HandleAls(solverData, als.Possibilities, rowCenterCells, als);
+                        HandleCorrespondence(data, als.Possibilities, cells);
+                        HandleAls(data, als.Possibilities, rowCenterCells, als);
                         
-                        if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                                new AlmostClaimingSetReportBuilder(als, cells, rowCenterCells)) &&
-                            StopOnFirstCommit) return;
+                        if (data.ChangeBuffer.NeedCommit())
+                        {
+                            data.ChangeBuffer.Commit(new AlmostClaimingSetReportBuilder(als, cells, rowCenterCells));
+                            if(StopOnFirstCommit) return;
+                        }
                     }
                     
-                    foreach (var als in SearchMiniGridForAls(solverData, miniRow, miniCol,
+                    foreach (var als in SearchMiniGridForAls(data, miniRow, miniCol,
                                  u, Unit.Column))
                     {
                         if(!colPossibilities.ContainsAll(als.Possibilities)) continue;
                         
                         var col = miniCol * 3 + u;
                         
-                        var correspondence = ColumnCorrespondence(solverData, als.Possibilities, miniRow,
+                        var correspondence = ColumnCorrespondence(data, als.Possibilities, miniRow,
                             col);
                         if (correspondence.Count != als.PositionsCount) continue;
 
                         var cells = correspondence.ToCellArray(Unit.Column, col);
-                        HandleCorrespondence(solverData, als.Possibilities, cells);
-                        HandleAls(solverData, als.Possibilities, colCenterCells, als);
+                        HandleCorrespondence(data, als.Possibilities, cells);
+                        HandleAls(data, als.Possibilities, colCenterCells, als);
                         
-                        if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                                new AlmostClaimingSetReportBuilder(als, cells, colCenterCells)) &&
-                            StopOnFirstCommit) return;
+                        if (data.ChangeBuffer.NeedCommit())
+                        {
+                            data.ChangeBuffer.Commit(new AlmostClaimingSetReportBuilder(als, cells, colCenterCells));
+                            if(StopOnFirstCommit) return;
+                        }
                     }
                 }
             }

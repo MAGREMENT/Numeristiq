@@ -78,9 +78,11 @@ public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitCo
             
             buffer.Clear();
         }
-        
-        return tectonicSolverData.ChangeBuffer.Commit(new GroupEliminationReportBuilder(cells.ToArray()))
-            && StopOnFirstCommit;
+
+        if (!tectonicSolverData.ChangeBuffer.NeedCommit()) return false;
+
+        tectonicSolverData.ChangeBuffer.Commit(new GroupEliminationReportBuilder(cells.ToArray()));
+        return StopOnFirstCommit;
     }
 
     public int Compare(IChangeCommit<NumericChange> first, IChangeCommit<NumericChange> second)

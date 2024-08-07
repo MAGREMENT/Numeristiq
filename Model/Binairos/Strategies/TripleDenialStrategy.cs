@@ -21,8 +21,11 @@ public class TripleDenialStrategy : Strategy<IBinairoSolverData>
                 if(n == 0 || data[row, col + 1] != 0 || data[row, col + 2] != n) continue;
                 
                 data.ChangeBuffer.ProposeSolutionAddition(BinairoUtility.Opposite(n), row, col + 1);
-                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new TripleDenialReportBuilder())
-                                                   && StopOnFirstCommit) return;
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(new TripleDenialReportBuilder());
+                    if(StopOnFirstCommit) return;
+                }
             }
         }
         
@@ -34,8 +37,11 @@ public class TripleDenialStrategy : Strategy<IBinairoSolverData>
                 if(n == 0 || data[row + 1, col] != 0 || data[row + 2, col] != n) continue;
                 
                 data.ChangeBuffer.ProposeSolutionAddition(BinairoUtility.Opposite(n), row + 1, col);
-                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new TripleDenialReportBuilder())
-                                                   && StopOnFirstCommit) return;
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(new TripleDenialReportBuilder());
+                    if(StopOnFirstCommit) return;
+                }
             }
         }
     }

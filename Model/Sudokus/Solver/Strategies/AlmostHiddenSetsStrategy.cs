@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
@@ -62,9 +63,14 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
             }
         }
 
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-            new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, new List<Link<CellPossibility>>()))
-                                                       && StopOnFirstCommit;
+        if (solverData.ChangeBuffer.NeedCommit())
+        {
+            solverData.ChangeBuffer.Commit( new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two,
+                Array.Empty<Link<CellPossibility>>()));
+            if (StopOnFirstCommit) return true;
+        }
+
+        return false;
     }
 
     private bool Process1CommonCell(ISudokuSolverData solverData, IPossibilitySet one,
@@ -97,9 +103,13 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
             }
         }
 
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                   new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, links)) &&
-                        StopOnFirstCommit;
+        if (solverData.ChangeBuffer.NeedCommit())
+        {
+            solverData.ChangeBuffer.Commit(new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, links));
+            if (StopOnFirstCommit) return true;
+        }
+
+        return false;
     }
 }
 
@@ -107,9 +117,9 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder<
 {
     private readonly IPossibilitySet _one;
     private readonly IPossibilitySet _two;
-    private readonly List<Link<CellPossibility>> _links;
+    private readonly IReadOnlyList<Link<CellPossibility>> _links;
 
-    public AlmostHiddenSetsAndStrongLinksReportBuilder(IPossibilitySet one, IPossibilitySet two, List<Link<CellPossibility>> links)
+    public AlmostHiddenSetsAndStrongLinksReportBuilder(IPossibilitySet one, IPossibilitySet two, IReadOnlyList<Link<CellPossibility>> links)
     {
         _one = one;
         _two = two;

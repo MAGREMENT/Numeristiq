@@ -51,9 +51,12 @@ public class TwoStringKiteStrategy : SudokuStrategy
                                 solverData.ChangeBuffer.ProposePossibilityRemoval(number, c);
                             }
 
-                            if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                                    new TwoStringKiteReportBuilder(number, rCommon, cCommon, rOther,
-                                        cOther)) && StopOnFirstCommit) return;
+                            if (solverData.ChangeBuffer.NeedCommit())
+                            {
+                                solverData.ChangeBuffer.Commit(new TwoStringKiteReportBuilder(number, rCommon, cCommon, rOther,
+                                    cOther));
+                                if (StopOnFirstCommit) return;
+                            }
                         }
                     }
                 }

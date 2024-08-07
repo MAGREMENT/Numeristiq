@@ -65,7 +65,7 @@ public class NakedSetStrategy : SudokuStrategy
         }
     }
 
-    private LinePositions EveryRowCellWithLessPossibilities(ISudokuSolverData solverData, int row, int than)
+    private LinePositions EveryRowCellWithLessPossibilities(ISudokuSolverData solverData, int row, int than) //TODO remove this ?
     {
         LinePositions result = new();
         for (int col = 0; col < 9; col++)
@@ -117,8 +117,10 @@ public class NakedSetStrategy : SudokuStrategy
             }
         }
         
-        return solverData.ChangeBuffer.Commit( new LineNakedPossibilitiesReportBuilder(toRemove,
-            except, row, Unit.Row)) && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(new LineNakedPossibilitiesReportBuilder(toRemove,
+            except, row, Unit.Row));
+        return StopOnFirstCommit;
     }
     
     private LinePositions EveryColumnCellWithLessPossibilities(ISudokuSolverData solverData, int col, int than)
@@ -172,8 +174,10 @@ public class NakedSetStrategy : SudokuStrategy
             }
         }
         
-        return solverData.ChangeBuffer.Commit( new LineNakedPossibilitiesReportBuilder(toRemove, except,
-            col, Unit.Column)) && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(new LineNakedPossibilitiesReportBuilder(toRemove, except,
+            col, Unit.Column));
+        return StopOnFirstCommit;
     }
     
     private BoxPositions EveryMiniGridCellWithLessPossibilities(ISudokuSolverData solverData, int miniRow, int miniCol, int than)
@@ -241,8 +245,10 @@ public class NakedSetStrategy : SudokuStrategy
             }
         }
         
-        return solverData.ChangeBuffer.Commit( new MiniGridNakedPossibilitiesReportBuilder(toRemove,
-            except)) && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(new MiniGridNakedPossibilitiesReportBuilder(toRemove,
+            except));
+        return StopOnFirstCommit;
     }
 }
 

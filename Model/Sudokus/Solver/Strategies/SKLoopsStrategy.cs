@@ -241,9 +241,10 @@ public class SKLoopsStrategy : SudokuStrategy
                 solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[3].Column);
             }
         }
-        
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-            new SKLoopsReportBuilder(cells, links)) && StopOnFirstCommit;
+
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(new SKLoopsReportBuilder(cells, links));
+        return StopOnFirstCommit;
     }
 
     private PossibilitiesAndNumber CrossRowPossibilities(ISudokuSolverData solverData, Cell cell)

@@ -28,11 +28,13 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
     public bool ProcessFullLoop(ISudokuSolverData solverData, LinkGraphLoop<ISudokuElement> loop)
     {
         loop.ForEachLink((one, two) => ProcessWeakLink(solverData, one, two), LinkStrength.Weak);
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
 
-        return solverData.ChangeBuffer.Commit( new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.NiceLoop));
+        solverData.ChangeBuffer.Commit(new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.NiceLoop));
+        return Strategy!.StopOnFirstCommit;
     }
 
-    private void ProcessWeakLink(ISudokuSolverData view, ISudokuElement one, ISudokuElement two)
+    private static void ProcessWeakLink(ISudokuSolverData view, ISudokuElement one, ISudokuElement two)
     {
         var cp1 = one.EveryCellPossibilities();
         var pos1 = one.EveryPossibilities();
@@ -97,17 +99,23 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
     public bool ProcessWeakInferenceLoop(ISudokuSolverData solverData, ISudokuElement inference, LinkGraphLoop<ISudokuElement> loop)
     {
         if (inference is not CellPossibility pos) return false;
+        
         solverData.ChangeBuffer.ProposePossibilityRemoval(pos.Possibility, pos.Row, pos.Column);
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
 
-        return solverData.ChangeBuffer.Commit( new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.WeakInference));
+        solverData.ChangeBuffer.Commit(new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.WeakInference));
+        return Strategy!.StopOnFirstCommit;
     }
 
     public bool ProcessStrongInferenceLoop(ISudokuSolverData solverData, ISudokuElement inference, LinkGraphLoop<ISudokuElement> loop)
     {
         if (inference is not CellPossibility pos) return false;
+        
         solverData.ChangeBuffer.ProposeSolutionAddition(pos.Possibility, pos.Row, pos.Column);
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
 
-        return solverData.ChangeBuffer.Commit( new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.StrongInference));
+        solverData.ChangeBuffer.Commit(new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.StrongInference));
+        return Strategy!.StopOnFirstCommit;
     }
 
     public bool ProcessChain(ISudokuSolverData solverData, LinkGraphChain<ISudokuElement> chain, ILinkGraph<ISudokuElement> graph)

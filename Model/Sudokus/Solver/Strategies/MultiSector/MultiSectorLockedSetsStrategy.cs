@@ -78,8 +78,13 @@ public class MultiSectorLockedSetsStrategy : SudokuStrategy
             } 
         }
 
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-            new MultiSectorLockedSetsReportBuilder(grid, covers.ToArray(), alternativesTotal)) && StopOnFirstCommit;
+        if (solverData.ChangeBuffer.NeedCommit())
+        {
+            solverData.ChangeBuffer.Commit(new MultiSectorLockedSetsReportBuilder(grid, covers.ToArray(), alternativesTotal));
+            if (StopOnFirstCommit) return true;
+        }
+
+        return false;
     }
 
     private bool IsSameCoverHouses(House[] one, House[] two)

@@ -81,9 +81,12 @@ public class HiddenSetStrategy : SudokuStrategy
                     RemoveAllPossibilitiesExcept(row, col, newVisited, solverData);
                 }
 
-                if (solverData.ChangeBuffer.Commit(
-                        new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, row, Unit.Row))
-                    && StopOnFirstCommit) return true;
+                if (solverData.ChangeBuffer.NeedCommit())
+                {
+                    solverData.ChangeBuffer.Commit(new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed,
+                        row, Unit.Row));
+                    if (StopOnFirstCommit) return true;
+                }
             }
             else if (newVisited.Count < _type &&
                      RecursiveRowMashing(solverData, i + 1, newMashed, newVisited, row)) return true;
@@ -113,9 +116,12 @@ public class HiddenSetStrategy : SudokuStrategy
                     RemoveAllPossibilitiesExcept(row, col, newVisited, solverData);
                 }
 
-                if (solverData.ChangeBuffer.Commit(
-                        new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, col, Unit.Column))
-                    && StopOnFirstCommit) return true;
+                if (solverData.ChangeBuffer.NeedCommit())
+                {
+                    solverData.ChangeBuffer.Commit(new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed,
+                        col, Unit.Column));
+                    if (StopOnFirstCommit) return true;
+                }
             }
             else if (newVisited.Count < _type &&
                      RecursiveColumnMashing(solverData, i + 1, newMashed, newVisited, col)) return true;
@@ -145,9 +151,11 @@ public class HiddenSetStrategy : SudokuStrategy
                     RemoveAllPossibilitiesExcept(position.Row, position.Column, newVisited, solverData);
                 }
 
-                if (solverData.ChangeBuffer.Commit(
-                        new MiniGridHiddenPossibilitiesReportBuilder(newVisited, newMashed))
-                    && StopOnFirstCommit) return true;
+                if (solverData.ChangeBuffer.NeedCommit())
+                {
+                    solverData.ChangeBuffer.Commit(new MiniGridHiddenPossibilitiesReportBuilder(newVisited, newMashed));
+                    if (StopOnFirstCommit) return true;
+                }
             }
             else if (newVisited.Count < _type && RecursiveMiniGridMashing(solverData, i + 1, newMashed,
                          newVisited, miniRow, miniCol)) return true;

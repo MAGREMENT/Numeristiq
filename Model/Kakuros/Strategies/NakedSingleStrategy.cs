@@ -20,8 +20,12 @@ public class NakedSingleStrategy : Strategy<IKakuroSolverData>
             if (pos.Count != 1) continue;
             
             data.ChangeBuffer.ProposeSolutionAddition(pos.FirstPossibility(), cell);
-            data.ChangeBuffer.Commit(
-                DefaultNumericChangeReportBuilder<INumericSolvingState, INumericSolvingStateHighlighter>.Instance);
+            if (data.ChangeBuffer.NeedCommit())
+            {
+                data.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<INumericSolvingState,
+                    INumericSolvingStateHighlighter>.Instance);
+                if(StopOnFirstCommit) return;
+            }
         }
     }
 }

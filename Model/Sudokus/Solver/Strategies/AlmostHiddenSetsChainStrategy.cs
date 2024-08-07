@@ -86,8 +86,11 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
                 }
             }
 
-            return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                new AlmostHiddenSetsChainReportBuilder(chain, ll)) && StopOnFirstCommit;
+            if (solverData.ChangeBuffer.NeedCommit())
+            {
+                solverData.ChangeBuffer.Commit(new AlmostHiddenSetsChainReportBuilder(chain, ll));
+                if (StopOnFirstCommit) return true;
+            }
         }
 
         return false;
@@ -145,8 +148,13 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
             }
         }
         
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-            new AlmostHiddenSetsChainReportBuilder(chain.ToChain(), links)) && StopOnFirstCommit;
+        if (solverData.ChangeBuffer.NeedCommit())
+        {
+            solverData.ChangeBuffer.Commit(new AlmostHiddenSetsChainReportBuilder(chain.ToChain(), links));
+            if (StopOnFirstCommit) return true;
+        }
+
+        return false;
     }
 }
 

@@ -40,8 +40,12 @@ public class ClaimingSetStrategy : SudokuStrategy
                         }
                     }
 
-                    if (solverData.ChangeBuffer.Commit( new BoxLineReductionReportBuilder(row,
-                            ppir, number, Unit.Row)) && StopOnFirstCommit) return;
+                    if (solverData.ChangeBuffer.NeedCommit())
+                    {
+                        solverData.ChangeBuffer.Commit(new ClaimingSetReportBuilder(row,
+                            ppir, number, Unit.Row));
+                        if (StopOnFirstCommit) return;
+                    }
                 }
             }
 
@@ -67,22 +71,26 @@ public class ClaimingSetStrategy : SudokuStrategy
                         }
                     }
 
-                    if(solverData.ChangeBuffer.Commit( new BoxLineReductionReportBuilder(col,
-                           ppic, number, Unit.Column)) && StopOnFirstCommit) return;
+                    if (solverData.ChangeBuffer.NeedCommit())
+                    {
+                        solverData.ChangeBuffer.Commit(new ClaimingSetReportBuilder(col,
+                            ppic, number, Unit.Column));
+                        if (StopOnFirstCommit) return;
+                    }
                 }
             }
         }
     }
 }
 
-public class BoxLineReductionReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
+public class ClaimingSetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _unitNumber;
     private readonly IReadOnlyLinePositions _linePos;
     private readonly int _number;
     private readonly Unit _unit;
 
-    public BoxLineReductionReportBuilder(int unitNumber, IReadOnlyLinePositions linePos, int number, Unit unit)
+    public ClaimingSetReportBuilder(int unitNumber, IReadOnlyLinePositions linePos, int number, Unit unit)
     {
         _unitNumber = unitNumber;
         _linePos = linePos;

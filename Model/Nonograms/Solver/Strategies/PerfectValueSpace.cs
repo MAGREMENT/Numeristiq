@@ -26,9 +26,13 @@ public class PerfectValueSpaceStrategy : Strategy<INonogramSolverData>
                 {
                     data.ChangeBuffer.ProposeSolutionAddition(row, c);
                 }
-
-                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new PerfectValueSpaceStrategyReportBuilder(
-                        space, row, Orientation.Horizontal, spaces.FirstValueIndex + i))) return;
+                
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(new PerfectValueSpaceStrategyReportBuilder(
+                        space, row, Orientation.Horizontal, spaces.FirstValueIndex + i));
+                    if (StopOnFirstCommit) return;
+                }
             }
         }
         
@@ -45,8 +49,12 @@ public class PerfectValueSpaceStrategy : Strategy<INonogramSolverData>
                     data.ChangeBuffer.ProposeSolutionAddition(r, col);
                 }
 
-                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new PerfectValueSpaceStrategyReportBuilder(
-                        space, col, Orientation.Vertical, spaces.FirstValueIndex + i))) return;
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(new PerfectValueSpaceStrategyReportBuilder(
+                        space, col, Orientation.Vertical, spaces.FirstValueIndex + i));
+                    if (StopOnFirstCommit) return;
+                }
             }
         }
     }

@@ -181,7 +181,10 @@ public class FireworksStrategy : SudokuStrategy
                 fireworks.ColumnWing.Row, fireworks.ColumnWing.Column);
         }
 
-        return user.ChangeBuffer.Commit(new FireworksReportBuilder(fireworks));
+        if (!user.ChangeBuffer.NeedCommit()) return false;
+        
+        user.ChangeBuffer.Commit(new FireworksReportBuilder(fireworks));
+        return StopOnFirstCommit;
     }
 
     private void ProcessDualFireworks(ISudokuSolverData user, List<Fireworks> fireworksList)
@@ -221,8 +224,11 @@ public class FireworksStrategy : SudokuStrategy
                         user.ChangeBuffer.ProposePossibilityRemoval(possibility, two.RowWing.Row, two.RowWing.Column);
                 }
 
-                if (user.ChangeBuffer.Commit( new FireworksReportBuilder(one, two)) &&
-                    StopOnFirstCommit) return;
+                if (user.ChangeBuffer.NeedCommit())
+                {
+                    user.ChangeBuffer.Commit(new FireworksReportBuilder(one, two));
+                    if (StopOnFirstCommit) return;
+                }
             }
         }
         
@@ -285,9 +291,11 @@ public class FireworksStrategy : SudokuStrategy
                         }
                     }
 
-                    if (user.ChangeBuffer.NeedCommit() && user.ChangeBuffer.Commit(
-                            new FireworksWithAlmostLockedSetsReportBuilder(df, one, two))
-                                                        && StopOnFirstCommit) return;
+                    if (user.ChangeBuffer.NeedCommit())
+                    {
+                        user.ChangeBuffer.Commit(new FireworksWithAlmostLockedSetsReportBuilder(df, one, two));
+                        if (StopOnFirstCommit) return;
+                    }
                 }
             }
             
@@ -308,9 +316,11 @@ public class FireworksStrategy : SudokuStrategy
                     if (!friend.ShareAUnit(df.RowWing)) continue;
 
                     user.ChangeBuffer.ProposePossibilityRemoval(possibility, df.RowWing.Row, df.RowWing.Column);
-                    if (user.ChangeBuffer.NeedCommit() && user.ChangeBuffer.Commit(
-                            new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
-                                StopOnFirstCommit) return;
+                    if (user.ChangeBuffer.NeedCommit())
+                    {
+                        user.ChangeBuffer.Commit(new FireworksWithStrongLinkReportBuilder(df, current, friend));
+                        if (StopOnFirstCommit) return;
+                    }
                     break;
                 }
             }
@@ -325,9 +335,11 @@ public class FireworksStrategy : SudokuStrategy
                     if (!friend.ShareAUnit(df.ColumnWing)) continue;
 
                     user.ChangeBuffer.ProposePossibilityRemoval(possibility, df.ColumnWing.Row, df.ColumnWing.Column);
-                    if (user.ChangeBuffer.NeedCommit() && user.ChangeBuffer.Commit(
-                            new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
-                                StopOnFirstCommit) return;
+                    if (user.ChangeBuffer.NeedCommit())
+                    {
+                        user.ChangeBuffer.Commit(new FireworksWithStrongLinkReportBuilder(df, current, friend));
+                        if (StopOnFirstCommit) return;
+                    }
                     break;
                 }
             }
@@ -344,8 +356,11 @@ public class FireworksStrategy : SudokuStrategy
                     if (!df.Possibilities.Contains(p)) user.ChangeBuffer.ProposePossibilityRemoval(p, df.Cross);
                 }
 
-                if (user.ChangeBuffer.NeedCommit() && user.ChangeBuffer.Commit(
-                        new FireworksReportBuilder(df)) && StopOnFirstCommit) return;
+                if (user.ChangeBuffer.NeedCommit())
+                {
+                    user.ChangeBuffer.Commit(new FireworksReportBuilder(df));
+                    if (StopOnFirstCommit) return;
+                }
             }
         }
         
@@ -393,9 +408,11 @@ public class FireworksStrategy : SudokuStrategy
                     }  
                 }
 
-                if (user.ChangeBuffer.NeedCommit() && user.ChangeBuffer.Commit(
-                        new FireworksWithCellReportBuilder(center, one, two)) &&
-                            StopOnFirstCommit) return;
+                if (user.ChangeBuffer.NeedCommit())
+                {
+                    user.ChangeBuffer.Commit(new FireworksWithCellReportBuilder(center, one, two));
+                    if (StopOnFirstCommit) return;
+                }
             }
         }
     }

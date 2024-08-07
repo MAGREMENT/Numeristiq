@@ -155,8 +155,10 @@ public class JuniorExocetStrategy : SudokuStrategy
             }
         }
 
-        return solverData.ChangeBuffer.Commit( new DoubleJuniorExocetReportBuilder(je1, je2))
-               && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+
+        solverData.ChangeBuffer.Commit(new DoubleJuniorExocetReportBuilder(je1, je2));
+        return StopOnFirstCommit;
     }
 
     private bool Process(ISudokuSolverData solverData, JuniorExocet je)
@@ -450,7 +452,10 @@ public class JuniorExocetStrategy : SudokuStrategy
             }
         }
 
-        return solverData.ChangeBuffer.Commit(new DoubleTargetExocetReportBuilder(je)) && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+
+        solverData.ChangeBuffer.Commit(new DoubleTargetExocetReportBuilder(je));
+        return StopOnFirstCommit;
     }
 
     private void RemoveAll(ISudokuSolverData solverData, Cell cell, ReadOnlyBitSet16 except)

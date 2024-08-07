@@ -64,9 +64,12 @@ public class OddagonForcingNetStrategy : SudokuStrategy
                     if (element.Value == Coloring.On) solverData.ChangeBuffer.ProposeSolutionAddition(cp);
                     else solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
 
-                    if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit( 
-                            new OddagonForcingNetReportBuilder(colorings, element.Value, oddagon,
-                                solverData.PreComputer.Graphs.ComplexLinkGraph, cp)) && StopOnFirstCommit) return;
+                    if (solverData.ChangeBuffer.NeedCommit())
+                    {
+                        solverData.ChangeBuffer.Commit(new OddagonForcingNetReportBuilder(colorings, element.Value, oddagon,
+                            solverData.PreComputer.Graphs.ComplexLinkGraph, cp));
+                        if (StopOnFirstCommit) return;
+                    }
                 }
             }
         }

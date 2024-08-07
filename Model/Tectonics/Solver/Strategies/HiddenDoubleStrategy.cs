@@ -38,8 +38,11 @@ public class HiddenDoubleStrategy : Strategy<ITectonicSolverData>
                         }
                     }
 
-                    if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new HiddenDoubleReportBuilder(z,
-                            p, n, other)) && StopOnFirstCommit) return;
+                    if (data.ChangeBuffer.NeedCommit())
+                    {
+                        data.ChangeBuffer.Commit(new HiddenDoubleReportBuilder(z, p, n, other));
+                        if (StopOnFirstCommit) return;
+                    }
                 }
                 else dic[p] = n;
             }

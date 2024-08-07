@@ -61,9 +61,10 @@ public class XWingStrategy : SudokuStrategy
                 solverData.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
             }
         }
-        
-        return solverData.ChangeBuffer.Commit( new XWingReportBuilder(cols, row1, row2, number, Unit.Row))
-            && StopOnFirstCommit;
+
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(new XWingReportBuilder(cols, row1, row2, number, Unit.Row));
+        return StopOnFirstCommit;
     }
 
     private bool RemoveFromRows(ISudokuSolverData solverData, IReadOnlyLinePositions rows, int col1, int col2, int number)
@@ -78,8 +79,9 @@ public class XWingStrategy : SudokuStrategy
             }
         }
         
-        return solverData.ChangeBuffer.Commit( new XWingReportBuilder(rows, col1, col2, number, Unit.Column))
-            && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(new XWingReportBuilder(rows, col1, col2, number, Unit.Column));
+        return StopOnFirstCommit;
     }
 }
 

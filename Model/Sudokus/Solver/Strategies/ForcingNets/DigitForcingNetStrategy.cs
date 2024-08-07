@@ -40,7 +40,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
         }
     }
 
-    private bool Process(ISudokuSolverData view, ColoringDictionary<ISudokuElement> onColoring,
+    private bool Process(ISudokuSolverData solverData, ColoringDictionary<ISudokuElement> onColoring,
         ColoringDictionary<ISudokuElement> offColoring)
     {
         foreach (var on in onColoring)
@@ -52,16 +52,19 @@ public class DigitForcingNetStrategy : SudokuStrategy
                 switch (other)
                 {
                     case Coloring.Off when on.Value == Coloring.Off :
-                        view.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, possOn.Row, possOn.Column);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, possOn.Row, possOn.Column);
                         break;
                     case Coloring.On when on.Value == Coloring.On :
-                        view.ChangeBuffer.ProposeSolutionAddition(possOn.Possibility, possOn.Row, possOn.Column);
+                        solverData.ChangeBuffer.ProposeSolutionAddition(possOn.Possibility, possOn.Row, possOn.Column);
                         break;
                 }
 
-                if (view.ChangeBuffer.NeedCommit() &&view.ChangeBuffer.Commit(
-                        new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value, 
-                            possOn, other, view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstCommit) return true;
+                if (solverData.ChangeBuffer.NeedCommit())
+                {
+                    solverData.ChangeBuffer.Commit(new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value, 
+                        possOn, other, solverData.PreComputer.Graphs.ComplexLinkGraph));
+                    if (StopOnFirstCommit) return true;
+                }
             }
 
             if (on.Value != Coloring.On) continue;
@@ -71,21 +74,27 @@ public class DigitForcingNetStrategy : SudokuStrategy
                 if (off.Value != Coloring.On || off.Key is not CellPossibility possOff) continue;
                 if (possOff.Row == possOn.Row && possOn.Column == possOff.Column)
                 {
-                    RemoveAll(view, possOn.Row, possOn.Column, possOn.Possibility, possOff.Possibility);
-                    if (view.ChangeBuffer.NeedCommit() && view.ChangeBuffer.Commit(
-                            new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
-                                possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstCommit) return true;
+                    RemoveAll(solverData, possOn.Row, possOn.Column, possOn.Possibility, possOff.Possibility);
+                    if (solverData.ChangeBuffer.NeedCommit())
+                    {
+                        solverData.ChangeBuffer.Commit(new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
+                            possOff, off.Value, solverData.PreComputer.Graphs.ComplexLinkGraph));
+                        if (StopOnFirstCommit) return true;
+                    }
                 }
                 else if (possOff.Possibility == possOn.Possibility && possOn.ShareAUnit(possOff))
                 {
                     foreach (var coord in possOn.SharedSeenCells(possOff))
                     {
-                        view.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, coord.Row, coord.Column);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, coord.Row, coord.Column);
                     }
                     
-                    if (view.ChangeBuffer.NeedCommit() && view.ChangeBuffer.Commit(
-                            new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
-                                possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstCommit) return true;
+                    if (solverData.ChangeBuffer.NeedCommit())
+                    {
+                        solverData.ChangeBuffer.Commit(new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
+                            possOff, off.Value, solverData.PreComputer.Graphs.ComplexLinkGraph));
+                        if (StopOnFirstCommit) return true;
+                    }
                 }
             }
         }

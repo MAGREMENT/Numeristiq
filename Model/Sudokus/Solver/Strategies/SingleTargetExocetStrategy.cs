@@ -49,8 +49,11 @@ public class SingleTargetExocetStrategy : SudokuStrategy
                 }
             }
 
-            if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                    new SingleTargetExocetReportBuilder(exo)) && StopOnFirstCommit) return;
+            if (solverData.ChangeBuffer.NeedCommit())
+            {
+                solverData.ChangeBuffer.Commit(new SingleTargetExocetReportBuilder(exo));
+                if(StopOnFirstCommit) return;
+            }
         }
     }
 }

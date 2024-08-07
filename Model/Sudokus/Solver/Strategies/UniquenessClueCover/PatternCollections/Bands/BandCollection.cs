@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Explanation;
@@ -203,9 +202,11 @@ public class BandCollection : IPatternCollection
                 }
             }
         }
+
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
         
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-            new BandUniquenessClueCoverReportBuilder(candidate)) && Strategy!.StopOnFirstCommit;
+        solverData.ChangeBuffer.Commit(new BandUniquenessClueCoverReportBuilder(candidate));
+        return Strategy!.StopOnFirstCommit;
     }
 }
 

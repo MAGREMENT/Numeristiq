@@ -41,8 +41,12 @@ public class CombinationCoherencyStrategy : Strategy<IKakuroSolverData>
                     if (IsPossible(data, used + p, cell, sum, total + p, 0)) continue;
 
                     data.ChangeBuffer.ProposePossibilityRemoval(p, cell);
-                    data.ChangeBuffer.Commit(
-                        DefaultNumericChangeReportBuilder<INumericSolvingState, INumericSolvingStateHighlighter>.Instance);
+                    if (data.ChangeBuffer.NeedCommit())
+                    {
+                        data.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<INumericSolvingState,
+                            INumericSolvingStateHighlighter>.Instance);
+                        if(StopOnFirstCommit) return;
+                    }
                 }
             }
         }

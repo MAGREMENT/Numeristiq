@@ -31,8 +31,12 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                             data.ChangeBuffer.ProposeSolutionAddition(row, current);
                         }
 
-                        if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
-                                Orientation.Horizontal, row, col, remaining.FirstValueIndex)) && StopOnFirstCommit) return;
+                        if (data.ChangeBuffer.NeedCommit())
+                        {
+                            data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
+                                Orientation.Horizontal, row, col, remaining.FirstValueIndex));
+                            if(StopOnFirstCommit) return;
+                        }
                     }
 
                     if (col == data.Nonogram.ColumnCount - 1 || (!data.Nonogram[row, col + 1] 
@@ -43,8 +47,12 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                             data.ChangeBuffer.ProposeSolutionAddition(row, current);
                         }
                 
-                        if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
-                                Orientation.Horizontal, row, col, remaining.LastValueIndex)) && StopOnFirstCommit) return;
+                        if (data.ChangeBuffer.NeedCommit())
+                        {
+                            data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
+                                Orientation.Horizontal, row, col, remaining.LastValueIndex));
+                            if(StopOnFirstCommit) return;
+                        }
                     }
                 }
             }
@@ -60,8 +68,12 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                     data.ChangeBuffer.ProposeSolutionAddition(row, current);
                 }
 
-                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
-                        Orientation.Horizontal, row, space, spaces.FirstValueIndex)) && StopOnFirstCommit) return;
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
+                        Orientation.Horizontal, row, space, spaces.FirstValueIndex));
+                    if(StopOnFirstCommit) return;
+                }
             }
 
             space = spaces[^1];
@@ -72,8 +84,12 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                     data.ChangeBuffer.ProposeSolutionAddition(row, current);
                 }
                 
-                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
-                        Orientation.Horizontal, row, space, spaces.LastValueIndex)) && StopOnFirstCommit) return;
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
+                        Orientation.Horizontal, row, space, spaces.LastValueIndex));
+                    if(StopOnFirstCommit) return;
+                }
             }
         }
         
@@ -94,8 +110,12 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                             data.ChangeBuffer.ProposeSolutionAddition(current, col);
                         }
 
-                        if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
-                                Orientation.Vertical, col, row, remaining.FirstValueIndex)) && StopOnFirstCommit) return;
+                        if (data.ChangeBuffer.NeedCommit())
+                        {
+                            data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
+                                Orientation.Vertical, col, row, remaining.FirstValueIndex));
+                            if(StopOnFirstCommit) return;
+                        }
                     }
 
                     if (row == data.Nonogram.RowCount - 1 || (!data.Nonogram[row + 1, col] 
@@ -106,8 +126,12 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                             data.ChangeBuffer.ProposeSolutionAddition(current, col);
                         }
                 
-                        if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
-                                Orientation.Vertical, col, row, remaining.LastValueIndex)) && StopOnFirstCommit) return;
+                        if (data.ChangeBuffer.NeedCommit())
+                        {
+                            data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
+                                Orientation.Vertical, col, row, remaining.LastValueIndex));
+                            if(StopOnFirstCommit) return;
+                        }
                     }
                 }
             }
@@ -123,8 +147,12 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                     data.ChangeBuffer.ProposeSolutionAddition(current, col);
                 }
 
-                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
-                        Orientation.Vertical, col, space, spaces.FirstValueIndex)) && StopOnFirstCommit) return;
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
+                        Orientation.Vertical, col, space, spaces.FirstValueIndex));
+                    if(StopOnFirstCommit) return;
+                }
             }
 
             space = spaces[^1];
@@ -135,8 +163,12 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                     data.ChangeBuffer.ProposeSolutionAddition(current, col);
                 }
                 
-                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
-                        Orientation.Vertical, col, space, spaces.LastValueIndex)) && StopOnFirstCommit) return;
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
+                        Orientation.Vertical, col, space, spaces.LastValueIndex));
+                    if(StopOnFirstCommit) return;
+                }
             }
         }
     }

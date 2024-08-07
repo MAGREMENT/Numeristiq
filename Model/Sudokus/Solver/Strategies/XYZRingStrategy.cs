@@ -122,8 +122,10 @@ public class XYZRingStrategy : SudokuStrategy
             solverData.ChangeBuffer.ProposePossibilityRemoval(poss, cell);
         }
         
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(new XYZRingReportBuilder(hinge,
-            hingeRow, hingeCol, rowFriend, columnFriend, poss)) && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(new XYZRingReportBuilder(hinge,
+            hingeRow, hingeCol, rowFriend, columnFriend, poss));
+        return StopOnFirstCommit;
     }
 
     private bool CheckIntegrity(ISudokuElement element, params CellPossibility[] no)

@@ -98,8 +98,11 @@ public class NotEnoughSpaceStrategy : Strategy<INonogramSolverData>
             data.ChangeBuffer.ProposePossibilityRemoval(row, i);
         }
 
-        return data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new NotEnoughSpaceReportBuilder(
-                row, Orientation.Horizontal, ind, start, current)) && StopOnFirstCommit;
+        if (!data.ChangeBuffer.NeedCommit()) return false;
+
+        data.ChangeBuffer.Commit(new NotEnoughSpaceReportBuilder(
+            row, Orientation.Horizontal, ind, start, current));
+        return StopOnFirstCommit;
     }
     
     private bool TryProcessVertical(INonogramSolverData data, int start, int current, int min, int col, int ind)
@@ -111,8 +114,11 @@ public class NotEnoughSpaceStrategy : Strategy<INonogramSolverData>
             data.ChangeBuffer.ProposePossibilityRemoval(i, col);
         }
 
-        return data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new NotEnoughSpaceReportBuilder(
-            col, Orientation.Vertical, ind, start, current)) && StopOnFirstCommit;
+        if (!data.ChangeBuffer.NeedCommit()) return false;
+
+        data.ChangeBuffer.Commit(new NotEnoughSpaceReportBuilder(
+            col, Orientation.Vertical, ind, start, current));
+        return StopOnFirstCommit;
     }
 }
 

@@ -112,8 +112,10 @@ public class PatternOverlayStrategy : SudokuStrategy
             solverData.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
         }
 
-        return solverData.ChangeBuffer.Commit( new PatternOverlayReportBuilder(patterns, number))
-            && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+
+        solverData.ChangeBuffer.Commit(new PatternOverlayReportBuilder(patterns, number));
+        return StopOnFirstCommit;
     }
 
     private List<GridPositions>[] GetPatterns(ISudokuSolverData solverData)

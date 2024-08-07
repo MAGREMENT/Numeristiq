@@ -123,9 +123,9 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
             }
         }
 
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                   new DistributedDisjointSubsetReportBuilder(positions, covers)) &&
-               StopOnFirstCommit;
+        if(!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(new DistributedDisjointSubsetReportBuilder(positions, covers));
+        return StopOnFirstCommit;
     }
 }
 

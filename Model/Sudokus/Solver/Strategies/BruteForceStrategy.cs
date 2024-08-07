@@ -31,6 +31,7 @@ public class BruteForceStrategy : SudokuStrategy
             }
         }
 
-        solverData.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<ISudokuSolvingState, ISudokuHighlighter>.Instance);
+        if(solverData.ChangeBuffer.NeedCommit()) solverData.ChangeBuffer.Commit(
+            DefaultNumericChangeReportBuilder<ISudokuSolvingState, ISudokuHighlighter>.Instance);
     }
 }

@@ -100,9 +100,11 @@ public class SetEquivalenceStrategy : SudokuStrategy
                     }
                 }
 
-                if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                        new GeometricEquivalenceReportBuilder(equivalence)) &&
-                            StopOnFirstCommit) return;
+                if (solverData.ChangeBuffer.NeedCommit())
+                {
+                    solverData.ChangeBuffer.Commit(new SetEquivalenceReportBuilder(equivalence));
+                    if (StopOnFirstCommit) return;
+                }
             }
         }
     }
@@ -125,11 +127,11 @@ public class SetEquivalence
     public int SecondOrder { get; }
 }
 
-public class GeometricEquivalenceReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
+public class SetEquivalenceReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly SetEquivalence _equivalence;
 
-    public GeometricEquivalenceReportBuilder(SetEquivalence equivalence)
+    public SetEquivalenceReportBuilder(SetEquivalence equivalence)
     {
         _equivalence = equivalence;
     }

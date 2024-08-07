@@ -36,8 +36,12 @@ public class NakedDoubleStrategy : Strategy<ITectonicSolverData>
                         }
                     }
 
-                    if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new NakedDoubleReportBuilder(p,
-                            cell, other)) && StopOnFirstCommit) return;
+                    if (data.ChangeBuffer.NeedCommit())
+                    {
+                        data.ChangeBuffer.Commit(new NakedDoubleReportBuilder(p,
+                            cell, other));
+                        if (StopOnFirstCommit) return;
+                    }
                 }
                 else dic[p] = cell;
             }

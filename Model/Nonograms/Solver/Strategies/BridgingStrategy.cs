@@ -31,8 +31,12 @@ public class BridgingStrategy : Strategy<INonogramSolverData>
                         data.ChangeBuffer.ProposeSolutionAddition(row, i);
                     }
 
-                    if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new BridgingReportBuilder(
-                            Orientation.Horizontal, row, c, last, space.FirstValueIndex)) && StopOnFirstCommit) return;
+                    if (data.ChangeBuffer.NeedCommit())
+                    {
+                        data.ChangeBuffer.Commit(new BridgingReportBuilder(
+                            Orientation.Horizontal, row, c, last, space.FirstValueIndex));
+                        if(StopOnFirstCommit) return;
+                    }
                 }
 
                 last = c;
@@ -56,8 +60,12 @@ public class BridgingStrategy : Strategy<INonogramSolverData>
                         data.ChangeBuffer.ProposeSolutionAddition(i, col);
                     }
 
-                    if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new BridgingReportBuilder(
-                            Orientation.Vertical, col, r, last, space.FirstValueIndex)) && StopOnFirstCommit) return;
+                    if (data.ChangeBuffer.NeedCommit())
+                    {
+                        data.ChangeBuffer.Commit(new BridgingReportBuilder(
+                            Orientation.Vertical, col, r, last, space.FirstValueIndex));
+                        if(StopOnFirstCommit) return;
+                    }
                 }
 
                 last = r;

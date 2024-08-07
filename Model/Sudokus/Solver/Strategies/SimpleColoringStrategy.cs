@@ -30,17 +30,22 @@ public class SimpleColoringStrategy : SudokuStrategy
 
             if (SearchForTwiceInTheSameUnit(solverData, coloredVertices))
             {
-                if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                        new SimpleColoringReportBuilder(coloredVertices, true)) &&
-                            StopOnFirstCommit) return;
+                if (solverData.ChangeBuffer.NeedCommit())
+                {
+                    solverData.ChangeBuffer.Commit(new SimpleColoringReportBuilder(coloredVertices, true));
+                    if(StopOnFirstCommit) return;
+                }
                 
                 continue;
             }
             
             SearchForTwoColorsElsewhere(solverData, coloredVertices);
             
-            if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                    new SimpleColoringReportBuilder(coloredVertices)) && StopOnFirstCommit) return;
+            if (solverData.ChangeBuffer.NeedCommit())
+            {
+                solverData.ChangeBuffer.Commit(new SimpleColoringReportBuilder(coloredVertices));
+                if(StopOnFirstCommit) return;
+            } 
         }
     }
 

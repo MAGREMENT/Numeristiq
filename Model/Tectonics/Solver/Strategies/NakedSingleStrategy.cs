@@ -21,7 +21,12 @@ public class NakedSingleStrategy : Strategy<ITectonicSolverData>
             
                 data.ChangeBuffer.ProposeSolutionAddition(
                     p.First(1, data.Tectonic.GetZone(row, col).Count), row, col);
-                data.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<INumericSolvingState, ITectonicHighlighter>.Instance);
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<INumericSolvingState,
+                        ITectonicHighlighter>.Instance);
+                    if (StopOnFirstCommit) return;
+                }
             }
         }
     }

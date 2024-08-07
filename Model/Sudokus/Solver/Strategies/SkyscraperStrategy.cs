@@ -50,9 +50,11 @@ public class SkyscraperStrategy : SudokuStrategy
                         if(r2 != row1) solverData.ChangeBuffer.ProposePossibilityRemoval(number, r2, other1);
                     }
 
-                    if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                            new SkyscraperReportBuilder(Unit.Row, row1, row2, pos1, pos2, number))
-                                && StopOnFirstCommit) return;
+                    if (solverData.ChangeBuffer.NeedCommit())
+                    {
+                        solverData.ChangeBuffer.Commit(new SkyscraperReportBuilder(Unit.Row, row1, row2, pos1, pos2, number));
+                        if(StopOnFirstCommit) return;
+                    }
                 }
             }
             
@@ -86,9 +88,11 @@ public class SkyscraperStrategy : SudokuStrategy
                         if(c2 != col1) solverData.ChangeBuffer.ProposePossibilityRemoval(number, other1, c2);
                     }
 
-                    if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                            new SkyscraperReportBuilder(Unit.Column, col1, col2, pos1, pos2, number)) &&
-                                StopOnFirstCommit) return;
+                    if (solverData.ChangeBuffer.NeedCommit())
+                    {
+                        solverData.ChangeBuffer.Commit(new SkyscraperReportBuilder(Unit.Column, col1, col2, pos1, pos2, number));
+                        if(StopOnFirstCommit) return;
+                    }
                 }
             }
         }

@@ -42,8 +42,12 @@ public class AmountCoherencyStrategy : Strategy<IKakuroSolverData>
                     if (total + p + min > sum.Amount || total + p + max < sum.Amount)
                     {
                         data.ChangeBuffer.ProposePossibilityRemoval(p, cell);
-                        data.ChangeBuffer.Commit(
-                            DefaultNumericChangeReportBuilder<INumericSolvingState, INumericSolvingStateHighlighter>.Instance);
+                        if (data.ChangeBuffer.NeedCommit())
+                        {
+                            data.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<INumericSolvingState,
+                                INumericSolvingStateHighlighter>.Instance);
+                            if(StopOnFirstCommit) return;
+                        }
                     }
                 }
             }

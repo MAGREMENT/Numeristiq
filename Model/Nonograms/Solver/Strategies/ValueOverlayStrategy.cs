@@ -27,8 +27,12 @@ public class ValueOverlayStrategy : Strategy<INonogramSolverData>
                     data.ChangeBuffer.ProposeSolutionAddition(row, col);
                 }
 
-                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new ValueOverlayReportBuilder(
-                        Orientation.Horizontal, row, space, i)) && StopOnFirstCommit) return;
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(new ValueOverlayReportBuilder(
+                        Orientation.Horizontal, row, space, i));
+                    if (StopOnFirstCommit) return;
+                }
             }
         }
         
@@ -45,8 +49,12 @@ public class ValueOverlayStrategy : Strategy<INonogramSolverData>
                     data.ChangeBuffer.ProposeSolutionAddition(row, col);
                 }
 
-                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new ValueOverlayReportBuilder(
-                        Orientation.Vertical, col, space, i)) && StopOnFirstCommit) return;
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(new ValueOverlayReportBuilder(
+                        Orientation.Vertical, col, space, i));
+                    if (StopOnFirstCommit) return;
+                }
             }
         }
     }

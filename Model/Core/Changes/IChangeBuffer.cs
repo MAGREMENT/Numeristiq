@@ -12,7 +12,7 @@ public interface IChangeBuffer<TChange, TVerifier, THighlighter>
     List<ChangeCommit<TChange, TVerifier, THighlighter>> Commits { get; }
 
     bool NeedCommit();
-    bool Commit(IChangeReportBuilder<TChange, TVerifier, THighlighter> builder); //TODO look into removing return value
+    void Commit(IChangeReportBuilder<TChange, TVerifier, THighlighter> builder);
     IEnumerable<TChange> DumpChanges();
 }
 
@@ -55,12 +55,9 @@ public class DichotomousChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<Di
         return !_producer.FastMode && (_possibilitiesRemoved.Count > 0 || _solutionsAdded.Count > 0);
     }
 
-    public bool Commit(IChangeReportBuilder<DichotomousChange, TVerifier, THighlighter> builder)
+    public void Commit(IChangeReportBuilder<DichotomousChange, TVerifier, THighlighter> builder)
     {
-        if (!NeedCommit()) return false;
-
         Commits.Add(new ChangeCommit<DichotomousChange, TVerifier, THighlighter>(EstablishChangeList(), builder));
-        return true;
     }
 
     public IEnumerable<DichotomousChange> DumpChanges()
@@ -150,12 +147,9 @@ public class NumericChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<Numeri
         return !_producer.FastMode && (_possibilitiesRemoved.Count > 0 || _solutionsAdded.Count > 0);
     }
 
-    public bool Commit(IChangeReportBuilder<NumericChange, TVerifier, THighlighter> builder)
+    public void Commit(IChangeReportBuilder<NumericChange, TVerifier, THighlighter> builder)
     {
-        if (!NeedCommit()) return false;
-
         Commits.Add(new ChangeCommit<NumericChange, TVerifier, THighlighter>(EstablishChangeList(), builder));
-        return true;
     }
 
     public IEnumerable<NumericChange> DumpChanges()
@@ -229,12 +223,9 @@ public class BinaryChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<BinaryC
         return !_producer.FastMode && _added.Count > 0;
     }
 
-    public bool Commit(IChangeReportBuilder<BinaryChange, TVerifier, THighlighter> builder)
+    public void Commit(IChangeReportBuilder<BinaryChange, TVerifier, THighlighter> builder)
     {
-        if (!NeedCommit()) return false;
-
         Commits.Add(new ChangeCommit<BinaryChange, TVerifier, THighlighter>(EstablishChangeList(), builder));
-        return true;
     }
 
     public IEnumerable<BinaryChange> DumpChanges()

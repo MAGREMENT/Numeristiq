@@ -27,8 +27,11 @@ public class DoubleStrategy : Strategy<IBinairoSolverData>
                     c = col + 1;
                     if (c < data.ColumnCount) data.ChangeBuffer.ProposeSolutionAddition(o, row, c);
 
-                    if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new DoubleReportBuilder())
-                                                     && StopOnFirstCommit) return;
+                    if (data.ChangeBuffer.NeedCommit())
+                    {
+                        data.ChangeBuffer.Commit(new DoubleReportBuilder());
+                        if(StopOnFirstCommit) return;
+                    }
                 }
 
                 last = n;
@@ -49,8 +52,11 @@ public class DoubleStrategy : Strategy<IBinairoSolverData>
                     r = row + 1;
                     if (r < data.RowCount) data.ChangeBuffer.ProposeSolutionAddition(o, r, col);
 
-                    if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new DoubleReportBuilder())
-                                                     && StopOnFirstCommit) return;
+                    if (data.ChangeBuffer.NeedCommit())
+                    {
+                        data.ChangeBuffer.Commit(new DoubleReportBuilder());
+                        if(StopOnFirstCommit) return;
+                    }
                 }
 
                 last = n;

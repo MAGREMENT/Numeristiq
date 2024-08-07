@@ -44,7 +44,7 @@ public class CellForcingNetStrategy : SudokuStrategy
         }
     }
 
-    private bool Process(ISudokuSolverData view, ColoringDictionary<ISudokuElement>[] colorings, Cell current)
+    private bool Process(ISudokuSolverData solverData, ColoringDictionary<ISudokuElement>[] colorings, Cell current)
     {
         foreach (var element in colorings[0])
         {
@@ -66,17 +66,23 @@ public class CellForcingNetStrategy : SudokuStrategy
             {
                 if (currentColoring == Coloring.On)
                 {
-                    view.ChangeBuffer.ProposeSolutionAddition(cell.Possibility, cell.Row, cell.Column);
-                    if (view.ChangeBuffer.NeedCommit() && view.ChangeBuffer.Commit(
-                            new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.On,
-                                view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstCommit) return true;
+                    solverData.ChangeBuffer.ProposeSolutionAddition(cell.Possibility, cell.Row, cell.Column);
+                    if (solverData.ChangeBuffer.NeedCommit())
+                    {
+                        solverData.ChangeBuffer.Commit(new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.On,
+                            solverData.PreComputer.Graphs.ComplexLinkGraph));
+                        if (StopOnFirstCommit) return true;
+                    }
                 }
                 else
                 {
-                    view.ChangeBuffer.ProposePossibilityRemoval(cell.Possibility, cell.Row, cell.Column);
-                    if (view.ChangeBuffer.NeedCommit() && view.ChangeBuffer.Commit(
-                            new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.Off,
-                                view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstCommit) return true;
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(cell.Possibility, cell.Row, cell.Column);
+                    if (solverData.ChangeBuffer.NeedCommit())
+                    {
+                        solverData.ChangeBuffer.Commit(new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.Off,
+                            solverData.PreComputer.Graphs.ComplexLinkGraph));
+                        if (StopOnFirstCommit) return true;
+                    }
                 }
             }
         }

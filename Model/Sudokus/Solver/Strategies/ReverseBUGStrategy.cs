@@ -58,8 +58,11 @@ public class ReverseBUGStrategy : SudokuStrategy
                     solverData.ChangeBuffer.ProposePossibilityRemoval(n2, soloRow, soloCol);
                 }
 
-                if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                        new ReverseBugReportBuilder(or, n1)) && StopOnFirstCommit) return;
+                if (solverData.ChangeBuffer.NeedCommit())
+                {
+                    solverData.ChangeBuffer.Commit(new ReverseBugReportBuilder(or, n1));
+                    if(StopOnFirstCommit) return;
+                } 
             }
         }
     }

@@ -79,8 +79,10 @@ public class AlternatingInferenceGeneralization : Strategy<ITectonicSolverData>
             solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
         }
 
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-            new AlternatingInferenceChainReportBuilder(end, on, off)) && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+
+        solverData.ChangeBuffer.Commit(new AlternatingInferenceChainReportBuilder(end, on, off));
+        return StopOnFirstCommit;
     }
 
     private bool TryProcessLoop(ITectonicSolverData solverData, ITectonicElement current, bool isStrong,
@@ -90,8 +92,10 @@ public class AlternatingInferenceGeneralization : Strategy<ITectonicSolverData>
         if (isStrong) solverData.ChangeBuffer.ProposeSolutionAddition(cp);
         else solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
         
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-            new AlternatingInferenceLoopReportBuilder(current, isStrong, on, off)) && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+
+        solverData.ChangeBuffer.Commit(new AlternatingInferenceLoopReportBuilder(current, isStrong, on, off));
+        return StopOnFirstCommit;
     }
 
     private int TryFindLoop(ITectonicElement current, ITectonicElement objective, Dictionary<ITectonicElement, ITectonicElement> start,

@@ -39,9 +39,12 @@ public class UnreachableSquaresStrategy : Strategy<INonogramSolverData>
                     }
                 }
 
-                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(
-                        new SingleValueUnreachableSquareReportBuilder(Orientation.Horizontal, row,
-                            pos.ToArray(), remaining.FirstValueIndex)) && StopOnFirstCommit) return;
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(new SingleValueUnreachableSquareReportBuilder(Orientation.Horizontal, row,
+                        pos.ToArray(), remaining.FirstValueIndex));
+                    if (StopOnFirstCommit) return;
+                }
             }
             
             var spaces = data.PreComputer.HorizontalValueSpaces(row);
@@ -60,8 +63,12 @@ public class UnreachableSquaresStrategy : Strategy<INonogramSolverData>
                 if (!bitSet.Contains(col)) data.ChangeBuffer.ProposePossibilityRemoval(row, col);
             }
 
-            if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new UnreachableSquareReportBuilder(
-                    spaces, Orientation.Horizontal, row)) && StopOnFirstCommit) return;
+            if (data.ChangeBuffer.NeedCommit())
+            {
+                data.ChangeBuffer.Commit(new UnreachableSquareReportBuilder(
+                    spaces, Orientation.Horizontal, row));
+                if (StopOnFirstCommit) return;
+            }
             bitSet.Clear();
         }
         
@@ -87,9 +94,12 @@ public class UnreachableSquaresStrategy : Strategy<INonogramSolverData>
                     }
                 }
 
-                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(
-                        new SingleValueUnreachableSquareReportBuilder(Orientation.Vertical, col,
-                            pos.ToArray(), remaining.FirstValueIndex)) && StopOnFirstCommit) return;
+                if (data.ChangeBuffer.NeedCommit())
+                {
+                    data.ChangeBuffer.Commit(new SingleValueUnreachableSquareReportBuilder(Orientation.Vertical, col,
+                        pos.ToArray(), remaining.FirstValueIndex));
+                    if (StopOnFirstCommit) return;
+                }
             }
             
             var spaces = data.PreComputer.VerticalValueSpaces(col);
@@ -108,8 +118,11 @@ public class UnreachableSquaresStrategy : Strategy<INonogramSolverData>
                 if (!bitSet.Contains(row)) data.ChangeBuffer.ProposePossibilityRemoval(row, col);
             }
 
-            if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new UnreachableSquareReportBuilder(
-                    spaces, Orientation.Vertical, col)) && StopOnFirstCommit) return;
+            if (data.ChangeBuffer.NeedCommit())
+            {
+                data.ChangeBuffer.Commit(new UnreachableSquareReportBuilder(spaces, Orientation.Vertical, col));
+                if (StopOnFirstCommit) return;
+            }
             bitSet.Clear();
         }
     }

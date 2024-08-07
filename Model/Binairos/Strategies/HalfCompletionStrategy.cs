@@ -30,8 +30,11 @@ public class HalfCompletionStrategy : Strategy<IBinairoSolverData>
                 data.ChangeBuffer.ProposeSolutionAddition(toAdd, row, col);
             }
 
-            if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new HalfCompletionReportBuilder())
-                                               && StopOnFirstCommit) return;
+            if (data.ChangeBuffer.NeedCommit())
+            {
+                data.ChangeBuffer.Commit(new HalfCompletionReportBuilder());
+                if(StopOnFirstCommit) return;
+            }
         }
 
         objective = data.ColumnCount / 2;
@@ -51,8 +54,11 @@ public class HalfCompletionStrategy : Strategy<IBinairoSolverData>
                 data.ChangeBuffer.ProposeSolutionAddition(toAdd, row, col);
             }
 
-            if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new HalfCompletionReportBuilder())
-                                               && StopOnFirstCommit) return;
+            if (data.ChangeBuffer.NeedCommit())
+            {
+                data.ChangeBuffer.Commit(new HalfCompletionReportBuilder());
+                if(StopOnFirstCommit) return;
+            }
         }
     }
 }

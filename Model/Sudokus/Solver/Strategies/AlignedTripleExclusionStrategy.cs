@@ -273,8 +273,10 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         SearchForElimination(solverData, poss2, poss1, poss3, c2, c1, c3, forbiddenTri, forbiddenBi);
         SearchForElimination(solverData, poss3, poss2, poss1, c3, c2, c1, forbiddenTri, forbiddenBi);
 
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit( 
-            new AlignedTripleExclusionReportBuilder(c1, c2, c3, usefulThings)) && StopOnFirstCommit;
+        if(!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(
+            new AlignedTripleExclusionReportBuilder(c1, c2, c3, usefulThings)); 
+        return StopOnFirstCommit;
     }
 
     private void SearchForElimination(ISudokuSolverData solverData, ReadOnlyBitSet16 poss1, ReadOnlyBitSet16 poss2,

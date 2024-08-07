@@ -20,7 +20,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
     private readonly MinMaxSetting _possCount;
     private readonly IntSetting _maxUnPerfectPatternCell;
     
-    public NonColorablePatternStrategy(int minPossCount, int maxPossCount, int maxNotInPatternCell) : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
+    public NonColorablePatternStrategy(int minPossCount, int maxPossCount, int maxNotInPatternCell) : base(OfficialName, Difficulty.Inhuman, DefaultInstanceHandling)
     {
         _possCount = new MinMaxSetting("Possibility count", "The minimum and maximum amount of possibilities" +
                                                             "a pattern can have", 2, 5, 2, 5, 1, minPossCount, maxPossCount);
@@ -85,10 +85,10 @@ public class NonColorablePatternStrategy : SudokuStrategy
         {
             solverData.ChangeBuffer.ProposePossibilityRemoval(p, multiNotPerfect);
         }
-        
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                    new NonColorablePatternReportBuilder(perfect.ToArray(), list, poss)) &&
-                StopOnFirstCommit;
+
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(new NonColorablePatternReportBuilder(perfect.ToArray(), list, poss));
+        return StopOnFirstCommit;
     }
 
     private bool Try(ISudokuSolverData solverData, List<Cell> perfect, List<Cell> notPerfect, ReadOnlyBitSet16 poss)
@@ -120,9 +120,12 @@ public class NonColorablePatternStrategy : SudokuStrategy
                 else solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
             }
 
-            if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                    new NonColorablePatternReportBuilder(perfect.ToArray(), combination, poss)) &&
-                        StopOnFirstCommit) return true;
+            if (solverData.ChangeBuffer.NeedCommit())
+            {
+                solverData.ChangeBuffer.Commit(
+                    new NonColorablePatternReportBuilder(perfect.ToArray(), combination, poss));
+                if(StopOnFirstCommit) return true;
+            }
         }
         
         return false;

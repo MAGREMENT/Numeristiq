@@ -95,8 +95,11 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
                 }
             }
 
-            return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                new AlmostLockedSetsChainReportBuilder(chain, ll)) && StopOnFirstCommit;
+            if (solverData.ChangeBuffer.NeedCommit())
+            {
+                solverData.ChangeBuffer.Commit(new AlmostLockedSetsChainReportBuilder(chain, ll));
+                if (StopOnFirstCommit) return true;
+            }
         }
         
         return false;
@@ -125,8 +128,13 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
             }
         }
 
-        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-            new AlmostLockedSetsChainReportBuilder(chain.ToChain())) && StopOnFirstCommit;
+        if (solverData.ChangeBuffer.NeedCommit())
+        {
+            solverData.ChangeBuffer.Commit(new AlmostLockedSetsChainReportBuilder(chain.ToChain()));
+            if (StopOnFirstCommit) return true;
+        }
+
+        return false;
     }
 }
 

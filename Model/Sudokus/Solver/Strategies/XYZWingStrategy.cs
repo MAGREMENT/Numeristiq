@@ -71,8 +71,9 @@ public class XYZWingStrategy : SudokuStrategy
             solverData.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
         }
 
-        return solverData.ChangeBuffer.Commit(
-            new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2)) && StopOnFirstCommit;
+        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        solverData.ChangeBuffer.Commit(new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2));
+        return StopOnFirstCommit;
     }
     
     private static bool Only2Possibilities(ReadOnlyBitSet16 possibilities)

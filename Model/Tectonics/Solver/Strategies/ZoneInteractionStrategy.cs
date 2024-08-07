@@ -36,7 +36,11 @@ public class ZoneInteractionStrategy : Strategy<ITectonicSolverData>
                 buffer.Clear();
             }
 
-            data.ChangeBuffer.Commit(new ZoneInteractionReportBuilder(zone));
+            if (data.ChangeBuffer.NeedCommit())
+            {
+                data.ChangeBuffer.Commit(new ZoneInteractionReportBuilder(zone));
+                if (StopOnFirstCommit) return;
+            }
         }
     }
 }

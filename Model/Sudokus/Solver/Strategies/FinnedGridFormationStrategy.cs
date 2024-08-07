@@ -114,9 +114,12 @@ public class FinnedGridFormationStrategy : SudokuStrategy
                 }
             }
 
-            if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                    new FinnedGridFormationReportBuilder(mashed, visited, row, number, Unit.Row)) &&
-                    StopOnFirstCommit) return true;
+            if (solverData.ChangeBuffer.NeedCommit())
+            {
+                solverData.ChangeBuffer.Commit(new FinnedGridFormationReportBuilder(mashed, visited,
+                    row, number, Unit.Row));
+                if(StopOnFirstCommit) return true;
+            } 
         }
 
         return false;
@@ -184,9 +187,12 @@ public class FinnedGridFormationStrategy : SudokuStrategy
                 }
             }
 
-            if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                    new FinnedGridFormationReportBuilder(mashed, visited, col, number, Unit.Column))
-                    && StopOnFirstCommit) return true;
+            if (solverData.ChangeBuffer.NeedCommit())
+            {
+                solverData.ChangeBuffer.Commit(new FinnedGridFormationReportBuilder(mashed, visited, col, 
+                    number, Unit.Column));
+                if(StopOnFirstCommit) return true;
+            } 
         }
 
         return false;

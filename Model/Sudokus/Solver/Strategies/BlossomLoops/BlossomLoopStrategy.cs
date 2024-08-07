@@ -58,8 +58,11 @@ public class BlossomLoopStrategy : SudokuStrategy
                     }
                 }
 
-                if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
-                        new BlossomLoopReportBuilder(loop, branches, cps)) && StopOnFirstCommit) return;
+                if (solverData.ChangeBuffer.NeedCommit())
+                {
+                    solverData.ChangeBuffer.Commit(new BlossomLoopReportBuilder(loop, branches, cps));
+                    if (StopOnFirstCommit) return;
+                }
             }
         }
     }

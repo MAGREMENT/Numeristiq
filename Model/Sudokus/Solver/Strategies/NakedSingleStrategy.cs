@@ -24,8 +24,11 @@ public class NakedSingleStrategy : SudokuStrategy
                 if (solverData.PossibilitiesAt(row, col).Count != 1) continue;
                 
                 solverData.ChangeBuffer.ProposeSolutionAddition(solverData.PossibilitiesAt(row, col).FirstPossibility(), row, col);
-                solverData.ChangeBuffer.Commit( new NakedSingleReportBuilder());
-                if (StopOnFirstCommit) return;
+                if (solverData.ChangeBuffer.NeedCommit())
+                {
+                    solverData.ChangeBuffer.Commit( new NakedSingleReportBuilder());
+                    if (StopOnFirstCommit) return;
+                }
             }
         }
     }

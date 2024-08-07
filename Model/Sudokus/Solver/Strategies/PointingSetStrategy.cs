@@ -54,8 +54,11 @@ public class PointingSetStrategy : SudokuStrategy
                             if (col / 3 != miniCol) solverData.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
                         }
                         
-                        if(solverData.ChangeBuffer.Commit(
-                            new PointingPossibilitiesReportBuilder(number, ppimg, Unit.Row)) && StopOnFirstCommit) return;
+                        if (solverData.ChangeBuffer.NeedCommit())
+                        {
+                            solverData.ChangeBuffer.Commit(new PointingPossibilitiesReportBuilder(number, ppimg, Unit.Row));
+                            if (StopOnFirstCommit) return;
+                        }
                     }
                     else if (ppimg.AreAllInSameColumn())
                     {
@@ -65,8 +68,11 @@ public class PointingSetStrategy : SudokuStrategy
                             if (row / 3 != miniRow) solverData.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
                         }
 
-                        if (solverData.ChangeBuffer.Commit(
-                                new PointingPossibilitiesReportBuilder(number, ppimg, Unit.Column)) && StopOnFirstCommit) return;
+                        if (solverData.ChangeBuffer.NeedCommit())
+                        {
+                            solverData.ChangeBuffer.Commit(new PointingPossibilitiesReportBuilder(number, ppimg, Unit.Column));
+                            if (StopOnFirstCommit) return;
+                        }
                     }
                 }
             }
