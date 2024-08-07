@@ -33,8 +33,8 @@ public class SplittingStrategy : Strategy<INonogramSolverData>
                 if (s == c || e == c || e - s + 1 <= max) continue;
 
                 data.ChangeBuffer.ProposePossibilityRemoval(row, c);
-                if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new SplittingReportBuilder(
-                        Orientation.Horizontal, row, s, e, ind)) && StopOnFirstPush) return;
+                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new SplittingReportBuilder(
+                        Orientation.Horizontal, row, s, e, ind)) && StopOnFirstCommit) return;
             }
         }
         
@@ -57,8 +57,8 @@ public class SplittingStrategy : Strategy<INonogramSolverData>
                 if (s == r || e == r || e - s + 1 <= max) continue;
 
                 data.ChangeBuffer.ProposePossibilityRemoval(r, col);
-                if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new SplittingReportBuilder(
-                        Orientation.Vertical, col, s, e, ind)) && StopOnFirstPush) return;
+                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new SplittingReportBuilder(
+                        Orientation.Vertical, col, s, e, ind)) && StopOnFirstCommit) return;
             } 
         }
     }

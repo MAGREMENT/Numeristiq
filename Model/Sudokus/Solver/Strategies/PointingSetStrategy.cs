@@ -55,7 +55,7 @@ public class PointingSetStrategy : SudokuStrategy
                         }
                         
                         if(solverData.ChangeBuffer.Commit(
-                            new PointingPossibilitiesReportBuilder(number, ppimg, Unit.Row)) && StopOnFirstPush) return;
+                            new PointingPossibilitiesReportBuilder(number, ppimg, Unit.Row)) && StopOnFirstCommit) return;
                     }
                     else if (ppimg.AreAllInSameColumn())
                     {
@@ -66,7 +66,7 @@ public class PointingSetStrategy : SudokuStrategy
                         }
 
                         if (solverData.ChangeBuffer.Commit(
-                                new PointingPossibilitiesReportBuilder(number, ppimg, Unit.Column)) && StopOnFirstPush) return;
+                                new PointingPossibilitiesReportBuilder(number, ppimg, Unit.Column)) && StopOnFirstCommit) return;
                     }
                 }
             }

@@ -63,7 +63,7 @@ public class XYChainsStrategy : SudokuStrategy
             solverData.ChangeBuffer.ProposePossibilityRemoval(route[0].XPossibility, coord.Row, coord.Column);
         }
         
-        return solverData.ChangeBuffer.Commit(new XYChainReportBuilder(route)) && StopOnFirstPush;
+        return solverData.ChangeBuffer.Commit(new XYChainReportBuilder(route)) && StopOnFirstCommit;
     }
 }
 

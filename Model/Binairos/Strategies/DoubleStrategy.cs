@@ -27,8 +27,8 @@ public class DoubleStrategy : Strategy<IBinarySolverData>
                     c = col + 1;
                     if (c < data.ColumnCount) data.ChangeBuffer.ProposeSolutionAddition(o, row, c);
 
-                    if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new DoubleReportBuilder())
-                                                     && StopOnFirstPush) return;
+                    if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new DoubleReportBuilder())
+                                                     && StopOnFirstCommit) return;
                 }
 
                 last = n;
@@ -49,8 +49,8 @@ public class DoubleStrategy : Strategy<IBinarySolverData>
                     r = row + 1;
                     if (r < data.RowCount) data.ChangeBuffer.ProposeSolutionAddition(o, r, col);
 
-                    if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new DoubleReportBuilder())
-                                                     && StopOnFirstPush) return;
+                    if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new DoubleReportBuilder())
+                                                     && StopOnFirstCommit) return;
                 }
 
                 last = n;

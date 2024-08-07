@@ -41,7 +41,7 @@
                                                         SeedSelected="OnSeedSelection" ShowSeedAsked="ShowSeed"/>
                 
                 <Path Grid.Row="2" HorizontalAlignment="Center" Width="40" Height="40" Margin="10" x:Name="ToRDR"
-                      Stroke="{DynamicResource Text}" Data="M 20,5 V 35 M 5,23 20,35 35,23" StrokeThickness="2"/>
+                      Stroke="{DynamicResource Text}" Data="M 20,5 V 35 M 8,25 20,35 32,25" StrokeThickness="2"/>
                 
                 <controls1:DigitRemoverControl Grid.Row="3" Width="300" Height="100" HorizontalAlignment="Center"
                                                x:Name="RDR" SymmetryChanged="ChangeSymmetry" UniqueChanged="ChangeUnique"/>
@@ -49,14 +49,14 @@
         </Border>
         
         <Path Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Width="40" Height="40" Margin="0,0,10,0"
-              Stroke="{DynamicResource Text}" Data="M 5,20 H 35 M 23,5 35,20 23,35" StrokeThickness="2"
+              Stroke="{DynamicResource Text}" Data="M 5,20 H 35 M 25,8 35,20 25,32" StrokeThickness="2"
               x:Name="ToEvaluator"/>
         
         <controls1:EvaluatorControl Grid.Row="0" Grid.Column="2" Width="300" VerticalAlignment="Stretch" x:Name="Evaluator"
                                     ManageCriteriaAsked="OpenManageCriteriaWindow" Margin="0,10,0,10"/>
         
         <Path Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" Width="40" Height="40" Margin="10"
-              Stroke="{DynamicResource Text}" Data="M 5,20 H 35 M 23,5 35,20 23,35" StrokeThickness="2"
+              Stroke="{DynamicResource Text}" Data="M 5,20 H 35 M 25,8 35,20 25,32" StrokeThickness="2"
               x:Name="ToFinalList"/>
         
         <Border Grid.Row="0" Grid.Column="4" Grid.RowSpan="2" Margin="0, 10, 10, 10"
@@ -86,11 +86,24 @@
                 <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource TransparentBarScrollViewer}">
                     <Grid x:Name="Evaluated">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="200"/>
                         </Grid.ColumnDefinitions>
+                        
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Foreground="White" FontSize="16" VerticalAlignment="Center"
+                                   Margin="0 5" HorizontalAlignment="Center">N°</TextBlock>
+                        <TextBlock Grid.Column="1" Foreground="White" FontSize="16" VerticalAlignment="Center"
+                                   Margin="0 5" HorizontalAlignment="Center">String</TextBlock>
+                        <TextBlock Grid.Column="2" Foreground="White" FontSize="16" VerticalAlignment="Center"
+                                   Margin="0 5" HorizontalAlignment="Center">Rating</TextBlock>
+                        <TextBlock Grid.Column="3" Foreground="White" FontSize="16" VerticalAlignment="Center"
+                                   Margin="0 5" HorizontalAlignment="Center">Hardest Strategy</TextBlock>
                     </Grid>
                 </ScrollViewer>
             </Grid>
@@ -125,7 +138,7 @@
             </Grid.RowDefinitions>
             
             <Path Grid.Row="0" HorizontalAlignment="Center" Width="40" Height="40" x:Name="ToBin"
-                  Stroke="{DynamicResource Text}" Data="M 20,5 V 35 M 5,23 20,35 35,23" StrokeThickness="2"/>
+                  Stroke="{DynamicResource Text}" Data="M 20,5 V 35 M 8,25 20,35 32,25" StrokeThickness="2"/>
             
             <Image Grid.Row="1" Width="80" Height="80" Margin="10" Source="../../Images/bin.png" x:Name="Bin"/>
         </Grid>

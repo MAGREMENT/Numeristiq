@@ -72,7 +72,7 @@ public class XYZWingStrategy : SudokuStrategy
         }
 
         return solverData.ChangeBuffer.Commit(
-            new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2)) && StopOnFirstPush;
+            new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2)) && StopOnFirstCommit;
     }
     
     private static bool Only2Possibilities(ReadOnlyBitSet16 possibilities)

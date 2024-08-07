@@ -105,16 +105,16 @@ public class UnitForcingNetStrategy : SudokuStrategy
                 if (col == Coloring.On)
                 {
                     view.ChangeBuffer.ProposeSolutionAddition(current.Possibility, current.Row, current.Column);
-                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
+                    if (view.ChangeBuffer.NeedCommit() && view.ChangeBuffer.Commit(
                             new UnitForcingNetReportBuilder(colorings, current, Coloring.On, view.PreComputer.Graphs.ComplexLinkGraph)) &&
-                                StopOnFirstPush) return true;
+                                StopOnFirstCommit) return true;
                 }
                 else
                 {
                     view.ChangeBuffer.ProposePossibilityRemoval(current.Possibility, current.Row, current.Column);
-                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
+                    if (view.ChangeBuffer.NeedCommit() && view.ChangeBuffer.Commit(
                             new UnitForcingNetReportBuilder(colorings, current, Coloring.Off, view.PreComputer.Graphs.ComplexLinkGraph)) &&
-                                StopOnFirstPush) return true;
+                                StopOnFirstCommit) return true;
                 }
             }
         }

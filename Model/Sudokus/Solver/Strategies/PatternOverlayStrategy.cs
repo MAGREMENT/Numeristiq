@@ -113,7 +113,7 @@ public class PatternOverlayStrategy : SudokuStrategy
         }
 
         return solverData.ChangeBuffer.Commit( new PatternOverlayReportBuilder(patterns, number))
-            && StopOnFirstPush;
+            && StopOnFirstCommit;
     }
 
     private List<GridPositions>[] GetPatterns(ISudokuSolverData solverData)

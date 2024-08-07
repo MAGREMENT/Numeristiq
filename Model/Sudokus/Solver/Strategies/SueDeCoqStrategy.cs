@@ -118,8 +118,8 @@ public class SueDeCoqStrategy : SudokuStrategy
                 var boxPP = new SnapshotPossibilitySet(boxCombination, boxPossibilities, solverData.CurrentState);
                 Process(solverData, boxPP, unitPP, cells, possibilities, cellsInBox, cellsInUnit);
 
-                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                        new SueDeCoqReportBuilder(boxPP, unitPP, cells)) && StopOnFirstPush) return true;
+                if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
+                        new SueDeCoqReportBuilder(boxPP, unitPP, cells)) && StopOnFirstCommit) return true;
             }
         }
 

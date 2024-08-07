@@ -62,9 +62,9 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
             }
         }
 
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
             new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, new List<Link<CellPossibility>>()))
-                                                       && StopOnFirstPush;
+                                                       && StopOnFirstCommit;
     }
 
     private bool Process1CommonCell(ISudokuSolverData solverData, IPossibilitySet one,
@@ -97,9 +97,9 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
             }
         }
 
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                    new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, links)) &&
-                        StopOnFirstPush;
+                        StopOnFirstCommit;
     }
 }
 

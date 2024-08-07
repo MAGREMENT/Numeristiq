@@ -5,29 +5,32 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Background="{DynamicResource Background2}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Border CornerRadius="5" Padding="5" Background="{DynamicResource Background2}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
         
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
         
-        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20"
-                   Foreground="{DynamicResource Text}" Margin="10,0,0,0">Puzzle Evaluator</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20"
+                       Foreground="{DynamicResource Text}" Margin="5,0,0,0">Puzzle Evaluator</TextBlock>
         
-        <Border Grid.Row="0" Grid.Column="1" x:Name="ActivatedLamp" Margin="10" BorderBrush="{DynamicResource Text}"
-                BorderThickness="2" Width="20" Height="20" Background="Red" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+            <Border Grid.Row="0" Grid.Column="1" x:Name="ActivatedLamp" Margin="5"
+                    CornerRadius="10" Width="20" Height="20" Background="{DynamicResource Off}"
+                    VerticalAlignment="Center" HorizontalAlignment="Right"/>
         
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource TransparentBarScrollViewer}">
-            <StackPanel x:Name="CriteriaList"/>
-        </ScrollViewer>
+            <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource TransparentBarScrollViewer}">
+                <StackPanel x:Name="CriteriaList"/>
+            </ScrollViewer>
         
-        <Button Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Click="ManageCriteria"
-                Margin="10" Height="36" Style="{StaticResource FullPrimaryButton}" FontSize="16">Manage Criteria's</Button>
-    </Grid>
+            <Button Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Click="ManageCriteria"
+                    Margin="10" Height="36" Style="{StaticResource FullPrimaryButton}" FontSize="18">Manage Criteria's</Button>
+        </Grid>
+    </Border>
 </UserControl>

@@ -100,9 +100,9 @@ public class SetEquivalenceStrategy : SudokuStrategy
                     }
                 }
 
-                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                         new GeometricEquivalenceReportBuilder(equivalence)) &&
-                            StopOnFirstPush) return;
+                            StopOnFirstCommit) return;
             }
         }
     }

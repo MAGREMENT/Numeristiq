@@ -21,7 +21,7 @@ public class NeighborLinkConstructRule : IConstructRule<ITectonicSolverData, ITe
 
                 foreach (var p in poss.EnumeratePossibilities())
                 {
-                    foreach (var cell in TectonicCellUtility.GetNeighbors(row, col,
+                    foreach (var cell in TectonicUtility.GetNeighbors(row, col,
                                  solverData.Tectonic.RowCount, solverData.Tectonic.ColumnCount))
                     {
                         if (solverData.PossibilitiesAt(cell).Contains(p))
@@ -49,7 +49,7 @@ public class NeighborLinkConstructRule : IConstructRule<ITectonicSolverData, ITe
                             foreach (var n in pos.EnumeratePositions(entry.Key))
                             {
                                 var cell = entry.Key[n];
-                                if (!TectonicCellUtility.AreNeighbors(entry.Key[n], new Cell(row, col)))
+                                if (!TectonicUtility.AreNeighbors(entry.Key[n], new Cell(row, col)))
                                 {
                                     buffer = cell;
                                 }
@@ -82,7 +82,7 @@ public class NeighborLinkConstructRule : IConstructRule<ITectonicSolverData, ITe
 
                 foreach (var p in poss.EnumeratePossibilities())
                 {
-                    foreach (var cell in TectonicCellUtility.GetNeighbors(row, col,
+                    foreach (var cell in TectonicUtility.GetNeighbors(row, col,
                                  solverData.Tectonic.RowCount, solverData.Tectonic.ColumnCount))
                     {
                         if (solverData.PossibilitiesAt(cell).Contains(p)) linkGraph.Add(

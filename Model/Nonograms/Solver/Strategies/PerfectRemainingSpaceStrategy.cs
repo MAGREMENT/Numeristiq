@@ -32,8 +32,8 @@ public class PerfectRemainingSpaceStrategy : Strategy<INonogramSolverData>
                 cursor++;
             }
 
-            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new PerfectRemainingSpaceStrategyReportBuilder(
-                    space, row, Orientation.Horizontal)) && StopOnFirstPush) return;
+            if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new PerfectRemainingSpaceStrategyReportBuilder(
+                    space, row, Orientation.Horizontal)) && StopOnFirstCommit) return;
         }
         
         for (int col = 0; col < data.Nonogram.ColumnCount; col++)
@@ -54,8 +54,8 @@ public class PerfectRemainingSpaceStrategy : Strategy<INonogramSolverData>
                 cursor++;
             }
             
-            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new PerfectRemainingSpaceStrategyReportBuilder(
-                    space, col, Orientation.Vertical)) && StopOnFirstPush) return;
+            if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new PerfectRemainingSpaceStrategyReportBuilder(
+                    space, col, Orientation.Vertical)) && StopOnFirstCommit) return;
         }
     }
 }

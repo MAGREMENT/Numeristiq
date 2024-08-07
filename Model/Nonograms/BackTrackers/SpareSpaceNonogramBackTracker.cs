@@ -8,7 +8,7 @@ namespace Model.Nonograms.BackTrackers;
 public class SpareSpaceNonogramBackTracker : BackTracker<Nonogram, IAvailabilityChecker>
 {
     private IEnumerable<int[]>?[] _rowCombinations = Array.Empty<IEnumerable<int[]>?>();
-    private Nonogram _copy = new Nonogram();
+    private Nonogram _copy = new();
     
     public SpareSpaceNonogramBackTracker() : base(new Nonogram(), ConstantAvailabilityChecker.Instance) { }
     
@@ -70,9 +70,7 @@ public class SpareSpaceNonogramBackTracker : BackTracker<Nonogram, IAvailability
 
         for (int col = 0; col < Current.ColumnCount; col++)
         {
-            if (Current.IsColumnCorrect(col)) continue;
-
-            return false;
+            if (!Current.IsColumnCorrect(col)) return false;
         }
 
         return true;
@@ -116,10 +114,10 @@ public class SpareSpaceNonogramBackTracker : BackTracker<Nonogram, IAvailability
                 }
 
                 ok = ok && Search(result, position + 1);
-
+                
                 pos--;
                 for (; pos >= 0; pos--) Current[position, pos] = _copy[position, pos];
-
+                
                 if (ok) return true;
             }
             
@@ -128,9 +126,7 @@ public class SpareSpaceNonogramBackTracker : BackTracker<Nonogram, IAvailability
 
         for (int col = 0; col < Current.ColumnCount; col++)
         {
-            if (Current.IsColumnCorrect(col)) continue;
-
-            return false;
+            if (!Current.IsColumnCorrect(col)) return false;
         }
 
         result.AddNewResult(Current.Copy());

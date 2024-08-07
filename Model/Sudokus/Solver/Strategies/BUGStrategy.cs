@@ -70,7 +70,7 @@ public class BUGStrategy : SudokuStrategy
         }
 
         
-        if(solverData.ChangeBuffer.NotEmpty()) solverData.ChangeBuffer.Commit(
+        if(solverData.ChangeBuffer.NeedCommit()) solverData.ChangeBuffer.Commit(
             new BUGStrategyReportBuilder(additionalCandidates));
     }
 }

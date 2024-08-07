@@ -137,9 +137,9 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
                 solverData.ChangeBuffer.ProposePossibilityRemoval(p, cNotInPattern[0].Row, cNotInPattern[0].Column);
             }
             
-            return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+            return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                        new ExtendedUniqueRectanglesReportBuilder(poss, cells.ToArray())) &&
-                   StopOnFirstPush;
+                   StopOnFirstCommit;
         }
         
         
@@ -176,9 +176,9 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
         }
         
 
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                    new ExtendedUniqueRectanglesReportBuilder(poss, cells.ToArray())) &&
-                        StopOnFirstPush;
+                        StopOnFirstCommit;
     }
 }
 

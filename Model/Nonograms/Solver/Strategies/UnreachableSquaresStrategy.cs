@@ -39,9 +39,9 @@ public class UnreachableSquaresStrategy : Strategy<INonogramSolverData>
                     }
                 }
 
-                if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(
+                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(
                         new SingleValueUnreachableSquareReportBuilder(Orientation.Horizontal, row,
-                            pos.ToArray(), remaining.FirstValueIndex)) && StopOnFirstPush) return;
+                            pos.ToArray(), remaining.FirstValueIndex)) && StopOnFirstCommit) return;
             }
             
             var spaces = data.PreComputer.HorizontalValueSpaces(row);
@@ -60,8 +60,8 @@ public class UnreachableSquaresStrategy : Strategy<INonogramSolverData>
                 if (!bitSet.Contains(col)) data.ChangeBuffer.ProposePossibilityRemoval(row, col);
             }
 
-            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new UnreachableSquareReportBuilder(
-                    spaces, Orientation.Horizontal, row)) && StopOnFirstPush) return;
+            if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new UnreachableSquareReportBuilder(
+                    spaces, Orientation.Horizontal, row)) && StopOnFirstCommit) return;
             bitSet.Clear();
         }
         
@@ -87,9 +87,9 @@ public class UnreachableSquaresStrategy : Strategy<INonogramSolverData>
                     }
                 }
 
-                if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(
+                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(
                         new SingleValueUnreachableSquareReportBuilder(Orientation.Vertical, col,
-                            pos.ToArray(), remaining.FirstValueIndex)) && StopOnFirstPush) return;
+                            pos.ToArray(), remaining.FirstValueIndex)) && StopOnFirstCommit) return;
             }
             
             var spaces = data.PreComputer.VerticalValueSpaces(col);
@@ -108,8 +108,8 @@ public class UnreachableSquaresStrategy : Strategy<INonogramSolverData>
                 if (!bitSet.Contains(row)) data.ChangeBuffer.ProposePossibilityRemoval(row, col);
             }
 
-            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new UnreachableSquareReportBuilder(
-                    spaces, Orientation.Vertical, col)) && StopOnFirstPush) return;
+            if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new UnreachableSquareReportBuilder(
+                    spaces, Orientation.Vertical, col)) && StopOnFirstCommit) return;
             bitSet.Clear();
         }
     }

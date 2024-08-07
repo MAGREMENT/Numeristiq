@@ -31,7 +31,7 @@ public class HiddenSingleStrategy : SudokuStrategy
                     {
                         solverData.ChangeBuffer.ProposeSolutionAddition(number, u, rp.First());
                         solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Row));
-                        if (StopOnFirstPush) return;
+                        if (StopOnFirstCommit) return;
                     }
                     
                     var cp = solverData.ColumnPositionsAt(u, number);
@@ -39,7 +39,7 @@ public class HiddenSingleStrategy : SudokuStrategy
                     {
                         solverData.ChangeBuffer.ProposeSolutionAddition(number, cp.First(), u);
                         solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Column));
-                        if (StopOnFirstPush) return;
+                        if (StopOnFirstCommit) return;
                     }
                     
                     var mp = solverData.MiniGridPositionsAt(i, j, number);
@@ -48,7 +48,7 @@ public class HiddenSingleStrategy : SudokuStrategy
                     var pos = mp.First();
                     solverData.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
                     solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Box));
-                    if (StopOnFirstPush) return;
+                    if (StopOnFirstCommit) return;
                 }
             }
         }

@@ -26,8 +26,8 @@ public class ValueCompletionStrategy : Strategy<INonogramSolverData>
                 if (space.End < data.Nonogram.ColumnCount - 1)
                     data.ChangeBuffer.ProposePossibilityRemoval(row, space.End + 1);
 
-                if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new ValueCompletionReportBuilder(
-                        Orientation.Horizontal, row, space, i)) && StopOnFirstPush) return;
+                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new ValueCompletionReportBuilder(
+                        Orientation.Horizontal, row, space, i)) && StopOnFirstCommit) return;
             }
         }
         
@@ -43,8 +43,8 @@ public class ValueCompletionStrategy : Strategy<INonogramSolverData>
                 if (space.End < data.Nonogram.RowCount - 1)
                     data.ChangeBuffer.ProposePossibilityRemoval(space.End + 1, col);
 
-                if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new ValueCompletionReportBuilder(
-                    Orientation.Vertical, col, space, i)) && StopOnFirstPush) return;
+                if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(new ValueCompletionReportBuilder(
+                    Orientation.Vertical, col, space, i)) && StopOnFirstCommit) return;
             }
         }
     }

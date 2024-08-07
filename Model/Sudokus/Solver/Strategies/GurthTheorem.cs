@@ -69,7 +69,7 @@ public abstract class Symmetry
 
         ApplyEveryTime(solverData);
 
-        if (solverData.ChangeBuffer.NotEmpty())
+        if (solverData.ChangeBuffer.NeedCommit())
             solverData.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<ISudokuSolvingState, ISudokuHighlighter>.Instance);
     }
 

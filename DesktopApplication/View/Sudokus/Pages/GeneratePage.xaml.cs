@@ -88,10 +88,12 @@ public partial class GeneratePage : ISudokuGenerateView
     {
         Evaluated.Dispatcher.Invoke(() =>
         {
-            Evaluated.Children.Clear();
-            Evaluated.RowDefinitions.Clear();
+            if(Evaluated.Children.Count > 4)
+                Evaluated.Children.RemoveRange(4, Evaluated.Children.Count - 4);
+            if(Evaluated.RowDefinitions.Count > 1) 
+                Evaluated.RowDefinitions.RemoveRange(1, Evaluated.RowDefinitions.Count - 1);
 
-            var r = 0;
+            var r = 1;
             foreach (var sudoku in sudokus)
             {
                 Evaluated.RowDefinitions.Add(new RowDefinition

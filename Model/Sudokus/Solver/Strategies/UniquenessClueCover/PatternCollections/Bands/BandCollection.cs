@@ -204,8 +204,8 @@ public class BandCollection : IPatternCollection
             }
         }
         
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-            new BandUniquenessClueCoverReportBuilder(candidate)) && Strategy!.StopOnFirstPush;
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
+            new BandUniquenessClueCoverReportBuilder(candidate)) && Strategy!.StopOnFirstCommit;
     }
 }
 

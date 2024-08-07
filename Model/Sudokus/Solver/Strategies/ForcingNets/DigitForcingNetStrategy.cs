@@ -59,9 +59,9 @@ public class DigitForcingNetStrategy : SudokuStrategy
                         break;
                 }
 
-                if (view.ChangeBuffer.NotEmpty() &&view.ChangeBuffer.Commit(
+                if (view.ChangeBuffer.NeedCommit() &&view.ChangeBuffer.Commit(
                         new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value, 
-                            possOn, other, view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstPush) return true;
+                            possOn, other, view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstCommit) return true;
             }
 
             if (on.Value != Coloring.On) continue;
@@ -72,9 +72,9 @@ public class DigitForcingNetStrategy : SudokuStrategy
                 if (possOff.Row == possOn.Row && possOn.Column == possOff.Column)
                 {
                     RemoveAll(view, possOn.Row, possOn.Column, possOn.Possibility, possOff.Possibility);
-                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
+                    if (view.ChangeBuffer.NeedCommit() && view.ChangeBuffer.Commit(
                             new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
-                                possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstPush) return true;
+                                possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstCommit) return true;
                 }
                 else if (possOff.Possibility == possOn.Possibility && possOn.ShareAUnit(possOff))
                 {
@@ -83,9 +83,9 @@ public class DigitForcingNetStrategy : SudokuStrategy
                         view.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, coord.Row, coord.Column);
                     }
                     
-                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
+                    if (view.ChangeBuffer.NeedCommit() && view.ChangeBuffer.Commit(
                             new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
-                                possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstPush) return true;
+                                possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstCommit) return true;
                 }
             }
         }

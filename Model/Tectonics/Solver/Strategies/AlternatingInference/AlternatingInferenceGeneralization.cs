@@ -74,13 +74,13 @@ public class AlternatingInferenceGeneralization : Strategy<ITectonicSolverData>
     {
         if (current is not CellPossibility end) return false;
 
-        foreach (var cp in TectonicCellUtility.SharedSeenPossibilities(solverData, start, end))
+        foreach (var cp in TectonicUtility.SharedSeenPossibilities(solverData, start, end))
         {
             solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
         }
 
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-            new AlternatingInferenceChainReportBuilder(end, on, off)) && StopOnFirstPush;
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
+            new AlternatingInferenceChainReportBuilder(end, on, off)) && StopOnFirstCommit;
     }
 
     private bool TryProcessLoop(ITectonicSolverData solverData, ITectonicElement current, bool isStrong,
@@ -90,8 +90,8 @@ public class AlternatingInferenceGeneralization : Strategy<ITectonicSolverData>
         if (isStrong) solverData.ChangeBuffer.ProposeSolutionAddition(cp);
         else solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
         
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-            new AlternatingInferenceLoopReportBuilder(current, isStrong, on, off)) && StopOnFirstPush;
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
+            new AlternatingInferenceLoopReportBuilder(current, isStrong, on, off)) && StopOnFirstCommit;
     }
 
     private int TryFindLoop(ITectonicElement current, ITectonicElement objective, Dictionary<ITectonicElement, ITectonicElement> start,

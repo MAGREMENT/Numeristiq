@@ -201,8 +201,8 @@ public class ThorsHammerStrategy : SudokuStrategy
             }
         }
 
-        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                new ThorsHammerReportBuilder(cells, notInPattern)) && StopOnFirstPush) return true;
+        if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
+                new ThorsHammerReportBuilder(cells, notInPattern)) && StopOnFirstCommit) return true;
 
         return false;
     }

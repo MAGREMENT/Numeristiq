@@ -98,9 +98,9 @@ public class EmptyRectangleStrategy : SudokuStrategy
         if (isOneLinkStrong) solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, two);
         if (isTwoLinkStrong) solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, one);
 
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
             new EmptyRectangleReportBuilder(hinge, one, two, isOneLinkStrong, isTwoLinkStrong,
-                miniRow, miniCol, possibility)) && StopOnFirstPush;
+                miniRow, miniCol, possibility)) && StopOnFirstCommit;
     }
 }
 

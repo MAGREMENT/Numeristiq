@@ -246,7 +246,7 @@ public class WXYZWingStrategy : SudokuStrategy
 
         return solverData.ChangeBuffer.Commit(
             new WXYZWingReportBuilder(miniPositions, linePositions, unit, unitNumber))
-            && StopOnFirstPush;
+            && StopOnFirstCommit;
         
     }
 }

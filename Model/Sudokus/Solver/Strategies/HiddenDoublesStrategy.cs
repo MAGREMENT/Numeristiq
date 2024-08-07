@@ -88,7 +88,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
         }
 
         return solverData.ChangeBuffer.Commit(
-            new LineHiddenDoublesReportBuilder(row, positions, n1, n2, Unit.Row)) && StopOnFirstPush;
+            new LineHiddenDoublesReportBuilder(row, positions, n1, n2, Unit.Row)) && StopOnFirstCommit;
     }
 
     private bool ProcessColumn(ISudokuSolverData solverData, IReadOnlyLinePositions positions, int col,
@@ -105,7 +105,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
         }
 
         return solverData.ChangeBuffer.Commit(
-            new LineHiddenDoublesReportBuilder(col, positions, n1, n2, Unit.Column)) && StopOnFirstPush;
+            new LineHiddenDoublesReportBuilder(col, positions, n1, n2, Unit.Column)) && StopOnFirstCommit;
     }
 
     private bool ProcessMiniGrid(ISudokuSolverData solverData, IReadOnlyBoxPositions positions, int n1, int n2)
@@ -121,7 +121,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
         }
 
         return solverData.ChangeBuffer.Commit(
-            new BoxHiddenDoublesReportBuilder(positions, n1, n2)) && StopOnFirstPush;
+            new BoxHiddenDoublesReportBuilder(positions, n1, n2)) && StopOnFirstCommit;
     }
 }
 

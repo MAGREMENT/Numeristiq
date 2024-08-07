@@ -28,7 +28,7 @@ public class ZoneInteractionStrategy : Strategy<ITectonicSolverData>
 
                 if (buffer.Count == 0) continue;
 
-                foreach (var neighbor in TectonicCellUtility.SharedNeighboringCells(data.Tectonic, buffer))
+                foreach (var neighbor in TectonicUtility.SharedNeighboringCells(data.Tectonic, buffer))
                 {
                     data.ChangeBuffer.ProposePossibilityRemoval(n, neighbor);
                 }

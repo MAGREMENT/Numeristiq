@@ -31,8 +31,8 @@ public class SeniorExocetStrategy : SudokuStrategy
                 JuniorExocetStrategy.RemoveAllNonSCells(solverData, exo, exo.ComputeAllCoverHouses());
             }
             
-            if(solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer
-                   .Commit(new DoubleTargetExocetReportBuilder(exo)) && StopOnFirstPush) return;
+            if(solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer
+                   .Commit(new DoubleTargetExocetReportBuilder(exo)) && StopOnFirstCommit) return;
         }
     }
 }

@@ -68,11 +68,11 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                             ProcessRowBiValue(data, p, cp.Possibility, row, startCol, sc + c);
                             ProcessAhsCell(data, p, cp.Possibility, cell);
 
-                            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(
+                            if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(
                                                                  new AlmostClaimingPairBuilder(startRow, startCol,
                                                                      u, Unit.Row, new Cell(row, sc + c), cell,
                                                                      p, cp.Possibility))
-                                                             && StopOnFirstPush) return true;
+                                                             && StopOnFirstCommit) return true;
                         }
                     }
                 }
@@ -107,11 +107,11 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                                 new Cell(r, startCol + c));
                             ProcessAhsCell(data, p, cp.Possibility, cell);
 
-                            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(
+                            if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(
                                                                  new AlmostClaimingPairBuilder(startRow, startCol,
                                                                      u, Unit.Row, new Cell(r, startCol + c), cell,
                                                                      p, cp.Possibility))
-                                                             && StopOnFirstPush) return true;
+                                                             && StopOnFirstCommit) return true;
                         }
                     }
                 }
@@ -155,10 +155,10 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                             ProcessColumnBiValue(data, p, cp.Possibility, col, startRow, sr + r);
                             ProcessAhsCell(data, p, cp.Possibility, cell);
 
-                            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(
+                            if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(
                                                                  new AlmostClaimingPairBuilder(startRow, startCol,
                                                                      u, Unit.Column, new Cell(sr + r, col), cell,
-                                                                     p, cp.Possibility)) && StopOnFirstPush) return true;
+                                                                     p, cp.Possibility)) && StopOnFirstCommit) return true;
                         }
                     }
                 }
@@ -193,11 +193,11 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                                 new Cell(startRow + r, c));
                             ProcessAhsCell(data, p, cp.Possibility, cell);
 
-                            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(
+                            if (data.ChangeBuffer.NeedCommit() && data.ChangeBuffer.Commit(
                                                                  new AlmostClaimingPairBuilder(startRow, startCol,
                                                                      u, Unit.Column, new Cell(startRow + r, c), cell,
                                                                      p, cp.Possibility))
-                                                             && StopOnFirstPush) return true;
+                                                             && StopOnFirstCommit) return true;
                         }
                     }
                 }

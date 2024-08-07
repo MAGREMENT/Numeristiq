@@ -34,16 +34,16 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
             if (SearchColor(solverData, coloredVertices.On, coloredVertices.Off, inGraph) ||
                 SearchColor(solverData, coloredVertices.Off, coloredVertices.On, inGraph))
             {
-                if(solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+                if(solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                        new SimpleColoringReportBuilder(coloredVertices, true)) && 
-                        StopOnFirstPush) return;
+                        StopOnFirstCommit) return;
                 
                 continue;
             }
             
             SearchMix(solverData, coloredVertices.On, coloredVertices.Off, inGraph);
-            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                new SimpleColoringReportBuilder(coloredVertices)) && StopOnFirstPush) return;
+            if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
+                new SimpleColoringReportBuilder(coloredVertices)) && StopOnFirstCommit) return;
         }
     }
 

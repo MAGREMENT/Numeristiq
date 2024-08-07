@@ -10,12 +10,13 @@
       Title="SolvePage" d:DesignHeight="660" d:DesignWidth="1210">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="660"/>
-            <ColumnDefinition Width="150"/>
-            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <global:SizeOptimizedContentControl Grid.Column="0" Width="640" Height="640" x:Name="EmbeddedDrawer">
+        <global:SizeOptimizedContentControl Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                            x:Name="EmbeddedDrawer" Margin="10">
             <global:SizeOptimizedContentControl.OptimizableContent>
                 <controls:TectonicBoard 
                     BackgroundBrush="Transparent" LineBrush="{DynamicResource Text}"
@@ -29,7 +30,7 @@
             </global:SizeOptimizedContentControl.OptimizableContent>
         </global:SizeOptimizedContentControl>
         
-        <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="0, 20, 0, 0">
+        <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="0, 20, 0, 0" Width="150">
             <controls:DimensionChooser TitleText="Rows" x:Name="RowCount" DimensionChangeAsked="OnRowDimensionChangeAsked"
                                        HorizontalAlignment="Center"/>
             <controls:DimensionChooser TitleText="Columns" x:Name="ColumnCount" DimensionChangeAsked="OnColumnDimensionChangeAsked"

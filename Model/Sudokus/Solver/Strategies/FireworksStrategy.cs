@@ -128,7 +128,7 @@ public class FireworksStrategy : SudokuStrategy
                                     
                             if(ProcessTripleFireworks(solverData, new Fireworks(new Cell(row, col),
                                    new Cell(row, rFinal), new Cell(cFinal, col), poss)) &&
-                               StopOnFirstPush) return;
+                               StopOnFirstCommit) return;
                         }
                     }
                 }
@@ -222,7 +222,7 @@ public class FireworksStrategy : SudokuStrategy
                 }
 
                 if (user.ChangeBuffer.Commit( new FireworksReportBuilder(one, two)) &&
-                    StopOnFirstPush) return;
+                    StopOnFirstCommit) return;
             }
         }
         
@@ -285,9 +285,9 @@ public class FireworksStrategy : SudokuStrategy
                         }
                     }
 
-                    if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
+                    if (user.ChangeBuffer.NeedCommit() && user.ChangeBuffer.Commit(
                             new FireworksWithAlmostLockedSetsReportBuilder(df, one, two))
-                                                        && StopOnFirstPush) return;
+                                                        && StopOnFirstCommit) return;
                 }
             }
             
@@ -308,9 +308,9 @@ public class FireworksStrategy : SudokuStrategy
                     if (!friend.ShareAUnit(df.RowWing)) continue;
 
                     user.ChangeBuffer.ProposePossibilityRemoval(possibility, df.RowWing.Row, df.RowWing.Column);
-                    if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
+                    if (user.ChangeBuffer.NeedCommit() && user.ChangeBuffer.Commit(
                             new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
-                                StopOnFirstPush) return;
+                                StopOnFirstCommit) return;
                     break;
                 }
             }
@@ -325,9 +325,9 @@ public class FireworksStrategy : SudokuStrategy
                     if (!friend.ShareAUnit(df.ColumnWing)) continue;
 
                     user.ChangeBuffer.ProposePossibilityRemoval(possibility, df.ColumnWing.Row, df.ColumnWing.Column);
-                    if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
+                    if (user.ChangeBuffer.NeedCommit() && user.ChangeBuffer.Commit(
                             new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
-                                StopOnFirstPush) return;
+                                StopOnFirstCommit) return;
                     break;
                 }
             }
@@ -344,8 +344,8 @@ public class FireworksStrategy : SudokuStrategy
                     if (!df.Possibilities.Contains(p)) user.ChangeBuffer.ProposePossibilityRemoval(p, df.Cross);
                 }
 
-                if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
-                        new FireworksReportBuilder(df)) && StopOnFirstPush) return;
+                if (user.ChangeBuffer.NeedCommit() && user.ChangeBuffer.Commit(
+                        new FireworksReportBuilder(df)) && StopOnFirstCommit) return;
             }
         }
         
@@ -393,9 +393,9 @@ public class FireworksStrategy : SudokuStrategy
                     }  
                 }
 
-                if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
+                if (user.ChangeBuffer.NeedCommit() && user.ChangeBuffer.Commit(
                         new FireworksWithCellReportBuilder(center, one, two)) &&
-                            StopOnFirstPush) return;
+                            StopOnFirstCommit) return;
             }
         }
     }

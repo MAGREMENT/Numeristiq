@@ -44,9 +44,7 @@ public class NaiveNonogramBackTracker : BackTracker<Nonogram, IAvailabilityCheck
 
         for (int col = 0; col < Current.ColumnCount; col++)
         {
-            if (Current.IsColumnCorrect(col)) continue;
-
-            return false;
+            if (!Current.IsColumnCorrect(col)) return false;
         }
 
         return true;
@@ -84,9 +82,7 @@ public class NaiveNonogramBackTracker : BackTracker<Nonogram, IAvailabilityCheck
 
         for (int col = 0; col < Current.ColumnCount; col++)
         {
-            if (Current.IsColumnCorrect(col)) continue;
-
-            return false;
+            if (!Current.IsColumnCorrect(col)) return false;
         }
         
         result.AddNewResult(Current.Copy());

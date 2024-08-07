@@ -30,8 +30,8 @@ public class OddagonStrategy : SudokuStrategy
                 }
             }
 
-            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-                    new OddagonReportBuilder(ao)) && StopOnFirstPush) return;
+            if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
+                    new OddagonReportBuilder(ao)) && StopOnFirstCommit) return;
         }
     }
 }

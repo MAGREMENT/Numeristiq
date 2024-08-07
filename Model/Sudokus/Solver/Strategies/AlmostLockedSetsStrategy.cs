@@ -68,8 +68,8 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
                 }
             }
 
-            if(solverData.ChangeBuffer.Commit( new AlmostLockedSetsReportBuilder(one,
-                   two, restrictedCommons)) && StopOnFirstPush) return;
+            if(solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(new AlmostLockedSetsReportBuilder(one,
+                   two, restrictedCommons)) && StopOnFirstCommit) return;
         }
     }
 }

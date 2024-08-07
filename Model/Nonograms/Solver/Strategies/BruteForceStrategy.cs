@@ -31,7 +31,7 @@ public class BruteForceStrategy : Strategy<INonogramSolverData>
             }
         }
 
-        data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<INonogramSolvingState, INonogramHighlighter>
-            .Instance);
+        if(data.ChangeBuffer.NeedCommit()) data.ChangeBuffer.Commit(
+            DefaultDichotomousChangeReportBuilder<INonogramSolvingState, INonogramHighlighter>.Instance);
     }
 }

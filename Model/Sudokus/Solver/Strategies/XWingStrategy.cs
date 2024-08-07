@@ -63,7 +63,7 @@ public class XWingStrategy : SudokuStrategy
         }
         
         return solverData.ChangeBuffer.Commit( new XWingReportBuilder(cols, row1, row2, number, Unit.Row))
-            && StopOnFirstPush;
+            && StopOnFirstCommit;
     }
 
     private bool RemoveFromRows(ISudokuSolverData solverData, IReadOnlyLinePositions rows, int col1, int col2, int number)
@@ -79,7 +79,7 @@ public class XWingStrategy : SudokuStrategy
         }
         
         return solverData.ChangeBuffer.Commit( new XWingReportBuilder(rows, col1, col2, number, Unit.Column))
-            && StopOnFirstPush;
+            && StopOnFirstCommit;
     }
 }
 

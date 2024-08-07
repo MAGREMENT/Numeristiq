@@ -40,19 +40,19 @@ public class NishioForcingNetStrategy : SudokuStrategy
                             case Coloring.Off when cs.AddOff(cell):
                                 solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                                 
-                                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer
+                                if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer
                                         .Commit(new NishioForcingNetReportBuilder(coloring, row, col, possibility,
                                             cs.Cause, cell, Coloring.Off, solverData.PreComputer.Graphs.ComplexLinkGraph)) && 
-                                                StopOnFirstPush) return;
+                                                StopOnFirstCommit) return;
                                 break;
                             
                             case Coloring.On when cs.AddOn(cell):
                                 solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                                 
-                                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer
+                                if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer
                                         .Commit(new NishioForcingNetReportBuilder(coloring, row, col, possibility,
                                             cs.Cause, cell, Coloring.On, solverData.PreComputer.Graphs.ComplexLinkGraph)) && 
-                                                StopOnFirstPush) return;
+                                                StopOnFirstCommit) return;
                                 break;
                         }
                     }

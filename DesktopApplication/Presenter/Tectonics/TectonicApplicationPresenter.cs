@@ -16,6 +16,8 @@ public class TectonicApplicationPresenter
         _settings = settings;
         _solver.StrategyManager.AddStrategies(new NakedSingleStrategy(),
             new HiddenSingleStrategy(),
+            new NakedDoubleStrategy(),
+            new HiddenDoubleStrategy(),
             new ZoneInteractionStrategy(),
             new AlternatingInferenceGeneralization(new XChainType()),
             new GroupEliminationStrategy(),

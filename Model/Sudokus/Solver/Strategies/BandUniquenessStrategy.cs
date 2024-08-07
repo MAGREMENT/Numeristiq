@@ -66,9 +66,9 @@ public class BandUniquenessStrategy : SudokuStrategy
                     buffer.Clear();
                 }
 
-                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                         new BandUniquenessReportBuilder(mini, Unit.Row, presence)) &&
-                            StopOnFirstPush) return;
+                            StopOnFirstCommit) return;
             }
 
             presence = new ReadOnlyBitSet16();
@@ -111,9 +111,9 @@ public class BandUniquenessStrategy : SudokuStrategy
                     buffer.Clear();
                 }
 
-                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                         new BandUniquenessReportBuilder(mini, Unit.Row, presence)) &&
-                    StopOnFirstPush) return;
+                    StopOnFirstCommit) return;
             }
         }
     }

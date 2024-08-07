@@ -41,7 +41,7 @@ public class ClaimingSetStrategy : SudokuStrategy
                     }
 
                     if (solverData.ChangeBuffer.Commit( new BoxLineReductionReportBuilder(row,
-                            ppir, number, Unit.Row)) && StopOnFirstPush) return;
+                            ppir, number, Unit.Row)) && StopOnFirstCommit) return;
                 }
             }
 
@@ -68,7 +68,7 @@ public class ClaimingSetStrategy : SudokuStrategy
                     }
 
                     if(solverData.ChangeBuffer.Commit( new BoxLineReductionReportBuilder(col,
-                           ppic, number, Unit.Column)) && StopOnFirstPush) return;
+                           ppic, number, Unit.Column)) && StopOnFirstCommit) return;
                 }
             }
         }

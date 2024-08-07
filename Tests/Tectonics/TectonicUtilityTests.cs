@@ -8,7 +8,7 @@ public class TectonicCellUtilityTests
     [Test]
     public void NonAdjacentTest()
     {
-        Assert.That(TectonicCellUtility.AreAdjacent(new Cell(1, 0), new Cell(0, 2)), Is.False);
+        Assert.That(TectonicUtility.AreAdjacent(new Cell(1, 0), new Cell(0, 2)), Is.False);
     }
 
     [Test]
@@ -29,7 +29,7 @@ public class TectonicCellUtilityTests
                 var c2 = new Cell(j / tectonic.RowCount, j % tectonic.ColumnCount);
 
                 var naive = new List<Cell>(NaiveSharedSeenCells(tectonic, c1, c2));
-                var utility = new List<Cell>(TectonicCellUtility.SharedSeenCells(tectonic, c1, c2));
+                var utility = new List<Cell>(TectonicUtility.SharedSeenCells(tectonic, c1, c2));
 
                 Assert.That(naive, Has.Count.EqualTo(utility.Count));
                 foreach (var c in naive)
@@ -49,8 +49,8 @@ public class TectonicCellUtilityTests
                 var current = new Cell(row, col);
                 if (current == one || current == two) continue;
                 
-                if (TectonicCellUtility.DoesSeeEachOther(tectonic, current, one) &&
-                    TectonicCellUtility.DoesSeeEachOther(tectonic, current, two)) yield return current;
+                if (TectonicUtility.DoesSeeEachOther(tectonic, current, one) &&
+                    TectonicUtility.DoesSeeEachOther(tectonic, current, two)) yield return current;
             }
         }
     }

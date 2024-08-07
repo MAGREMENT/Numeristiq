@@ -86,9 +86,9 @@ public class NonColorablePatternStrategy : SudokuStrategy
             solverData.ChangeBuffer.ProposePossibilityRemoval(p, multiNotPerfect);
         }
         
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                     new NonColorablePatternReportBuilder(perfect.ToArray(), list, poss)) &&
-                StopOnFirstPush;
+                StopOnFirstCommit;
     }
 
     private bool Try(ISudokuSolverData solverData, List<Cell> perfect, List<Cell> notPerfect, ReadOnlyBitSet16 poss)
@@ -120,9 +120,9 @@ public class NonColorablePatternStrategy : SudokuStrategy
                 else solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
             }
 
-            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+            if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                     new NonColorablePatternReportBuilder(perfect.ToArray(), combination, poss)) &&
-                        StopOnFirstPush) return true;
+                        StopOnFirstCommit) return true;
         }
         
         return false;

@@ -67,9 +67,9 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
                 solverData.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                    new AlternatingInferenceChainReportBuilder<CellPossibility>(chain)) &&
-                            strategy.StopOnFirstPush;
+                            strategy.StopOnFirstCommit;
     }
     
     static bool ProcessChainWithComplexGraph(ISudokuSolverData solverData, LinkGraphChain<ISudokuElement> chain,
@@ -85,9 +85,9 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
                 solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
         }
 
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                    new AlternatingInferenceChainReportBuilder<ISudokuElement>(chain)) &&
-                            strategy.StopOnFirstPush;
+                            strategy.StopOnFirstCommit;
     }
 }
 

@@ -68,13 +68,13 @@ public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : 
                         if (_loopsProcessed.Contains(loop)) continue;
 
                         if (inferenceType.ProcessFullLoop(view, loop) &&
-                            inferenceType.Strategy!.StopOnFirstPush) return true;
+                            inferenceType.Strategy!.StopOnFirstCommit) return true;
                         _loopsProcessed.Add(loop);
                     }
                     else
                     {
                         if (inferenceType.ProcessStrongInferenceLoop(view, cut.FirstElement(), cut.ToLoop(LinkStrength.Strong))
-                            && inferenceType.Strategy!.StopOnFirstPush) return true;
+                            && inferenceType.Strategy!.StopOnFirstCommit) return true;
                     }
                 }
                 AddToSearched(locallySearched, cut.FirstElement(), last);
@@ -109,13 +109,13 @@ public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : 
                         if (_loopsProcessed.Contains(loop)) continue;
 
                         if (inferenceType.ProcessFullLoop(view, loop) &&
-                            inferenceType.Strategy!.StopOnFirstPush) return true;
+                            inferenceType.Strategy!.StopOnFirstCommit) return true;
                         _loopsProcessed.Add(loop);
                     }
                     else
                     {
                         if (inferenceType.ProcessWeakInferenceLoop(view, cut.LastElement(), cut.ToLoop(LinkStrength.Weak))
-                            && inferenceType.Strategy!.StopOnFirstPush) return true;
+                            && inferenceType.Strategy!.StopOnFirstCommit) return true;
                     }
                 }
 

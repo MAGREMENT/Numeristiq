@@ -215,8 +215,8 @@ public class BUGLiteStrategy : SudokuStrategy
             }
         }
 
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-            new BUGLiteReportBuilder(bcp)) && StopOnFirstPush;
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
+            new BUGLiteReportBuilder(bcp)) && StopOnFirstCommit;
     }
 }
 

@@ -100,7 +100,7 @@ public class NakedDoublesStrategy : SudokuStrategy
 
         return solverData.ChangeBuffer.Commit(
             new LineNakedDoublesReportBuilder(possibilities, row, col1, col2, Unit.Row))
-            && StopOnFirstPush;
+            && StopOnFirstCommit;
     }
 
     private bool ProcessColumn(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities, int col,
@@ -118,7 +118,7 @@ public class NakedDoublesStrategy : SudokuStrategy
 
         return solverData.ChangeBuffer.Commit(
             new LineNakedDoublesReportBuilder(possibilities, col, row1, row2, Unit.Column))
-            && StopOnFirstPush;
+            && StopOnFirstCommit;
     }
 
     private bool ProcessMiniGrid(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities,
@@ -142,7 +142,7 @@ public class NakedDoublesStrategy : SudokuStrategy
 
         return solverData.ChangeBuffer.Commit(
             new MiniGridNakedDoublesReportBuilder(possibilities, miniRow, miniCol, gridNumber1, gridNumber2))
-            && StopOnFirstPush;
+            && StopOnFirstCommit;
     }
 
 }

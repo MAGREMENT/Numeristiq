@@ -136,7 +136,7 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
             {
                 result[progress.Row, progress.Column] = progress.Number;
 
-                foreach (var neighbor in TectonicCellUtility.GetNeighbors(progress.Row, progress.Column,
+                foreach (var neighbor in TectonicUtility.GetNeighbors(progress.Row, progress.Column,
                              _tectonic.RowCount, _tectonic.ColumnCount))
                 {
                     result.RemovePossibility(progress.Number, neighbor.Row, neighbor.Column);
@@ -179,7 +179,7 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
     {
         _possibilities[row, col] = new ReadOnlyBitSet8();
 
-        foreach (var neighbor in TectonicCellUtility.GetNeighbors(row, col, _tectonic.RowCount, _tectonic.ColumnCount))
+        foreach (var neighbor in TectonicUtility.GetNeighbors(row, col, _tectonic.RowCount, _tectonic.ColumnCount))
         {
             _possibilities[neighbor.Row, neighbor.Column] -= number;
         }

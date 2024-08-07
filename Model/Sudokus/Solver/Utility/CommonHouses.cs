@@ -109,7 +109,7 @@ public readonly struct CommonHouses : IEnumerable<House>
     {
         if ((_sharedHouses & RowBit) > 0) yield return new House(Unit.Row, _row);
         if ((_sharedHouses & ColumnBit) > 0) yield return new House(Unit.Column, _col);
-        if ((_sharedHouses & BoxBit) > 0) yield return new House(Unit.Box, _row * 3 + _col);
+        if ((_sharedHouses & BoxBit) > 0) yield return new House(Unit.Box, _row / 3 * 3 + _col / 3);
     }
 
     IEnumerator IEnumerable.GetEnumerator()

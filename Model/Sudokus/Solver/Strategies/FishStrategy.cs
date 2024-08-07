@@ -187,9 +187,9 @@ public class FishStrategy : SudokuStrategy
 
         if (_allowCannibalism.Value) ProcessCannibalism(solverData, number, coverSet);
         
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                 new FishReportBuilder(new HashSet<House>(_baseSet), coverSet, number,
-                    _toCover.Copy(), new List<Cell>(_fins))) && StopOnFirstPush;
+                    _toCover.Copy(), new List<Cell>(_fins))) && StopOnFirstCommit;
     }
 
     private void ProcessCannibalism(ISudokuSolverData solverData, int number, House[] coverSet)

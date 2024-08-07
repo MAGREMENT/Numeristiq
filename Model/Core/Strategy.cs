@@ -33,7 +33,7 @@ public abstract class Strategy : ISettingCollection
 
     public bool Locked { get; set; }
 
-    public bool StopOnFirstPush => InstanceHandling == InstanceHandling.FirstOnly;
+    public bool StopOnFirstCommit => InstanceHandling == InstanceHandling.FirstOnly;
     
     protected Strategy(string name, Difficulty difficulty, InstanceHandling defaultHandling)
     {

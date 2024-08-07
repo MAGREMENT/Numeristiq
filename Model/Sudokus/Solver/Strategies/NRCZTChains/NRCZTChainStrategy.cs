@@ -179,8 +179,8 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer<NumericChange>
             if (SudokuCellUtility.AreLinked(target, last)) solverData.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(new NRCZTChainReportBuilder(chain))
-                                                    && StopOnFirstPush;
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(new NRCZTChainReportBuilder(chain))
+                                                    && StopOnFirstCommit;
     }
 
     public int Compare(IChangeCommit<NumericChange> first, IChangeCommit<NumericChange> second)

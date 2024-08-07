@@ -11,8 +11,8 @@ public interface IChangeBuffer<TChange, TVerifier, THighlighter>
 { 
     List<ChangeCommit<TChange, TVerifier, THighlighter>> Commits { get; }
 
-    bool NotEmpty();
-    bool Commit(IChangeReportBuilder<TChange, TVerifier, THighlighter> builder);
+    bool NeedCommit();
+    bool Commit(IChangeReportBuilder<TChange, TVerifier, THighlighter> builder); //TODO look into removing return value
     IEnumerable<TChange> DumpChanges();
 }
 
@@ -50,15 +50,14 @@ public class DichotomousChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<Di
         if (_producer.CanAddSolution(cell)) _solutionsAdded.Add(cell);
     }
     
-    public bool NotEmpty()
+    public bool NeedCommit()
     {
-        return _possibilitiesRemoved.Count > 0 || _solutionsAdded.Count > 0;
+        return !_producer.FastMode && (_possibilitiesRemoved.Count > 0 || _solutionsAdded.Count > 0);
     }
 
     public bool Commit(IChangeReportBuilder<DichotomousChange, TVerifier, THighlighter> builder)
     {
-        if (_producer.FastMode ||
-            (_possibilitiesRemoved.Count == 0 && _solutionsAdded.Count == 0)) return false;
+        if (!NeedCommit()) return false;
 
         Commits.Add(new ChangeCommit<DichotomousChange, TVerifier, THighlighter>(EstablishChangeList(), builder));
         return true;
@@ -146,15 +145,14 @@ public class NumericChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<Numeri
         if (_producer.CanAddSolution(cp)) _solutionsAdded.Add(cp);
     }
 
-    public bool NotEmpty()
+    public bool NeedCommit()
     {
-        return _possibilitiesRemoved.Count > 0 || _solutionsAdded.Count > 0;
+        return !_producer.FastMode && (_possibilitiesRemoved.Count > 0 || _solutionsAdded.Count > 0);
     }
 
     public bool Commit(IChangeReportBuilder<NumericChange, TVerifier, THighlighter> builder)
     {
-        if (_producer.FastMode ||
-            (_possibilitiesRemoved.Count == 0 && _solutionsAdded.Count == 0)) return false;
+        if (!NeedCommit()) return false;
 
         Commits.Add(new ChangeCommit<NumericChange, TVerifier, THighlighter>(EstablishChangeList(), builder));
         return true;
@@ -226,14 +224,14 @@ public class BinaryChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<BinaryC
         if (_producer.CanAddSolution(cp)) _added.Add(cp);
     }
 
-    public bool NotEmpty()
+    public bool NeedCommit()
     {
-        return _added.Count > 0;
+        return !_producer.FastMode && _added.Count > 0;
     }
 
     public bool Commit(IChangeReportBuilder<BinaryChange, TVerifier, THighlighter> builder)
     {
-        if (_producer.FastMode || _added.Count == 0) return false;
+        if (!NeedCommit()) return false;
 
         Commits.Add(new ChangeCommit<BinaryChange, TVerifier, THighlighter>(EstablishChangeList(), builder));
         return true;

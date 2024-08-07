@@ -118,7 +118,7 @@ public class NakedSetStrategy : SudokuStrategy
         }
         
         return solverData.ChangeBuffer.Commit( new LineNakedPossibilitiesReportBuilder(toRemove,
-            except, row, Unit.Row)) && StopOnFirstPush;
+            except, row, Unit.Row)) && StopOnFirstCommit;
     }
     
     private LinePositions EveryColumnCellWithLessPossibilities(ISudokuSolverData solverData, int col, int than)
@@ -173,7 +173,7 @@ public class NakedSetStrategy : SudokuStrategy
         }
         
         return solverData.ChangeBuffer.Commit( new LineNakedPossibilitiesReportBuilder(toRemove, except,
-            col, Unit.Column)) && StopOnFirstPush;
+            col, Unit.Column)) && StopOnFirstCommit;
     }
     
     private BoxPositions EveryMiniGridCellWithLessPossibilities(ISudokuSolverData solverData, int miniRow, int miniCol, int than)
@@ -242,7 +242,7 @@ public class NakedSetStrategy : SudokuStrategy
         }
         
         return solverData.ChangeBuffer.Commit( new MiniGridNakedPossibilitiesReportBuilder(toRemove,
-            except)) && StopOnFirstPush;
+            except)) && StopOnFirstCommit;
     }
 }
 

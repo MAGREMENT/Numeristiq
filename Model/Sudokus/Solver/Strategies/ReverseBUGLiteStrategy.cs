@@ -74,9 +74,9 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
                     }
                 }
 
-                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                         new ReverseBUGLiteChangeReport(row1, row2, cols1, cols2, Unit.Row)) &&
-                            StopOnFirstPush) return;
+                            StopOnFirstCommit) return;
             }
         }
         
@@ -134,9 +134,9 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
                     }
                 }
 
-                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                         new ReverseBUGLiteChangeReport(col1, col2, rows1, rows2, Unit.Column)) &&
-                            StopOnFirstPush) return;
+                            StopOnFirstCommit) return;
             }
         }
     }

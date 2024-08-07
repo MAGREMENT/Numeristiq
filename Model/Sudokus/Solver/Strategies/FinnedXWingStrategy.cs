@@ -65,9 +65,9 @@ public class FinnedXWingStrategy : SudokuStrategy
         if (finnedPos.Contains(asArray[1]) && HasSameMiniCol(finnedPos, asArray[0], asArray[1]))
             ProcessRow(solverData, normalRow, finnedRow, asArray[0], number);
 
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
             new FinnedXWingReportBuilder(normalPos, normalRow, finnedPos,
-                finnedRow, number, Unit.Row)) && StopOnFirstPush;
+                finnedRow, number, Unit.Row)) && StopOnFirstCommit;
     }
 
     private bool ExamineColumn(ISudokuSolverData solverData, int normalCol, int finnedCol,
@@ -81,9 +81,9 @@ public class FinnedXWingStrategy : SudokuStrategy
         if (finnedPos.Contains(asArray[1]) && HasSameMiniRow(finnedPos, asArray[0], asArray[1]))
             ProcessColumn(solverData, normalCol, finnedCol, asArray[0], number);
 
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                 new FinnedXWingReportBuilder(normalPos, normalCol,
-                    finnedPos, finnedCol, number, Unit.Column)) && StopOnFirstPush;
+                    finnedPos, finnedCol, number, Unit.Column)) && StopOnFirstCommit;
     }
 
     private bool HasSameMiniCol(IReadOnlyLinePositions toExamine, int col, int except)

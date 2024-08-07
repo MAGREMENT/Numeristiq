@@ -75,9 +75,9 @@ public class AlmostClaimingSetStrategy : SudokuStrategy
                         HandleCorrespondence(solverData, als.Possibilities, correspondence);
                         HandleAls(solverData, als.Possibilities, rowCenterCells, als);
 
-                        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+                        if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                                 new AlmostClaimingSetReportBuilder(als, correspondence, rowCenterCells)) &&
-                            StopOnFirstPush) return;
+                            StopOnFirstCommit) return;
                     }
 
                     foreach (var als in SearchColumnForAls(solverData, miniCol * 3 + u, miniRow))
@@ -91,9 +91,9 @@ public class AlmostClaimingSetStrategy : SudokuStrategy
                         HandleCorrespondence(solverData, als.Possibilities, correspondence);
                         HandleAls(solverData, als.Possibilities, colCenterCells, als);
                         
-                        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+                        if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                                 new AlmostClaimingSetReportBuilder(als, correspondence, colCenterCells)) &&
-                            StopOnFirstPush) return;
+                            StopOnFirstCommit) return;
                     }
 
                     foreach (var als in SearchMiniGridForAls(solverData, miniRow, miniCol,
@@ -111,9 +111,9 @@ public class AlmostClaimingSetStrategy : SudokuStrategy
                         HandleCorrespondence(solverData, als.Possibilities, cells);
                         HandleAls(solverData, als.Possibilities, rowCenterCells, als);
                         
-                        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+                        if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                                 new AlmostClaimingSetReportBuilder(als, cells, rowCenterCells)) &&
-                            StopOnFirstPush) return;
+                            StopOnFirstCommit) return;
                     }
                     
                     foreach (var als in SearchMiniGridForAls(solverData, miniRow, miniCol,
@@ -131,9 +131,9 @@ public class AlmostClaimingSetStrategy : SudokuStrategy
                         HandleCorrespondence(solverData, als.Possibilities, cells);
                         HandleAls(solverData, als.Possibilities, colCenterCells, als);
                         
-                        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
+                        if (solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit(
                                 new AlmostClaimingSetReportBuilder(als, cells, colCenterCells)) &&
-                            StopOnFirstPush) return;
+                            StopOnFirstCommit) return;
                     }
                 }
             }

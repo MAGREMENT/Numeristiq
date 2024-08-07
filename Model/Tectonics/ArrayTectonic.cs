@@ -117,7 +117,7 @@ public class ArrayTectonic : ITectonic
     public bool MergeZones(IZone z1, IZone z2)
     {
         if (z1.Count + z2.Count > IZone.MaxCount || z1.Equals(z2) ||
-            !TectonicCellUtility.AreAdjacent(z1, z2)) return false;
+            !TectonicUtility.AreAdjacent(z1, z2)) return false;
         
         List<Cell> total = new();
         if (z1 is SoloZone sz1) total.Add(sz1.Cell);
@@ -162,7 +162,7 @@ public class ArrayTectonic : ITectonic
         AddZoneUnchecked(first);
         CheckZoneIntegrity(_zones.Count - 1);
 
-        foreach (var otherZone in TectonicCellUtility.DivideInAdjacentCells(second))
+        foreach (var otherZone in TectonicUtility.DivideInAdjacentCells(second))
         {
             AddZoneUnchecked(otherZone);
             CheckZoneIntegrity(_zones.Count - 1);
@@ -205,7 +205,7 @@ public class ArrayTectonic : ITectonic
                 var n = this[row, col];
                 if (n == 0) return false;
 
-                foreach (var cell in TectonicCellUtility.GetNeighbors(row, col, RowCount, ColumnCount))
+                foreach (var cell in TectonicUtility.GetNeighbors(row, col, RowCount, ColumnCount))
                 {
                     if (this[cell.Row, cell.Column] == n) return false;
                 }

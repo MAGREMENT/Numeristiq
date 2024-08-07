@@ -107,7 +107,7 @@ public class DeathBlossomStrategy : SudokuStrategy
                                 
                                 Process(solverData, current, seenCell, eliminationsCauses[seenCell],
                                     possibility);
-                                if (StopOnFirstPush) return;
+                                if (StopOnFirstCommit) return;
                             }
                             
                             buffer.Clear();

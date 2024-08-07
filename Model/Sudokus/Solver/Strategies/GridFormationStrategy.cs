@@ -89,7 +89,7 @@ public class GridFormationStrategy : SudokuStrategy
         return solverData.ChangeBuffer.Commit( unit == Unit.Row
                 ? new GridFormationReportBuilder(visited, toRemove, number)
                 : new GridFormationReportBuilder(toRemove, visited, number)) 
-               && StopOnFirstPush;
+               && StopOnFirstCommit;
     }
 }
 

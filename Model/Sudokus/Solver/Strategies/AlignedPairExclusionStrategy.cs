@@ -133,9 +133,9 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
         SearchForElimination(solverData, poss1, poss2, forbidden, row1, col1, inSameUnit);
         SearchForElimination(solverData, poss2, poss1, forbidden, row2, col2, inSameUnit);
         
-        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit( 
+        return solverData.ChangeBuffer.NeedCommit() && solverData.ChangeBuffer.Commit( 
             new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2))
-                && StopOnFirstPush;
+                && StopOnFirstCommit;
     }
 
     private void SearchForElimination(ISudokuSolverData solverData, ReadOnlyBitSet16 poss1,

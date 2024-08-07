@@ -42,7 +42,7 @@ public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitCo
 
         if (cells.Count == Limit) return false;
 
-        foreach (var cell in TectonicCellUtility.SharedNeighboringCells(tectonicSolverData.Tectonic, cells))
+        foreach (var cell in TectonicUtility.SharedNeighboringCells(tectonicSolverData.Tectonic, cells))
         {
             if (done.Contains(cell)) continue;
 
@@ -71,7 +71,7 @@ public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitCo
                 if (tectonicSolverData.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
             }
 
-            foreach (var target in TectonicCellUtility.SharedSeenCells(tectonicSolverData.Tectonic, buffer))
+            foreach (var target in TectonicUtility.SharedSeenCells(tectonicSolverData.Tectonic, buffer))
             {
                 tectonicSolverData.ChangeBuffer.ProposePossibilityRemoval(possibility, target);
             }
@@ -80,7 +80,7 @@ public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitCo
         }
         
         return tectonicSolverData.ChangeBuffer.Commit(new GroupEliminationReportBuilder(cells.ToArray()))
-            && StopOnFirstPush;
+            && StopOnFirstCommit;
     }
 
     public int Compare(IChangeCommit<NumericChange> first, IChangeCommit<NumericChange> second)

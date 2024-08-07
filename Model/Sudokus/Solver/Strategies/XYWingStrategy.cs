@@ -99,7 +99,7 @@ public class XYWingStrategy : SudokuStrategy
 
         return solverData.ChangeBuffer.Commit(
             new XYWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2))
-            && StopOnFirstPush;
+            && StopOnFirstCommit;
     }
 }
 
