@@ -45,21 +45,14 @@ public class AlternatingInferenceGeneralization : Strategy<ITectonicSolverData>
 
             foreach (var eOn in graph.Neighbors(current, LinkStrength.Strong))
             {
-                if (!on.TryAdd(eOn, current)) continue;
-                
-                /*if (((off.TryGetValue(eOn, out var before) && !before.Equals(current)) 
-                    || (eOn is CellPossibility cp1 && cp1 == start))
-                    && TryFindLoop(current, eOn, off, on) >= 4)
-                {
-                    if(TryProcessLoop(solverData, eOn, true, on, off)) return true;
-                    continue;
-                }*/ //TODO fix this dumb shit
+                if (IsInPath(current, eOn, off, on) || !on.TryAdd(eOn, current)) continue;
 
                 if (TryProcessChain(solverData, start, eOn, on, off)) return true;
 
                 foreach (var eOff in graph.Neighbors(eOn))
                 {
-                    if (eOff is CellPossibility cp2 && cp2 == start) continue;
+                    if (eOff is CellPossibility cp2 && cp2 == start || IsInPath(eOn, eOff, on, off))
+                        continue;
                     
                     if (off.TryAdd(eOff, eOn)) queue.Enqueue(eOff);
                 }
@@ -85,34 +78,21 @@ public class AlternatingInferenceGeneralization : Strategy<ITectonicSolverData>
         return StopOnFirstCommit;
     }
 
-    private bool TryProcessLoop(ITectonicSolverData solverData, ITectonicElement current, bool isStrong,
-        Dictionary<ITectonicElement, ITectonicElement> on, Dictionary<ITectonicElement, ITectonicElement> off)
+    private static bool IsInPath(ITectonicElement from, ITectonicElement target,
+        Dictionary<ITectonicElement, ITectonicElement> first, Dictionary<ITectonicElement, ITectonicElement> second)
     {
-        if (current is not CellPossibility cp) return false;
-        if (isStrong) solverData.ChangeBuffer.ProposeSolutionAddition(cp);
-        else solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
-        
-        if (!solverData.ChangeBuffer.NeedCommit()) return false;
+        var isFirst = true;
+        var current = from;
 
-        solverData.ChangeBuffer.Commit(new AlternatingInferenceLoopReportBuilder(current, isStrong, on, off));
-        return StopOnFirstCommit;
-    }
-
-    private int TryFindLoop(ITectonicElement current, ITectonicElement objective, Dictionary<ITectonicElement, ITectonicElement> start,
-        Dictionary<ITectonicElement, ITectonicElement> other)
-    {
-        var result = 1;
-        bool s = true;
-        while ((s ? start : other).TryGetValue(current, out var next))
+        while (isFirst ? first.TryGetValue(current, out var next) : second.TryGetValue(current, out next))
         {
-            if (next.Equals(objective)) return result;
-            
-            result++;
+            if (next.Equals(target)) return true;
+
             current = next;
-            s = !s;
+            isFirst = !isFirst;
         }
 
-        return -1;
+        return false;
     }
 }
 

@@ -51,10 +51,11 @@ public abstract class DrawingBoard : FrameworkElement
     protected override void OnRender(DrawingContext context)
     {
         if (!RefreshAllowed) return;
-            
+
         foreach (var list in _layers)
         {
-            foreach (var component in list)
+            //ToArray() is for thread-safety
+            foreach (var component in list.ToArray())
             {
                 component.Draw(context, this);
             }

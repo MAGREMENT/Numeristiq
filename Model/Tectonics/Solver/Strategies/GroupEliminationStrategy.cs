@@ -42,7 +42,7 @@ public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitCo
 
         if (cells.Count == Limit) return false;
 
-        foreach (var cell in TectonicUtility.SharedNeighboringCells(tectonicSolverData.Tectonic, cells))
+        foreach (var cell in TectonicUtility.SharedSeenCells(tectonicSolverData.Tectonic, cells))
         {
             if (done.Contains(cell)) continue;
 
