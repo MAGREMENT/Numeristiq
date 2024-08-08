@@ -10,12 +10,16 @@ namespace Model.Sudokus.Solver.Utility.Oddagons;
 
 public static class OddagonSearcher
 {
-    private static readonly IOddagonSearchAlgorithm Algorithm = new OddagonSearchAlgorithmV3(7, 3);
+    private static readonly IOddagonSearchAlgorithm Algorithm = new OddagonSearchAlgorithmV1();
 
-    public static List<AlmostOddagon> Search(ISudokuSolverData solverData)
+    public static List<AlmostOddagon> Search(ISudokuSolverData solverData, int maxLength, int maxGuardians)
     {
         solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
             SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
+
+        Algorithm.MaxLength = maxLength;
+        Algorithm.MaxGuardians = maxGuardians;
+        
         return Algorithm.Search(solverData, solverData.PreComputer.Graphs.SimpleLinkGraph);
     }
 

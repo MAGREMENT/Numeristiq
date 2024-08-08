@@ -145,7 +145,7 @@ public class SudokuPreComputer
 
     private List<AlmostOddagon> DoAlmostOddagons()
     {
-        return OddagonSearcher.Search(_solverData);
+        return OddagonSearcher.Search(_solverData, 7, 3);
     }
 
     private PossibilitiesGraph<IPossibilitySet> DoAlmostLockedSetGraph()

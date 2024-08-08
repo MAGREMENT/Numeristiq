@@ -1,7 +1,8 @@
-using System.Collections.Generic;
-using Model.Core;
+using System;
+using System.Linq;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Utility.Oddagons;
 
@@ -16,12 +17,26 @@ public class AlmostOddagon
         Guardians = guardians;
     }
 
-    public static AlmostOddagon FromBoard(ISudokuSolvingState holder, LinkGraphLoop<CellPossibility> loop)
+    public override string ToString()
     {
-        List<CellPossibility> guardians = new();
-        loop.ForEachLink((one, two) => guardians.AddRange(
-                OddagonSearcher.FindGuardians(holder, one, two)), LinkStrength.Weak);
+        return $"{Loop} with guardians {Guardians.ToStringSequence(", ")}";
+    }
 
-        return new AlmostOddagon(loop, guardians.ToArray());
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Loop.GetHashCode(), Guardians.GetHashCode());
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not AlmostOddagon ao || !ao.Loop.Equals(Loop) || ao.Guardians.Length != Guardians.Length)
+            return false;
+
+        foreach (var g in Guardians)
+        {
+            if (!ao.Guardians.Contains(g)) return false;
+        }
+
+        return true;
     }
 }

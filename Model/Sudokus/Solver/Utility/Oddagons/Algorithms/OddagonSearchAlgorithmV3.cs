@@ -1,4 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Model.Core;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 
@@ -6,90 +8,68 @@ namespace Model.Sudokus.Solver.Utility.Oddagons.Algorithms;
 
 public class OddagonSearchAlgorithmV3 : IOddagonSearchAlgorithm
 {
-    private readonly int _maxLength;
-    private readonly int _maxGuardians;
-
-    public OddagonSearchAlgorithmV3(int maxLength, int maxGuardians)
-    {
-        _maxLength = maxLength;
-        _maxGuardians = maxGuardians;
-    }
-
-
+    public int MaxLength { get; set; }
+    public int MaxGuardians { get; set; }
+    
     public List<AlmostOddagon> Search(ISudokuSolverData solverData, ILinkGraph<CellPossibility> graph)
     {
-        List<AlmostOddagon> result = new();
-        foreach (var start in graph)
-        {
-            Search(solverData, new LinkGraphChainBuilder<CellPossibility>(start),
-                new List<CellPossibility>(), graph, result);
-        }
-
-        return result;
+        return CycleBasis.Find(graph, (a, b, c) 
+            => ConstructLoop(a, b, c, solverData));
     }
 
-    private void Search(ISudokuSolverData solverData, LinkGraphChainBuilder<CellPossibility> builder,
-        List<CellPossibility> currentGuardians, ILinkGraph<CellPossibility> graph, List<AlmostOddagon> result)
+    private AlmostOddagon? ConstructLoop(List<CellPossibility> fullPath, List<CellPossibility> nonFullPath,
+        int index, ISudokuSolvingState state)
     {
-        if (builder.Count > _maxLength) return;
+        if (fullPath.Count + index + 1 > MaxLength) return null;
         
-        var last = builder.LastElement();
-        var first = builder.FirstElement();
+        List<CellPossibility> elements = new();
+        List<LinkStrength> links = new();
+        HashSet<CellPossibility> guardians = new();
 
-        foreach (var friend in graph.Neighbors(last, LinkStrength.Strong))
+        for (int i = 0; i < fullPath.Count; i++)
         {
-            if (currentGuardians.Contains(friend)) continue;
-            
-            if (friend == first)
-            {
-                if (builder.Count < 5 || builder.Count % 2 != 1) continue;
+            var e = fullPath[i];
+            if (guardians.Contains(e)) return null;
 
-                result.Add(new AlmostOddagon(builder.ToLoop(LinkStrength.Strong), currentGuardians.ToArray()));
-            }
-            else if (!builder.ContainsElement(friend))
-            {
-                builder.Add(LinkStrength.Strong, friend);
-                Search(solverData, builder, currentGuardians, graph, result);
-                builder.RemoveLast();
-            }
+            elements.Add(e);
+            if (i != fullPath.Count - 1 && ProcessLink(state, e, fullPath[i + 1], guardians,
+                    elements, links)) return null;
         }
-        
-        foreach (var friend in graph.Neighbors(last, LinkStrength.Weak))
+
+        if (!ProcessLink(state, fullPath[^1], nonFullPath[index], guardians, elements, links)) return null;
+
+        for (int i = index; i >= 0; i--)
         {
-            if (currentGuardians.Contains(friend)) continue;
+            var e = nonFullPath[i];
+            if (guardians.Contains(e)) return null;
 
-            bool ok = true;
-            var count = 0;
-            foreach (var guardian in OddagonSearcher.FindGuardians(solverData, last, friend))
-            {
-                if (currentGuardians.Contains(guardian)) continue;
-                if (builder.ContainsElement(guardian))
-                {
-                    ok = false;
-                    break;
-                }
-                
-                currentGuardians.Add(guardian);
-                count++;
-            }
-
-            if (ok && currentGuardians.Count <= _maxGuardians)
-            {
-                if (friend == first)
-                {
-                    if (builder.Count < 5 || builder.Count % 2 != 1) continue;
-
-                    result.Add(new AlmostOddagon(builder.ToLoop(LinkStrength.Weak), currentGuardians.ToArray()));
-                }
-                else if (!builder.ContainsElement(friend))
-                {
-                    builder.Add(LinkStrength.Weak, friend);
-                    Search(solverData, builder, currentGuardians, graph, result);
-                    builder.RemoveLast();
-                }  
-            }
-            
-            currentGuardians.RemoveRange(currentGuardians.Count - count, count);
+            elements.Add(e);
+            if (i != 0 && ProcessLink(state, e, nonFullPath[i - 1], guardians, elements, links)) return null;
         }
+
+        return ProcessLink(state, nonFullPath[0], fullPath[0], guardians, elements, links)
+            ? new AlmostOddagon(new LinkGraphLoop<CellPossibility>(elements.ToArray(), links.ToArray()),
+                guardians.ToArray())
+            : null;
+    }
+
+    private bool ProcessLink(ISudokuSolvingState state, CellPossibility e1, CellPossibility e2,
+        HashSet<CellPossibility> guardians, List<CellPossibility> elements, List<LinkStrength> links)
+    {
+        var buffer = OddagonSearcher.FindGuardians(state, e1, e2);
+        var yes = false;
+        foreach (var g in buffer)
+        {
+            yes = true;
+            if(guardians.Contains(g)) continue;
+
+            if (elements.Contains(g)) return false;
+
+            guardians.Add(g);
+            if (guardians.Count > MaxGuardians) return false;
+        }
+
+        links.Add(yes ? LinkStrength.Weak : LinkStrength.Strong);
+        return true;
     }
 }

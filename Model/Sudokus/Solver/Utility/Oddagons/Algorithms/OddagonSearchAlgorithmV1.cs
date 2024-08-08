@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
@@ -7,89 +6,83 @@ namespace Model.Sudokus.Solver.Utility.Oddagons.Algorithms;
 
 public class OddagonSearchAlgorithmV1 : IOddagonSearchAlgorithm
 {
+    public int MaxLength { get; set; }
+    public int MaxGuardians { get; set; }
+
     public List<AlmostOddagon> Search(ISudokuSolverData solverData, ILinkGraph<CellPossibility> graph)
     {
-        var result = new List<AlmostOddagon>();
-
-        Queue<CellPossibility> queue = new();
-        Dictionary<CellPossibility, CellPossibility> parents = new();
+        List<AlmostOddagon> result = new();
         foreach (var start in graph)
         {
-            queue.Enqueue(start);
-            while (queue.Count > 0)
+            Search(solverData, new LinkGraphChainBuilder<CellPossibility>(start),
+                new List<CellPossibility>(), graph, result);
+        }
+
+        return result;
+    }
+
+    private void Search(ISudokuSolverData solverData, LinkGraphChainBuilder<CellPossibility> builder,
+        List<CellPossibility> currentGuardians, ILinkGraph<CellPossibility> graph, List<AlmostOddagon> result)
+    {
+        if (builder.Count > MaxLength) return;
+        
+        var last = builder.LastElement();
+        var first = builder.FirstElement();
+
+        foreach (var friend in graph.Neighbors(last, LinkStrength.Strong))
+        {
+            if (currentGuardians.Contains(friend)) continue;
+            
+            if (friend == first)
             {
-                var current = queue.Dequeue();
-                bool hasParent = parents.TryGetValue(current, out var currentParent);
-                
-                foreach (var friend in graph.Neighbors(current))
+                if (builder.Count < 5 || builder.Count % 2 != 1) continue;
+
+                result.Add(new AlmostOddagon(builder.ToLoop(LinkStrength.Strong), currentGuardians.ToArray()));
+            }
+            else if (!builder.ContainsElement(friend))
+            {
+                builder.Add(LinkStrength.Strong, friend);
+                Search(solverData, builder, currentGuardians, graph, result);
+                builder.RemoveLast();
+            }
+        }
+        
+        foreach (var friend in graph.Neighbors(last, LinkStrength.Weak))
+        {
+            if (currentGuardians.Contains(friend)) continue;
+            
+            bool ok = true;
+            var count = 0;
+            foreach (var guardian in OddagonSearcher.FindGuardians(solverData, last, friend))
+            {
+                if (currentGuardians.Contains(guardian)) continue;
+                if (builder.ContainsElement(guardian))
                 {
-                    if (friend == start ||(hasParent && friend == currentParent)) continue;
-                    
-                    if (parents.ContainsKey(friend))
-                    {
-                        var path1 = PathToRoot(parents, current);
-                        var path2 = PathToRoot(parents, friend);
+                    ok = false;
+                    break;
+                }
+                
+                currentGuardians.Add(guardian);
+                count++;
+            }
 
-                        var supposedTotal = path1.Length + path2.Length - 1;
-                        if (supposedTotal < 5 || supposedTotal % 2 != 1) continue;
+            if (ok && currentGuardians.Count <= MaxGuardians)
+            {
+                if (friend == first)
+                {
+                    if (builder.Count < 5 || builder.Count % 2 != 1) continue;
 
-                        var set = new HashSet<CellPossibility>(path1);
-                        set.UnionWith(path2);
-                        if (set.Count != supposedTotal) continue;
-
-                        var elements = new CellPossibility[supposedTotal];
-                        Array.Reverse(path2);
-                        Array.Copy(path1, 0, elements, 0, path1.Length);
-                        Array.Copy(path2, 1, elements, path1.Length, path2.Length - 1);
-                        
-                        result.Add(AlmostOddagon.FromBoard(solverData, new LinkGraphLoop<CellPossibility>(elements,
-                            SearchLinks(elements, graph))));
-                    }
-                    else
-                    {
-                        parents.Add(friend, current);
-                        queue.Enqueue(friend);
-                    }
+                    result.Add(new AlmostOddagon(builder.ToLoop(LinkStrength.Weak), currentGuardians.ToArray()));
+                }
+                else if (!builder.ContainsElement(friend))
+                {
+                    builder.Add(LinkStrength.Weak, friend);
+                    Search(solverData, builder, currentGuardians, graph, result);
+                    builder.RemoveLast();
                 }
             }
-            
-            queue.Clear();
-            parents.Clear();
+
+            currentGuardians.RemoveRange(currentGuardians.Count - count, count);
         }
-
-        return result;
-    }
-
-    private CellPossibility[] PathToRoot(Dictionary<CellPossibility, CellPossibility> parents, CellPossibility from)
-    {
-        List<CellPossibility> result = new();
-        result.Add(from);
-
-        var current = from;
-        while (parents.TryGetValue(current, out var parent))
-        {
-            result.Add(parent);
-            current = parent;
-        }
-
-        return result.ToArray();
-    }
-
-    private LinkStrength[] SearchLinks(CellPossibility[] elements, ILinkGraph<CellPossibility> graph)
-    {
-        var result = new LinkStrength[elements.Length];
-
-        for (int i = 0; i < elements.Length - 1; i++)
-        {
-            result[i] = graph.AreNeighbors(elements[i], elements[i + 1], LinkStrength.Strong)
-                ? LinkStrength.Strong
-                : LinkStrength.Weak;
-        }
-        
-        result[^1] = graph.AreNeighbors(elements[^1], elements[0], LinkStrength.Strong)
-            ? LinkStrength.Strong
-            : LinkStrength.Weak;
-        
-        return result;
     }
 }

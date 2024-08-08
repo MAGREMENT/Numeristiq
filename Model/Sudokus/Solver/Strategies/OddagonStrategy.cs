@@ -64,7 +64,6 @@ public class OddagonReportBuilder : IChangeReportBuilder<NumericChange, ISudokuS
 
             foreach (var cp in _oddagon.Guardians)
             {
-                lighter.EncirclePossibility(cp);
                 lighter.HighlightPossibility(cp, StepColor.On);
             }
 
