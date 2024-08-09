@@ -9,7 +9,7 @@ namespace Model.Sudokus.Solver.Utility.Graphs;
 public class Chain<TElement, TLink> : IEnumerable<TElement> where TElement : notnull where TLink : notnull
 {
     public TElement[] Elements { get; }
-    public TLink[] Links { get; protected init; }
+    public TLink[] Links { get; }
 
     public int Count => Elements.Length;
 
@@ -241,7 +241,7 @@ public class ChainBuilder<TElement, TLink> where TElement : notnull where TLink 
 
 public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ISudokuElement
 {
-    public bool IsMonoDirectional { get; init; } = false;
+    public bool IsMonoDirectional { get; init; }
     
     public LinkGraphChain(T[] elements, LinkStrength[] links) : base(elements, links)
     {
@@ -324,16 +324,6 @@ public class LinkGraphLoop<T> : Loop<T, LinkStrength> where T : ISudokuElement
     
     public LinkGraphLoop(T[] elements, LinkStrength[] links, LinkStrength lastLink) : base(elements, links, lastLink)
     {
-    }
-
-    public int IndexOf(T element)
-    {
-        for (int i = 0; i < Elements.Length; i++)
-        {
-            if (Elements[i].Equals(element)) return i;
-        }
-
-        return -1;
     }
     
     public int MaxRank()

@@ -1,25 +1,23 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Model.Core;
+using Model.Core.Highlighting;
+using Model.Core.Steps;
 using Model.Nonograms;
 using Model.Nonograms.Solver;
 using Model.Nonograms.Solver.Strategies;
 
 namespace DesktopApplication.Presenter.Nonograms.Solve;
 
-public class NonogramSolvePresenter
+public class NonogramSolvePresenter : SolveWithStepsPresenter<INonogramHighlighter,
+    IDichotomousStep<INonogramHighlighter>, IDichotomousSolvingState>
 {
     private readonly INonogramSolveView _view;
     private readonly NonogramSolver _solver;
-    private readonly NonogramHighlightTranslator _translator;
-    
-    private int _stepCount;
-    private StateShown _stateShown = StateShown.Before;
-    private int _currentlyOpenedStep = -1;
 
-    public NonogramSolvePresenter(INonogramSolveView view)
+    public NonogramSolvePresenter(INonogramSolveView view) : base(new NonogramHighlightTranslator(view.Drawer))
     {
         _view = view;
-        _translator = new NonogramHighlightTranslator(_view.Drawer);
         _solver = new NonogramSolver();
         _solver.StrategyManager.AddStrategies(new PerfectRemainingSpaceStrategy(), new NotEnoughSpaceStrategy(),
             new EdgeValueStrategy(), new PerfectValueSpaceStrategy(), new ValueCompletionStrategy(),
@@ -31,8 +29,8 @@ public class NonogramSolvePresenter
     {
         _solver.SetNonogram(NonogramTranslator.TranslateLineFormat(s));
         SetUpNewNonogram();
-        ShowCurrentState();
-        ClearLogs();
+        SetShownState(_solver, false, false);
+        ClearSteps();
     }
 
     public void ShowNonogramAsString()
@@ -46,78 +44,13 @@ public class NonogramSolvePresenter
         await Task.Run(() => _solver.Solve(stopAtProgress));
         _solver.StrategyEnded -= OnStrategyEnd;
     }
-    
-    public void RequestLogOpening(int id)
-    {
-        var index = id - 1;
-        if (index < 0 || index > _solver.Steps.Count) return;
-        
-        _view.CloseLogs();
-
-        if (_currentlyOpenedStep == index)
-        {
-            _currentlyOpenedStep = -1;
-            ShowState(_solver);
-        }
-        else
-        {
-            _view.OpenLog(index);
-            _currentlyOpenedStep = index;
-
-            var log = _solver.Steps[index];
-            ShowState(_stateShown == StateShown.Before ? log.From : log.To); 
-            _translator.Translate(log.HighlightManager); 
-        }
-    }
-
-    public void RequestStateShownChange(StateShown ss)
-    {
-        _stateShown = ss;
-        _view.SetLogsStateShown(ss);
-        if (_currentlyOpenedStep < 0 || _currentlyOpenedStep > _solver.Steps.Count) return;
-        
-        var log = _solver.Steps[_currentlyOpenedStep];
-        ShowState(_stateShown == StateShown.Before ? log.From : log.To); 
-        _translator.Translate(log.HighlightManager);
-    }
-
-    public void RequestHighlightChange(int newHighlight)
-    {
-        if (_currentlyOpenedStep < 0 || _currentlyOpenedStep >= _solver.Steps.Count) return;
-        
-        var log = _solver.Steps[_currentlyOpenedStep];
-        log.HighlightManager.GoTo(newHighlight - 1);
-        
-        _view.Drawer.ClearHighlights();
-        _translator.Translate(log.HighlightManager);
-    }
 
     private void OnStrategyEnd(Strategy strategy, int index, int p, int s)
     {
         if (p + s == 0) return;
         
-        ShowCurrentState();
-        UpdateLogs();
-    }
-    
-    private void ClearLogs()
-    {
-        _view.ClearLogs();
-        _stepCount = 0;
-    }
-    
-    private void UpdateLogs()
-    {
-        if (_solver.Steps.Count < _stepCount)
-        {
-            ClearLogs();
-            return;
-        }
-
-        for (;_stepCount < _solver.Steps.Count; _stepCount++)
-        {
-            _view.AddLog(_solver.Steps[_stepCount], _stateShown);
-        }
+        SetShownState(_solver, false, false);
+        UpdateSteps();
     }
 
     private void SetUpNewNonogram()
@@ -125,15 +58,9 @@ public class NonogramSolvePresenter
         var drawer = _view.Drawer;
         drawer.SetRows(_solver.Nonogram.HorizontalLines);
         drawer.SetColumns(_solver.Nonogram.VerticalLines);
-        ShowCurrentState();
     }
 
-    private void ShowCurrentState()
-    {
-        ShowState(_solver);
-    }
-
-    private void ShowState(IDichotomousSolvingState state)
+    protected override void SetShownState(IDichotomousSolvingState state, bool solutionAsClues, bool showPossibilities)
     {
         var drawer = _view.Drawer;
         drawer.ClearSolutions();
@@ -150,5 +77,20 @@ public class NonogramSolvePresenter
         }
         
         drawer.Refresh();
+    }
+
+    protected override IReadOnlyList<IDichotomousStep<INonogramHighlighter>> Steps => _solver.Steps;
+    protected override ISolveWithStepsView View => _view;
+    public override IStepExplanationPresenterBuilder? RequestExplanation()
+    {
+        
+        if (_currentlyOpenedStep < 0 || _currentlyOpenedStep >= _solver.Steps.Count) return null;
+
+        return new NonogramStepExplanationPresenterBuilder(_solver.Steps[_currentlyOpenedStep]);
+    }
+
+    protected override IDichotomousSolvingState GetCurrentState()
+    {
+        return _solver;
     }
 }

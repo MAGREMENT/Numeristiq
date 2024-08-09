@@ -5,7 +5,7 @@ using Model.Utility;
 
 namespace DesktopApplication.Presenter.Nonograms.Solve;
 
-public class NonogramHighlightTranslator : INonogramHighlighter
+public class NonogramHighlightTranslator : INonogramHighlighter, IHighlighterTranslator<INonogramHighlighter>
 {
     private readonly INonogramDrawer _drawer;
 
@@ -14,8 +14,9 @@ public class NonogramHighlightTranslator : INonogramHighlighter
         _drawer = drawer;
     }
 
-    public void Translate(IHighlightable<INonogramHighlighter> highlightable)
+    public void Translate(IHighlightable<INonogramHighlighter> highlightable, bool clear)
     {
+        if(clear) _drawer.ClearHighlights();
         highlightable.Highlight(this);
         _drawer.Refresh();
     }

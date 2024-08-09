@@ -1,10 +1,11 @@
-﻿<Page x:Class="DesktopApplication.View.Nonograms.Pages.SolvePage"
+﻿<view:SolveWithStepsPage x:Class="DesktopApplication.View.Nonograms.Pages.SolvePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:global="clr-namespace:DesktopApplication.View.Controls"
       xmlns:controls="clr-namespace:DesktopApplication.View.Nonograms.Controls"
+      xmlns:view="clr-namespace:DesktopApplication.View"
       mc:Ignorable="d"
       Title="SolvePage" d:DesignHeight="660" d:DesignWidth="1060">
     <Grid>
@@ -39,9 +40,9 @@
                     <TextBlock Grid.Row="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
                                Foreground="{DynamicResource Text}" Margin="5 0 0 0">Steps</TextBlock>
             
-                    <ScrollViewer Grid.Row="1" Margin="0,0,0,5" x:Name="LogViewer"
+                    <ScrollViewer Grid.Row="1" Margin="0,0,0,5" x:Name="StepViewer"
                                   Style="{StaticResource TransparentBarScrollViewer}" VerticalAlignment="Stretch">
-                        <StackPanel x:Name="LogPanel"/>
+                        <StackPanel x:Name="StepPanel"/>
                     </ScrollViewer>
                 </Grid>
             </Border>
@@ -59,4 +60,4 @@
         
         <global:HideableTextBox Grid.Column="0" Grid.ColumnSpan="2" TextChanged="CreateNewNonogram" Showed="OnHideableTextboxShowed" x:Name="TextBox"/>
     </Grid>
-</Page>
+</view:SolveWithStepsPage>
