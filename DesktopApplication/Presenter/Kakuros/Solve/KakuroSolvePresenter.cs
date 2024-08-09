@@ -18,16 +18,13 @@ public class KakuroSolvePresenter
     private int _bufferedAmount = -1;
     private EditMode _mode = EditMode.Default;
 
-    public KakuroSolvePresenter(IKakuroSolveView view, Settings settings)
+    public KakuroSolvePresenter(IKakuroSolveView view, KakuroSolver solver, Settings settings)
     {
         _view = view;
-        _solver = new KakuroSolver(new RecursiveKakuroCombinationCalculator());
-        _solver.StrategyManager.AddStrategies(new NakedSingleStrategy(),
-            new AmountCoherencyStrategy(),
-            new CombinationCoherencyStrategy());
+        _solver = solver;
 
-        _view.Drawer.FastPossibilityDisplay = settings.FastPossibilityDisplay;
-        settings.FastPossibilityDisplaySetting.ValueChanged += v =>
+        _view.Drawer.FastPossibilityDisplay = settings.FastPossibilityDisplay.Get().ToBool();
+        settings.FastPossibilityDisplay.ValueChanged += v =>
         {
             _view.Drawer.FastPossibilityDisplay = v.ToBool();
             _view.Drawer.Refresh();

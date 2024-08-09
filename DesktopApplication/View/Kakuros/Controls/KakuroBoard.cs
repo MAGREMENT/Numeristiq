@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Media;
 using DesktopApplication.Presenter.Kakuros.Solve;
 using DesktopApplication.View.Controls;
-using DesktopApplication.View.Tectonics.Controls;
 using Model.Utility;
 using Orientation = Model.Utility.Orientation;
 
@@ -79,14 +78,6 @@ public class KakuroBoard : DrawingBoard, IKakuroDrawingData, ISizeOptimizable, I
         FontStyles.Normal, FontWeights.Regular, FontStretches.Normal);
     public CultureInfo CultureInfo { get; } =  CultureInfo.CurrentUICulture;
     
-    public static readonly DependencyProperty DefaultNumberBrushProperty =
-        DependencyProperty.Register(nameof(DefaultNumberBrush), typeof(Brush), typeof(KakuroBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if(obj is not TectonicBoard board) return;
-                board.Refresh();
-            }));
-    
     public Brush DefaultNumberBrush
     {
         set => SetValue(DefaultNumberBrushProperty, value);
@@ -95,27 +86,11 @@ public class KakuroBoard : DrawingBoard, IKakuroDrawingData, ISizeOptimizable, I
 
     public Brush ClueNumberBrush => Brushes.Transparent;
 
-    public static readonly DependencyProperty BackgroundBrushProperty =
-        DependencyProperty.Register(nameof(BackgroundBrush), typeof(Brush), typeof(KakuroBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if(obj is not KakuroBoard board) return;
-                board.Refresh();
-            }));
-
     public Brush BackgroundBrush
     {
         set => SetValue(BackgroundBrushProperty, value);
         get => (Brush)GetValue(BackgroundBrushProperty);
     }
-    
-    public static readonly DependencyProperty LineBrushProperty =
-        DependencyProperty.Register(nameof(LineBrush), typeof(Brush), typeof(KakuroBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if(obj is not KakuroBoard board) return;
-                board.Refresh();
-            }));
     
     public Brush LineBrush
     {
@@ -138,14 +113,6 @@ public class KakuroBoard : DrawingBoard, IKakuroDrawingData, ISizeOptimizable, I
     }
 
     public Brush AmountBrush => (Brush)GetValue(AmountLineBrushProperty);
-
-    public static readonly DependencyProperty CursorBrushProperty =
-        DependencyProperty.Register(nameof(CursorBrush), typeof(Brush), typeof(KakuroBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if (obj is not KakuroBoard board) return;
-                board.Refresh();
-            }));
     
     public Brush CursorBrush
     {

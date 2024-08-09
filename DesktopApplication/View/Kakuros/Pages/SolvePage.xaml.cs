@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using DesktopApplication.Presenter.Kakuros;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Kakuros.Solve;
 using DesktopApplication.View.Kakuros.Controls;
 using Model.Utility;
@@ -13,11 +13,11 @@ public partial class SolvePage : IKakuroSolveView
 
     public IKakuroSolverDrawer Drawer => (KakuroBoard)ContentControl.OptimizableContent!;
 
-    public SolvePage(KakuroApplicationPresenter presenter)
+    public SolvePage()
     {
         InitializeComponent();
 
-        _presenter = presenter.Initialize(this);
+        _presenter = PresenterFactory.Instance.Initialize(this);
         DefaultMode.IsChecked = true;
     }
     
@@ -99,5 +99,21 @@ public partial class SolvePage : IKakuroSolveView
     private void CreateDefault(object sender, MouseButtonEventArgs e)
     {
         _presenter.AddDefault();
+    }
+
+    public override string Header => "Solve";
+    public override void OnShow()
+    {
+       
+    }
+
+    public override void OnClose()
+    {
+        
+    }
+
+    public override object? TitleBarContent()
+    {
+        return null;
     }
 }

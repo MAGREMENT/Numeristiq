@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Sudokus.Manage;
 using DesktopApplication.View.Settings;
@@ -23,10 +24,10 @@ public partial class ManagePage : ISudokuManageView
     
     private readonly SudokuManagePresenter _presenter;
     
-    public ManagePage(SudokuApplicationPresenter appPresenter)
+    public ManagePage()
     {
         InitializeComponent();
-        _presenter = appPresenter.Initialize(this);
+        _presenter = PresenterFactory.Instance.Initialize(this);
         _presenter.Initialize();
     }
 
@@ -170,6 +171,8 @@ public partial class ManagePage : ISudokuManageView
         
         return dialog.OpenFile();
     }
+
+    public override string Header => "Manage";
 
     public override void OnShow()
     {

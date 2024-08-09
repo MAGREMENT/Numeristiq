@@ -8,9 +8,9 @@ namespace Model.Sudokus.Solver.Strategies.BlossomLoops.LoopFinders;
 
 public class BLLoopFinderV2 : IBlossomLoopLoopFinder //TODO fix
 {
-    public List<LinkGraphLoop<ISudokuElement>> Find(CellPossibility[] cps, ILinkGraph<ISudokuElement> graph)
+    public List<Loop<ISudokuElement, LinkStrength>> Find(CellPossibility[] cps, ILinkGraph<ISudokuElement> graph)
     {
-        List<LinkGraphLoop<ISudokuElement>> result = new();
+        List<Loop<ISudokuElement, LinkStrength>> result = new();
 
         foreach (var cp in cps)
         {
@@ -20,7 +20,7 @@ public class BLLoopFinderV2 : IBlossomLoopLoopFinder //TODO fix
         return result;
     }
 
-    private void Search(List<LinkGraphLoop<ISudokuElement>> result, ILinkGraph<ISudokuElement> graph,
+    private void Search(List<Loop<ISudokuElement, LinkStrength>> result, ILinkGraph<ISudokuElement> graph,
         CellPossibility start, CellPossibility[] cps)
     {
         Dictionary<ISudokuElement, ISudokuElement> on = new();
@@ -57,7 +57,7 @@ public class BLLoopFinderV2 : IBlossomLoopLoopFinder //TODO fix
         }
     }
 
-    private static LinkGraphLoop<ISudokuElement>? TryMakeLoop(Dictionary<ISudokuElement, ISudokuElement> on, 
+    private static Loop<ISudokuElement, LinkStrength>? TryMakeLoop(Dictionary<ISudokuElement, ISudokuElement> on, 
         Dictionary<ISudokuElement, ISudokuElement> off, ISudokuElement end, ISudokuElement start)
     {
         List<ISudokuElement> elements = new();
@@ -83,7 +83,7 @@ public class BLLoopFinderV2 : IBlossomLoopLoopFinder //TODO fix
         
         elements.Reverse();
         links.Reverse();
-        return new LinkGraphLoop<ISudokuElement>(elements.ToArray(), links.ToArray());
+        return new Loop<ISudokuElement, LinkStrength>(elements.ToArray(), links.ToArray());
     }
     
     private static bool ComponentsCheck(CellPossibility[] cps, ISudokuElement friend)

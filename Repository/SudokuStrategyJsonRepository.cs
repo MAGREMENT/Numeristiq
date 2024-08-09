@@ -20,10 +20,10 @@ public class SudokuStrategyJsonRepository : JsonRepository, IStrategyRepository<
         Upload(_buffer);
     }
 
-    public IReadOnlyList<SudokuStrategy> GetStrategies()
+    public IEnumerable<SudokuStrategy> GetStrategies()
     {
         _buffer ??= Download<List<StrategyDAO>>();
-        return _buffer is null ? Array.Empty<SudokuStrategy>() : To(_buffer);
+        return _buffer is null ? Enumerable.Empty<SudokuStrategy>() : To(_buffer);
     }
 
     public void UpdateStrategy(SudokuStrategy strategy)
@@ -44,10 +44,10 @@ public class SudokuStrategyJsonRepository : JsonRepository, IStrategyRepository<
         Upload(From(list), stream);
     }
 
-    public IReadOnlyList<SudokuStrategy> GetPreset(Stream stream)
+    public IEnumerable<SudokuStrategy> GetPreset(Stream stream)
     {
         _buffer = Download<List<StrategyDAO>>(stream);
-        return _buffer is null ? Array.Empty<SudokuStrategy>() : To(_buffer);
+        return _buffer is null ? Enumerable.Empty<SudokuStrategy>() : To(_buffer);
     }
 
     private int IndexOf(string name)

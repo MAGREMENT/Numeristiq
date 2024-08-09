@@ -78,27 +78,11 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawingData, ISudokuSolverDrawer
         FontStyles.Normal, FontWeights.Regular, FontStretches.Normal);
     public CultureInfo CultureInfo { get; } =  CultureInfo.CurrentUICulture;
 
-    public static readonly DependencyProperty LinkBrushProperty =
-        DependencyProperty.Register(nameof(LinkBrush), typeof(Brush), typeof(SudokuBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if (obj is not SudokuBoard board) return;
-                board.Refresh();
-            }));
-
     public Brush LinkBrush
     {
         set => SetValue(LinkBrushProperty, value);
         get => (Brush)GetValue(LinkBrushProperty);
     }
-    
-    public static readonly DependencyProperty DefaultNumberBrushProperty =
-        DependencyProperty.Register(nameof(DefaultNumberBrush), typeof(Brush), typeof(SudokuBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if (obj is not SudokuBoard board) return;
-                board.Refresh();
-            }));
 
     public Brush DefaultNumberBrush
     {
@@ -106,55 +90,23 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawingData, ISudokuSolverDrawer
         get => (Brush)GetValue(DefaultNumberBrushProperty);
     }
 
-    public static readonly DependencyProperty ClueNumberBrushProperty =
-        DependencyProperty.Register(nameof(ClueNumberBrush), typeof(Brush), typeof(SudokuBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if (obj is not SudokuBoard board) return;
-                board.Refresh();
-            }));
-
     public Brush ClueNumberBrush
     {
         set => SetValue(ClueNumberBrushProperty, value);
         get => (Brush)GetValue(ClueNumberBrushProperty);
     }
-    
-    public static readonly DependencyProperty BackgroundBrushProperty =
-        DependencyProperty.Register(nameof(BackgroundBrush), typeof(Brush), typeof(SudokuBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if (obj is not SudokuBoard board) return;
-                board.Refresh();
-            }));
 
     public Brush BackgroundBrush
     {
         set => SetValue(BackgroundBrushProperty, value);
         get => (Brush)GetValue(BackgroundBrushProperty);
     }
-
-    public static readonly DependencyProperty LineBrushProperty =
-        DependencyProperty.Register(nameof(LineBrush), typeof(Brush), typeof(SudokuBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if (obj is not SudokuBoard board) return;
-                board.Refresh();
-            }));
     
     public Brush LineBrush
     {
         set => SetValue(LineBrushProperty, value);
         get => (Brush)GetValue(LineBrushProperty);
     }
-    
-    public static readonly DependencyProperty CursorBrushProperty =
-        DependencyProperty.Register(nameof(CursorBrush), typeof(Brush), typeof(SudokuBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if (obj is not SudokuBoard board) return;
-                board.Refresh();
-            }));
     
     public Brush CursorBrush
     {

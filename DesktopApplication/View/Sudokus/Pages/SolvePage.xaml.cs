@@ -6,7 +6,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using DesktopApplication.Presenter;
-using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.HelperWindows;
@@ -23,10 +22,10 @@ public partial class SolvePage : ISudokuSolveView
 
     private bool _disabled;
     
-    public SolvePage(SudokuApplicationPresenter appPresenter)
+    public SolvePage()
     {
         InitializeComponent();
-        _presenter = appPresenter.Initialize(this);
+        _presenter = PresenterFactory.Instance.Initialize(this);
     }
 
     #region ISudokuSolveView
@@ -272,6 +271,8 @@ public partial class SolvePage : ISudokuSolveView
             // ignored
         }
     }
+
+    public override string Header => "Solve";
 
     public override void OnShow()
     {

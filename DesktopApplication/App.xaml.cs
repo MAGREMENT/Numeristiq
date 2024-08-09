@@ -10,7 +10,7 @@ using Model.Utility;
 
 namespace DesktopApplication;
 
-public partial class App : IGlobalApplicationView
+public partial class App : IResourceView
 {
     public new static App Current => (App)Application.Current;
     
@@ -20,7 +20,7 @@ public partial class App : IGlobalApplicationView
     {
         InitializeComponent();
 
-        GlobalApplicationPresenter.InitializeInstance(this);
+        PresenterFactory.Instance.Initialize(this);
         FrameworkElement.StyleProperty.OverrideMetadata(typeof(Window), new FrameworkPropertyMetadata
         {
             DefaultValue = FindResource(typeof(Window))

@@ -15,14 +15,10 @@ public class NonogramSolvePresenter : SolveWithStepsPresenter<INonogramHighlight
     private readonly INonogramSolveView _view;
     private readonly NonogramSolver _solver;
 
-    public NonogramSolvePresenter(INonogramSolveView view) : base(new NonogramHighlightTranslator(view.Drawer))
+    public NonogramSolvePresenter(INonogramSolveView view, NonogramSolver solver) : base(new NonogramHighlightTranslator(view.Drawer))
     {
         _view = view;
-        _solver = new NonogramSolver();
-        _solver.StrategyManager.AddStrategies(new PerfectRemainingSpaceStrategy(), new NotEnoughSpaceStrategy(),
-            new EdgeValueStrategy(), new PerfectValueSpaceStrategy(), new ValueCompletionStrategy(),
-            new BridgingStrategy(), new SplittingStrategy(), new ValueOverlayStrategy(),
-            new UnreachableSquaresStrategy(), new BruteForceStrategy());
+        _solver = solver;
     }
 
     public void SetNewNonogram(string s)

@@ -49,17 +49,17 @@ public class SudokuPlayPresenter
         _disabler = new Disabler(_view);
         _repository = new MySqlSudokuBankRepository();
         
-        _player.MainLocation = _settings.MainLocation;
-        _view.Drawer.StartAngle = View.Utility.MathUtility.ToRadians(_settings.StartAngle);
-        _view.Drawer.RotationFactor = (int)_settings.RotationDirection;
+        _player.MainLocation = (PossibilitiesLocation)_settings.MainLocation.Get().ToInt();
+        _view.Drawer.StartAngle = View.Utility.MathUtility.ToRadians(_settings.StartAngle.Get().ToDouble());
+        _view.Drawer.RotationFactor = _settings.RotationDirection.Get().ToInt();
 
-        _settings.MainLocationSetting.ValueChanged += v => _player.MainLocation = (PossibilitiesLocation)v.ToInt();
-        _settings.StartAngleSetting.ValueChanged += v =>
+        _settings.MainLocation.ValueChanged += v => _player.MainLocation = (PossibilitiesLocation)v.ToInt();
+        _settings.StartAngle.ValueChanged += v =>
         {
             _view.Drawer.StartAngle = View.Utility.MathUtility.ToRadians(v.ToDouble());
             _view.Drawer.Refresh();
         };
-        _settings.RotationDirectionSetting.ValueChanged += v =>
+        _settings.RotationDirection.ValueChanged += v =>
         {
             _view.Drawer.RotationFactor = v.ToInt();
             _view.Drawer.Refresh();
@@ -216,7 +216,7 @@ public class SudokuPlayPresenter
     
     public void Paste(string s)
     {
-        if(!_settings.OpenPasteDialog) Paste(s, _settings.DefaultPasteFormat);
+        if(!_settings.OpenPasteDialog.Get().ToBool()) Paste(s, (SudokuStringFormat)_settings.DefaultPasteFormat.Get().ToInt());
         else _view.OpenOptionDialog("Paste", i =>
         {
             Paste(s, (SudokuStringFormat)i);
@@ -278,7 +278,7 @@ public class SudokuPlayPresenter
         var state = format switch
         {
             SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(s),
-            SudokuStringFormat.Grid => SudokuTranslator.TranslateGridFormat(s, _settings.SoloToGiven),
+            SudokuStringFormat.Grid => SudokuTranslator.TranslateGridFormat(s, _settings.SoloToGiven.Get().ToBool()),
             SudokuStringFormat.Base32 => SudokuTranslator.TranslateBase32Format(s, new AlphabeticalBase32Translator()),
             _ => throw new Exception()
         };
@@ -299,7 +299,7 @@ public class SudokuPlayPresenter
         if (sudoku.GetSolutionCount() < 17) return new Clue<ISudokuHighlighter>("Not enough numbers in the Sudoku");
 
         _disabler.Disable(1);
-        if (_settings.TestSolutionCount)
+        if (_settings.TestSolutionCount.Get().ToBool())
         {
             var count = await Task.Run(() =>
             {

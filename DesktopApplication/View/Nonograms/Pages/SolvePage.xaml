@@ -10,8 +10,8 @@
       Title="SolvePage" d:DesignHeight="660" d:DesignWidth="1060">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="660"/>
-            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
         <global:SizeOptimizedContentControl Grid.Column="0" Width="640" Height="640" x:Name="EmbeddedDrawer">

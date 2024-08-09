@@ -48,7 +48,7 @@ public class OddagonSearchAlgorithmV3 : IOddagonSearchAlgorithm
         }
 
         return ProcessLink(state, nonFullPath[0], fullPath[0], guardians, elements, links)
-            ? new AlmostOddagon(new LinkGraphLoop<CellPossibility>(elements.ToArray(), links.ToArray()),
+            ? new AlmostOddagon(new Loop<CellPossibility, LinkStrength>(elements.ToArray(), links.ToArray()),
                 guardians.ToArray())
             : null;
     }

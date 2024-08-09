@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         mc:Ignorable="d"
-        Height="440" Width="450"
+        Height="440" Width="650"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
@@ -48,16 +48,19 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             
             <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource WelcomeButton}"
                     x:Name="Sudoku" Margin="0 0 5 5" Click="OnSudokuClick"/>
             <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource WelcomeButton}"
-                    x:Name="Tectonic" Margin="5 0 0 5" Click="OnTectonicClick"/>
+                    x:Name="Tectonic" Margin="5 0 5 5" Click="OnTectonicClick"/>
+            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource WelcomeButton}"
+                    x:Name="Binairo" Margin="5 0 0 5" Click="OnBinairoClick"/>
             <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource WelcomeButton}"
                     x:Name="Kakuro" Margin="0 5 5 0" Click="OnKakuroClick"/>
             <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource WelcomeButton}"
-                    x:Name="Nonogram" Margin="5 5 0 0" Click="OnNonogramClick"/>
+                    x:Name="Nonogram" Margin="5 5 5 0" Click="OnNonogramClick"/>
         </Grid>
     </Grid>
 </Window>

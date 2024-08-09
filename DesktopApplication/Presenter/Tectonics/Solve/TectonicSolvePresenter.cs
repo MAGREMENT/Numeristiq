@@ -26,8 +26,8 @@ public class TectonicSolvePresenter : SolveWithStepsPresenter<ITectonicHighlight
         _solver = solver;
         _view = view;
 
-        _view.Drawer.LinkOffsetSidePriority = settings.LinkOffsetSidePriority;
-        settings.LinkOffsetSidePrioritySetting.ValueChanged += v =>
+        _view.Drawer.LinkOffsetSidePriority = (LinkOffsetSidePriority)settings.LinkOffsetSidePriority.Get().ToInt();
+        settings.LinkOffsetSidePriority.ValueChanged += v =>
         {
             _view.Drawer.LinkOffsetSidePriority = (LinkOffsetSidePriority)v.ToInt();
             _view.Drawer.Refresh();

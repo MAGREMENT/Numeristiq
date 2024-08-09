@@ -2,7 +2,6 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using DesktopApplication.Presenter;
-using DesktopApplication.Presenter.Nonograms;
 using DesktopApplication.Presenter.Nonograms.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.Nonograms.Controls;
@@ -15,11 +14,11 @@ public partial class SolvePage : INonogramSolveView
 
     public INonogramDrawer Drawer => (INonogramDrawer)EmbeddedDrawer.OptimizableContent!;
 
-    public SolvePage(NonogramApplicationPresenter presenter)
+    public SolvePage()
     {
         InitializeComponent();
 
-        _presenter = presenter.Initialize(this);
+        _presenter = PresenterFactory.Instance.Initialize(this);
     }
     
     public void ShowNonogramAsString(string s)
@@ -46,6 +45,8 @@ public partial class SolvePage : INonogramSolveView
     {
         _presenter.ShowNonogramAsString();
     }
+
+    public override string Header => "Solve";
 
     public override void OnShow()
     {

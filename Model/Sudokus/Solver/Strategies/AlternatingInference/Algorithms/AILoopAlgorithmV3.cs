@@ -25,11 +25,11 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
             {
                 if (offColoring.TryGetColoredElement(entry.Key, out var coloring))
                 {
-                    var path1 = onColoring.History!.GetPathToRootWithGuessedLinksAndMonoCheck(entry.Key, entry.Value, graph);
-                    var path2 = offColoring.History!.GetPathToRootWithGuessedLinksAndMonoCheck(entry.Key, coloring, graph);
+                    var (path1, isMono1) = onColoring.History!.GetPathToRootWithGuessedLinksAndMonoCheck(entry.Key, entry.Value, graph);
+                    var (path2, isMono2) = offColoring.History!.GetPathToRootWithGuessedLinksAndMonoCheck(entry.Key, coloring, graph);
                     if(path2.Count < 2 || path1.Count < 2 || path1.Count + path2.Count < 6) continue;
                     
-                    var loop = path1.TryMakeLoop(path2);
+                    var loop = path1.TryMakeLoop(isMono1, path2, isMono2);
                     if (loop is null) continue;
 
                     switch (entry.Value, coloring)

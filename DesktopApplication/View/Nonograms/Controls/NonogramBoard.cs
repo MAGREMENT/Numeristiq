@@ -65,14 +65,6 @@ public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizabl
         set => SetValue(UnavailableBrushProperty, value);
         get => (Brush)GetValue(UnavailableBrushProperty);
     }
-    
-    public static readonly DependencyProperty LineBrushProperty =
-        DependencyProperty.Register(nameof(LineBrush), typeof(Brush), typeof(NonogramBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if(obj is not NonogramBoard board) return;
-                board.Refresh();
-            }));
 
     public Brush CursorBrush => Brushes.Transparent;
     public Brush LinkBrush => Brushes.Transparent;
@@ -82,14 +74,6 @@ public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizabl
         set => SetValue(LineBrushProperty, value);
         get => (Brush)GetValue(LineBrushProperty);
     }
-    
-    public static readonly DependencyProperty BackgroundBrushProperty =
-        DependencyProperty.Register(nameof(BackgroundBrush), typeof(Brush), typeof(NonogramBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if(obj is not NonogramBoard board) return;
-                board.Refresh();
-            }));
 
     public Brush BackgroundBrush
     {
@@ -151,8 +135,6 @@ public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizabl
         var delta = _cellSize / 2;
         return new Point(GetLeftOfCell(col) + delta, GetTopOfCell(row) + delta);
     }
-
-    public bool IsClue(int row, int col) => false;
 
     public int RowCount => _rows.Count;
     public int ColumnCount => _columns.Count;

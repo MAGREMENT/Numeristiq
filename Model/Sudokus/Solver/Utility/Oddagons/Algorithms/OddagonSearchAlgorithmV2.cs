@@ -120,7 +120,7 @@ public class OddagonSearchAlgorithmV2 : IOddagonSearchAlgorithm
             links.Add(p2.LinkAt(i - 1));
         }
 
-        return new AlmostOddagon(new LinkGraphLoop<CellPossibility>(elements.ToArray(), links.ToArray()),
+        return new AlmostOddagon(new Loop<CellPossibility, LinkStrength>(elements.ToArray(), links.ToArray()),
             _guardianBuffer.ToArray());
     }
 }
@@ -187,7 +187,7 @@ public class OddagonPath
         if (gBuffer.Count > maxGuardians) return null;
         
         var lBuffer = new List<LinkStrength> { g.Any() ? LinkStrength.Weak : LinkStrength.Strong };
-        return new AlmostOddagon(new LinkGraphLoop<CellPossibility>(_cps.ToArray(),
+        return new AlmostOddagon(new Loop<CellPossibility, LinkStrength>(_cps.ToArray(),
             lBuffer.ToArray()), gBuffer.ToArray());
     }
 }

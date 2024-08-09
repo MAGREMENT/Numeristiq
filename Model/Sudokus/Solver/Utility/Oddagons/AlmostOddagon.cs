@@ -8,10 +8,10 @@ namespace Model.Sudokus.Solver.Utility.Oddagons;
 
 public class AlmostOddagon
 {
-    public LinkGraphLoop<CellPossibility> Loop { get; }
+    public Loop<CellPossibility, LinkStrength> Loop { get; }
     public CellPossibility[] Guardians { get; }
     
-    public AlmostOddagon(LinkGraphLoop<CellPossibility> loop, CellPossibility[] guardians)
+    public AlmostOddagon(Loop<CellPossibility, LinkStrength> loop, CellPossibility[] guardians)
     {
         Loop = loop;
         Guardians = guardians;

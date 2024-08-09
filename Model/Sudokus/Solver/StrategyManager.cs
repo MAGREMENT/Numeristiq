@@ -32,7 +32,7 @@ public class StrategyManager<TStrategy> where TStrategy : Strategy
         _strategies.InsertAt(strategy, position, i => InterchangeStrategies(i, position));
     }
     
-    public void AddStrategies(IReadOnlyList<TStrategy>? strategies)
+    public void AddStrategies(IEnumerable<TStrategy>? strategies)
     {
         if (strategies is null) return;
         

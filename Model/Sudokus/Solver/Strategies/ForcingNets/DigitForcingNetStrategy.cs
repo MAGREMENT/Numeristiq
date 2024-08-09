@@ -159,8 +159,8 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, 
         });
     }
 
-    private string Explanation(List<LinkGraphChain<ISudokuElement>> onPaths,
-        List<LinkGraphChain<ISudokuElement>> offPaths, CellPossibility first)
+    private string Explanation(List<Chain<ISudokuElement, LinkStrength>> onPaths,
+        List<Chain<ISudokuElement, LinkStrength>> offPaths, CellPossibility first)
     {
         return $"If {first} is on : \n{ForcingNetsUtility.AllPathsToString(onPaths)}\n" +
                $"If {first} is off : \n{ForcingNetsUtility.AllPathsToString(offPaths)}";

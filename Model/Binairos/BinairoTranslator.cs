@@ -5,7 +5,7 @@ namespace Model.Binairos;
 
 public static class BinairoTranslator
 {
-    public static string TranslateLineFormat(Binairo binairo)
+    public static string TranslateLineFormat(IReadOnlyBinairo binairo)
     {
         var builder = new StringBuilder($"{binairo.RowCount}x{binairo.ColumnCount}:");
         for (int row = 0; row < binairo.RowCount; row++)
@@ -43,12 +43,14 @@ public static class BinairoTranslator
         }
 
         var result = new Binairo(dimension[0], dimension[1]);
+        if (result.RowCount == 0 || result.ColumnCount == 0) return result;
+        
         int start = ++i;
         int n;
         for (; i < s.Length && (n = i - start) <= result.RowCount * result.ColumnCount; i++)
         {
             var c = s[i];
-            if (c != '.')
+            if (c != '.' && c != ' ')
             {
                 result[n / result.ColumnCount, n % result.ColumnCount] = c - '0' + 1;
             }

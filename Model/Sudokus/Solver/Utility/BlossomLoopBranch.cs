@@ -5,9 +5,9 @@ namespace Model.Sudokus.Solver.Utility;
 public class BlossomLoopBranch
 {
     public ISudokuElement[] Targets { get; }
-    public LinkGraphChain<ISudokuElement> Branch { get; }
+    public Chain<ISudokuElement, LinkStrength> Branch { get; }
 
-    public BlossomLoopBranch(LinkGraphChain<ISudokuElement> branch, params ISudokuElement[] targets)
+    public BlossomLoopBranch(Chain<ISudokuElement, LinkStrength> branch, params ISudokuElement[] targets)
     {
         Targets = targets;
         Branch = branch;

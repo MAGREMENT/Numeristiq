@@ -11,7 +11,7 @@ namespace Model.Sudokus.Solver.Strategies.BlossomLoops.BranchFinder;
 public class BLBranchFinderV1 : IBlossomLoopBranchFinder
 {
     public BlossomLoopBranch[]? FindShortestBranches(ILinkGraph<ISudokuElement> graph,
-        CellPossibility[] cps, LinkGraphLoop<ISudokuElement> loop)
+        CellPossibility[] cps, Loop<ISudokuElement, LinkStrength> loop)
     {
         HashSet<ISudokuElement> nope = new(loop.Elements);
 

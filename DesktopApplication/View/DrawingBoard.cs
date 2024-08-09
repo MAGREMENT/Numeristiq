@@ -75,6 +75,58 @@ public abstract class DrawingBoard : FrameworkElement
         rtb.Render(this);
         return BitmapFrame.Create(rtb);
     }
+    
+    #region DependencyProperties
+    
+    public static readonly DependencyProperty LinkBrushProperty =
+        DependencyProperty.Register("LinkBrush", typeof(Brush), typeof(DrawingBoard),
+            new PropertyMetadata((obj, _) =>
+    {
+        if (obj is not DrawingBoard board) return;
+        board.Refresh();
+    }));
+    
+    public static readonly DependencyProperty DefaultNumberBrushProperty =
+        DependencyProperty.Register("DefaultNumberBrush", typeof(Brush), typeof(DrawingBoard),
+            new PropertyMetadata((obj, _) =>
+    {
+        if (obj is not DrawingBoard board) return;
+        board.Refresh();
+    }));
+
+    public static readonly DependencyProperty ClueNumberBrushProperty =
+        DependencyProperty.Register("ClueNumberBrush", typeof(Brush), typeof(DrawingBoard),
+            new PropertyMetadata((obj, _) =>
+    {
+        if (obj is not DrawingBoard board) return;
+        board.Refresh();
+    }));
+    
+    public static readonly DependencyProperty BackgroundBrushProperty =
+        DependencyProperty.Register("BackgroundBrush", typeof(Brush), typeof(DrawingBoard),
+            new PropertyMetadata((obj, _) =>
+    {
+        if (obj is not DrawingBoard board) return;
+        board.Refresh();
+    }));
+
+    public static readonly DependencyProperty LineBrushProperty =
+        DependencyProperty.Register("LineBrush", typeof(Brush), typeof(DrawingBoard),
+            new PropertyMetadata((obj, _) =>
+    {
+        if (obj is not DrawingBoard board) return;
+        board.Refresh();
+    }));
+    
+    public static readonly DependencyProperty CursorBrushProperty =
+        DependencyProperty.Register("CursorBrush", typeof(Brush), typeof(DrawingBoard),
+            new PropertyMetadata((obj, _) =>
+    {
+        if (obj is not DrawingBoard board) return;
+        board.Refresh();
+    }));
+    
+    #endregion
 }
 
 public interface IDrawableComponent
@@ -183,7 +235,6 @@ public interface ICellGameDrawingData : IDefaultDrawingData
     double GetTopOfCell(int row);
     double GetTopOfCellWithBorder(int row);
     Point GetCenterOfCell(int row, int col);
-    bool IsClue(int row, int col);
 }
 
 public interface IDichotomousCellGameDrawingData : ICellGameDrawingData
@@ -199,6 +250,8 @@ public interface INumericCellGameDrawingData : ICellGameDrawingData
 {
     Brush DefaultNumberBrush { get; }
     Brush ClueNumberBrush { get; }
+    
+    bool IsClue(int row, int col);
 }
 
 public interface INinePossibilitiesGameDrawingData : INumericCellGameDrawingData
@@ -258,6 +311,17 @@ public interface INonogramDrawingData : IDichotomousCellGameDrawingData
 
     IReadOnlyList<int> GetRowValues(int row);
     IReadOnlyList<int> GetColumnValues(int col);
+}
+
+public interface IBinairoDrawingData : INumericCellGameDrawingData
+{
+    Brush CircleFirstColor { get; }
+    Brush CircleSecondColor { get; }
+    
+    int RowCount { get; }
+    int ColumnCount { get; }
+    
+    bool AreSolutionNumbers { get; }
 }
 
 public class InwardAmountCellDrawableComponent : IDrawableComponent<IKakuroDrawingData>
@@ -503,6 +567,39 @@ public class SolutionDrawableComponent : IDrawableComponent<INumericCellGameDraw
                 break;
             case IDichotomousCellGameDrawingData dc : Draw(context, dc);
                 break;
+        }
+    }
+}
+
+public class BinairoSolutionDrawableComponent : IDrawableComponent<IBinairoDrawingData>
+{
+    private readonly int _row;
+    private readonly int _col;
+    private readonly int _solution;
+
+    public BinairoSolutionDrawableComponent(int solution, int row, int col)
+    {
+        _solution = solution;
+        _row = row;
+        _col = col;
+    }
+
+    public void Draw(DrawingContext context, IBinairoDrawingData data)
+    {
+        if (data.AreSolutionNumbers)
+        {
+            var brush = data.IsClue(_row, _col) ? data.ClueNumberBrush : data.DefaultNumberBrush;
+            var text = new FormattedText(_solution.ToString(), data.CultureInfo, FlowDirection.LeftToRight, data.Typeface,
+                data.CellSize / 4 * 3, brush, 1);
+            DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfCell(_col),
+                    data.GetTopOfCell(_row), data.CellSize, data.CellSize), ComponentHorizontalAlignment.Center,
+                ComponentVerticalAlignment.Center);
+        }
+        else
+        {
+            var radius = data.CellSize * 3 / 8;
+            var brush = _solution == 1 ? data.CircleFirstColor : data.CircleSecondColor;
+            context.DrawEllipse(brush, null, data.GetCenterOfCell(_row, _col), radius, radius);
         }
     }
 }
@@ -1145,6 +1242,32 @@ public class SudokuGridDrawableComponent : IDrawableComponent<ICellGameDrawingDa
                 new Rect(delta, 0, data.BigLineWidth, data.Height));
 
             delta += data.CellSize * 3 + data.SmallLineWidth * 2 + data.BigLineWidth;
+        }
+    }
+}
+
+public class BinairoGridDrawableComponent : IDrawableComponent<IBinairoDrawingData>
+{
+    public void Draw(DrawingContext context, IBinairoDrawingData data)
+    {
+        if (data.RowCount == 0 || data.ColumnCount == 0) return;
+
+        double x = 0;
+        for (int col = 0; col <= data.ColumnCount; col++)
+        {
+            context.DrawRectangle(data.LineBrush, null, new Rect(x, 0,
+                data.BigLineWidth, data.Height));
+
+            x += data.BigLineWidth + data.CellSize;
+        }
+
+        double y = 0;
+        for (int row = 0; row <= data.RowCount; row++)
+        {
+            context.DrawRectangle(data.LineBrush, null, new Rect(0, y,
+                data.Width, data.BigLineWidth));
+
+            y += data.BigLineWidth + data.CellSize;
         }
     }
 }

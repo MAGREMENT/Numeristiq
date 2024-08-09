@@ -1,5 +1,4 @@
 ﻿using Model.Core;
-using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 
@@ -20,7 +19,7 @@ public class XType : IAlternatingInferenceType<CellPossibility>
         return solverData.PreComputer.Graphs.SimpleLinkGraph;
     }
 
-    public bool ProcessFullLoop(ISudokuSolverData solverData, LinkGraphLoop<CellPossibility> loop)
+    public bool ProcessFullLoop(ISudokuSolverData solverData, Loop<CellPossibility, LinkStrength> loop)
     {
         loop.ForEachLink((one, two)
             => ProcessWeakLink(solverData, one, two), LinkStrength.Weak);
@@ -38,7 +37,7 @@ public class XType : IAlternatingInferenceType<CellPossibility>
         }
     }
 
-    public bool ProcessWeakInferenceLoop(ISudokuSolverData solverData, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
+    public bool ProcessWeakInferenceLoop(ISudokuSolverData solverData, CellPossibility inference, Loop<CellPossibility, LinkStrength> loop)
     {
         solverData.ChangeBuffer.ProposePossibilityRemoval(inference.Possibility, inference.Row, inference.Column);
         if (!solverData.ChangeBuffer.NeedCommit()) return false;
@@ -47,7 +46,7 @@ public class XType : IAlternatingInferenceType<CellPossibility>
         return Strategy!.StopOnFirstCommit;
     }
 
-    public bool ProcessStrongInferenceLoop(ISudokuSolverData solverData, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
+    public bool ProcessStrongInferenceLoop(ISudokuSolverData solverData, CellPossibility inference, Loop<CellPossibility, LinkStrength> loop)
     {
         solverData.ChangeBuffer.ProposeSolutionAddition(inference.Possibility, inference.Row, inference.Column);
         if (!solverData.ChangeBuffer.NeedCommit()) return false;
@@ -56,7 +55,7 @@ public class XType : IAlternatingInferenceType<CellPossibility>
         return Strategy!.StopOnFirstCommit;
     }
 
-    public bool ProcessChain(ISudokuSolverData solverData, LinkGraphChain<CellPossibility> chain, ILinkGraph<CellPossibility> graph)
+    public bool ProcessChain(ISudokuSolverData solverData, Chain<CellPossibility, LinkStrength> chain, ILinkGraph<CellPossibility> graph)
     {
         return IAlternatingInferenceType<CellPossibility>.ProcessChainWithSimpleGraph(solverData,
             chain, graph, Strategy!);

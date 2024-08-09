@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Sudokus.Generate;
 using DesktopApplication.View.Controls;
@@ -21,15 +22,17 @@ public partial class GeneratePage : ISudokuGenerateView
     private readonly SudokuGeneratePresenter _presenter;
     private readonly bool _initialized;
     
-    public GeneratePage(SudokuApplicationPresenter appPresenter)
+    public GeneratePage()
     {
         InitializeComponent();
-        _presenter = appPresenter.Initialize(this);
+        _presenter = PresenterFactory.Instance.Initialize(this);
 
         RenderOptions.SetBitmapScalingMode(Bin, BitmapScalingMode.Fant);
 
         _initialized = true;
     }
+
+    public override string Header => "Generate";
 
     public override void OnShow()
     {

@@ -24,7 +24,7 @@ public partial class ThemeWindow : IThemeView
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
 
-        _presenter = GlobalApplicationPresenter.Instance.InitializeThemePresenter(this);
+        _presenter = PresenterFactory.Instance.Initialize(this);
         _presenter.EvaluateName(string.Empty);
     }
     

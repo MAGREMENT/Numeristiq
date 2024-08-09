@@ -22,13 +22,13 @@ public class Settings
             new IntSetting("Theme", "The theme of the application.", new NameListInteractionInterface(themes), -1),
             new BooleanSetting("Show same cell links", "Allows links between candidates of the same cell to be shown."),
             new EnumSetting<LinkOffsetSidePriority>("Link offset side priority", "Defines which side will be prioritized" +
-                " for the angle of links.", null, LinkOffsetSidePriority.Any),
+                " for the angle of links.", null, DesktopApplication.LinkOffsetSidePriority.Any),
             new BooleanSetting("Unique solution", "The puzzle must have a unique solution. Allows additional strategies."
                 , true),
             new IntSetting("Start angle", "Start angle for cells multi-color highlighting.",
                 new SliderInteractionInterface(0, 360, 10), 0),
             new EnumSetting<RotationDirection>("Rotation direction", "Rotation direction for cells multi-color highlighting.",
-                SpaceConverter.Instance, RotationDirection.ClockWise),
+                SpaceConverter.Instance, DesktopApplication.RotationDirection.ClockWise),
             new EnumSetting<SudokuStringFormat>("Copy default format", "The default format used for copying.",
                 SpaceConverter.Instance, SudokuStringFormat.Grid),
             new BooleanSetting("Open copy dialog", "Opens a dialog window with options when a copy is asked."),
@@ -46,7 +46,9 @@ public class Settings
             new BooleanSetting("Test solution count for clue", "When asking for a clue, verifies that the" +
                                                                " Sudoku has indeed a solution."),
             new BooleanSetting("Fast possibility display", "Display the Sudoku's possibilities in a" +
-                                                           " faster but less elegant way.")
+                                                           " faster but less elegant way."),
+            new BooleanSetting("Are solution numbers", "Defines if the solutions should be represented as " +
+                                                       "numbers")
         };
         _collections = new[]
         {
@@ -104,31 +106,22 @@ public class Settings
     public IReadOnlyList<NamedListSpan<ISetting>> GetCollection(SettingCollections collection) =>
         _collections[(int)collection];
 
-    public ISetting ThemeSetting => _settings[0];
-    public ISetting ShowSameCellsLinksSetting => _settings[1];
-    public ISetting LinkOffsetSidePrioritySetting => _settings[2];
-    public ISetting AllowUniquenessSetting => _settings[3];
-    public ISetting StartAngleSetting => _settings[4];
-    public ISetting RotationDirectionSetting => _settings[5];
-    public ISetting MainLocationSetting => _settings[12];
-    public ISetting FastPossibilityDisplaySetting => _settings[14];
-    
-    //TODO to ISetting
-    public int Theme => _settings[0].Get().ToInt();
-    public bool ShowSameCellLinks => _settings[1].Get().ToBool();
-    public LinkOffsetSidePriority LinkOffsetSidePriority => ((EnumSetting<LinkOffsetSidePriority>)_settings[2]).Value;
-    public int StartAngle => _settings[4].Get().ToInt();
-    public RotationDirection RotationDirection => ((EnumSetting<RotationDirection>)_settings[5]).Value;
-    public SudokuStringFormat DefaultCopyFormat => ((EnumSetting<SudokuStringFormat>)_settings[6]).Value;
-    public bool OpenCopyDialog => _settings[7].Get().ToBool();
-    public SudokuStringFormat DefaultPasteFormat => ((EnumSetting<SudokuStringFormat>)_settings[8]).Value;
-    public bool OpenPasteDialog => _settings[9].Get().ToBool();
-    public SudokuLineFormatEmptyCellRepresentation EmptyCellRepresentation =>
-        ((EnumSetting<SudokuLineFormatEmptyCellRepresentation>)_settings[10]).Value;
-    public bool SoloToGiven => _settings[11].Get().ToBool();
-    public PossibilitiesLocation MainLocation => ((EnumSetting<PossibilitiesLocation>)_settings[12]).Value;
-    public bool TestSolutionCount => _settings[13].Get().ToBool();
-    public bool FastPossibilityDisplay => _settings[14].Get().ToBool();
+    public ISetting Theme => _settings[0];
+    public ISetting ShowSameCellLinks => _settings[1];
+    public ISetting LinkOffsetSidePriority => _settings[2];
+    public ISetting AllowUniqueness => _settings[3];
+    public ISetting StartAngle => _settings[4];
+    public ISetting RotationDirection => _settings[5];
+    public ISetting DefaultCopyFormat => _settings[6];
+    public ISetting OpenCopyDialog => _settings[7];
+    public ISetting DefaultPasteFormat => _settings[8];
+    public ISetting OpenPasteDialog => _settings[9];
+    public ISetting EmptyCellRepresentation => _settings[10];
+    public ISetting SoloToGiven => _settings[11];
+    public ISetting MainLocation => _settings[12];
+    public ISetting TestSolutionCount => _settings[13];
+    public ISetting FastPossibilityDisplay => _settings[14];
+    public ISetting AreSolutionNumbers => _settings[15];
 }
 
 public enum SettingCollections

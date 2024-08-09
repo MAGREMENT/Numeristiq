@@ -109,41 +109,17 @@ public class TectonicBoard : DrawingBoard, ITectonicDrawingData, IAddChild, ITec
     public LinkOffsetSidePriority LinkOffsetSidePriority { get; set; } = LinkOffsetSidePriority.Any;
     public double InwardCellLineWidth => 3;
     
-    public static readonly DependencyProperty DefaultNumberBrushProperty =
-        DependencyProperty.Register(nameof(DefaultNumberBrush), typeof(Brush), typeof(TectonicBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if(obj is not TectonicBoard board) return;
-                board.Refresh();
-            }));
-    
     public Brush DefaultNumberBrush
     {
         set => SetValue(DefaultNumberBrushProperty, value);
         get => (Brush)GetValue(DefaultNumberBrushProperty);
     }
 
-    public static readonly DependencyProperty ClueNumberBrushProperty =
-        DependencyProperty.Register(nameof(ClueNumberBrush), typeof(Brush), typeof(TectonicBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if(obj is not TectonicBoard board) return;
-                board.Refresh();
-            }));
-
     public Brush ClueNumberBrush
     {
         get => (Brush)GetValue(ClueNumberBrushProperty);
         set => SetValue(ClueNumberBrushProperty, value);
     }
-    
-    public static readonly DependencyProperty BackgroundBrushProperty =
-        DependencyProperty.Register(nameof(BackgroundBrush), typeof(Brush), typeof(TectonicBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if(obj is not TectonicBoard board) return;
-                board.Refresh();
-            }));
 
     public Brush BackgroundBrush
     {
@@ -151,41 +127,17 @@ public class TectonicBoard : DrawingBoard, ITectonicDrawingData, IAddChild, ITec
         get => (Brush)GetValue(BackgroundBrushProperty);
     }
     
-    public static readonly DependencyProperty LineBrushProperty =
-        DependencyProperty.Register(nameof(LineBrush), typeof(Brush), typeof(TectonicBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if(obj is not TectonicBoard board) return;
-                board.Refresh();
-            }));
-    
     public Brush LineBrush
     {
         set => SetValue(LineBrushProperty, value);
         get => (Brush)GetValue(LineBrushProperty);
     }
 
-    public static readonly DependencyProperty LinkBrushProperty =
-        DependencyProperty.Register(nameof(LinkBrush), typeof(Brush), typeof(TectonicBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if(obj is not TectonicBoard board) return;
-                board.Refresh();
-            }));
-
     public Brush LinkBrush
     {
         set => SetValue(LinkBrushProperty, value);
         get => (Brush)GetValue(LinkBrushProperty);
     }
-    
-    public static readonly DependencyProperty CursorBrushProperty =
-        DependencyProperty.Register(nameof(CursorBrush), typeof(Brush), typeof(TectonicBoard),
-            new PropertyMetadata((obj, _) =>
-            {
-                if(obj is not TectonicBoard board) return;
-                board.Refresh();
-            }));
 
     public Brush CursorBrush
     {

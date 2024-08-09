@@ -7,7 +7,7 @@ public class BinairoTranslatorTests
     [Test]
     public void Test()
     {
-        const string s = "3x4:...1.01.11..";
+        const string s = "6x6:1...1..1........0...0.0......1.0.0..";
 
         var binairo = BinairoTranslator.TranslateLineFormat(s);
         Console.WriteLine(binairo);

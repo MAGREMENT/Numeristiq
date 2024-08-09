@@ -28,7 +28,7 @@ public class ThemePresenter
         else
         {
             _currentColor = name;
-            _view.SelectColor(name, _themeManager.Themes[_settings.Theme].GetColor(name));
+            _view.SelectColor(name, _themeManager.Themes[CurrentTheme].GetColor(name));
         }
     }
 
@@ -36,18 +36,18 @@ public class ThemePresenter
     {
         if(_currentColor is null) return;
 
-        var theme = _themeManager.Themes[_settings.Theme];
+        var theme = _themeManager.Themes[CurrentTheme];
         theme.SetColor(_currentColor, value);
-        _themeManager.UpdateTheme(_settings.Theme);
-        _settings.TrySet("Theme", new IntSettingValue(_settings.Theme));
-        _view.SetColors(theme.AllColors(), _themeManager.IsEditable(_settings.Theme));
+        _themeManager.UpdateTheme(CurrentTheme);
+        _settings.TrySet("Theme", new IntSettingValue(CurrentTheme));
+        _view.SetColors(theme.AllColors(), _themeManager.IsEditable(CurrentTheme));
     }
 
     public void SetTheme(string name)
     {
         var index = _themeManager.IndexOf(name);
 
-        if (index == -1 || index == _settings.Theme) return;
+        if (index == -1 || index == CurrentTheme) return;
 
         _settings.TrySet("Theme", new IntSettingValue(index));
         UpdateThemeStuff();
@@ -62,12 +62,14 @@ public class ThemePresenter
     public void SaveNewTheme(string name)
     {
         if (!IsNameCorrect(name, out _)) return;
-        var theme = _themeManager.Themes[_settings.Theme].Copy(name);
+        var theme = _themeManager.Themes[CurrentTheme].Copy(name);
         _themeManager.AddNewTheme(theme);
         
-        _view.SetOtherThemes(_themeManager.EnumerateThemesAndState(_settings.Theme));
+        _view.SetOtherThemes(_themeManager.EnumerateThemesAndState(CurrentTheme));
         _view.ShowNameError("Name is already used");
     }
+
+    private int CurrentTheme => _settings.Theme.Get().ToInt();
 
     private bool IsNameCorrect(string name, out string error)
     {
@@ -113,11 +115,11 @@ public class ThemePresenter
 
     private void UpdateThemeStuff()
     {
-        var current = _themeManager.Themes[_settings.Theme];
+        var current = _themeManager.Themes[CurrentTheme];
 
         _view.SetCurrentTheme(current.Name);
-        _view.SetOtherThemes(_themeManager.EnumerateThemesAndState(_settings.Theme));
-        _view.SetColors(current.AllColors(), _themeManager.IsEditable(_settings.Theme));
+        _view.SetOtherThemes(_themeManager.EnumerateThemesAndState(CurrentTheme));
+        _view.SetColors(current.AllColors(), _themeManager.IsEditable(CurrentTheme));
 
         UnselectCurrentColor();
     }

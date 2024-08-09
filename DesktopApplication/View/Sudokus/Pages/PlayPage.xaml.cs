@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Sudokus.Play;
 using DesktopApplication.Presenter.Sudokus.Solve;
@@ -26,10 +27,10 @@ public partial class PlayPage : ISudokuPlayView
     private bool _disabled;
     private readonly bool _initialized;
     
-    public PlayPage(SudokuApplicationPresenter appPresenter)
+    public PlayPage()
     {
         InitializeComponent();
-        _presenter = appPresenter.Initialize(this);
+        _presenter = PresenterFactory.Instance.Initialize(this);
         
         InitializeDifficultyComboBox();
         InitializeHighlightColorBoxes();
@@ -121,6 +122,8 @@ public partial class PlayPage : ISudokuPlayView
     }
 
     #endregion
+
+    public override string Header => "Play";
 
     public override void OnShow()
     {

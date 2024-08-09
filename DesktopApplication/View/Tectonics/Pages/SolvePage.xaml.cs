@@ -17,12 +17,11 @@ public partial class SolvePage : ITectonicSolveView
 {
     private readonly TectonicSolvePresenter _presenter;
     
-    public SolvePage(TectonicApplicationPresenter appPresenter)
+    public SolvePage()
     {
         InitializeComponent();
 
-        _presenter = appPresenter.Initialize(this);
-        
+        _presenter = PresenterFactory.Instance.Initialize(this);
         DefaultMode.IsChecked = true; //Do NOT move this to XAML
     }
 
@@ -160,6 +159,8 @@ public partial class SolvePage : ITectonicSolveView
                 break;
         }
     }
+
+    public override string Header => "Solve";
 
     public override void OnShow()
     {

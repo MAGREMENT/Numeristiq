@@ -14,14 +14,14 @@ public class OddagonSearchAlgorithmV1 : IOddagonSearchAlgorithm
         List<AlmostOddagon> result = new();
         foreach (var start in graph)
         {
-            Search(solverData, new LinkGraphChainBuilder<CellPossibility>(start),
+            Search(solverData, new ChainBuilder<CellPossibility, LinkStrength>(start),
                 new List<CellPossibility>(), graph, result);
         }
 
         return result;
     }
 
-    private void Search(ISudokuSolverData solverData, LinkGraphChainBuilder<CellPossibility> builder,
+    private void Search(ISudokuSolverData solverData, ChainBuilder<CellPossibility, LinkStrength> builder,
         List<CellPossibility> currentGuardians, ILinkGraph<CellPossibility> graph, List<AlmostOddagon> result)
     {
         if (builder.Count > MaxLength) return;

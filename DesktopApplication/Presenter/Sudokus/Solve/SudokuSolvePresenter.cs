@@ -42,21 +42,21 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
         _settings = settings;
         _repo = repo;
 
-        _view.Drawer.FastPossibilityDisplay = _settings.FastPossibilityDisplay;
-        _view.Drawer.LinkOffsetSidePriority = _settings.LinkOffsetSidePriority;
+        _view.Drawer.FastPossibilityDisplay = _settings.FastPossibilityDisplay.Get().ToBool();
+        _view.Drawer.LinkOffsetSidePriority = (LinkOffsetSidePriority)_settings.LinkOffsetSidePriority.Get().ToInt();
 
-        _settings.FastPossibilityDisplaySetting.ValueChanged += v =>
+        _settings.FastPossibilityDisplay.ValueChanged += v =>
         {
             _view.Drawer.FastPossibilityDisplay = v.ToBool();
             _view.Drawer.Refresh();
         };
-        _settings.LinkOffsetSidePrioritySetting.ValueChanged += v =>
+        _settings.LinkOffsetSidePriority.ValueChanged += v =>
         {
             _view.Drawer.LinkOffsetSidePriority = (LinkOffsetSidePriority)v.ToInt();
             _view.Drawer.Refresh();
         };
-        _settings.ShowSameCellsLinksSetting.ValueChanged += _ => _view.Drawer.Refresh();
-        _settings.AllowUniquenessSetting.ValueChanged += AllowUniqueness;
+        _settings.ShowSameCellLinks.ValueChanged += _ => _view.Drawer.Refresh();
+        _settings.AllowUniqueness.ValueChanged += AllowUniqueness;
         
         SettingsPresenter = new SettingsPresenter(_settings, SettingCollections.SudokuSolvePage);
 
@@ -189,7 +189,8 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
     {
         if (_currentlyDisplayedState is null) return;
         
-        if(!_settings.OpenCopyDialog) Copy(_currentlyDisplayedState, _settings.DefaultCopyFormat);
+        if(!_settings.OpenCopyDialog.Get().ToBool()) Copy(_currentlyDisplayedState, (SudokuStringFormat)
+            _settings.DefaultCopyFormat.Get().ToInt());
         else _view.OpenOptionDialog("Copy", i =>
         {
             Copy(_currentlyDisplayedState, (SudokuStringFormat)i);
@@ -198,7 +199,8 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
 
     public void Paste(string s)
     {
-        if(!_settings.OpenPasteDialog) Paste(s, _settings.DefaultPasteFormat);
+        if(!_settings.OpenPasteDialog.Get().ToBool()) Paste(s, (SudokuStringFormat)
+            _settings.DefaultPasteFormat.Get().ToInt());
         else _view.OpenOptionDialog("Paste", i =>
         {
             Paste(s, (SudokuStringFormat)i);
@@ -221,7 +223,8 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
     {
         _view.CopyToClipBoard(format switch
         {
-            SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(state, _settings.EmptyCellRepresentation),
+            SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(state, (SudokuLineFormatEmptyCellRepresentation)
+                _settings.EmptyCellRepresentation.Get().ToInt()),
             SudokuStringFormat.Grid => SudokuTranslator.TranslateGridFormat(state),
             SudokuStringFormat.Base32 => SudokuTranslator.TranslateBase32Format(state, new AlphabeticalBase32Translator()),
             _ => throw new Exception()
@@ -236,7 +239,7 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
                 SetNewSudoku(SudokuTranslator.TranslateLineFormat(s));
                 break;
             case SudokuStringFormat.Grid :
-                SetNewState(SudokuTranslator.TranslateGridFormat(s, _settings.SoloToGiven));
+                SetNewState(SudokuTranslator.TranslateGridFormat(s, _settings.SoloToGiven.Get().ToBool()));
                 break;
             case SudokuStringFormat.Base32 :
                 SetNewState(SudokuTranslator.TranslateBase32Format(s, new AlphabeticalBase32Translator()));

@@ -48,15 +48,15 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     
     ILinkGraph<T> GetGraph(ISudokuSolverData solverData);
 
-    bool ProcessFullLoop(ISudokuSolverData solverData, LinkGraphLoop<T> loop);
+    bool ProcessFullLoop(ISudokuSolverData solverData, Loop<T, LinkStrength> loop);
 
-    bool ProcessWeakInferenceLoop(ISudokuSolverData solverData, T inference, LinkGraphLoop<T> loop);
+    bool ProcessWeakInferenceLoop(ISudokuSolverData solverData, T inference, Loop<T, LinkStrength> loop);
 
-    bool ProcessStrongInferenceLoop(ISudokuSolverData solverData, T inference, LinkGraphLoop<T> loop);
+    bool ProcessStrongInferenceLoop(ISudokuSolverData solverData, T inference, Loop<T, LinkStrength> loop);
 
-    bool ProcessChain(ISudokuSolverData solverData, LinkGraphChain<T> chain, ILinkGraph<T> graph);
+    bool ProcessChain(ISudokuSolverData solverData, Chain<T, LinkStrength> chain, ILinkGraph<T> graph);
 
-    static bool ProcessChainWithSimpleGraph(ISudokuSolverData solverData, LinkGraphChain<CellPossibility> chain,
+    static bool ProcessChainWithSimpleGraph(ISudokuSolverData solverData, Chain<CellPossibility, LinkStrength> chain,
         ILinkGraph<CellPossibility> graph, SudokuStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
@@ -73,7 +73,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
         return strategy.StopOnFirstCommit;
     }
     
-    static bool ProcessChainWithComplexGraph(ISudokuSolverData solverData, LinkGraphChain<ISudokuElement> chain,
+    static bool ProcessChainWithComplexGraph(ISudokuSolverData solverData, Chain<ISudokuElement, LinkStrength> chain,
         ILinkGraph<ISudokuElement> graph, SudokuStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
@@ -112,10 +112,10 @@ public interface IReportBuilderWithChain
 
 public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
 {
-    private readonly LinkGraphLoop<T> _loop;
+    private readonly Loop<T, LinkStrength> _loop;
     private readonly LoopType _type;
 
-    public AlternatingInferenceLoopReportBuilder(LinkGraphLoop<T> loop, LoopType type)
+    public AlternatingInferenceLoopReportBuilder(Loop<T, LinkStrength> loop, LoopType type)
     {
         _loop = loop;
         _type = type;
@@ -155,7 +155,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<Num
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        return result + $" found\nLoop :: {_loop}";
+        return result + $" found\nLoop :: {_loop.ToLinkLoopString()}";
     }
 
     public int MaxRank()
@@ -179,11 +179,12 @@ public enum LoopType
     NiceLoop, WeakInference, StrongInference
 }
 
-public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
+public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<NumericChange, ISudokuSolvingState,
+    ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
 {
-    private readonly LinkGraphChain<T> _chain;
+    private readonly Chain<T, LinkStrength> _chain;
 
-    public AlternatingInferenceChainReportBuilder(LinkGraphChain<T> chain)
+    public AlternatingInferenceChainReportBuilder(Chain<T, LinkStrength> chain)
     {
         _chain = chain;
     }

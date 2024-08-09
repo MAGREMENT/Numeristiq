@@ -67,7 +67,7 @@ public class SudokuGeneratePresenter
                 SudokuTranslator.TranslateBase32Format(s, new AlphabeticalBase32Translator())),
             SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(s),
             SudokuStringFormat.Grid => SudokuTranslator.TranslateSolvingState(
-                SudokuTranslator.TranslateGridFormat(s, _setting.SoloToGiven)),
+                SudokuTranslator.TranslateGridFormat(s, _setting.SoloToGiven.Get().ToBool())),
             _ => throw new ArgumentOutOfRangeException()
         };
 
@@ -140,7 +140,8 @@ public class SudokuGeneratePresenter
     public void CopyAll()
     {
         _view.CopyToClipboard(_evaluatedList.ToStringSequence("\n", puzzle => 
-            SudokuTranslator.TranslateLineFormat(puzzle.Puzzle, _setting.EmptyCellRepresentation)));
+            SudokuTranslator.TranslateLineFormat(puzzle.Puzzle, (SudokuLineFormatEmptyCellRepresentation)
+                _setting.EmptyCellRepresentation.Get().ToInt())));
     }
 }
 

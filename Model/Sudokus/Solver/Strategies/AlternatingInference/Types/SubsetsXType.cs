@@ -24,7 +24,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
         return solverData.PreComputer.Graphs.ComplexLinkGraph;
     }
 
-    public bool ProcessFullLoop(ISudokuSolverData solverData, LinkGraphLoop<ISudokuElement> loop)
+    public bool ProcessFullLoop(ISudokuSolverData solverData, Loop<ISudokuElement, LinkStrength> loop)
     {
         loop.ForEachLink((one, two)
             => ProcessWeakLink(solverData, one, two), LinkStrength.Weak);
@@ -46,7 +46,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
         }
     }
 
-    public bool ProcessWeakInferenceLoop(ISudokuSolverData solverData, ISudokuElement inference, LinkGraphLoop<ISudokuElement> loop)
+    public bool ProcessWeakInferenceLoop(ISudokuSolverData solverData, ISudokuElement inference, Loop<ISudokuElement, LinkStrength> loop)
     {
         if (inference is not CellPossibility single) return false;
         
@@ -57,7 +57,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
         return Strategy!.StopOnFirstCommit;
     }
 
-    public bool ProcessStrongInferenceLoop(ISudokuSolverData solverData, ISudokuElement inference, LinkGraphLoop<ISudokuElement> loop)
+    public bool ProcessStrongInferenceLoop(ISudokuSolverData solverData, ISudokuElement inference, Loop<ISudokuElement, LinkStrength> loop)
     {
         if (inference is not CellPossibility single) return false;
         
@@ -68,7 +68,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
         return Strategy!.StopOnFirstCommit;
     }
 
-    public bool ProcessChain(ISudokuSolverData solverData, LinkGraphChain<ISudokuElement> chain, ILinkGraph<ISudokuElement> graph)
+    public bool ProcessChain(ISudokuSolverData solverData, Chain<ISudokuElement, LinkStrength> chain, ILinkGraph<ISudokuElement> graph)
     {
         return IAlternatingInferenceType<ISudokuElement>.ProcessChainWithComplexGraph(solverData,
             chain, graph, Strategy!);

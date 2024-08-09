@@ -12,7 +12,8 @@ namespace Model.Sudokus.Solver.Utility;
 
 public static class ForcingNetsUtility
 {
-    public static void HighlightAllPaths(ISudokuHighlighter lighter, List<LinkGraphChain<ISudokuElement>> paths, Coloring startColoring)
+    public static void HighlightAllPaths(ISudokuHighlighter lighter, List<Chain<ISudokuElement, LinkStrength>> paths,
+        Coloring startColoring)
     {
         HashSet<ISudokuElement> alreadyHighlighted = new();
 
@@ -42,25 +43,25 @@ public static class ForcingNetsUtility
         }
     }
 
-    public static string AllPathsToString(List<LinkGraphChain<ISudokuElement>> paths)
+    public static string AllPathsToString(List<Chain<ISudokuElement, LinkStrength>> paths)
     {
         var builder = new StringBuilder();
 
         for (int i = 0; i < paths.Count; i++)
         {
             var letter = (char)('a' + i);
-            builder.Append($"{letter}) {paths[i]}\n");
+            builder.Append($"{letter}) {paths[i].ToLinkChainString()}\n");
         }
 
         return builder.ToString();
     }
 
-    public static List<LinkGraphChain<ISudokuElement>> FindEveryNeededPaths(LinkGraphChain<ISudokuElement> basePath,
+    public static List<Chain<ISudokuElement, LinkStrength>> FindEveryNeededPaths(Chain<ISudokuElement, LinkStrength> basePath,
         IColoringResult<ISudokuElement> result, ILinkGraph<ISudokuElement> graph, ISudokuSolvingState snapshot)
     {
-        var list = new List<LinkGraphChain<ISudokuElement>> {basePath};
+        var list = new List<Chain<ISudokuElement, LinkStrength>> {basePath};
         HashSet<ISudokuElement> allElements = new(basePath.Elements);
-        Queue<LinkGraphChain<ISudokuElement>> queue = new();
+        Queue<Chain<ISudokuElement, LinkStrength>> queue = new();
         queue.Enqueue(basePath);
 
         while (queue.Count > 0)

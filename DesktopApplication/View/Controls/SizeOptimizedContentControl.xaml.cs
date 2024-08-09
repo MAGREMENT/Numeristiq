@@ -42,7 +42,7 @@ public partial class SizeOptimizedContentControl
         SizeChanged += (_, _) => AdjustOptimizableSize();
     }
 
-    private void AdjustOptimizableSize()
+    private void AdjustOptimizableSize() //TODO fix
     {
         if (_content is null || !_content.HasSize())
         {

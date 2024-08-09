@@ -6,7 +6,7 @@ namespace Model.Sudokus.Solver.Strategies.AlternatingInference.Algorithms;
 public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     private readonly int _maxLoopSize;
-    private readonly HashSet<LinkGraphLoop<T>> _loopsProcessed = new();
+    private readonly HashSet<Loop<T, LinkStrength>> _loopsProcessed = new();
     
     public AlgorithmType Type => AlgorithmType.Loop;
 
@@ -23,13 +23,13 @@ public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : 
         Dictionary<T, HashSet<T>> locallySearched = new();
         foreach (var start in graph)
         {
-            if (Search(solverData, graph, type, new LinkGraphChainBuilder<T>(start), globallySearched, locallySearched)) return;
+            if (Search(solverData, graph, type, new ChainBuilder<T, LinkStrength>(start), globallySearched, locallySearched)) return;
             locallySearched.Clear();
         }
     }
 
-    private bool Search(ISudokuSolverData view, ILinkGraph<T> graph, IAlternatingInferenceType<T> inferenceType, LinkGraphChainBuilder<T> builder,
-        Dictionary<T, HashSet<T>> globallySearched, Dictionary<T, HashSet<T>> locallySearched)
+    private bool Search(ISudokuSolverData view, ILinkGraph<T> graph, IAlternatingInferenceType<T> inferenceType,
+        ChainBuilder<T, LinkStrength> builder, Dictionary<T, HashSet<T>> globallySearched, Dictionary<T, HashSet<T>> locallySearched)
     {
         if (builder.Count > _maxLoopSize) return false;
 

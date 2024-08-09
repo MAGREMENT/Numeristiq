@@ -5,8 +5,10 @@ using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.Kakuros;
 using DesktopApplication.View.Nonograms;
 using DesktopApplication.View.Sudokus;
+using DesktopApplication.View.Sudokus.Pages;
 using DesktopApplication.View.Tectonics;
 using DesktopApplication.View.Themes;
+using SolvePage = DesktopApplication.View.Tectonics.Pages.SolvePage;
 
 namespace DesktopApplication.View;
 
@@ -21,8 +23,7 @@ public partial class WelcomeWindow
     {
         InitializeComponent();
 
-        _presenter = GlobalApplicationPresenter.Instance.InitializeWelcomePresenter();
-        
+        _presenter = PresenterFactory.Instance.Initialize();
         RenderOptions.SetBitmapScalingMode(Image, BitmapScalingMode.Fant);
             
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
@@ -41,28 +42,36 @@ public partial class WelcomeWindow
 
     private void OnSudokuClick(object sender, RoutedEventArgs e)
     {
-        var window = new SudokuWindow();
+        var window = new PageWindow(1400, 750, new Sudokus.Pages.SolvePage(),
+            new PlayPage(), new ManagePage(), new GeneratePage());
         window.Show();
         Close();
     }
     
     private void OnTectonicClick(object sender, RoutedEventArgs e)
     {
-        var window = new TectonicWindow();
+        var window = new PageWindow(1210, 700, new SolvePage());
         window.Show();
         Close();
     }
     
     private void OnKakuroClick(object sender, RoutedEventArgs e)
     {
-        var window = new KakuroWindow();
+        var window = new PageWindow(1000, 800, new Kakuros.Pages.SolvePage());
         window.Show();
         Close();
     }
     
     private void OnNonogramClick(object sender, RoutedEventArgs e)
     {
-        var window = new NonogramWindow();
+        var window = new PageWindow(1060, 70, new Nonograms.Pages.SolvePage());
+        window.Show();
+        Close();
+    }
+    
+    private void OnBinairoClick(object sender, RoutedEventArgs e)
+    {
+        var window = new PageWindow(1050, 700, new Binairos.Pages.SolvePage());
         window.Show();
         Close();
     }

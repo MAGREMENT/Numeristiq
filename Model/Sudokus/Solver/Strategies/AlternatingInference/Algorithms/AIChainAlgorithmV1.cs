@@ -13,14 +13,14 @@ public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T :
 
         foreach (var start in graph)
         {
-            if (Search(solverData, graph, type, new LinkGraphChainBuilder<T>(start),
+            if (Search(solverData, graph, type, new ChainBuilder<T, LinkStrength>(start),
                     new HashSet<T> { start }, processed)) return;
             processed.Add(start);
         }
     }
 
     private bool Search(ISudokuSolverData user, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
-        LinkGraphChainBuilder<T> builder, HashSet<T> explored, HashSet<T> processed)
+        ChainBuilder<T, LinkStrength> builder, HashSet<T> explored, HashSet<T> processed)
     {
         var next = builder.LastLink() == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
         var last = builder.LastElement();
@@ -58,7 +58,7 @@ public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T :
     }
 
     private bool Check(ISudokuSolverData user, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
-        LinkGraphChain<T> chain)
+        Chain<T, LinkStrength> chain)
     {
         return type.ProcessChain(user, chain, graph);
     }

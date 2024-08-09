@@ -147,7 +147,7 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, I
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         var highlights = new Highlight<ISudokuHighlighter>[_colorings.Length];
-        var paths = new List<LinkGraphChain<ISudokuElement>>[_colorings.Length];
+        var paths = new List<Chain<ISudokuElement, LinkStrength>>[_colorings.Length];
 
         for (int i = 0; i < _colorings.Length; i++)
         {

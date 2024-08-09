@@ -67,7 +67,7 @@ public class BlossomLoopStrategy : SudokuStrategy
         }
     }
 
-    private HashSet<CellPossibility> SetUpNope(LinkGraphLoop<ISudokuElement> loop,
+    private HashSet<CellPossibility> SetUpNope(Loop<ISudokuElement, LinkStrength> loop,
         BlossomLoopBranch[] branches)
     {
         HashSet<CellPossibility> nope = new();
@@ -199,11 +199,11 @@ public class BlossomLoopStrategy : SudokuStrategy
 
 public class BlossomLoopReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly LinkGraphLoop<ISudokuElement> _loop;
+    private readonly Loop<ISudokuElement, LinkStrength> _loop;
     private readonly BlossomLoopBranch[] _branches;
     private readonly CellPossibility[] _cps;
 
-    public BlossomLoopReportBuilder(LinkGraphLoop<ISudokuElement> loop, BlossomLoopBranch[] branches, CellPossibility[] cps)
+    public BlossomLoopReportBuilder(Loop<ISudokuElement, LinkStrength> loop, BlossomLoopBranch[] branches, CellPossibility[] cps)
     {
         _loop = loop;
         _branches = branches;
