@@ -2,6 +2,7 @@
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Utility;
 
 namespace Model.Binairos.Strategies;
 
@@ -29,7 +30,7 @@ public class DoubleStrategy : Strategy<IBinairoSolverData>
 
                     if (data.ChangeBuffer.NeedCommit())
                     {
-                        data.ChangeBuffer.Commit(new DoubleReportBuilder());
+                        data.ChangeBuffer.Commit(new DoubleReportBuilder(row, col, true));
                         if(StopOnFirstCommit) return;
                     }
                 }
@@ -54,7 +55,7 @@ public class DoubleStrategy : Strategy<IBinairoSolverData>
 
                     if (data.ChangeBuffer.NeedCommit())
                     {
-                        data.ChangeBuffer.Commit(new DoubleReportBuilder());
+                        data.ChangeBuffer.Commit(new DoubleReportBuilder(row, col, false));
                         if(StopOnFirstCommit) return;
                     }
                 }
@@ -67,9 +68,27 @@ public class DoubleStrategy : Strategy<IBinairoSolverData>
 
 public class DoubleReportBuilder : IChangeReportBuilder<BinaryChange, IBinarySolvingState, IBinairoHighlighter>
 {
+    private readonly int _row;
+    private readonly int _col;
+    private readonly bool _isRow;
+
+    public DoubleReportBuilder(int row, int col, bool isRow)
+    {
+        _row = row;
+        _col = col;
+        _isRow = isRow;
+    }
+
     public ChangeReport<IBinairoHighlighter> BuildReport(IReadOnlyList<BinaryChange> changes, IBinarySolvingState snapshot)
     {
-        return new ChangeReport<IBinairoHighlighter>("Double");
+        var c1 = _isRow ? new Cell(_row, _col - 1) : new Cell(_row - 1, _col);
+        var c2 = new Cell(_row, _col);
+        
+        return new ChangeReport<IBinairoHighlighter>($"Double in {c1} and {c2}", lighter =>
+        {
+            lighter.HighlightCell(c1, StepColor.Cause1);
+            lighter.HighlightCell(c2, StepColor.Cause1);
+        });
     }
 
     public Clue<IBinairoHighlighter> BuildClue(IReadOnlyList<BinaryChange> changes, IBinarySolvingState snapshot)

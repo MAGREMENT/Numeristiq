@@ -13,5 +13,6 @@ public interface INonogramHighlighter
 
 public interface IBinairoHighlighter
 {
-    
+    void HighlightCell(int row, int col, StepColor color);
+    void HighlightCell(Cell c, StepColor color) => HighlightCell(c.Row, c.Column, color);
 }

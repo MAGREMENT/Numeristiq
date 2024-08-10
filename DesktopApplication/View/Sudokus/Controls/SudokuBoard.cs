@@ -431,16 +431,14 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawingData, ISudokuSolverDrawer
 
     public event OnSizeChange? OptimizableSizeChanged;
 
-    public int WidthSizeMetricCount => 9;
-    public int HeightSizeMetricCount => 9;
-    public double GetHeightAdditionalSize()
+    public double GetWidthSizeMetricFor(double space)
     {
-        return _bigLineWidth * 4 + _smallLineWidth * 6;
+        return (space - _smallLineWidth * 6 - _bigLineWidth * 4) / 9;
     }
 
-    public double GetWidthAdditionalSize()
+    public double GetHeightSizeMetricFor(double space)
     {
-        return _bigLineWidth * 4 + _smallLineWidth * 6;
+        return (space - _smallLineWidth * 6 - _bigLineWidth * 4) / 9;
     }
 
     public bool HasSize()
@@ -448,12 +446,7 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawingData, ISudokuSolverDrawer
         return true;
     }
 
-    public double SimulateSizeMetric(int n, SizeType type)
-    {
-        return n * 9 + _smallLineWidth * 6 + _bigLineWidth * 4;
-    }
-
-    public void SetSizeMetric(int n)
+    public void SetSizeMetric(double n)
     {
         SetCellSize(n, false);
     }

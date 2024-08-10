@@ -1,7 +1,9 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Binairos.Solve;
 using DesktopApplication.View.Controls;
+using DesktopApplication.View.HelperWindows;
 
 namespace DesktopApplication.View.Binairos.Pages;
 
@@ -29,7 +31,14 @@ public partial class SolvePage : IBinairoSolveView
 
     public override object? TitleBarContent()
     {
-        return null;
+        var settings = new SettingsButton();
+        settings.Clicked += () =>
+        {
+            var window = new SettingWindow(_presenter.SettingsPresenter);
+            window.Show();
+        };
+
+        return settings;
     }
 
     protected override StackPanel GetStepPanel()
@@ -67,5 +76,15 @@ public partial class SolvePage : IBinairoSolveView
     private void OnTextChanged(string s)
     {
         _presenter.SetNewBinairo(s);
+    }
+
+    private void OnSolve(object sender, RoutedEventArgs e)
+    {
+        _presenter.Solve(false);
+    }
+
+    private void OnAdvance(object sender, RoutedEventArgs e)
+    {
+        _presenter.Solve(true);
     }
 }

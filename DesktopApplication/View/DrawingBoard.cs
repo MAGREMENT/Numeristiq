@@ -589,7 +589,7 @@ public class BinairoSolutionDrawableComponent : IDrawableComponent<IBinairoDrawi
         if (data.AreSolutionNumbers)
         {
             var brush = data.IsClue(_row, _col) ? data.ClueNumberBrush : data.DefaultNumberBrush;
-            var text = new FormattedText(_solution.ToString(), data.CultureInfo, FlowDirection.LeftToRight, data.Typeface,
+            var text = new FormattedText((_solution - 1).ToString(), data.CultureInfo, FlowDirection.LeftToRight, data.Typeface,
                 data.CellSize / 4 * 3, brush, 1);
             DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfCell(_col),
                     data.GetTopOfCell(_row), data.CellSize, data.CellSize), ComponentHorizontalAlignment.Center,
@@ -597,9 +597,16 @@ public class BinairoSolutionDrawableComponent : IDrawableComponent<IBinairoDrawi
         }
         else
         {
-            var radius = data.CellSize * 3 / 8;
+            double radius;
+            var center = data.GetCenterOfCell(_row, _col);
+            if (data.IsClue(_row, _col))
+            {
+                radius = data.CellSize * 13 / 32;
+                context.DrawEllipse(data.ClueNumberBrush, null, center, radius, radius);
+            }
+            radius = data.CellSize * 3 / 8;
             var brush = _solution == 1 ? data.CircleFirstColor : data.CircleSecondColor;
-            context.DrawEllipse(brush, null, data.GetCenterOfCell(_row, _col), radius, radius);
+            context.DrawEllipse(brush, null, center, radius, radius);
         }
     }
 }

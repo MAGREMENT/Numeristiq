@@ -55,26 +55,13 @@ public partial class SizeOptimizedContentControl
             var availableWidth = ActualWidth - ContentHolder.Padding.Left - ContentHolder.Padding.Right;
             var availableHeight = ActualHeight - ContentHolder.Padding.Top - ContentHolder.Padding.Bottom;
 
-            _content.SetSizeMetric(availableHeight - _content.Height < availableWidth - _content.Width
-                ? ComputeOptimalSize(availableHeight, _content.HeightSizeMetricCount, _content.GetHeightAdditionalSize(), SizeType.Height) 
-                : ComputeOptimalSize(availableWidth, _content.WidthSizeMetricCount, _content.GetWidthAdditionalSize(), SizeType.Width)); 
+            var w = _content.GetWidthSizeMetricFor(availableWidth);
+            var h = _content.GetHeightSizeMetricFor(availableHeight);
+
+            _content.SetSizeMetric(w > h ? h : w);
         }
         
         ContentHolder.Child = (FrameworkElement)_content;
-    }
-
-    private int ComputeOptimalSize(double space, int count, double additionalSize, SizeType type)
-    {
-        var value = (int)((space - additionalSize) / count);
-        var simulation = _content!.SimulateSizeMetric(value, type);
-        while (simulation > space)
-        {
-            var possibleRemoval = (int)((simulation - space) / count);
-            value -= possibleRemoval > 0 ? possibleRemoval : 1;
-            simulation = _content!.SimulateSizeMetric(value, type);
-        }
-
-        return value;
     }
 }
 
@@ -82,23 +69,11 @@ public interface ISizeOptimizable
 {
     event OnSizeChange? OptimizableSizeChanged;
     
-    double Width { get; }
-    double Height { get; }
-    
-    int WidthSizeMetricCount { get; }
-    int HeightSizeMetricCount { get; }
-
-    double GetHeightAdditionalSize();
-    double GetWidthAdditionalSize();
+    double GetWidthSizeMetricFor(double space);
+    double GetHeightSizeMetricFor(double space);
     
     bool HasSize();
-    double SimulateSizeMetric(int n, SizeType type);
-    void SetSizeMetric(int n);
-}
-
-public enum SizeType
-{
-    Width, Height
+    void SetSizeMetric(double n);
 }
 
 public delegate void OnSizeChange();

@@ -73,6 +73,11 @@ public class Settings
             new [] //SudokuGenerateView
             {
                 new NamedListSpan<ISetting>("Themes", _settings, 0),
+            },
+            new[] //BinairoSolveView
+            {
+                new NamedListSpan<ISetting>("Themes", _settings, 0),
+                new NamedListSpan<ISetting>("Board", _settings, 15)
             }
         };
         _repository = repository;
@@ -129,5 +134,6 @@ public enum SettingCollections
     WelcomeWindow,
     SudokuSolvePage,
     SudokuPlayPage,
-    SudokuGeneratePage
+    SudokuGeneratePage,
+    BinairoSolvePage
 }

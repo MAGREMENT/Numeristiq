@@ -10,5 +10,6 @@ public class HardCodedBinairoStrategyRepository : HardCodedStrategyRepository<St
     {
         yield return new DoubleStrategy();
         yield return new TripleDenialStrategy();
+        yield return new HalfCompletionStrategy();
     }
 }

@@ -64,7 +64,7 @@ public partial class WelcomeWindow
     
     private void OnNonogramClick(object sender, RoutedEventArgs e)
     {
-        var window = new PageWindow(1060, 70, new Nonograms.Pages.SolvePage());
+        var window = new PageWindow(1060, 700, new Nonograms.Pages.SolvePage());
         window.Show();
         Close();
     }

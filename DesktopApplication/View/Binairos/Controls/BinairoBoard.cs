@@ -2,17 +2,18 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Threading;
 using DesktopApplication.Presenter.Binairos.Solve;
 using DesktopApplication.View.Controls;
+using Model.Core.Changes;
 
 namespace DesktopApplication.View.Binairos.Controls;
 
 public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable, IBinairoDrawer
 {
     private const int BackgroundIndex = 0;
-    private const int LinesIndex = 1;
-    private const int NumbersIndex = 2;
+    private const int HighlightIndex = 1;
+    private const int LinesIndex = 2;
+    private const int NumbersIndex = 3;
 
     private double _lineWidth;
     private double _cellSize;
@@ -21,7 +22,7 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
 
     private bool[,] _clues = new bool[0, 0];
 
-    public BinairoBoard() : base(3)
+    public BinairoBoard() : base(4)
     {
         Layers[BackgroundIndex].Add(new BackgroundDrawableComponent());
         Layers[LinesIndex].Add(new BinairoGridDrawableComponent());
@@ -197,7 +198,12 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
     {
         _clues[row, col] = isClue;
     }
-    
+
+    public void HighlightCell(int row, int col, StepColor color)
+    {
+        Layers[HighlightIndex].Add(new CellFillDrawableComponent(row, col, (int)color, FillColorType.Step));
+    }
+
     public void ClearHighlights()
     {
         
@@ -233,16 +239,15 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
     #region ISizeOptimizable
 
     public event OnSizeChange? OptimizableSizeChanged;
-    public int WidthSizeMetricCount => _columnCount;
-    public int HeightSizeMetricCount => _rowCount;
-    public double GetHeightAdditionalSize()
+    
+    public double GetWidthSizeMetricFor(double space)
     {
-        return _lineWidth * (_rowCount + 1);
+        return (space - _lineWidth) / _columnCount - _lineWidth;
     }
 
-    public double GetWidthAdditionalSize()
+    public double GetHeightSizeMetricFor(double space)
     {
-        return _lineWidth * (_columnCount + 1);
+        return (space - _lineWidth) / _rowCount - _lineWidth;
     }
 
     public bool HasSize()
@@ -250,13 +255,7 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
         return _rowCount > 0 && _columnCount > 0;
     }
 
-    public double SimulateSizeMetric(int n, SizeType type)
-    {
-        var mult = type == SizeType.Height ? _rowCount : _columnCount;
-        return _lineWidth + (_lineWidth + n) * mult;
-    }
-
-    public void SetSizeMetric(int n)
+    public void SetSizeMetric(double n)
     {
         _cellSize = n;
         UpdateSize(false);

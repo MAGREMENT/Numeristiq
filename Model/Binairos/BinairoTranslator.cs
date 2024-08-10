@@ -7,6 +7,8 @@ public static class BinairoTranslator
 {
     public static string TranslateLineFormat(IReadOnlyBinairo binairo)
     {
+        if (binairo.RowCount == 0 || binairo.ColumnCount == 0) return string.Empty;
+        
         var builder = new StringBuilder($"{binairo.RowCount}x{binairo.ColumnCount}:");
         for (int row = 0; row < binairo.RowCount; row++)
         {

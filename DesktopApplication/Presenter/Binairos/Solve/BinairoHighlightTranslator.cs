@@ -1,4 +1,5 @@
-﻿using Model.Core.Highlighting;
+﻿using Model.Core.Changes;
+using Model.Core.Highlighting;
 
 namespace DesktopApplication.Presenter.Binairos.Solve;
 
@@ -16,5 +17,10 @@ public class BinairoHighlightTranslator : IHighlighterTranslator<IBinairoHighlig
         if(clear) _drawer.ClearHighlights();
         highlightable.Highlight(this);
         _drawer.Refresh();
+    }
+
+    public void HighlightCell(int row, int col, StepColor color)
+    {
+        _drawer.HighlightCell(row, col, color);
     }
 }

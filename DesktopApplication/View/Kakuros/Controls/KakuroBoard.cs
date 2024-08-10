@@ -417,23 +417,20 @@ public class KakuroBoard : DrawingBoard, IKakuroDrawingData, ISizeOptimizable, I
     #region ISizeOptimizable
 
     public event OnSizeChange? OptimizableSizeChanged;
-    public int WidthSizeMetricCount => ColumnCount;
-    public int HeightSizeMetricCount => RowCount;
+    
+    public double GetWidthSizeMetricFor(double space)
+    {
+        return (space - (_columnCount + 2) * _bigLineWidth) / (_columnCount + _amountWidthFactor);
+    }
 
-    public double GetHeightAdditionalSize() => AmountHeight + _bigLineWidth * (RowCount + 2);
-
-    public double GetWidthAdditionalSize() => AmountWidth + _bigLineWidth * (ColumnCount + 2);
+    public double GetHeightSizeMetricFor(double space)
+    {
+        return (space - (_rowCount + 2) * _bigLineWidth) / (_rowCount + _amountHeightFactor);
+    }
 
     public bool HasSize() => RowCount > 0 && ColumnCount > 0;
 
-    public double SimulateSizeMetric(int n, SizeType type)
-    {
-        var buffer = n + _bigLineWidth;
-        buffer *= type == SizeType.Width ? ColumnCount : RowCount;
-        return buffer + _bigLineWidth * 2 + (type == SizeType.Width ? _amountWidthFactor : _amountHeightFactor) * n;
-    }
-
-    public void SetSizeMetric(int n)
+    public void SetSizeMetric(double n)
     {
         SetCellSize(n, false);
     }

@@ -471,22 +471,20 @@ public class TectonicBoard : DrawingBoard, ITectonicDrawingData, IAddChild, ITec
     #region ISizeOptimizable
 
     public event OnSizeChange? OptimizableSizeChanged;
-    public int WidthSizeMetricCount => ColumnCount;
-    public int HeightSizeMetricCount => RowCount;
+    
+    public double GetWidthSizeMetricFor(double space)
+    {
+        return (space - BigLineRange.Maximum * (_columnCount + 1)) / _columnCount;
+    }
 
-    public double GetHeightAdditionalSize() => _bigLineWidth * (RowCount + 1);
-
-    public double GetWidthAdditionalSize() => _bigLineWidth * (ColumnCount + 1);
+    public double GetHeightSizeMetricFor(double space)
+    {
+        return (space - BigLineRange.Maximum * (_rowCount + 1)) / _rowCount;
+    }
 
     public bool HasSize() => RowCount > 0 && ColumnCount > 0;
 
-    public double SimulateSizeMetric(int n, SizeType type)
-    {
-        var blw = _bigLineRange.GetValueFor(n);
-        return type == SizeType.Width ? blw + (blw + n) * ColumnCount : blw + (blw + n) * RowCount;
-    }
-
-    public void SetSizeMetric(int n)
+    public void SetSizeMetric(double n)
     {
         SetCellSize(n, false);
     }

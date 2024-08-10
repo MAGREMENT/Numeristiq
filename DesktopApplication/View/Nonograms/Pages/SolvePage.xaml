@@ -14,7 +14,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <global:SizeOptimizedContentControl Grid.Column="0" Width="640" Height="640" x:Name="EmbeddedDrawer">
+        <global:SizeOptimizedContentControl Grid.Column="0" Margin="10" x:Name="EmbeddedDrawer">
             <global:SizeOptimizedContentControl.OptimizableContent>
                 <controls:NonogramBoard CellSize="50" LineBrush="{DynamicResource Text}"
                                         BackgroundBrush="Transparent"

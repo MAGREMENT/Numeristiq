@@ -14,8 +14,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <controls:SizeOptimizedContentControl Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                              Width="740" Height="740" x:Name="ContentControl" MouseDown="CreateDefault">
+        <controls:SizeOptimizedContentControl Grid.Column="0" Margin="10" x:Name="ContentControl" MouseDown="CreateDefault">
             <controls:SizeOptimizedContentControl.OptimizableContent>
                 <c:KakuroBoard LineBrush="{DynamicResource Text}" BackgroundBrush="Transparent"
                                DefaultNumberBrush="{DynamicResource Text}" AmountLineBrush="{DynamicResource Accent}"
