@@ -22,13 +22,13 @@ public class Settings
             new IntSetting("Theme", "The theme of the application.", new NameListInteractionInterface(themes), -1),
             new BooleanSetting("Show same cell links", "Allows links between candidates of the same cell to be shown."),
             new EnumSetting<LinkOffsetSidePriority>("Link offset side priority", "Defines which side will be prioritized" +
-                " for the angle of links.", null, DesktopApplication.LinkOffsetSidePriority.Any),
+                " for the angle of links.", null, DesktopApplication.Presenter.LinkOffsetSidePriority.Any),
             new BooleanSetting("Unique solution", "The puzzle must have a unique solution. Allows additional strategies."
                 , true),
             new IntSetting("Start angle", "Start angle for cells multi-color highlighting.",
                 new SliderInteractionInterface(0, 360, 10), 0),
             new EnumSetting<RotationDirection>("Rotation direction", "Rotation direction for cells multi-color highlighting.",
-                SpaceConverter.Instance, DesktopApplication.RotationDirection.ClockWise),
+                SpaceConverter.Instance, DesktopApplication.Presenter.RotationDirection.ClockWise),
             new EnumSetting<SudokuStringFormat>("Copy default format", "The default format used for copying.",
                 SpaceConverter.Instance, SudokuStringFormat.Grid),
             new BooleanSetting("Open copy dialog", "Opens a dialog window with options when a copy is asked."),
@@ -136,4 +136,14 @@ public enum SettingCollections
     SudokuPlayPage,
     SudokuGeneratePage,
     BinairoSolvePage
+}
+
+public enum RotationDirection
+{
+    ClockWise = 1, CounterClockWise = -1
+}
+
+public enum LinkOffsetSidePriority
+{
+    Any, Left, Right
 }

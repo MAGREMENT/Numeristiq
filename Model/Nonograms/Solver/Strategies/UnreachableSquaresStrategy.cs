@@ -4,6 +4,7 @@ using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Nonograms.Solver.Strategies;
 
@@ -146,13 +147,15 @@ public class SingleValueUnreachableSquareReportBuilder : IChangeReportBuilder<Di
 
     public ChangeReport<INonogramHighlighter> BuildReport(IReadOnlyList<DichotomousChange> changes, INonogramSolvingState snapshot)
     {
+        var cells = new ContainingHashSet<Cell>();
+        foreach (var other in _pos)
+        {
+            cells.Add(_orientation == Orientation.Horizontal ? new Cell(_unit, other) : new Cell(other, _unit));
+        }
         return new ChangeReport<INonogramHighlighter>("Unreachable Squares", lighter =>
         {
             lighter.HighlightValues(_orientation, _unit, _valueIndex, _valueIndex, StepColor.Cause1);
-            foreach(var other in _pos)
-            {
-                lighter.EncircleLineSection(_orientation, _unit, other, other, StepColor.Cause1);
-            }
+            lighter.EncircleCells(cells, StepColor.Cause1);
         });
     }
 

@@ -1,7 +1,10 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Kakuros.Solve;
+using DesktopApplication.View.Controls;
 using DesktopApplication.View.Kakuros.Controls;
 using Model.Utility;
 
@@ -115,5 +118,28 @@ public partial class SolvePage : IKakuroSolveView
     public override object? TitleBarContent()
     {
         return null;
+    }
+
+    protected override StackPanel GetStepPanel() => StepPanel;
+
+    protected override ScrollViewer GetStepViewer() => StepViewer;
+
+    protected override ISolveWithStepsPresenter GetStepsPresenter() => _presenter;
+
+    protected override ISizeOptimizable GetExplanationDrawer()
+    {
+        var board = new KakuroBoard
+        {
+            BackgroundBrush = Brushes.Transparent,
+            BigLineWidth = 3,
+            AmountHeightFactor = 0.5,
+            AmountWidthFactor = 0.5,
+            CellSize = 20
+        };
+
+        board.SetResourceReference(DrawingBoard.DefaultNumberBrushProperty, "Text");
+        board.SetResourceReference(KakuroBoard.AmountLineBrushProperty, "Accent");
+
+        return board;
     }
 }

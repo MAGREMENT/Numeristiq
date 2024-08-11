@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Kakuros.Solve;
 using DesktopApplication.View.Controls;
 using Model.Utility;
@@ -13,10 +14,11 @@ namespace DesktopApplication.View.Kakuros.Controls;
 public class KakuroBoard : DrawingBoard, IKakuroDrawingData, ISizeOptimizable, IKakuroSolverDrawer
 {
     private const int BackgroundIndex = 0;
-    private const int CursorIndex = 1;
-    private const int LineIndex = 2;
-    private const int AmountIndex = 3;
-    private const int NumberIndex = 4;
+    private const int HighlightIndex = 1;
+    private const int CursorIndex = 2;
+    private const int LineIndex = 3;
+    private const int AmountIndex = 4;
+    private const int NumberIndex = 5;
 
     private int _rowCount;
     private int _columnCount;
@@ -52,7 +54,7 @@ public class KakuroBoard : DrawingBoard, IKakuroDrawingData, ISizeOptimizable, I
 
     public event OnCellSelection? CellSelected;
     
-    public KakuroBoard() : base(5)
+    public KakuroBoard() : base(6)
     {
         Focusable = true;
 
@@ -436,6 +438,11 @@ public class KakuroBoard : DrawingBoard, IKakuroDrawingData, ISizeOptimizable, I
     }
 
     #endregion
+
+    public void ClearHighlights()
+    {
+        Layers[HighlightIndex].Clear();
+    }
 }
 
 public readonly struct AmountCell

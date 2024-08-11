@@ -183,6 +183,8 @@ public readonly struct ReadOnlyBinairoUnitBitSet
 
     public int this[int index] => (int)((_bits >> (index * 2)) & 3);
 
+    public bool Contains(ReadOnlyBinairoUnitBitSet set) => (_bits | set._bits) == _bits;
+
     public int GetTotalCount() => OnesCount + TwosCount;
     
     public override bool Equals(object? obj)

@@ -32,7 +32,7 @@ public class HalfCompletionStrategy : Strategy<IBinairoSolverData>
 
             if (data.ChangeBuffer.NeedCommit())
             {
-                data.ChangeBuffer.Commit(new HalfCompletionReportBuilder());
+                data.ChangeBuffer.Commit(new HalfCompletionReportBuilder(row, toAdd, true));
                 if(StopOnFirstCommit) return;
             }
         }
@@ -56,7 +56,7 @@ public class HalfCompletionStrategy : Strategy<IBinairoSolverData>
 
             if (data.ChangeBuffer.NeedCommit())
             {
-                data.ChangeBuffer.Commit(new HalfCompletionReportBuilder());
+                data.ChangeBuffer.Commit(new HalfCompletionReportBuilder(col, toAdd, false));
                 if(StopOnFirstCommit) return;
             }
         }
@@ -65,9 +65,39 @@ public class HalfCompletionStrategy : Strategy<IBinairoSolverData>
 
 public class HalfCompletionReportBuilder : IChangeReportBuilder<BinaryChange, IBinarySolvingState, IBinairoHighlighter>
 {
+    private readonly int _unit;
+    private readonly int _number;
+    private readonly bool _isRow;
+
+    public HalfCompletionReportBuilder(int unit, int number, bool isRow)
+    {
+        _unit = unit;
+        _number = number;
+        _isRow = isRow;
+    }
+
     public ChangeReport<IBinairoHighlighter> BuildReport(IReadOnlyList<BinaryChange> changes, IBinarySolvingState snapshot)
     {
-        return new ChangeReport<IBinairoHighlighter>("Half Completion");
+        var u = _isRow ? 'r' : 'c';
+        return new ChangeReport<IBinairoHighlighter>($"Half Completion in {u}{_unit} for {_number - 1}", lighter =>
+        {
+            if (_isRow)
+            {
+                for (int col = 0; col < snapshot.ColumnCount; col++)
+                {
+                    if (snapshot[_unit, col] == _number) lighter.HighlightCell(_unit, col, StepColor.Cause1);
+                }
+            }
+            else
+            {
+                for (int row = 0; row < snapshot.RowCount; row++)
+                {
+                    if (snapshot[row, _unit] == _number) lighter.HighlightCell(row, _unit, StepColor.Cause1);
+                }
+            }
+            
+            ChangeReportHelper.HighlightChanges(lighter, changes);
+        });
     }
 
     public Clue<IBinairoHighlighter> BuildClue(IReadOnlyList<BinaryChange> changes, IBinarySolvingState snapshot)

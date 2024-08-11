@@ -5,7 +5,6 @@ using Model.Core.Steps;
 
 namespace DesktopApplication.Presenter;
 
-//TODO implement for each game
 public abstract class SolveWithStepsPresenter<THighlight, TStep, TState> : ISolveWithStepsPresenter
     where TStep : IStep<THighlight, TState>
 {
@@ -111,4 +110,9 @@ public interface ISolveWithStepsView
     void OpenStep(int index);
     void CloseStep(int index);
     void SetStepsStateShown(StateShown stateShown);
+}
+
+public enum StateShown
+{
+    Before, After
 }

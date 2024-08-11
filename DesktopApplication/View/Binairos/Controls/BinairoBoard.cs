@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Binairos.Solve;
 using DesktopApplication.View.Controls;
 using Model.Core.Changes;

@@ -83,6 +83,7 @@ public class BinairoSolvePresenter : SolveWithStepsPresenter<IBinairoHighlighter
         var drawer = _view.Drawer;
         
         drawer.ClearSolutions();
+        drawer.ClearHighlights();
         for (int row = 0; row < numericSolvingState.RowCount; row++)
         {
             for (int col = 0; col < numericSolvingState.ColumnCount; col++)

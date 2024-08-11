@@ -23,6 +23,14 @@ public static class ChangeReportHelper
         else highlightable.HighlightCell(progress.Row, progress.Column, StepColor.Change1);
     }
     
+    public static void HighlightChanges(IBinairoHighlighter highlightable, IReadOnlyList<BinaryChange> changes)
+    {
+        foreach (var change in changes)
+        {
+            highlightable.HighlightCell(change.Row, change.Column, StepColor.Change1);
+        }
+    }
+    
     public static string ToName(int n)
     {
         return n switch

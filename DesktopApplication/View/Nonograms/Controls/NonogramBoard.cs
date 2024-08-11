@@ -4,10 +4,12 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Nonograms.Solve;
 using DesktopApplication.View.Controls;
 using Model.Core.Changes;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace DesktopApplication.View.Nonograms.Controls;
 
@@ -213,9 +215,9 @@ public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizabl
         Layers[HighlightIndex].Clear();
     }
 
-    public void EncircleCells(HashSet<Cell> cells, StepColor color)
+    public void EncircleCells(IContainingEnumerable<Cell> cells, StepColor color)
     {
-        //TODO
+        Layers[HighlightIndex].Add(new MultiCellGeometryDrawableComponent(cells, (int)color, FillColorType.Step));
     }
 
     public void HighlightValues(int unit, int startIndex, int endIndex, StepColor color, Orientation orientation)

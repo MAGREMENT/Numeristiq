@@ -3,7 +3,7 @@ using Model.Utility;
 
 namespace DesktopApplication.Presenter.Kakuros.Solve;
 
-public interface IKakuroSolverDrawer
+public interface IKakuroSolverDrawer : IDrawer
 {
     int RowCount { set; }
     int ColumnCount { set; }
@@ -20,5 +20,4 @@ public interface IKakuroSolverDrawer
     void ClearCursor();
     void PutCursorOnNumberCell(int row, int col);
     void PutCursorOnAmountCell(int row, int col, Orientation orientation);
-    void Refresh();
 }

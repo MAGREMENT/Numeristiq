@@ -1,6 +1,6 @@
 namespace DesktopApplication.Presenter.Kakuros.Solve;
 
-public interface IKakuroSolveView
+public interface IKakuroSolveView : ISolveWithStepsView
 {
     IKakuroSolverDrawer Drawer { get; }
 

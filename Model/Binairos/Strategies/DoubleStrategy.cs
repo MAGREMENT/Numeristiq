@@ -88,6 +88,8 @@ public class DoubleReportBuilder : IChangeReportBuilder<BinaryChange, IBinarySol
         {
             lighter.HighlightCell(c1, StepColor.Cause1);
             lighter.HighlightCell(c2, StepColor.Cause1);
+            
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 

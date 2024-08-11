@@ -1,14 +1,17 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Model.Core;
+using Model.Core.Highlighting;
+using Model.Core.Steps;
 using Model.Kakuros;
-using Model.Kakuros.Strategies;
 using Model.Utility;
 using Model.Utility.BitSets;
 using Orientation = Model.Utility.Orientation;
 
 namespace DesktopApplication.Presenter.Kakuros.Solve;
 
-public class KakuroSolvePresenter
+public class KakuroSolvePresenter : SolveWithStepsPresenter<INumericSolvingStateHighlighter, 
+    INumericStep<INumericSolvingStateHighlighter>, INumericSolvingState>
 {
     private readonly IKakuroSolveView _view;
     private readonly KakuroSolver _solver;
@@ -19,6 +22,7 @@ public class KakuroSolvePresenter
     private EditMode _mode = EditMode.Default;
 
     public KakuroSolvePresenter(IKakuroSolveView view, KakuroSolver solver, Settings settings)
+        : base(new KakuroHighlightTranslator(view.Drawer))
     {
         _view = view;
         _solver = solver;
@@ -165,11 +169,12 @@ public class KakuroSolvePresenter
             _solver.SetKakuro(copy);
             ShowNewKakuro(copy);
         }
-        else ShowState(_solver);
+        else SetShownState(_solver, false, true);
     }
 
     private void ShowNewKakuro(IKakuro k)
     {
+        ClearSteps();
         var drawer = _view.Drawer;
 
         drawer.RowCount = k.RowCount;
@@ -198,10 +203,20 @@ public class KakuroSolvePresenter
 
     private void OnProgressMade(Strategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
     {
-        if(solutionAdded + possibilitiesRemoved > 0) ShowState(_solver);
-    } 
+        if (solutionAdded + possibilitiesRemoved == 0) return;
 
-    private void ShowState(INumericSolvingState state)
+        SetShownState(_solver, false, true);
+        UpdateSteps();
+    } 
+    
+    protected override IReadOnlyList<INumericStep<INumericSolvingStateHighlighter>> Steps => _solver.Steps;
+    protected override ISolveWithStepsView View => _view;
+    public override IStepExplanationPresenterBuilder? RequestExplanation()
+    {
+        return null;
+    }
+
+    protected override void SetShownState(INumericSolvingState state, bool solutionAsClues, bool showPossibilities)
     {
         var drawer = _view.Drawer;
         
@@ -209,13 +224,15 @@ public class KakuroSolvePresenter
         foreach (var cell in _solver.Kakuro.EnumerateCells())
         {
             var n = state[cell.Row, cell.Column];
-            if (n == 0) drawer.SetPossibilities(cell.Row, cell.Column,
-                    state.PossibilitiesAt(cell).EnumeratePossibilities());
+            if (n == 0 && showPossibilities) drawer.SetPossibilities(cell.Row, cell.Column,
+                state.PossibilitiesAt(cell).EnumeratePossibilities());
             else drawer.SetSolution(cell.Row, cell.Column, n);
         }
         
         drawer.Refresh();
     }
+
+    protected override INumericSolvingState GetCurrentState() => _solver;
 }
 
 public enum EditMode

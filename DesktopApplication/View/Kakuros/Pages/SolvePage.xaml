@@ -1,4 +1,4 @@
-﻿<view:ManagedPage x:Class="DesktopApplication.View.Kakuros.Pages.SolvePage"
+﻿<view:SolveWithStepsPage x:Class="DesktopApplication.View.Kakuros.Pages.SolvePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,7 +7,7 @@
       xmlns:c="clr-namespace:DesktopApplication.View.Kakuros.Controls"
       xmlns:view="clr-namespace:DesktopApplication.View"
       mc:Ignorable="d"
-      Title="SolvePage" d:DesignHeight="760" d:DesignWidth="1000">
+      Title="SolvePage" d:DesignHeight="760" d:DesignWidth="1050">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -24,28 +24,59 @@
             </controls:SizeOptimizedContentControl.OptimizableContent>
         </controls:SizeOptimizedContentControl>
         
-        <StackPanel Grid.Column="1" Margin="10" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock FontSize="18" Margin="0, 20, 0, 0" Foreground="{DynamicResource Text}">
-                Edit Mode
-            </TextBlock>
+        <Grid Grid.Column="1" Margin="0 10 10 10" Width="350">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             
-            <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}" 
-                         x:Name="DefaultMode" Checked="ModeToDefault" Style="{StaticResource ArrowRadioButton}">
-                Default
-            </RadioButton>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             
-            <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
-                         Checked="ModeToEdit" Style="{StaticResource ArrowRadioButton}">
-                Edit
-            </RadioButton>
+            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 0 0 10" Padding="5"
+                    CornerRadius="5" Background="{DynamicResource Background2}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" FontSize="18" Margin="5 0 0 0" VerticalAlignment="Center"
+                               Foreground="{DynamicResource Text}">Steps</TextBlock>
+                    
+                    <ScrollViewer Grid.Row="1" x:Name="StepViewer" Style="{StaticResource TransparentBarScrollViewer}">
+                        <StackPanel x:Name="StepPanel"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
             
-            <Button Style="{StaticResource DefaultLightUpButtonStyle}" Margin="10"
-                    Click="Solve">Solve</Button>
-            <Button Style="{StaticResource DefaultLightUpButtonStyle}" Margin="10"
-                    Click="Advance">Advance</Button>
-        </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock FontSize="18" Margin="0, 20, 0, 0" Foreground="{DynamicResource Text}">
+                    Edit Mode
+                </TextBlock>
+            
+                <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}" 
+                             x:Name="DefaultMode" Checked="ModeToDefault" Style="{StaticResource ArrowRadioButton}">
+                    Default
+                </RadioButton>
+            
+                <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
+                             Checked="ModeToEdit" Style="{StaticResource ArrowRadioButton}">
+                    Edit
+                </RadioButton>
+            </StackPanel>
+            
+            <StackPanel Grid.Row="1" Grid.Column="1">
+                <Button Style="{StaticResource DefaultLightUpButtonStyle}" Margin="10 0 0 5"
+                        Click="Solve">Solve</Button>
+                <Button Style="{StaticResource DefaultLightUpButtonStyle}" Margin="10 5 0 0"
+                        Click="Advance">Advance</Button>
+            </StackPanel>
+        </Grid>
         
         <controls:HideableTextBox Grid.Column="0" Grid.ColumnSpan="2" TextChanged="OnNewKakuro" x:Name="KakuroAsString"
                                   Showed="OnKakuroAsStringShowed"/>
     </Grid>
-</view:ManagedPage>
+</view:SolveWithStepsPage>

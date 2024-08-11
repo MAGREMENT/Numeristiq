@@ -5,7 +5,7 @@ using System.Windows.Navigation;
 
 namespace DesktopApplication.View;
 
-public partial class PageWindow //TODO use
+public partial class PageWindow
 {
     private readonly ManagedPage[] _pages;
 

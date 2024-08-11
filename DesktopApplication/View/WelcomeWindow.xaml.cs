@@ -57,7 +57,7 @@ public partial class WelcomeWindow
     
     private void OnKakuroClick(object sender, RoutedEventArgs e)
     {
-        var window = new PageWindow(1000, 800, new Kakuros.Pages.SolvePage());
+        var window = new PageWindow(1050, 800, new Kakuros.Pages.SolvePage());
         window.Show();
         Close();
     }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Tectonics.Solve;
 using DesktopApplication.View.Kakuros.Controls;
 using DesktopApplication.View.Tectonics.Controls;
@@ -752,6 +753,52 @@ public class CellRectangleDrawableComponent : IDrawableComponent<ICellGameDrawin
         
         context.DrawRectangle(null, new Pen(DrawableComponentHelper.GetBrush(_colorType, _colorAsInt), data.InwardCellLineWidth),
             new Rect(new Point(leftX, topY), new Point(rightX, bottomY)));
+    }
+}
+
+public class MultiCellGeometryDrawableComponent : IDrawableComponent<ICellGameDrawingData>
+{
+    private readonly IContainingEnumerable<Cell> _cells;
+    private readonly int _colorAsInt;
+    private readonly FillColorType _colorType;
+
+    public MultiCellGeometryDrawableComponent(IContainingEnumerable<Cell> cells, int colorAsInt, FillColorType colorType)
+    {
+        _cells = cells;
+        _colorAsInt = colorAsInt;
+        _colorType = colorType;
+    }
+
+    public void Draw(DrawingContext context, ICellGameDrawingData data)
+    {
+        var brush = DrawableComponentHelper.GetBrush(_colorType, _colorAsInt);
+        var size = data.CellSize + data.BigLineWidth * 2;
+        foreach (var cell in _cells)
+        {
+            if (!_cells.Contains(new Cell(cell.Row, cell.Column - 1)))
+            {
+                context.DrawRectangle(brush, null, new Rect(data.GetLeftOfCellWithBorder(cell.Column),
+                    data.GetTopOfCellWithBorder(cell.Row), data.BigLineWidth, size));
+            }
+            
+            if (!_cells.Contains(new Cell(cell.Row - 1, cell.Column)))
+            {
+                context.DrawRectangle(brush, null, new Rect(data.GetLeftOfCellWithBorder(cell.Column),
+                    data.GetTopOfCellWithBorder(cell.Row), size, data.BigLineWidth));
+            }
+            
+            if (!_cells.Contains(new Cell(cell.Row, cell.Column + 1)))
+            {
+                context.DrawRectangle(brush, null, new Rect(data.GetLeftOfCell(cell.Column) + data.CellSize,
+                    data.GetTopOfCellWithBorder(cell.Row), data.BigLineWidth, size));
+            }
+            
+            if (!_cells.Contains(new Cell(cell.Row + 1, cell.Column)))
+            {
+                context.DrawRectangle(brush, null, new Rect(data.GetLeftOfCellWithBorder(cell.Column),
+                    data.GetTopOfCell(cell.Row) + data.CellSize, size, data.BigLineWidth));
+            }
+        }
     }
 }
 

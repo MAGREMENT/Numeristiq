@@ -11,12 +11,13 @@ public class HardCodedNonogramStrategyRepository : HardCodedStrategyRepository<S
         yield return new PerfectRemainingSpaceStrategy();
         yield return new NotEnoughSpaceStrategy();
         yield return new EdgeValueStrategy(); 
-        yield return new PerfectValueSpaceStrategy();
         yield return new ValueCompletionStrategy();
+        yield return new PerfectValueSpaceStrategy();
         yield return new BridgingStrategy();
         yield return new SplittingStrategy();
         yield return new ValueOverlayStrategy();
         yield return new UnreachableSquaresStrategy();
+        yield return new EdgeLogicStrategy();
         yield return new BruteForceStrategy();
     }
 }

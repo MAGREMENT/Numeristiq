@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using Model.Core.Changes;
+﻿using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace DesktopApplication.Presenter.Nonograms.Solve;
 
@@ -26,9 +26,9 @@ public class NonogramHighlightTranslator : INonogramHighlighter, IHighlighterTra
         _drawer.HighlightValues(unit, startIndex, endIndex, color, orientation);
     }
 
-    public void EncircleCells(IEnumerable<Cell> cells, StepColor color)
+    public void EncircleCells(IContainingEnumerable<Cell> cells, StepColor color)
     {
-        _drawer.EncircleCells(new HashSet<Cell>(cells), color);
+        _drawer.EncircleCells(cells, color);
     }
 
     public void EncircleLineSection(Orientation orientation, int unit, int startIndex, int endIndex, StepColor color)
