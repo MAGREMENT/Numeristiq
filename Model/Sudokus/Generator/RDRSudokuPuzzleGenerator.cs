@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Model.Core.BackTracking;
+﻿using Model.Core.BackTracking;
 using Model.Core.Generators;
 using Model.Utility;
 
 namespace Model.Sudokus.Generator;
 
-/// <summary>
-/// RDR = Random Digit Removal
-/// </summary>
 public class RDRSudokuPuzzleGenerator : RDRPuzzleGenerator<Sudoku>
 {
     private readonly SudokuBackTracker _backTracker = new();

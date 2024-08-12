@@ -54,7 +54,7 @@ public class UniquenessEnforcementStrategy : Strategy<IBinairoSolverData>
                 for (int row = 0; row < data.ColumnCount; row++)
                 {
                     if(data[row, col] == 0) data.ChangeBuffer.ProposeSolutionAddition(
-                        BinairoUtility.Opposite(set2[col]), row, col);
+                        BinairoUtility.Opposite(set2[row]), row, col);
                 }
                 
                 if (data.ChangeBuffer.NeedCommit())
@@ -99,7 +99,7 @@ public class UniquenessEnforcementReportBuilder : IChangeReportBuilder<BinaryCha
                 {
                     for (int row = 0; row < snapshot.RowCount; row++)
                     {
-                        if (snapshot[row, _unit] == 0) lighter.HighlightCell(row, _unit, StepColor.Cause1);
+                        if (snapshot[row, _unit] == 0) lighter.HighlightCell(row, _otherUnit, StepColor.Cause1);
                     }
                 }
 

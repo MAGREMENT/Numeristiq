@@ -26,7 +26,7 @@ public class BinairoBackTracker : BackTracker<Binairo, object?>
         var halfR = Current.RowCount / 2;
         for (; position < total; position++)
         {
-            bool uniqueness;
+            bool uniqueness, added1Col, added2Col, added1Row, added2Row;
             var row = position / Current.ColumnCount;
             var col = position % Current.ColumnCount;
             if (Current[row, col] != 0)
@@ -36,10 +36,6 @@ public class BinairoBackTracker : BackTracker<Binairo, object?>
                 return false;
             }
 
-            var added1Col = false;
-            var added2Col = false;
-            var added1Row = false;
-            var added2Row = false;
             if (!_oneUnavailability.Contains(row, col) && _rowCounts[row].OnesCount != halfC 
                                                        && _colCounts[col].OnesCount != halfR)
             {
@@ -47,6 +43,11 @@ public class BinairoBackTracker : BackTracker<Binairo, object?>
                 uniqueness = RowUniquenessCheck(row, col) && ColumnUniquenessCheck(row, col);
                 if (uniqueness)
                 {
+                    added1Col = false;
+                    added2Col = false;
+                    added1Row = false;
+                    added2Row = false;
+                    
                     _rowCounts[row].OnesCount += 1;
                     _colCounts[col].OnesCount += 1;
                     
@@ -151,7 +152,133 @@ public class BinairoBackTracker : BackTracker<Binairo, object?>
 
     protected override bool Search(IBackTrackingResult<Binairo> result, int position) 
     {
-        //TODO copy other search here
+        var total = Current.RowCount * Current.ColumnCount;
+        var halfC = Current.ColumnCount / 2;
+        var halfR = Current.RowCount / 2;
+        for (; position < total; position++)
+        {
+            bool uniqueness, added1Col, added2Col, added1Row, added2Row, search;
+            var row = position / Current.ColumnCount;
+            var col = position % Current.ColumnCount;
+            if (Current[row, col] != 0)
+            {
+                if (RowUniquenessCheck(row, col) && ColumnUniquenessCheck(row, col)) continue;
+                
+                return false;
+            }
+
+            if (!_oneUnavailability.Contains(row, col) && _rowCounts[row].OnesCount != halfC 
+                                                       && _colCounts[col].OnesCount != halfR)
+            {
+                Current[row, col] = 1;
+                uniqueness = RowUniquenessCheck(row, col) && ColumnUniquenessCheck(row, col);
+                if (uniqueness)
+                {
+                    added1Col = false;
+                    added2Col = false;
+                    added1Row = false;
+                    added2Row = false;
+                    
+                    _rowCounts[row].OnesCount += 1;
+                    _colCounts[col].OnesCount += 1;
+                    
+                    if (col < Current.ColumnCount - 2 && Current[row, col + 1] == 1
+                                                      && !_oneUnavailability.Contains(row, col + 2))
+                    {
+                        _oneUnavailability.Add(row, col + 2);
+                        added2Col = true;
+                    }
+                    if (col < Current.ColumnCount - 1 && col > 0 && Current[row, col - 1] == 1
+                                                      && !_oneUnavailability.Contains(row, col + 1))
+                    {
+                        _oneUnavailability.Add(row, col + 1);
+                        added1Col = true;
+                    }
+
+                    if (row < Current.RowCount - 2 && Current[row + 1, col] == 1
+                                                   && !_oneUnavailability.Contains(row + 2, col))
+                    {
+                        _oneUnavailability.Add(row + 2, col);
+                        added2Row = true;
+                    }
+                    if (row < Current.RowCount - 1 && row > 0 && Current[row - 1, col] == 1
+                                                   && !_oneUnavailability.Contains(row + 1, col))
+                    {
+                        _oneUnavailability.Add(row + 1, col);
+                        added1Row = true;
+                    }
+
+                    search = Search(result, position + 1);
+
+                    Current[row, col] = 0;
+                    _rowCounts[row].OnesCount -= 1;
+                    _colCounts[col].OnesCount -= 1;
+                    if (added2Col) _oneUnavailability.Remove(row, col + 2);
+                    if (added2Row) _oneUnavailability.Remove(row + 2, col);
+                    if (added1Col) _oneUnavailability.Remove(row, col + 1);
+                    if (added1Row) _oneUnavailability.Remove(row + 1, col);
+
+                    if (search) return true;
+                }
+                else Current[row, col] = 0;
+            }
+
+            if (_twoUnavailability.Contains(row, col) || _rowCounts[row].TwosCount == halfC
+                                                      || _colCounts[col].TwosCount == halfR) return false;
+            
+            Current[row, col] = 2;
+            uniqueness = RowUniquenessCheck(row, col) && ColumnUniquenessCheck(row, col);
+            if (!uniqueness)
+            {
+                Current[row, col] = 0;
+                return false;
+            }
+            
+            added1Col = false;
+            added2Col = false;
+            added1Row = false;
+            added2Row = false;
+            _rowCounts[row].TwosCount += 1;
+            _colCounts[col].TwosCount += 1;
+            
+            if (col < Current.ColumnCount - 2 && Current[row, col + 1] == 2 
+                                              && !_twoUnavailability.Contains(row, col + 2))
+            {
+                _twoUnavailability.Add(row, col + 2);
+                added2Col = true;
+            }
+            if (col < Current.ColumnCount - 1 && col > 0 && Current[row, col - 1] == 2 
+                                              && !_twoUnavailability.Contains(row, col + 1))
+            {
+                _twoUnavailability.Add(row, col + 1);
+                added1Col = true;
+            }
+
+            if (row < Current.RowCount - 2 && Current[row + 1, col] == 2
+                                           && !_twoUnavailability.Contains(row + 2, col))
+            {
+                _twoUnavailability.Add(row + 2, col);
+                added2Row = true;
+            }
+            if (row < Current.RowCount - 1 && row > 0 && Current[row - 1, col] == 2
+                                           && !_twoUnavailability.Contains(row + 1, col))
+            {
+                _twoUnavailability.Add(row + 1, col);
+                added1Row = true;
+            }
+
+            search = Search(result, position + 1);
+
+            Current[row, col] = 0;
+            _rowCounts[row].TwosCount -= 1;
+            _colCounts[col].TwosCount -= 1;
+            if (added1Col) _twoUnavailability.Remove(row, col + 1);
+            if (added1Row) _twoUnavailability.Remove(row + 1, col);
+            if (added2Col) _twoUnavailability.Remove(row, col + 2);
+            if (added2Row) _twoUnavailability.Remove(row + 2, col);
+
+            return search;
+        }
 
         result.AddNewResult(Current.Copy());
         return result.Count >= StopAt;

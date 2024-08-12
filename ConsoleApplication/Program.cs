@@ -45,6 +45,10 @@ public static class Program
             .AddCommand(new NonogramGenerateBatchCommand())
             .AddCommand(new NonogramSolutionCount());
 
+        instance.Root.AddDirectory(new Directory("Binairo"))
+            .AddCommand(new HelpCommand(), true)
+            .AddCommand(new BinairoGenerateBatchCommand());
+
         if (!IsForProduction)
         {
             sDir.AddDirectory(new Directory("Bank"))

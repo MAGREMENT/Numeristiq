@@ -207,7 +207,7 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
 
     public void ClearHighlights()
     {
-        
+        Layers[HighlightIndex].Clear();
     }
 
     private void AdaptClueArray()

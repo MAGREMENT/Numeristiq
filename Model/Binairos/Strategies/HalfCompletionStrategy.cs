@@ -32,7 +32,8 @@ public class HalfCompletionStrategy : Strategy<IBinairoSolverData>
 
             if (data.ChangeBuffer.NeedCommit())
             {
-                data.ChangeBuffer.Commit(new HalfCompletionReportBuilder(row, toAdd, true));
+                data.ChangeBuffer.Commit(new HalfCompletionReportBuilder(row, BinairoUtility.Opposite(toAdd),
+                    true));
                 if(StopOnFirstCommit) return;
             }
         }
@@ -56,7 +57,8 @@ public class HalfCompletionStrategy : Strategy<IBinairoSolverData>
 
             if (data.ChangeBuffer.NeedCommit())
             {
-                data.ChangeBuffer.Commit(new HalfCompletionReportBuilder(col, toAdd, false));
+                data.ChangeBuffer.Commit(new HalfCompletionReportBuilder(col, BinairoUtility.Opposite(toAdd),
+                    false));
                 if(StopOnFirstCommit) return;
             }
         }

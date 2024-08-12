@@ -22,8 +22,9 @@ public abstract class GenerateBatchWithRandomSizeCommand<TPuzzle, TState> : Gene
     {
     }
 
-    protected override void SetUpGenerator(IPuzzleGenerator<TPuzzle> generator, IReadOnlyCallReport report)
+    protected override bool SetUpGenerator(IPuzzleGenerator<TPuzzle> generator, IReadOnlyCallReport report)
     {
+        if (!CheckSizeOptionsValues(GetOptionsValues(report))) return false;
         var randomizer = GetRandomizer(generator);
         
         if (report.IsOptionUsed(RowCountIndex))
@@ -53,7 +54,25 @@ public abstract class GenerateBatchWithRandomSizeCommand<TPuzzle, TState> : Gene
             value = report.GetOptionValue(MaxColumnCountIndex);
             if (value is not null) randomizer.MaxColumnCount = (int)value;
         }
+
+        return true;
     }
 
     protected abstract GridSizeRandomizer GetRandomizer(IPuzzleGenerator<TPuzzle> generator);
+
+    protected virtual bool CheckSizeOptionsValues(IEnumerable<(Option, int)> options)
+    {
+        return true;
+    }
+
+    private IEnumerable<(Option, int)> GetOptionsValues(IReadOnlyCallReport report)
+    {
+        for (int i = RowCountIndex; i <= MaxColumnCountIndex; i++)
+        {
+            if (report.IsOptionUsed(i))
+            {
+                yield return (Options[i], (int)report.GetOptionValue(i)!);
+            }
+        }
+    }
 }

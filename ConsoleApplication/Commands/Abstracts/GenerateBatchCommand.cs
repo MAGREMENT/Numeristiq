@@ -32,11 +32,11 @@ public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TSta
 
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
-        var count = report.IsOptionUsed(CountIndex) ? (int)report.GetOptionValue(CountIndex)! : 1;
-        SetUpGenerator(_generator, report);
+        if (!SetUpGenerator(_generator, report)) return;
         _generator.KeepSymmetry = report.IsOptionUsed(SymmetryIndex);
         _generator.KeepUniqueness = !report.IsOptionUsed(NotUniqueIndex);
-
+        
+        var count = report.IsOptionUsed(CountIndex) ? (int)report.GetOptionValue(CountIndex)! : 1;
         if (report.IsOptionUsed(FeedbackIndex)) _generator.StepDone += OnStepDone;
         
         Console.WriteLine("Started generating...");
@@ -116,9 +116,9 @@ public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TSta
         Console.WriteLine("Done !");
     }
 
-    protected virtual void SetUpGenerator(IPuzzleGenerator<TPuzzle> generator, IReadOnlyCallReport report)
+    protected virtual bool SetUpGenerator(IPuzzleGenerator<TPuzzle> generator, IReadOnlyCallReport report)
     {
-        
+        return true;
     }
     protected abstract ITrackerAttachableSolver<TState> GetSolver(ArgumentInterpreter interpreter);
     protected abstract GeneratedPuzzle<TPuzzle> CreateGeneratedPuzzle(TPuzzle puzzle);

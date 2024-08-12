@@ -1,4 +1,5 @@
-﻿using Model.Core;
+﻿using Model.Binairos;
+using Model.Core;
 using Model.Kakuros;
 using Model.Nonograms.Solver;
 using Model.Repositories;
@@ -10,18 +11,23 @@ namespace ConsoleApplication;
 
 public class Instantiator
 {
-    private readonly IStrategyRepository<SudokuStrategy> sudokuRepository = new SudokuStrategyJsonRepository("strategies.json", 
-        !Program.IsForProduction, true);
-    private readonly IStrategyRepository<Strategy<ITectonicSolverData>> tectonicRepository = new HardCodedTectonicStrategyRepository();
-    private readonly IStrategyRepository<Strategy<IKakuroSolverData>> kakuroRepository = new HardCodedKakuroStrategyRepository();
-    private readonly IStrategyRepository<Strategy<INonogramSolverData>> nonogramRepository = new HardCodedNonogramStrategyRepository();
+    private readonly IStrategyRepository<SudokuStrategy> _sudokuRepository = new SudokuStrategyJsonRepository(
+        "strategies.json", !Program.IsForProduction, true);
+    private readonly IStrategyRepository<Strategy<ITectonicSolverData>> _tectonicRepository = 
+        new HardCodedTectonicStrategyRepository();
+    private readonly IStrategyRepository<Strategy<IKakuroSolverData>> _kakuroRepository = 
+        new HardCodedKakuroStrategyRepository();
+    private readonly IStrategyRepository<Strategy<INonogramSolverData>> _nonogramRepository = 
+        new HardCodedNonogramStrategyRepository();
+    private readonly IStrategyRepository<Strategy<IBinairoSolverData>> _binairoRepository =
+        new HardCodedBinairoStrategyRepository();
 
     private ThemeMultiRepository? _themeRepository;
 
     public SudokuSolver InstantiateSudokuSolver()
     {
         var solver = new SudokuSolver();
-        solver.StrategyManager.AddStrategies(sudokuRepository.GetStrategies());
+        solver.StrategyManager.AddStrategies(_sudokuRepository.GetStrategies());
 
         return solver;
     }
@@ -29,7 +35,7 @@ public class Instantiator
     public TectonicSolver InstantiateTectonicSolver()
     {
         var solver = new TectonicSolver();
-        solver.StrategyManager.AddStrategies(tectonicRepository.GetStrategies());
+        solver.StrategyManager.AddStrategies(_tectonicRepository.GetStrategies());
         
         return solver;
     }
@@ -37,7 +43,7 @@ public class Instantiator
     public KakuroSolver InstantiateKakuroSolver()
     {
         var solver = new KakuroSolver(new RecursiveKakuroCombinationCalculator());
-        solver.StrategyManager.AddStrategies(kakuroRepository.GetStrategies());
+        solver.StrategyManager.AddStrategies(_kakuroRepository.GetStrategies());
         
         return solver;
     }
@@ -45,7 +51,15 @@ public class Instantiator
     public NonogramSolver InstantiateNonogramSolver()
     {
         var solver = new NonogramSolver();
-        solver.StrategyManager.AddStrategies(nonogramRepository.GetStrategies());
+        solver.StrategyManager.AddStrategies(_nonogramRepository.GetStrategies());
+        
+        return solver;
+    }
+
+    public BinairoSolver InstantiateBinairoSolver()
+    {
+        var solver = new BinairoSolver();
+        solver.StrategyManager.AddStrategies(_binairoRepository.GetStrategies());
         
         return solver;
     }

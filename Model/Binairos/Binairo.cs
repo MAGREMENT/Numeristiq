@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Text;
 using Model.Core.BackTracking;
+using Model.Core.Generators;
 using Model.Utility;
 
 namespace Model.Binairos;
 
-public class Binairo : IReadOnlyBinairo, ICopyable<Binairo>
+public class Binairo : IReadOnlyBinairo, ICopyable<Binairo>, ICellsAndDigitsPuzzle
 {
     private readonly int[,] _cells;
     private readonly ReadOnlyBinairoUnitBitSet[] _rowSets;
