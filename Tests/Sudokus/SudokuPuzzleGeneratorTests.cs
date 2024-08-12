@@ -25,7 +25,7 @@ public class SudokuPuzzleGeneratorTests
         finder.AttachTo(solver);
         
         var puzzles = generator.Generate(SudokuCount);
-        var backTracker = new SudokuBackTracker(new Sudoku(), ConstantPossibilitiesGiver.Instance)
+        var backTracker = new SudokuBackTracker(new Sudoku(), ConstantPossibilitiesGiver.Nine)
         {
             StopAt = 2
         };

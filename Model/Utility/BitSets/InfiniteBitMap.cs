@@ -2,7 +2,7 @@
 
 namespace Model.Utility.BitSets;
 
-public class InfiniteBitmap
+public class InfiniteBitMap
 {
     private const int BitsPerEntry = 64;
     
@@ -12,12 +12,12 @@ public class InfiniteBitmap
     public int ColumnCount { get; }
     public int RowCount { get; }
     
-    public InfiniteBitmap(int rowCount, int columnCount)
+    public InfiniteBitMap(int rowCount, int columnCount)
     {
         RowCount = rowCount;
         ColumnCount = columnCount;
-        RowsPerUnit = BitsPerEntry / ColumnCount;
-        _bits = new ulong[RowCount / RowsPerUnit + 1];
+        RowsPerUnit = ColumnCount == 0 ? 0 : BitsPerEntry / ColumnCount;
+        _bits = new ulong[RowsPerUnit == 0 ? 1 : RowCount / RowsPerUnit + 1];
     }
 
     public bool Contains(int row, int col)

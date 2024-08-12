@@ -16,7 +16,7 @@ public static class TectonicBitSetsExtensions
     public static IEnumerable<int> EnumeratePositions(this ReadOnlyBitSet8 bitSet, IZone zone)
         => bitSet.Enumerate(0, zone.Count - 1);
     
-    public static bool HasNeighbor(this InfiniteBitmap bm, int row, int col)
+    public static bool HasNeighbor(this InfiniteBitMap bm, int row, int col)
     {
         var mask = (1UL << col) | (1UL << Math.Max(0, col - 1)) | (1UL << Math.Min(bm.ColumnCount - 1, col + 1));
         var min = Math.Max(0, row - 1);

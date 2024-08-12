@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Text;
+using Model.Core.BackTracking;
 using Model.Utility;
 
 namespace Model.Binairos;
 
-public class Binairo : IReadOnlyBinairo
+public class Binairo : IReadOnlyBinairo, ICopyable<Binairo>
 {
     private readonly int[,] _cells;
     private readonly ReadOnlyBinairoUnitBitSet[] _rowSets;
     private readonly ReadOnlyBinairoUnitBitSet[] _colSets;
-    
-    public int RowCount { get; }
-    public int ColumnCount { get; }
+
+    public int RowCount => _rowSets.Length;
+    public int ColumnCount => _colSets.Length;
 
     public Binairo(int rowCount, int colCount)
     {
-        RowCount = rowCount;
-        ColumnCount = colCount;
         _cells = new int[rowCount, colCount];
         _rowSets = new ReadOnlyBinairoUnitBitSet[rowCount];
         _colSets = new ReadOnlyBinairoUnitBitSet[colCount];
@@ -24,11 +23,16 @@ public class Binairo : IReadOnlyBinairo
 
     public Binairo()
     {
-        RowCount = 0;
-        ColumnCount = 0;
         _cells = new int[0, 0];
         _rowSets = Array.Empty<ReadOnlyBinairoUnitBitSet>();
         _colSets = Array.Empty<ReadOnlyBinairoUnitBitSet>();
+    }
+
+    private Binairo(int[,] cells, ReadOnlyBinairoUnitBitSet[] rowSets, ReadOnlyBinairoUnitBitSet[] colSets)
+    {
+        _cells = cells;
+        _rowSets = rowSets;
+        _colSets = colSets;
     }
 
     public int this[int row, int col]
@@ -129,6 +133,34 @@ public class Binairo : IReadOnlyBinairo
         }
 
         return total;
+    }
+
+    public bool SamePattern(IReadOnlyBinairo binairo)
+    {
+        if (binairo.RowCount != RowCount || binairo.ColumnCount != ColumnCount) return false;
+
+        for (int row = 0; row < RowCount; row++)
+        {
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                if (binairo[row, col] != this[row, col]) return false;
+            }
+        }
+
+        return true;
+    }
+
+    public Binairo Copy()
+    {
+        var cells = new int[RowCount, ColumnCount];
+        var rowSets = new ReadOnlyBinairoUnitBitSet[RowCount];
+        var colSets = new ReadOnlyBinairoUnitBitSet[ColumnCount];
+
+        Array.Copy(_cells, cells, _cells.Length);
+        Array.Copy(_rowSets, rowSets, _rowSets.Length);
+        Array.Copy(_colSets, colSets, _colSets.Length);
+
+        return new Binairo(cells, rowSets, colSets);
     }
 
     public override string ToString()
@@ -250,4 +282,6 @@ public interface IReadOnlyBinairo
 
     public bool IsCorrect();
     public int GetSolutionCount();
+
+    public bool SamePattern(IReadOnlyBinairo binairo);
 }

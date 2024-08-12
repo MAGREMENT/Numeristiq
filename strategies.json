@@ -42,6 +42,34 @@
     "Settings": {}
   },
   {
+    "Name": "Naked Triples",
+    "Enabled": true,
+    "Locked": false,
+    "InstanceHandling": 1,
+    "Settings": {}
+  },
+  {
+    "Name": "Hidden Triples",
+    "Enabled": true,
+    "Locked": false,
+    "InstanceHandling": 1,
+    "Settings": {}
+  },
+  {
+    "Name": "Naked Quads",
+    "Enabled": true,
+    "Locked": false,
+    "InstanceHandling": 1,
+    "Settings": {}
+  },
+  {
+    "Name": "Hidden Quads",
+    "Enabled": true,
+    "Locked": false,
+    "InstanceHandling": 1,
+    "Settings": {}
+  },
+  {
     "Name": "Gurth\u0027s Theorem",
     "Enabled": true,
     "Locked": false,

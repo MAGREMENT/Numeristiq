@@ -194,7 +194,7 @@ public class SudokuPlayer : IPlayerData, INumericSolvingState, IPossibilitiesGiv
         : ReadOnlyBitSet16.Filled(1, 9);
     public IEnumerable<int> EnumeratePossibilitiesAt(int row, int col) => _cells[row, col].PossibilitiesCount(MainLocation) > 0
         ? _cells[row, col].Possibilities(MainLocation)
-        : ConstantPossibilitiesGiver.Instance.EnumeratePossibilitiesAt(row, col);
+        : ConstantPossibilitiesGiver.Nine.EnumeratePossibilitiesAt(row, col);
 }
 
 public interface IPlayerData : IReadOnlyPlayerData

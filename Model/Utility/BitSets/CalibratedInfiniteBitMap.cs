@@ -1,11 +1,11 @@
 ﻿namespace Model.Utility.BitSets;
 
-public class CalibratedInfiniteBitmap : InfiniteBitmap
+public class CalibratedInfiniteBitMap : InfiniteBitMap
 {
     private readonly ulong _columnMask;
     private readonly ulong _rowMask;
     
-    public CalibratedInfiniteBitmap(int rowCount, int columnCount) : base(rowCount, columnCount)
+    public CalibratedInfiniteBitMap(int rowCount, int columnCount) : base(rowCount, columnCount)
     {
         for (int i = 0; i < RowsPerUnit; i++)
         {

@@ -12,7 +12,7 @@ public class SudokuSolutionCountCommand : SolutionCountCommand<Sudoku, IPossibil
     }
 
     protected override BackTracker<Sudoku, IPossibilitiesGiver> BackTracker { get; }
-        = new SudokuBackTracker(new Sudoku(), ConstantPossibilitiesGiver.Instance);
+        = new SudokuBackTracker(new Sudoku(), ConstantPossibilitiesGiver.Nine);
     
     protected override void SetBackTracker(string s)
     {

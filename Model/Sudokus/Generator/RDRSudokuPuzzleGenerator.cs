@@ -20,7 +20,7 @@ public class RDRSudokuPuzzleGenerator : RDRPuzzleGenerator<Sudoku>
     protected override int GetSolutionCount(Sudoku puzzle, int stopAt)
     {
         _backTracker.StopAt = stopAt;
-        _backTracker.Set(puzzle, ConstantPossibilitiesGiver.Instance);
+        _backTracker.Set(puzzle, ConstantPossibilitiesGiver.Nine);
         return _backTracker.Count();
     }
 

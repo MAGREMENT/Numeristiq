@@ -11,7 +11,7 @@ public class SudokuBackdoorCheckCommand : Command
     private const int StringIndex = 0;
     private const int SetIndex = 0;
     
-    private readonly SudokuBackTracker _backTracker = new(new Sudoku(), ConstantPossibilitiesGiver.Instance);
+    private readonly SudokuBackTracker _backTracker = new(new Sudoku(), ConstantPossibilitiesGiver.Nine);
     
     public SudokuBackdoorCheckCommand() : base("Backdoor", 
         new []

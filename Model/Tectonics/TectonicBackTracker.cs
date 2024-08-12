@@ -7,7 +7,7 @@ namespace Model.Tectonics;
 public class TectonicBackTracker : BackTracker<ITectonic, IPossibilitiesGiver>
 {
     private readonly Dictionary<IZone, BitSet8> _zones = new();
-    private readonly InfiniteBitmap[] _neighbors = new InfiniteBitmap[5];
+    private readonly InfiniteBitMap[] _neighbors = new InfiniteBitMap[5];
     
     public TectonicBackTracker() : base(new BlankTectonic(), new EmptyPossibilitiesGiver()){}
 
@@ -101,7 +101,7 @@ public class TectonicBackTracker : BackTracker<ITectonic, IPossibilitiesGiver>
         
         for (int i = 0; i < 5; i++)
         {
-            _neighbors[i] = new InfiniteBitmap(Current.RowCount, Current.ColumnCount);
+            _neighbors[i] = new InfiniteBitMap(Current.RowCount, Current.ColumnCount);
         }
 
         for (int row = 0; row < Current.RowCount; row++)

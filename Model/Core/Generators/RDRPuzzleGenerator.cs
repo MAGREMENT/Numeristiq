@@ -41,6 +41,9 @@ public abstract class RDRPuzzleGenerator<T> : IPuzzleGenerator<T> where T : ICel
 
         return result;
     }
+    
+    protected abstract int GetSolutionCount(T puzzle, int stopAt);
+    protected abstract Cell GetSymmetricCell(T puzzle, Cell cell);
 
     private T RemoveRandomDigits(T filled, List<Cell> list)
     {
@@ -85,9 +88,6 @@ public abstract class RDRPuzzleGenerator<T> : IPuzzleGenerator<T> where T : ICel
             filled[cells[i].Row, cells[i].Column] = buffer[i];
         }
     }
-    
-    protected abstract int GetSolutionCount(T puzzle, int stopAt);
-    protected abstract Cell GetSymmetricCell(T puzzle, Cell cell);
 
     private bool IsValid(T puzzle)
     {

@@ -8,10 +8,10 @@ public class InfiniteBitmapTests
     [Test]
     public void AddAndRemoveTest()
     {
-        var rCount = 8;
-        var cCount = 10;
+        const int rCount = 8;
+        const int cCount = 10;
         
-        var bitmap = new InfiniteBitmap(rCount, cCount);
+        var bitmap = new InfiniteBitMap(rCount, cCount);
         Cell[] toAdd = { new(0, 2), new(4, 4), new(6, 3), new(7, 9) };
 
         foreach (var cell in toAdd)
@@ -56,7 +56,7 @@ public class InfiniteBitmapTests
     [Test]
     public void HasNeighborTest()
     {
-        var bitmap = new InfiniteBitmap(11, 12);
+        var bitmap = new InfiniteBitMap(11, 12);
         
         for (int row = 0; row < bitmap.RowCount; row++)
         {
@@ -90,7 +90,7 @@ public class InfiniteBitmapTests
     [Test]
     public void FillAndEmptyNessTest()
     {
-        var bm = new CalibratedInfiniteBitmap(14, 12);
+        var bm = new CalibratedInfiniteBitMap(14, 12);
         bm.FillRow(1);
         bm.FillRow(13);
         bm.FillColumn(5);

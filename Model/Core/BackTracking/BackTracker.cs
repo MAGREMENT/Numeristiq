@@ -102,13 +102,11 @@ public interface IPossibilitiesGiver
 
 public class ConstantPossibilitiesGiver : IPossibilitiesGiver
 {
-    private static readonly IEnumerable<int> _enumerable = Create();
+    private readonly IEnumerable<int> _enumerable;
 
-    public static ConstantPossibilitiesGiver Instance { get; } = new();
-
-    private ConstantPossibilitiesGiver()
+    private ConstantPossibilitiesGiver(int max)
     {
-        
+        _enumerable = Create(max);
     }
     
     public IEnumerable<int> EnumeratePossibilitiesAt(int row, int col)
@@ -116,13 +114,15 @@ public class ConstantPossibilitiesGiver : IPossibilitiesGiver
         return _enumerable;
     }
 
-    private static IEnumerable<int> Create()
+    private static IEnumerable<int> Create(int max)
     {
-        for (int i = 1; i <= 9; i++)
+        for (int i = 1; i <= max; i++)
         {
             yield return i;
         }
     }
+    
+    public static ConstantPossibilitiesGiver Nine { get; } = new(9);
 }
 
 public class EmptyPossibilitiesGiver : IPossibilitiesGiver

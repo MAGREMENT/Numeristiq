@@ -28,7 +28,7 @@ public class RandomNonogramGenerator : IPuzzleGenerator<Nonogram>
         do
         {
             var size = Randomizer.GenerateSize();
-            var buffer = new CalibratedInfiniteBitmap(size.RowCount, size.ColumnCount);
+            var buffer = new CalibratedInfiniteBitMap(size.RowCount, size.ColumnCount);
 
             if (KeepSymmetry)
             {
