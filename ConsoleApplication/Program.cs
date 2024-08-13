@@ -47,6 +47,7 @@ public static class Program
 
         instance.Root.AddDirectory(new Directory("Binairo"))
             .AddCommand(new HelpCommand(), true)
+            .AddCommand(new BinairoSolveBatchCommand())
             .AddCommand(new BinairoGenerateBatchCommand());
 
         if (!IsForProduction)

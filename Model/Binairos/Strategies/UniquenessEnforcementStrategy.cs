@@ -21,7 +21,7 @@ public class UniquenessEnforcementStrategy : Strategy<IBinairoSolverData>
 
             for (int r = 0; r < data.RowCount; r++)
             {
-                var set2 = data.Binairo.RowSetAt(row);
+                var set2 = data.Binairo.RowSetAt(r);
                 if(set2.GetTotalCount() != data.ColumnCount || !set2.Contains(set)) continue;
 
                 for (int col = 0; col < data.ColumnCount; col++)
@@ -85,7 +85,7 @@ public class UniquenessEnforcementReportBuilder : IChangeReportBuilder<BinaryCha
     public ChangeReport<IBinairoHighlighter> BuildReport(IReadOnlyList<BinaryChange> changes, IBinarySolvingState snapshot)
     {
         var u = _isRow ? 'r' : 'c';
-        return new ChangeReport<IBinairoHighlighter>($"Uniqueness Enforcement in {u}{_unit} because of {u}{_otherUnit}",
+        return new ChangeReport<IBinairoHighlighter>($"Uniqueness Enforcement in {u}{_unit + 1} because of {u}{_otherUnit + 1}",
             lighter =>
             {
                 if (_isRow)

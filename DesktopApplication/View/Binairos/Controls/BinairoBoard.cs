@@ -6,6 +6,8 @@ using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Binairos.Solve;
 using DesktopApplication.View.Controls;
 using Model.Core.Changes;
+using Model.Utility;
+using Model.Utility.Collections;
 
 namespace DesktopApplication.View.Binairos.Controls;
 
@@ -14,7 +16,8 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
     private const int BackgroundIndex = 0;
     private const int HighlightIndex = 1;
     private const int LinesIndex = 2;
-    private const int NumbersIndex = 3;
+    private const int EncircleIndex = 3;
+    private const int NumbersIndex = 4;
 
     private double _lineWidth;
     private double _cellSize;
@@ -23,7 +26,7 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
 
     private bool[,] _clues = new bool[0, 0];
 
-    public BinairoBoard() : base(4)
+    public BinairoBoard() : base(5)
     {
         Layers[BackgroundIndex].Add(new BackgroundDrawableComponent());
         Layers[LinesIndex].Add(new BinairoGridDrawableComponent());
@@ -203,6 +206,11 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
     public void HighlightCell(int row, int col, StepColor color)
     {
         Layers[HighlightIndex].Add(new CellFillDrawableComponent(row, col, (int)color, FillColorType.Step));
+    }
+    
+    public void EncircleCells(IContainingEnumerable<Cell> cells, StepColor color)
+    {
+        Layers[EncircleIndex].Add(new MultiCellGeometryDrawableComponent(cells, (int)color, FillColorType.Step));
     }
 
     public void ClearHighlights()

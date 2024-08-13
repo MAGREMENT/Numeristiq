@@ -13,5 +13,6 @@ public class HardCodedBinairoStrategyRepository : HardCodedStrategyRepository<St
         yield return new HalfCompletionStrategy();
         yield return new UniquenessEnforcementStrategy();
         yield return new AdvancedTripleDenialStrategy();
+        yield return new AdvancedUniquenessEnforcementStrategy();
     }
 }

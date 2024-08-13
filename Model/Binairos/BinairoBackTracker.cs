@@ -208,7 +208,11 @@ public class BinairoBackTracker : BackTracker<Binairo, object?>
                         added1Row = true;
                     }
 
-                    search = Search(result, position + 1);
+                    if (Search(result, position + 1))
+                    {
+                        Current[row, col] = 0;
+                        return true;
+                    }
 
                     Current[row, col] = 0;
                     _rowCounts[row].OnesCount -= 1;
@@ -217,8 +221,6 @@ public class BinairoBackTracker : BackTracker<Binairo, object?>
                     if (added2Row) _oneUnavailability.Remove(row + 2, col);
                     if (added1Col) _oneUnavailability.Remove(row, col + 1);
                     if (added1Row) _oneUnavailability.Remove(row + 1, col);
-
-                    if (search) return true;
                 }
                 else Current[row, col] = 0;
             }
@@ -267,7 +269,11 @@ public class BinairoBackTracker : BackTracker<Binairo, object?>
                 added1Row = true;
             }
 
-            search = Search(result, position + 1);
+            if (Search(result, position + 1))
+            {
+                Current[row, col] = 0;
+                return true;
+            }
 
             Current[row, col] = 0;
             _rowCounts[row].TwosCount -= 1;
@@ -277,7 +283,7 @@ public class BinairoBackTracker : BackTracker<Binairo, object?>
             if (added2Col) _twoUnavailability.Remove(row, col + 2);
             if (added2Row) _twoUnavailability.Remove(row + 2, col);
 
-            return search;
+            return false;
         }
 
         result.AddNewResult(Current.Copy());

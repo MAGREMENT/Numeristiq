@@ -91,7 +91,10 @@ public abstract class RDRPuzzleGenerator<T> : IPuzzleGenerator<T> where T : ICel
 
     private bool IsValid(T puzzle)
     {
-        if (KeepUniqueness) return GetSolutionCount(puzzle, 2) == 1;
+        if (KeepUniqueness)
+        {
+            return GetSolutionCount(puzzle, 2) == 1;
+        }
 
         return GetSolutionCount(puzzle, 1) > 0;
     }

@@ -3,7 +3,7 @@ using Model.Utility;
 
 namespace Model.Binairos;
 
-public class RDRBinairoPuzzleGenerator : RDRPuzzleGenerator<Binairo> //TODO fix generate non-unique puzzles ?
+public class RDRBinairoPuzzleGenerator : RDRPuzzleGenerator<Binairo>
 {
     private readonly BinairoBackTracker _backTracker = new();
     

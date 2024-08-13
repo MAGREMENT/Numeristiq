@@ -164,6 +164,29 @@ public class Binairo : IReadOnlyBinairo, ICopyable<Binairo>, ICellsAndDigitsPuzz
         return new Binairo(cells, rowSets, colSets);
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Binairo b) return false;
+        if (!b.SamePattern(this)) return false;
+
+        for (int i = 0; i < _rowSets.Length; i++)
+        {
+            if (b._rowSets[i] != _rowSets[i]) return false;
+        }
+        
+        for (int i = 0; i < _colSets.Length; i++)
+        {
+            if (b._colSets[i] != _colSets[i]) return false;
+        }
+
+        return true;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_cells.GetHashCode(), _rowSets.GetHashCode(), _colSets.GetHashCode());
+    }
+
     public override string ToString()
     {
         var builder = new StringBuilder(ColumnLineString());
@@ -201,7 +224,7 @@ public class Binairo : IReadOnlyBinairo, ICopyable<Binairo>, ICellsAndDigitsPuzz
     }
 }
 
-public readonly struct ReadOnlyBinairoUnitBitSet
+public readonly struct ReadOnlyBinairoUnitBitSet //TODO test
 {
     private readonly ulong _bits;
     public int OnesCount { get; }
@@ -214,7 +237,7 @@ public readonly struct ReadOnlyBinairoUnitBitSet
         TwosCount = twosCount;
     }
 
-    public int this[int index] => (int)((_bits >> (index * 2)) & 3);
+    public int this[int index] => (int)((_bits >> (index * 2)) & 3ul);
 
     public bool Contains(ReadOnlyBinairoUnitBitSet set) => (_bits | set._bits) == _bits;
 
@@ -237,12 +260,12 @@ public readonly struct ReadOnlyBinairoUnitBitSet
             case 0 : return this - index;
             case 1 : 
                 var added1 = this[index] == 0;
-                return new ReadOnlyBinairoUnitBitSet(_bits | ((ulong)value << (index * 2)), 
-                    OnesCount + (added1 ? 1 : 0), TwosCount);
+                return added1 ? new ReadOnlyBinairoUnitBitSet(_bits | ((ulong)value << (index * 2)), 
+                    OnesCount + 1, TwosCount) : this;
             case 2 :
                 var added2 = this[index] == 0;
-                return new ReadOnlyBinairoUnitBitSet(_bits | ((ulong)value << (index * 2)), 
-                    OnesCount, TwosCount + (added2 ? 1 : 0));
+                return added2 ? new ReadOnlyBinairoUnitBitSet(_bits | ((ulong)value << (index * 2)), 
+                    OnesCount, TwosCount + 1) : this;
             default: return this;
         }
     }
@@ -252,9 +275,9 @@ public readonly struct ReadOnlyBinairoUnitBitSet
         var removed = set[index];
         return removed switch
         {
-            1 => new ReadOnlyBinairoUnitBitSet(set._bits & ~(1ul << (index * 2)),
+            1 => new ReadOnlyBinairoUnitBitSet(set._bits & ~(3ul << (index * 2)),
                 set.OnesCount - 1, set.TwosCount),
-            2 => new ReadOnlyBinairoUnitBitSet(set._bits & ~(1ul << (index * 2)),
+            2 => new ReadOnlyBinairoUnitBitSet(set._bits & ~(3ul << (index * 2)),
                 set.OnesCount, set.TwosCount - 1),
             _ => set
         };
