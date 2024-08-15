@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
@@ -24,7 +25,7 @@ public class OddagonStrategy : SudokuStrategy
             if (ao.Guardians.Length == 1) solverData.ChangeBuffer.ProposeSolutionAddition(ao.Guardians[0]);
             else
             {
-                foreach (var cp in SudokuCellUtility.SharedSeenExistingPossibilities(solverData, ao.Guardians))
+                foreach (var cp in SudokuUtility.SharedSeenExistingPossibilities(solverData, ao.Guardians))
                 {
                     solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
                 }

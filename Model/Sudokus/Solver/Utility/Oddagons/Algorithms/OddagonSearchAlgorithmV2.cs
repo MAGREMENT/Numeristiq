@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Model.Core;
+using Model.Core.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 

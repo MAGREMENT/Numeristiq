@@ -1,5 +1,6 @@
 using System;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Sudokus;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;

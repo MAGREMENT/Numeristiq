@@ -165,7 +165,7 @@ public class AlmostClaimingSetStrategy : SudokuStrategy
     {
         List<Cell> total = new List<Cell>(centerCells);
         total.AddRange(als.EnumerateCells());
-        foreach (var ssc in SudokuCellUtility.SharedSeenEmptyCells(solverData, total))
+        foreach (var ssc in SudokuUtility.SharedSeenEmptyCells(solverData, total))
         {
             foreach (var p in possibilities.EnumeratePossibilities())
             {

@@ -22,20 +22,36 @@
                                CellSelected="OnCellSelection" CursorBrush="{DynamicResource Secondary1}"
                                KeyDown="DoBoardInput" LostFocus="OnLostFocus"/>
             </controls:SizeOptimizedContentControl.OptimizableContent>
+            
+            <controls:SizeOptimizedContentControl.SideControls>
+                <Border Padding="5" CornerRadius="5" Background="{DynamicResource Background3}">
+                    <StackPanel Orientation="Vertical">
+                        <RadioButton Checked="ModeToDefault" Style="{StaticResource SideControlRadioButton}"
+                                     IsChecked="True" Margin="0 0 0 10" ToolTip="Number Edit">
+                            <Path Width="30" Height="30" Stroke="{Binding Path=Foreground,
+								 RelativeSource={RelativeSource AncestorType={x:Type RadioButton}}}"
+                                  StrokeThickness="3" Data="M 8,12 18,3 V 27"/>
+                        </RadioButton>
+            
+                        <RadioButton Checked="ModeToEdit" Style="{StaticResource SideControlRadioButton}"
+                                     ToolTip="Grid Edit">
+                            <Path Width="30" Height="30" Stroke="{Binding Path=Foreground,
+								 RelativeSource={RelativeSource AncestorType={x:Type RadioButton}}}"
+                                  StrokeThickness="2" Data="M 22,1 28,7 12,23 6,17 Z M 6,17 3,26 12,23"/>
+                        </RadioButton>
+                    </StackPanel>
+                </Border>
+            </controls:SizeOptimizedContentControl.SideControls>
         </controls:SizeOptimizedContentControl>
         
         <Grid Grid.Column="1" Margin="0 10 10 10" Width="350">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            
-            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 0 0 10" Padding="5"
+            <Border Grid.Row="0" Grid.Column="0" Margin="0 0 0 10" Padding="5"
                     CornerRadius="5" Background="{DynamicResource Background2}">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -52,28 +68,10 @@
                 </Grid>
             </Border>
             
-            <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock FontSize="18" Margin="0, 20, 0, 0" Foreground="{DynamicResource Text}">
-                    Edit Mode
-                </TextBlock>
-            
-                <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}" 
-                             x:Name="DefaultMode" Checked="ModeToDefault" Style="{StaticResource ArrowRadioButton}">
-                    Default
-                </RadioButton>
-            
-                <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
-                             Checked="ModeToEdit" Style="{StaticResource ArrowRadioButton}">
-                    Edit
-                </RadioButton>
-            </StackPanel>
-            
-            <StackPanel Grid.Row="1" Grid.Column="1">
-                <Button Style="{StaticResource DefaultLightUpButtonStyle}" Margin="10 0 0 5"
-                        Click="Solve">Solve</Button>
-                <Button Style="{StaticResource DefaultLightUpButtonStyle}" Margin="10 5 0 0"
-                        Click="Advance">Advance</Button>
-            </StackPanel>
+            <Button Grid.Row="1" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="0 0 0 10"
+                    Click="Solve">Solve</Button>
+            <Button Grid.Row="2" Style="{StaticResource DefaultLightUpButtonStyle}"
+                    Click="Advance">Advance</Button>
         </Grid>
         
         <controls:HideableTextBox Grid.Column="0" Grid.ColumnSpan="2" TextChanged="OnNewKakuro" x:Name="KakuroAsString"

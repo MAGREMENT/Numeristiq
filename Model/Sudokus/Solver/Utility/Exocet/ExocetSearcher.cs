@@ -148,7 +148,7 @@ public static class ExocetSearcher
                 if (cell.Row == t1.Row || cell.Row == t2.Row) continue;
             }
             else if (cell.Column == t1.Column || cell.Column == t2.Column) continue;
-            if (SudokuCellUtility.ShareAUnit(cell, base1)) continue;
+            if (SudokuUtility.ShareAUnit(cell, base1)) continue;
             if(solverData.Contains(cell.Row, cell.Column, possibility)) gp.Add(cell);
         }
     }

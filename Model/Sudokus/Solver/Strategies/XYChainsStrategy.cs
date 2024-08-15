@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.Collections;
 
@@ -20,9 +22,9 @@ public class XYChainsStrategy : SudokuStrategy
 
     public override void Apply(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.XYChainSpecific,
-            SudokuConstructRuleBank.CellStrongLink);
-        var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
+        solverData.PreComputer.SimpleGraph.Construct(XYChainSpecificConstructRule.Instance,
+            CellStrongLinkConstructRule.Instance);
+        var graph = solverData.PreComputer.SimpleGraph.Graph;
         var route = new List<XYCell>();
         var visited = new HashSet<CellPossibility>();
 
@@ -86,7 +88,7 @@ public readonly struct XYCell
 
     public IEnumerable<Cell> SharedSeenCells(XYCell cell)
     {
-        return SudokuCellUtility.SharedSeenCells(Row, Column, cell.Row, cell.Column);
+        return SudokuUtility.SharedSeenCells(Row, Column, cell.Row, cell.Column);
     }
 
     public CellPossibility XCellPossibility() => new(Row, Column, XPossibility);

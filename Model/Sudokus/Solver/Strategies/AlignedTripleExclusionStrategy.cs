@@ -208,7 +208,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
 
     private bool Search(ISudokuSolverData solverData, Cell c1, Cell c2, Cell c3)
     {
-        var ssc = SudokuCellUtility.SharedSeenEmptyCells(solverData, c1, c2, c3).ToArray();
+        var ssc = SudokuUtility.SharedSeenEmptyCells(solverData, c1, c2, c3).ToArray();
 
         var poss1 = solverData.PossibilitiesAt(c1);
         var poss2 = solverData.PossibilitiesAt(c2);
@@ -287,13 +287,13 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
             var toDelete = true;
             foreach (var p2 in poss2.EnumeratePossibilities())
             {
-                if (p1 == p2 && SudokuCellUtility.ShareAUnit(c1, c2)) continue;
+                if (p1 == p2 && SudokuUtility.ShareAUnit(c1, c2)) continue;
 
                 if (forbiddenBi.Contains(new BiValue(p1, p2))) continue;
 
                 foreach (var p3 in poss3.EnumeratePossibilities())
                 {
-                    if((p1 == p3 && SudokuCellUtility.ShareAUnit(c1, c3)) || (p2 == p3 && SudokuCellUtility.ShareAUnit(c2, c3))) continue;
+                    if((p1 == p3 && SudokuUtility.ShareAUnit(c1, c3)) || (p2 == p3 && SudokuUtility.ShareAUnit(c2, c3))) continue;
 
                     if (forbiddenBi.Contains(new BiValue(p1, p3)) 
                         || forbiddenBi.Contains(new BiValue(p2, p3))) continue;

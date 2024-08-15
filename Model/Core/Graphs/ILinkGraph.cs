@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Model.Sudokus.Solver.Utility.Graphs;
+namespace Model.Core.Graphs;
+
+//TODO graph interface
 
 public interface ILinkGraph<T> : IEnumerable<T> where T : notnull
 {
@@ -9,10 +11,16 @@ public interface ILinkGraph<T> : IEnumerable<T> where T : notnull
     public IEnumerable<T> Neighbors(T from);
     public bool AreNeighbors(T from, T to, LinkStrength strength);
     public bool AreNeighbors(T from, T to);
+    public LinkStrength? LinkBetween(T from, T to);
     public void Clear();
 }
 
 public enum LinkStrength
 {
     None = 0, Strong = 1, Weak = 2, Any = 3
+}
+
+public enum LinkType
+{
+    BiDirectional, MonoDirectional
 }

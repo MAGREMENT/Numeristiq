@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Core;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Sudokus.Solver.Utility.Oddagons.Algorithms;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -14,13 +15,14 @@ public static class OddagonSearcher
 
     public static List<AlmostOddagon> Search(ISudokuSolverData solverData, int maxLength, int maxGuardians)
     {
-        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
-            SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
+        solverData.PreComputer.SimpleGraph.Construct(CellStrongLinkConstructRule.Instance,
+            CellWeakLinkConstructRule.Instance,
+            UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance);
 
         Algorithm.MaxLength = maxLength;
         Algorithm.MaxGuardians = maxGuardians;
         
-        return Algorithm.Search(solverData, solverData.PreComputer.Graphs.SimpleLinkGraph);
+        return Algorithm.Search(solverData, solverData.PreComputer.SimpleGraph.Graph);
     }
 
     public static IEnumerable<CellPossibility> FindGuardians(ISudokuSolvingState holder, CellPossibility one, CellPossibility two)

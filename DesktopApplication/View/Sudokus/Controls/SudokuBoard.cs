@@ -10,6 +10,7 @@ using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.View.Controls;
 using Model.Core.Changes;
 using Model.Core.Explanation;
+using Model.Core.Graphs;
 using Model.Sudokus.Player;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;

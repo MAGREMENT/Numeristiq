@@ -38,7 +38,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
                     coords.AddRange(one.EnumerateCells(possibility));
                     coords.AddRange(two.EnumerateCells(possibility));
 
-                    foreach (var coord in SudokuCellUtility.SharedSeenCells(coords))
+                    foreach (var coord in SudokuUtility.SharedSeenCells(coords))
                     {
                         solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
@@ -51,7 +51,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
                 {
                     if (restrictedCommons.Contains(possibility) || two.Possibilities.Contains(possibility)) continue;
 
-                    foreach (var coord in SudokuCellUtility.SharedSeenCells(new List<Cell>(one.EnumerateCells(possibility))))
+                    foreach (var coord in SudokuUtility.SharedSeenCells(new List<Cell>(one.EnumerateCells(possibility))))
                     {
                         solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
@@ -61,7 +61,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
                 {
                     if (restrictedCommons.Contains(possibility) || one.Possibilities.Contains(possibility)) continue;
 
-                    foreach (var coord in SudokuCellUtility.SharedSeenCells(new List<Cell>(two.EnumerateCells(possibility))))
+                    foreach (var coord in SudokuUtility.SharedSeenCells(new List<Cell>(two.EnumerateCells(possibility))))
                     {
                         solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }

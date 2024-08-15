@@ -1,10 +1,18 @@
 ﻿using Model.Core.Graphs;
+using Model.Tectonics.Solver.Utility.ConstructRules;
 using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class CellStrongLinkConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement>
+public class CellStrongLinkConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement>, 
+    IConstructRule<ISudokuSolverData, CellPossibility>
 {
+    public static CellStrongLinkConstructRule Instance { get; } = new();
+    
+    private CellStrongLinkConstructRule() {}
+    
+    public int ID { get; } = UniqueID.Next();
+
     public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
     {
         for (int row = 0; row < 9; row++)

@@ -29,7 +29,7 @@ public partial class SolvePage : IBinairoSolveView
         
     }
 
-    public override object? TitleBarContent()
+    public override object TitleBarContent()
     {
         var settings = new SettingsButton();
         settings.Clicked += () =>

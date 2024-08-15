@@ -16,7 +16,7 @@ public class NRCZTChain : IEnumerable<ConjugateRelation> //TODO to interface wit
     public NRCZTChain(ISudokuSolverData solverData, CellPossibility from, CellPossibility to)
     {
         _relations.Add(new ConjugateRelation(from, to));
-        PossibleTargets.UnionWith(SudokuCellUtility.SeenExistingPossibilities(solverData, from));
+        PossibleTargets.UnionWith(SudokuUtility.SeenExistingPossibilities(solverData, from));
         PossibleTargets.Remove(to);
     }
 
@@ -35,7 +35,7 @@ public class NRCZTChain : IEnumerable<ConjugateRelation> //TODO to interface wit
         PossibleTargets = new HashSet<CellPossibility>(possibleTargets);
         PossibleTargets.Remove(relation.From);
         PossibleTargets.Remove(relation.To);
-        PossibleTargets.RemoveWhere(cp => !SudokuCellUtility.AreLinked(cp, mustSee));
+        PossibleTargets.RemoveWhere(cp => !SudokuUtility.AreLinked(cp, mustSee));
     }
 
     public NRCZTChain? TryAdd(CellPossibility from, CellPossibility to)

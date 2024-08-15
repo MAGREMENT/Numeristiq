@@ -224,7 +224,7 @@ public class Binairo : IReadOnlyBinairo, ICopyable<Binairo>, ICellsAndDigitsPuzz
     }
 }
 
-public readonly struct ReadOnlyBinairoUnitBitSet //TODO test
+public readonly struct ReadOnlyBinairoUnitBitSet
 {
     private readonly ulong _bits;
     public int OnesCount { get; }

@@ -46,7 +46,7 @@ public class TwoStringKiteStrategy : SudokuStrategy
                             var rOther = rowCell[(i + 1) % 2];
                             var cOther = colCell[(j + 1) % 2];
 
-                            foreach (var c in SudokuCellUtility.SharedSeenCells(rOther, cOther))
+                            foreach (var c in SudokuUtility.SharedSeenCells(rOther, cOther))
                             {
                                 solverData.ChangeBuffer.ProposePossibilityRemoval(number, c);
                             }

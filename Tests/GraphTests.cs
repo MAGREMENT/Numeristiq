@@ -1,0 +1,82 @@
+﻿using Model.Core.Graphs;
+using Model.Sudokus;
+using Model.Sudokus.Solver;
+using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
+using Tests.Utility;
+
+namespace Tests;
+
+public class GraphTests
+{
+    [Test]
+    public void LinkGraphConstructionTest()
+    {
+        var solver = new SudokuSolver();
+        var sudoku = SudokuTranslator.TranslateBase32Format(
+            "0hj0a6t009t21474n04eh8062146li815cloecj8a4tgc4tg1s7c032e2o0mc811ea0cg1c80e81h0ko42kq215e582a41h005a2qa1o9a9oa02gag03g105411818110309c0e0e0g10h05g10541180h1803a0a0",
+            new AlphabeticalBase32Translator());
+        solver.SetState(sudoku);
+        
+        ImplementationSpeedComparator.Compare(graph =>
+        {
+            graph.Construct(CellStrongLinkConstructRule.Instance, CellWeakLinkConstructRule.Instance,
+                UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
+                PointingPossibilitiesConstructRule.Instance, AlmostNakedSetConstructRule.Instance);
+        }, 30000, 
+            new ManagedLinkGraph<ISudokuSolverData, ISudokuElement>(new HDictionaryLinkGraph<ISudokuElement>(), solver),
+            new ManagedLinkGraph<ISudokuSolverData, ISudokuElement>(new ULDictionaryLinkGraph<ISudokuElement>(), solver));
+    }
+    
+    [Test]
+    public void LinkGraphEnumerationTest()
+    {
+        var solver = new SudokuSolver();
+        var sudoku = SudokuTranslator.TranslateBase32Format(
+            "0hj0a6t009t21474n04eh8062146li815cloecj8a4tgc4tg1s7c032e2o0mc811ea0cg1c80e81h0ko42kq215e582a41h005a2qa1o9a9oa02gag03g105411818110309c0e0e0g10h05g10541180h1803a0a0",
+            new AlphabeticalBase32Translator());
+        solver.SetState(sudoku);
+
+        var graphs = new ManagedLinkGraph<ISudokuSolverData, ISudokuElement>[]
+        {
+            new(new HDictionaryLinkGraph<ISudokuElement>(), solver),
+            new(new ULDictionaryLinkGraph<ISudokuElement>(), solver)
+        };
+
+        foreach (var graph in graphs)
+        {
+            graph.Construct(CellStrongLinkConstructRule.Instance, CellWeakLinkConstructRule.Instance,
+                UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
+                PointingPossibilitiesConstructRule.Instance, AlmostNakedSetConstructRule.Instance);
+        }
+
+        foreach (var start in graphs[0].Graph)
+        {
+            for (int i = 1; i < graphs.Length; i++)
+            {
+                var otherGraph = graphs[i];
+                
+                foreach (var friend in graphs[0].Graph.Neighbors(start, LinkStrength.Strong))
+                {
+                    Assert.True(otherGraph.Graph.AreNeighbors(start, friend, LinkStrength.Strong));
+                }
+            
+                foreach (var friend in graphs[0].Graph.Neighbors(start, LinkStrength.Weak))
+                {
+                    Assert.True(otherGraph.Graph.AreNeighbors(start, friend, LinkStrength.Weak));
+                }
+            }
+        }
+        
+        ImplementationSpeedComparator.Compare(graph =>
+        {
+            foreach (var start in graph)
+            {
+                foreach (var friend in graph.Neighbors(start))
+                {
+                    var a = friend.EveryCell();
+                }
+            }
+        }, 30, graphs[0].Graph, graphs[1].Graph);
+    }
+}

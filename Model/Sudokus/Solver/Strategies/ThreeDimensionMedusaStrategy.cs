@@ -5,6 +5,7 @@ using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -19,8 +20,9 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
     
     public override void Apply(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.CellStrongLink);
-        var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
+        solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructRule.Instance,
+            CellStrongLinkConstructRule.Instance);
+        var graph = solverData.PreComputer.SimpleGraph.Graph;
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
                      ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColorWithoutRules, graph,

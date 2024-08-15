@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Markup;
 using System.Windows.Media;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Tectonics.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.Utility;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.Collections;
 
 namespace DesktopApplication.View.Tectonics.Controls;
 
-public class TectonicBoard : DrawingBoard, ITectonicDrawingData, IAddChild, ITectonicDrawer, ISizeOptimizable
+public class TectonicBoard : DrawingBoard, ITectonicDrawingData, ITectonicDrawer, ISizeOptimizable
 {
     private const int BackgroundIndex = 0;
     private const int CellHighlightIndex = 1;
@@ -89,16 +89,6 @@ public class TectonicBoard : DrawingBoard, ITectonicDrawingData, IAddChild, ITec
 
         MouseLeftButtonUp += StopSelection;
         MouseLeave += StopSelection;
-    }
-    
-    public void AddChild(object value)
-    {
-        if (value is NeighborBorder border) Borders.Add(border);
-    }
-
-    public void AddText(string text)
-    {
-        
     }
 
     #region ITectonicDrawingData

@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Model.Core.Graphs;
 using Model.Utility;
 using Model.Utility.Collections;
 
-namespace Model.Sudokus.Solver.Utility.Graphs;
+namespace Model.Sudokus.Solver.Utility.Graphs.Implementations;
 
 public class SudokuElementArrayLinkGraph : ILinkGraph<ISudokuElement>
 {
@@ -75,6 +76,11 @@ public class SudokuElementArrayLinkGraph : ILinkGraph<ISudokuElement>
         
         l = _cps[cp.Row, cp.Column, cp.Possibility - 1, 1];
         return l is not null && l.Contains(to);
+    }
+
+    public LinkStrength? LinkBetween(ISudokuElement from, ISudokuElement to)
+    {
+        return null; //TODO
     }
 
     public void Clear()

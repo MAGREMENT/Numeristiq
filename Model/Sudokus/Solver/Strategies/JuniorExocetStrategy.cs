@@ -108,12 +108,12 @@ public class JuniorExocetStrategy : SudokuStrategy
         
         foreach (var possibility in totalCandidates.EnumeratePossibilities())
         {
-            foreach (var cell in SudokuCellUtility.SharedSeenCells(bCells))
+            foreach (var cell in SudokuUtility.SharedSeenCells(bCells))
             {
                 solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
             
-            foreach (var cell in SudokuCellUtility.SharedSeenCells(tCells))
+            foreach (var cell in SudokuUtility.SharedSeenCells(tCells))
             {
                 solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
@@ -362,7 +362,7 @@ public class JuniorExocetStrategy : SudokuStrategy
             if (diff.Count == 1)
             {
                 var p = diff.FirstPossibility();
-                foreach (var cell in SudokuCellUtility.SharedSeenCells(je.Target1MirrorNodes[0], je.Target1MirrorNodes[1]))
+                foreach (var cell in SudokuUtility.SharedSeenCells(je.Target1MirrorNodes[0], je.Target1MirrorNodes[1]))
                 {
                     solverData.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                 }
@@ -374,7 +374,7 @@ public class JuniorExocetStrategy : SudokuStrategy
             if (diff.Count == 1)
             {
                 var p = diff.FirstPossibility();
-                foreach (var cell in SudokuCellUtility.SharedSeenCells(je.Target2MirrorNodes[0], je.Target2MirrorNodes[1]))
+                foreach (var cell in SudokuUtility.SharedSeenCells(je.Target2MirrorNodes[0], je.Target2MirrorNodes[1]))
                 {
                     solverData.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                 }
@@ -385,12 +385,12 @@ public class JuniorExocetStrategy : SudokuStrategy
             //Elimination 10
             foreach (var possibility in revisedBaseCandidates.EnumeratePossibilities())
             {
-                foreach (var cell in SudokuCellUtility.SharedSeenCells(je.Base1, je.Base2))
+                foreach (var cell in SudokuUtility.SharedSeenCells(je.Base1, je.Base2))
                 {
                     solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
 
-                foreach (var cell in SudokuCellUtility.SharedSeenCells(je.Target1, je.Target2))
+                foreach (var cell in SudokuUtility.SharedSeenCells(je.Target1, je.Target2))
                 {
                     solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }

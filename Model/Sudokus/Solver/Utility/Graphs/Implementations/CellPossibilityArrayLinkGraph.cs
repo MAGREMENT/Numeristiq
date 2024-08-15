@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Model.Core.Graphs;
 using Model.Utility;
 using Model.Utility.Collections;
 
-namespace Model.Sudokus.Solver.Utility.Graphs;
+namespace Model.Sudokus.Solver.Utility.Graphs.Implementations;
 
 public class CellPossibilityArrayLinkGraph : ILinkGraph<CellPossibility>
 {
@@ -51,6 +52,17 @@ public class CellPossibilityArrayLinkGraph : ILinkGraph<CellPossibility>
         
         l = _cps[from.Row, from.Column, from.Possibility - 1, 1];
         return l is not null && l.Contains(to);
+    }
+
+    public LinkStrength? LinkBetween(CellPossibility from, CellPossibility to)
+    {
+        var list = _cps[from.Row, from.Column, from.Possibility - 1, 0];
+        if (list is not null && list.Contains(to)) return LinkStrength.Strong;
+
+        list = _cps[from.Row, from.Column, from.Possibility - 1, 1];
+        if (list is not null && list.Contains(to)) return LinkStrength.Weak;
+
+        return null;
     }
 
     public void Clear()

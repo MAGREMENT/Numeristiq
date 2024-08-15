@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Model.Core.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs;
 
 namespace Model.Sudokus.Solver.Utility.CellColoring;

@@ -112,7 +112,7 @@ public class JuniorExocet : DoubleTargetExocet
         var oneS = SCells[poss1];
         var twoS = SCells[poss2];
 
-        foreach (var diag in SudokuCellUtility.DiagonalMiniGridAssociation(Base1.Row / 3, Base1.Column / 3))
+        foreach (var diag in SudokuUtility.DiagonalMiniGridAssociation(Base1.Row / 3, Base1.Column / 3))
         {
             if (oneS.MiniGridCount(diag.Item1.MiniRow, diag.Item1.MiniColumn) > 0 &&
                 twoS.MiniGridCount(diag.Item2.MiniRow, diag.Item2.MiniColumn) > 0) return true;
@@ -151,7 +151,7 @@ public class JuniorExocet : DoubleTargetExocet
         var oneS = SCells[poss1];
         var twoS = SCells[poss2];
 
-        foreach (var diag in SudokuCellUtility.DiagonalMiniGridAssociation(Base1.Row / 3, Base1.Column / 3))
+        foreach (var diag in SudokuUtility.DiagonalMiniGridAssociation(Base1.Row / 3, Base1.Column / 3))
         {
             if (oneS.MiniGridCount(diag.Item1.MiniRow, diag.Item1.MiniColumn) > 0 &&
                 twoS.MiniGridCount(diag.Item2.MiniRow, diag.Item2.MiniColumn) > 0) return true;

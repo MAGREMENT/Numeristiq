@@ -17,14 +17,15 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
 
     public override INumericSolvingState StartState { get; protected set; } = new DefaultNumericSolvingState(0, 0);
     public IReadOnlyTectonic Tectonic => _tectonic;
-    public LinkGraphManager<ITectonicSolverData, ITectonicElement> Graphs { get; }
+    public ManagedLinkGraph<ITectonicSolverData, ITectonicElement> ManagedGraph { get; }
 
     public TectonicSolver()
     {
         _tectonic = new BlankTectonic();
         _possibilities = new ReadOnlyBitSet8[0, 0];
-        
-        Graphs = new LinkGraphManager<ITectonicSolverData, ITectonicElement>(this, new TectonicConstructRuleBank());
+
+        ManagedGraph = new ManagedLinkGraph<ITectonicSolverData, ITectonicElement>(
+            new HDictionaryLinkGraph<ITectonicElement>(), this);
     }
 
     public void SetTectonic(ITectonic tectonic)
@@ -34,7 +35,7 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
         InitCandidates();
         
         OnNewSolvable(_tectonic.GetSolutionCount());
-        Graphs.Clear();
+        ManagedGraph.Clear();
     }
 
     ReadOnlyBitSet16 INumericSolvingState.PossibilitiesAt(int row, int col)
@@ -224,7 +225,7 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
 
     protected override void OnChangeMade()
     {
-        Graphs.Clear();
+        ManagedGraph.Clear();
     }
 
     protected override void ApplyStrategy(Strategy<ITectonicSolverData> strategy)

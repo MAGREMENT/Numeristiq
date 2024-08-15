@@ -12,7 +12,6 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
         <global:SizeOptimizedContentControl Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
@@ -28,34 +27,34 @@
                     KeyDown="DoBoardInput"
                     ClueNumberBrush="{DynamicResource Primary1}"/>
             </global:SizeOptimizedContentControl.OptimizableContent>
+            
+            <global:SizeOptimizedContentControl.SideControls>
+                <controls:DimensionChooser TitleText="Rows" DimensionChangeAsked="OnRowDimensionChangeAsked"
+                                           HorizontalAlignment="Center"/>
+                <controls:DimensionChooser TitleText="Columns" DimensionChangeAsked="OnColumnDimensionChangeAsked"
+                                           HorizontalAlignment="Center"/>
+                <TextBlock FontSize="18" Margin="0, 20, 0, 0" Foreground="{DynamicResource Text}">
+                    Selection Mode
+                </TextBlock>
+            
+                <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}" 
+                             Checked="ModeToDefault" Style="{StaticResource ArrowRadioButton}">
+                    Default
+                </RadioButton>
+            
+                <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
+                             Checked="ModeToMerge" Style="{StaticResource ArrowRadioButton}">
+                    Merge
+                </RadioButton>
+            
+                <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
+                             Checked="ModeToSplit" Style="{StaticResource ArrowRadioButton}">
+                    Split
+                </RadioButton>
+            </global:SizeOptimizedContentControl.SideControls>
         </global:SizeOptimizedContentControl>
         
-        <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="0, 20, 0, 0" Width="150">
-            <controls:DimensionChooser TitleText="Rows" x:Name="RowCount" DimensionChangeAsked="OnRowDimensionChangeAsked"
-                                       HorizontalAlignment="Center"/>
-            <controls:DimensionChooser TitleText="Columns" x:Name="ColumnCount" DimensionChangeAsked="OnColumnDimensionChangeAsked"
-                                       HorizontalAlignment="Center"/>
-            <TextBlock FontSize="18" Margin="0, 20, 0, 0" Foreground="{DynamicResource Text}">
-                Selection Mode
-            </TextBlock>
-            
-            <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}" 
-                         x:Name="DefaultMode" Checked="ModeToDefault" Style="{StaticResource ArrowRadioButton}">
-                Default
-            </RadioButton>
-            
-            <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
-                         Checked="ModeToMerge" Style="{StaticResource ArrowRadioButton}">
-                Merge
-            </RadioButton>
-            
-            <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
-                         Checked="ModeToSplit" Style="{StaticResource ArrowRadioButton}">
-                Split
-            </RadioButton>
-        </StackPanel>
-        
-        <Grid Grid.Column="2" Width="400" Margin="0 10 10 10">
+        <Grid Grid.Column="1" Width="400" Margin="0 10 10 10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>

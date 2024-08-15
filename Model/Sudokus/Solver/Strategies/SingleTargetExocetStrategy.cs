@@ -23,7 +23,7 @@ public class SingleTargetExocetStrategy : SudokuStrategy
         foreach (var exo in ExocetSearcher.SearchSingleTargets(solverData))
         {
             //Single target specific elimination
-            foreach (var cell in SudokuCellUtility.SharedSeenCells(exo.Base1, exo.Base2))
+            foreach (var cell in SudokuUtility.SharedSeenCells(exo.Base1, exo.Base2))
             {
                 solverData.ChangeBuffer.ProposePossibilityRemoval(exo.WildCard, cell);
             }

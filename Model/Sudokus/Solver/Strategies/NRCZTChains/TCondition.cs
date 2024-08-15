@@ -28,7 +28,7 @@ public class TCondition : INRCZTCondition
             foreach (var relation in current)
             {
                 if (cp == relation.To) yield break;
-                if (SudokuCellUtility.AreLinked(cp, relation.To)) ok = true;
+                if (SudokuUtility.AreLinked(cp, relation.To)) ok = true;
             }
 
             if (ok) ignorable.Add(col);
@@ -71,7 +71,7 @@ public class TCondition : INRCZTCondition
             foreach (var relation in current)
             {
                 if (cp == relation.To) yield break;
-                if (SudokuCellUtility.AreLinked(cp, relation.To)) ok = true;
+                if (SudokuUtility.AreLinked(cp, relation.To)) ok = true;
             }
 
             if (ok) ignorable.Add(row);
@@ -114,7 +114,7 @@ public class TCondition : INRCZTCondition
             foreach (var relation in current)
             {
                 if (cp == relation.To) yield break;
-                if (SudokuCellUtility.AreLinked(cp, relation.To)) ok = true;
+                if (SudokuUtility.AreLinked(cp, relation.To)) ok = true;
             }
 
             if (ok) ignorable.Add(cell.Row % 3, cell.Column % 3);
@@ -157,7 +157,7 @@ public class TCondition : INRCZTCondition
             foreach (var relation in current)
             {
                 if (cp == relation.To) yield break;
-                if (SudokuCellUtility.AreLinked(cp, relation.To)) ok = true;
+                if (SudokuUtility.AreLinked(cp, relation.To)) ok = true;
             }
 
             if (ok) ignorable += p;

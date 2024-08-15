@@ -7,12 +7,20 @@ public interface IContainingEnumerable<T> : IEnumerable<T>
     bool Contains(T element);
 }
 
-public class ContainingList<T> : List<T>, IContainingEnumerable<T>
+public interface IContainingCollection<T> : IContainingEnumerable<T>
 {
-    
+    bool Add(T element);
 }
 
-public class ContainingHashSet<T> : HashSet<T>, IContainingEnumerable<T>
+public class ContainingList<T> : List<T>, IContainingCollection<T>
 {
-    
+    public new bool Add(T element)
+    {
+        base.Add(element);
+        return true;
+    }
+}
+
+public class ContainingHashSet<T> : HashSet<T>, IContainingCollection<T>
+{
 }

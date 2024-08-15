@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.PossibilitySets;
-using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -21,8 +22,8 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
     
     public override void Apply(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink);
-        var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
+        solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructRule.Instance);
+        var graph = solverData.PreComputer.SimpleGraph.Graph;
 
         foreach (var linked in solverData.PreComputer.ConstructAlmostHiddenSetGraph())
         {

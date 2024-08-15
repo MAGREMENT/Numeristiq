@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using Model.Core.Graphs;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Exocet;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Sudokus.Solver.Utility.Oddagons;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -28,12 +30,16 @@ public class SudokuPreComputer
     private PossibilitiesGraph<IPossibilitySet>? _alsGraph;
     private PositionsGraph<IPossibilitySet>? _ahsGraph;
     
-    public LinkGraphManager<ISudokuSolverData, ISudokuElement> Graphs { get; }
+    public ManagedLinkGraph<ISudokuSolverData, CellPossibility> SimpleGraph { get; }
+    public ManagedLinkGraph<ISudokuSolverData, ISudokuElement> ComplexGraph { get; }
 
     public SudokuPreComputer(ISudokuSolverData solverData)
     {
         _solverData = solverData;
-        Graphs = new LinkGraphManager<ISudokuSolverData, ISudokuElement>(solverData, new SudokuConstructRuleBank());
+        SimpleGraph = new ManagedLinkGraph<ISudokuSolverData, CellPossibility>(
+            new HDictionaryLinkGraph<CellPossibility>(), _solverData);
+        ComplexGraph = new ManagedLinkGraph<ISudokuSolverData, ISudokuElement>(
+            new HDictionaryLinkGraph<ISudokuElement>(), _solverData);
     }
 
     public void Reset()
@@ -61,7 +67,8 @@ public class SudokuPreComputer
         _alsGraph = null;
         _alsGraph = null;
         
-        Graphs.Clear();
+        SimpleGraph.Clear();
+        ComplexGraph.Clear();
     }
 
     public List<IPossibilitySet> AlmostLockedSets()
@@ -129,13 +136,12 @@ public class SudokuPreComputer
 
     private ColoringDictionary<ISudokuElement> DoColor(ISudokuElement start, Coloring firstColor)
     {
-        _solverData.PreComputer.Graphs.ConstructComplex(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
-            SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink, SudokuConstructRuleBank.PointingPossibilities,
-            SudokuConstructRuleBank.AlmostNakedPossibilities);
-        var graph = _solverData.PreComputer.Graphs.ComplexLinkGraph;
+        ComplexGraph.Construct(CellStrongLinkConstructRule.Instance, CellWeakLinkConstructRule.Instance,
+            UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
+            PointingPossibilitiesConstructRule.Instance, AlmostNakedSetConstructRule.Instance);
 
         return ColorHelper.ColorFromStart<ISudokuElement, ColoringDictionary<ISudokuElement>>(
-            ColorHelper.Algorithm.ColorWithRulesAndLinksJump, graph, start, firstColor, true);
+            ColorHelper.Algorithm.ColorWithRulesAndLinksJump, ComplexGraph.Graph, start, firstColor, true);
     }
 
     private List<JuniorExocet> DoJuniorExocet()

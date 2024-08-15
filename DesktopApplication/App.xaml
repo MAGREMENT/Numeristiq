@@ -310,35 +310,36 @@
 			    </Setter>
 		    </Style>
 		    
-		    <Style TargetType="RadioButton" x:Key="ArrowRadioButton">
+		    <Style TargetType="RadioButton" x:Key="SideControlRadioButton">
+			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+			    <Setter Property="Background" Value="Transparent"></Setter>
 			    <Setter Property="Template">
 				    <Setter.Value>
 					    <ControlTemplate TargetType="RadioButton">
-						    <Grid>
-							    <Grid.ColumnDefinitions>
-								    <ColumnDefinition Width="Auto"/>
-								    <ColumnDefinition Width="*"/>
-							    </Grid.ColumnDefinitions>
-							    
-							    <Path Grid.Column="0" Margin="0,0,5,0" Width="20" Height="20"
-							          x:Name="Arrow" Visibility="Hidden" Stroke="{DynamicResource Text}"
-							          VerticalAlignment="Center" StrokeThickness="2"
-							          Data="M 3,3 17,10 3,17 Z"/>
-							    
-							    <ContentPresenter Grid.Column="1"
+						    <Border Padding="5" Width="{TemplateBinding Width}" 
+						            CornerRadius="5" Height="{TemplateBinding Height}"
+						            Background="{TemplateBinding Background}">
+							    <ContentPresenter
 								    Margin="0"
-								    HorizontalAlignment="Left"
+								    HorizontalAlignment="Center"
 								    VerticalAlignment="Center"
 								    Focusable="False"/>
-						    </Grid>
+						    </Border>
 						    
 						    <ControlTemplate.Triggers>
-							    <Trigger Property="IsMouseOver" Value="True">
-								    <Setter TargetName="Arrow" Property="Visibility" Value="Visible"/>
-							    </Trigger>
+							    <MultiTrigger>
+								    <MultiTrigger.Conditions>
+									    <Condition Property="IsMouseOver" Value="True"/>
+									    <Condition Property="IsChecked" Value="False"/>
+								    </MultiTrigger.Conditions>
+								    
+								    <MultiTrigger.Setters>
+									    <Setter Property="Foreground" Value="{DynamicResource Primary1}"/>
+								    </MultiTrigger.Setters>
+							    </MultiTrigger>
+							    
 							    <Trigger Property="IsChecked" Value="True">
-								    <Setter TargetName="Arrow" Property="Visibility" Value="Visible"/>
-								    <Setter TargetName="Arrow" Property="Stroke" Value="{DynamicResource Primary1}"/>
+								    <Setter Property="Background" Value="{DynamicResource Primary1}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>

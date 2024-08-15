@@ -10,7 +10,7 @@ public static class RestrictedPossibilityAlgorithms
         {
             foreach (var cell2 in second.EnumerateCells(possibility))
             {
-                if (!SudokuCellUtility.ShareAUnit(cell1, cell2)) return false;
+                if (!SudokuUtility.ShareAUnit(cell1, cell2)) return false;
             }
         }
 

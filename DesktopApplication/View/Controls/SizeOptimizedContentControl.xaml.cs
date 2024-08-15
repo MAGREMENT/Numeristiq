@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Model.Utility.Collections;
 
 namespace DesktopApplication.View.Controls;
 
@@ -33,6 +34,8 @@ public partial class SizeOptimizedContentControl
             }
         }
     }
+
+    public NotifyingList<FrameworkElement> SideControls { get; } = new();
     
     public SizeOptimizedContentControl()
     {
@@ -40,20 +43,28 @@ public partial class SizeOptimizedContentControl
         
         NoSize.SetResourceReference(ForegroundProperty, "Text");
         SizeChanged += (_, _) => AdjustOptimizableSize();
+
+        SideControls.ElementAdded += e =>
+        {
+            if (SidePanel.Children.Count == 0) SidePanel.Margin = new Thickness(10, 0, 0, 0);
+            SidePanel.Children.Add(e);
+        };
     }
 
     private void AdjustOptimizableSize()
     {
         if (_content is null || !_content.HasSize())
         {
-            ContentHolder.Child = NoSize;
+            SetContent(NoSize);
             return;
         }
 
         if (ActualWidth is not double.NaN and > 0 && ActualHeight is not double.NaN and > 0)
         {
-            var availableWidth = ActualWidth - ContentHolder.Padding.Left - ContentHolder.Padding.Right;
-            var availableHeight = ActualHeight - ContentHolder.Padding.Top - ContentHolder.Padding.Bottom;
+            var sidePanelWidth = SidePanel.ActualWidth is double.NaN ? 0 : SidePanel.ActualWidth;
+            var availableWidth = ActualWidth - OuterBorder.Padding.Left - OuterBorder.Padding.Right
+                - sidePanelWidth - SidePanel.Margin.Left - SidePanel.Margin.Right;
+            var availableHeight = ActualHeight - OuterBorder.Padding.Top - OuterBorder.Padding.Bottom;
 
             var w = _content.GetWidthSizeMetricFor(availableWidth);
             var h = _content.GetHeightSizeMetricFor(availableHeight);
@@ -61,7 +72,14 @@ public partial class SizeOptimizedContentControl
             _content.SetSizeMetric(w > h ? h : w);
         }
         
-        ContentHolder.Child = (FrameworkElement)_content;
+        SetContent((FrameworkElement)_content);
+    }
+
+    private void SetContent(UIElement element)
+    {
+        if(ContentHolder.Children.Count > 1) ContentHolder.Children.RemoveRange(1, ContentHolder.Children.Count - 1);
+        Grid.SetColumn(element, 0);
+        ContentHolder.Children.Add(element);
     }
 }
 

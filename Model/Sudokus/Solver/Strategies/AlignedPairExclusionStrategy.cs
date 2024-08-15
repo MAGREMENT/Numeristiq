@@ -97,7 +97,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
 
     private bool Search(ISudokuSolverData solverData, int row1, int col1, int row2, int col2)
     {
-        var shared = new List<Cell>(SudokuCellUtility.SharedSeenEmptyCells(solverData, row1, col1, row2, col2));
+        var shared = new List<Cell>(SudokuUtility.SharedSeenEmptyCells(solverData, row1, col1, row2, col2));
 
         var poss1 = solverData.PossibilitiesAt(row1, col1);
         var poss2 = solverData.PossibilitiesAt(row2, col2);
@@ -105,7 +105,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
         
         if (shared.Count < poss1.Count || shared.Count < poss2.Count) return false;
 
-        var inSameUnit = SudokuCellUtility.ShareAUnit(row1, col1, row2, col2);
+        var inSameUnit = SudokuUtility.ShareAUnit(row1, col1, row2, col2);
         
         List<IPossibilitySet> usefulAls = new();
         HashSet<BiValue> forbidden = new();
@@ -209,7 +209,7 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
     {
         ExplanationElement start = new CellExplanationElement(new Cell(_row1, _col1));
         var current = start.Append(" and ").Append(new Cell(_row2, _col2))
-            .Append(" both see almost locked sets that prevents ").Append(SudokuCellUtility.Cast(changes))
+            .Append(" both see almost locked sets that prevents ").Append(SudokuUtility.Cast(changes))
             .Append(" from being possible.\nThe almost locked sets are the following :");
 
         foreach (var als in _als)

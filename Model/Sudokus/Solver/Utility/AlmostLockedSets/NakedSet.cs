@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
@@ -12,7 +13,7 @@ public class NakedSet : ISudokuElement
     
     public int DifficultyRank => 3;
 
-    public NakedSet(CellPossibilities[] cellPossibilities)
+    public NakedSet(params CellPossibilities[] cellPossibilities)
     {
         _cellPossibilities = cellPossibilities;
     }
@@ -112,7 +113,7 @@ public class NakedSet : ISudokuElement
     public override bool Equals(object? obj)
     {
         if (obj is not NakedSet np) return false;
-        foreach (CellPossibilities cp in _cellPossibilities)
+        foreach (var cp in _cellPossibilities)
         {
             if (!np._cellPossibilities.Contains(cp)) return false;
         }
@@ -128,7 +129,7 @@ public class NakedSet : ISudokuElement
             hashCode ^= coord.GetHashCode();
         }
 
-        return hashCode;
+        return HashCode.Combine(_cellPossibilities.Length, hashCode);
     }
 
     public override string ToString()

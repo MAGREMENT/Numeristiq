@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Model.Utility.Collections;
 
-public class UniqueList<T> : IReadOnlyList<T> where T : notnull
+public class UniqueList<T> : IReadOnlyList<T>, IContainingCollection<T> where T : notnull
 {
     private const int StartLength = 4;
 
@@ -51,14 +51,15 @@ public class UniqueList<T> : IReadOnlyList<T> where T : notnull
         Count++;
     }
 
-    public void Add(T obj)
+    public bool Add(T obj)
     {
         var i = IndexOf(obj);
-        if (i != -1) return;
+        if (i != -1) return false;
         
         GrowIfNeeded();
         _array[Count] = obj;
         Count++;
+        return true;
     }
 
     public void AddRange(IEnumerable<T> objs)

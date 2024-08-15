@@ -13,7 +13,7 @@ using SelectionMode = DesktopApplication.Presenter.Tectonics.Solve.SelectionMode
 
 namespace DesktopApplication.View.Tectonics.Pages;
 
-public partial class SolvePage : ITectonicSolveView
+public partial class SolvePage : ITectonicSolveView //TODO side controls visual
 {
     private readonly TectonicSolvePresenter _presenter;
     
@@ -22,7 +22,7 @@ public partial class SolvePage : ITectonicSolveView
         InitializeComponent();
 
         _presenter = PresenterFactory.Instance.Initialize(this);
-        DefaultMode.IsChecked = true; //Do NOT move this to XAML
+        ((RadioButton)EmbeddedDrawer.SideControls[3]!).IsChecked = true; //Do NOT move this to XAML
     }
 
     public ITectonicDrawer Drawer => (TectonicBoard)EmbeddedDrawer.OptimizableContent!;
@@ -59,12 +59,12 @@ public partial class SolvePage : ITectonicSolveView
 
     private void OnRowCountChange(int number)
     {
-        RowCount.SetDimension(number);
+        ((DimensionChooser)EmbeddedDrawer.SideControls[0]!).SetDimension(number);
     }
 
     private void OnColumnCountChange(int number)
     {
-        ColumnCount.SetDimension(number);
+        ((DimensionChooser)EmbeddedDrawer.SideControls[1]!).SetDimension(number);
     }
 
     private void OnRowDimensionChangeAsked(int diff)

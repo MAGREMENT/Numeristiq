@@ -2,6 +2,7 @@
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using System.Linq;
+using Model.Core.Graphs;
 
 namespace Model.Sudokus.Solver.Strategies.BlossomLoops.LoopFinders;
 

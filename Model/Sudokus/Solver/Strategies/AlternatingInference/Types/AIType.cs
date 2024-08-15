@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using Model.Core;
+using Model.Core.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -18,9 +20,10 @@ public class AIType : IAlternatingInferenceType<CellPossibility>
 
     public ILinkGraph<CellPossibility> GetGraph(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink,SudokuConstructRuleBank.CellWeakLink,
-            SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
-        return solverData.PreComputer.Graphs.SimpleLinkGraph;
+        solverData.PreComputer.SimpleGraph.Construct(CellStrongLinkConstructRule.Instance,
+            CellWeakLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
+            UnitStrongLinkConstructRule.Instance);
+        return solverData.PreComputer.SimpleGraph.Graph;
     }
 
     public bool ProcessFullLoop(ISudokuSolverData solverData, Loop<CellPossibility, LinkStrength> loop)

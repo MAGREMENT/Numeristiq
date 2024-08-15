@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
@@ -42,7 +43,7 @@ public class NishioForcingNetStrategy : SudokuStrategy
                                 if (solverData.ChangeBuffer.NeedCommit())
                                 {
                                     solverData.ChangeBuffer.Commit(new NishioForcingNetReportBuilder(coloring, row, col, possibility,
-                                        cs.Cause, cell, Coloring.Off, solverData.PreComputer.Graphs.ComplexLinkGraph));
+                                        cs.Cause, cell, Coloring.Off, ForcingNetsUtility.GetReportGraph(solverData)));
                                     if (StopOnFirstCommit) return;
                                 }
                                 break;
@@ -52,7 +53,7 @@ public class NishioForcingNetStrategy : SudokuStrategy
                                 if (solverData.ChangeBuffer.NeedCommit())
                                 {
                                     solverData.ChangeBuffer.Commit(new NishioForcingNetReportBuilder(coloring, row, col, possibility,
-                                        cs.Cause, cell, Coloring.On, solverData.PreComputer.Graphs.ComplexLinkGraph));
+                                        cs.Cause, cell, Coloring.On, ForcingNetsUtility.GetReportGraph(solverData)));
                                     if (StopOnFirstCommit) return;
                                 }
                                 break;

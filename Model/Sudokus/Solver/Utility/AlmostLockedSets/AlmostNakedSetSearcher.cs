@@ -100,7 +100,7 @@ public class AlmostNakedSetSearcher
     {
         for (int i = start; i < coords.Count; i++)
         {
-            if (!SudokuCellUtility.ShareAUnitWithAll(coords[i], visited)) continue;
+            if (!SudokuUtility.ShareAUnitWithAll(coords[i], visited)) continue;
 
             var inspected = _solverData.PossibilitiesAt(coords[i].Row, coords[i].Column);
             if(inspected.Count == 0 || (current.Count != 0 && !current.ContainsAny(inspected))) continue;

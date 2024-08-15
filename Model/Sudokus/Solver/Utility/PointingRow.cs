@@ -63,25 +63,13 @@ public class PointingRow : ISudokuElement
 
     public override int GetHashCode()
     {
-        int coordsHash = 0;
-        foreach (var col in _pos)
-        {
-            coordsHash ^= col.GetHashCode();
-        }
-
-        return HashCode.Combine(Possibility, Row, coordsHash);
+        return HashCode.Combine(Possibility, Row, _pos.GetHashCode());
     }
 
     public override bool Equals(object? obj)
     {
         if (obj is not PointingRow pr) return false;
-        if (pr.Possibility != Possibility || pr.Row != Row || _pos.Count != pr._pos.Count) return false;
-        foreach (var col in _pos)
-        {
-            if (!pr._pos.Contains(col)) return false;
-        }
-
-        return true;
+        return pr.Possibility == Possibility && pr.Row == Row && pr._pos.Equals(_pos);
     }
 
     public override string ToString()

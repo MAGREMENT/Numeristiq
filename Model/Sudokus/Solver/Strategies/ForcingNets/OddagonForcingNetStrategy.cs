@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
@@ -67,7 +68,7 @@ public class OddagonForcingNetStrategy : SudokuStrategy
                     if (solverData.ChangeBuffer.NeedCommit())
                     {
                         solverData.ChangeBuffer.Commit(new OddagonForcingNetReportBuilder(colorings, element.Value, oddagon,
-                            solverData.PreComputer.Graphs.ComplexLinkGraph, cp));
+                            ForcingNetsUtility.GetReportGraph(solverData), cp));
                         if (StopOnFirstCommit) return;
                     }
                 }

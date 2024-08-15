@@ -29,17 +29,17 @@ public readonly struct CellPossibility : ISudokuElement, ITectonicElement
     
     public bool ShareAUnit(CellPossibility coord)
     {
-        return SudokuCellUtility.ShareAUnit(Row, Column, coord.Row, coord.Column);
+        return SudokuUtility.ShareAUnit(Row, Column, coord.Row, coord.Column);
     }
     
     public bool ShareAUnit(Cell coord)
     {
-        return SudokuCellUtility.ShareAUnit(Row, Column, coord.Row, coord.Column);
+        return SudokuUtility.ShareAUnit(Row, Column, coord.Row, coord.Column);
     }
 
     public IEnumerable<Cell> SharedSeenCells(CellPossibility coord)
     {
-        return SudokuCellUtility.SharedSeenCells(Row, Column, coord.Row, coord.Column);
+        return SudokuUtility.SharedSeenCells(Row, Column, coord.Row, coord.Column);
     }
 
     public override int GetHashCode()

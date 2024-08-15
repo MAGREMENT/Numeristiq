@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.PossibilitySets;
@@ -122,7 +123,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
             cells.AddRange(first.EnumerateCells(possibility));
             cells.AddRange(last.EnumerateCells(possibility));
 
-            foreach (var ssc in SudokuCellUtility.SharedSeenCells(cells))
+            foreach (var ssc in SudokuUtility.SharedSeenCells(cells))
             {
                 solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, ssc);
             }

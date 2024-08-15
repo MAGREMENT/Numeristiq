@@ -3,7 +3,6 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -21,9 +20,6 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
     
     public override void Apply(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.UnitStrongLink,
-            SudokuConstructRuleBank.CellWeakLink, SudokuConstructRuleBank.UnitWeakLink);
-        
         for (int mini = 0; mini < 3; mini++)
         {
             if (Search(solverData, mini, Unit.Row)) return;
@@ -114,7 +110,6 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
     {
         var pNotInPattern = new List<CellPossibility>();
         var cNotInPattern = new List<Cell>();
-        var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
         
         foreach (var cell in cells)
         {
@@ -147,9 +142,12 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
         {
             foreach (var p in poss.EnumeratePossibilities())
             {
+                if (!solverData.PossibilitiesAt(cNotInPattern[0]).Contains(p)
+                    || !solverData.PossibilitiesAt(cNotInPattern[1]).Contains(p)) continue;
+                
                 var cp1 = new CellPossibility(cNotInPattern[0], p);
                 var cp2 = new CellPossibility(cNotInPattern[1], p);
-                if (!graph.AreNeighbors(cp1, cp2, LinkStrength.Strong)) continue;
+                if (!SudokuUtility.AreStronglyLinked(solverData, cp1, cp2)) continue;
                 
                 foreach (var elimination in poss.EnumeratePossibilities())
                 {
@@ -157,22 +155,14 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
                     solverData.ChangeBuffer.ProposePossibilityRemoval(elimination, cNotInPattern[0]);
                     solverData.ChangeBuffer.ProposePossibilityRemoval(elimination, cNotInPattern[1]);
                 }
+
+
             }
         }
-            
-        foreach (var target in graph.Neighbors(pNotInPattern[0]))
-        {
-            bool ok = true;
-            for (int i = 1; i < pNotInPattern.Count; i++)
-            {
-                if (!graph.AreNeighbors(pNotInPattern[i], target))
-                {
-                    ok = false;
-                    break;
-                }
-            }
 
-            if (ok) solverData.ChangeBuffer.ProposePossibilityRemoval(target);
+        foreach (var target in SudokuUtility.SharedSeenExistingPossibilities(solverData, pNotInPattern))
+        {
+            solverData.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
 

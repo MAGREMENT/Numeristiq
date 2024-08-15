@@ -8,6 +8,12 @@ namespace Model.Tectonics.Solver.Utility.ConstructRules;
 
 public class NeighborLinkConstructRule : IConstructRule<ITectonicSolverData, ITectonicElement>
 {
+    public static NeighborLinkConstructRule Instance { get; } = new();
+    
+    private NeighborLinkConstructRule() {}
+    
+    public int ID { get; } = UniqueID.Next();
+    
     public void Apply(ILinkGraph<ITectonicElement> linkGraph, ITectonicSolverData solverData)
     {
         Dictionary<IZone, List<Cell>> zoneBuffer = new();
@@ -66,28 +72,6 @@ public class NeighborLinkConstructRule : IConstructRule<ITectonicSolverData, ITe
                     }
                     
                     zoneBuffer.Clear();
-                }
-            }
-        }
-    }
-
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, ITectonicSolverData solverData)
-    {
-        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
-        {
-            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
-            {
-                var poss = solverData.PossibilitiesAt(row, col);
-                if (poss.Count == 0) continue;
-
-                foreach (var p in poss.EnumeratePossibilities())
-                {
-                    foreach (var cell in TectonicUtility.GetNeighbors(row, col,
-                                 solverData.Tectonic.RowCount, solverData.Tectonic.ColumnCount))
-                    {
-                        if (solverData.PossibilitiesAt(cell).Contains(p)) linkGraph.Add(
-                            new CellPossibility(row, col, p), new CellPossibility(cell, p), LinkStrength.Weak);
-                    }
                 }
             }
         }

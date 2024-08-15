@@ -1,5 +1,6 @@
 ﻿using Model.Core;
-using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Core.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.AlternatingInference.Types;
@@ -15,8 +16,9 @@ public class XType : IAlternatingInferenceType<CellPossibility>
     public SudokuStrategy? Strategy { get; set; }
     public ILinkGraph<CellPossibility> GetGraph(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
-        return solverData.PreComputer.Graphs.SimpleLinkGraph;
+        solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructRule.Instance,
+            UnitWeakLinkConstructRule.Instance);
+        return solverData.PreComputer.SimpleGraph.Graph;
     }
 
     public bool ProcessFullLoop(ISudokuSolverData solverData, Loop<CellPossibility, LinkStrength> loop)

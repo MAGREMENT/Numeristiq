@@ -1,18 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Model.Utility.Collections;
 
-namespace Model.Sudokus.Solver.Utility.Graphs;
+namespace Model.Core.Graphs;
 
-public class DictionaryLinkGraph<T> : ILinkGraph<T> where T : notnull
+public abstract class DictionaryLinkGraph<T> : ILinkGraph<T> where T : notnull
 {
-    private readonly Dictionary<T, HashSet<T>[]> _links = new();
+    private readonly Dictionary<T, IContainingCollection<T>[]> _links = new();
+
+    protected abstract IContainingCollection<T> CreateCollection();
 
     public void Add(T from, T to, LinkStrength strength, LinkType type = LinkType.BiDirectional)
     {
         if (!_links.TryGetValue(from, out var resume))
         {
-            resume = new[] { new HashSet<T>(), new HashSet<T>() };
+            resume = new[] { CreateCollection(), CreateCollection() };
             _links[from] = resume;
         }
         resume[(int)strength - 1].Add(to);
@@ -21,7 +24,7 @@ public class DictionaryLinkGraph<T> : ILinkGraph<T> where T : notnull
         
         if (!_links.TryGetValue(to, out resume))
         {
-            resume = new[] { new HashSet<T>(), new HashSet<T>() };
+            resume = new[] { CreateCollection(), CreateCollection() };
             _links[to] = resume;
         }
         resume[(int)strength - 1].Add(from);
@@ -59,6 +62,19 @@ public class DictionaryLinkGraph<T> : ILinkGraph<T> where T : notnull
                                                             resume[1].Contains(to));
     }
 
+    public LinkStrength? LinkBetween(T from, T to)
+    {
+        if (!_links.TryGetValue(from, out var sets))
+        {
+            return null;
+        }
+
+        if (sets[0].Contains(to)) return LinkStrength.Strong;
+        if (sets[1].Contains(to)) return LinkStrength.Weak;
+
+        return null;
+    }
+
     public void Clear()
     {
         _links.Clear();
@@ -73,4 +89,14 @@ public class DictionaryLinkGraph<T> : ILinkGraph<T> where T : notnull
     {
         return GetEnumerator();
     }
+}
+
+public class HDictionaryLinkGraph<T> : DictionaryLinkGraph<T> where T : notnull
+{
+    protected override IContainingCollection<T> CreateCollection() => new ContainingHashSet<T>();
+}
+
+public class ULDictionaryLinkGraph<T> : DictionaryLinkGraph<T> where T : notnull
+{
+    protected override IContainingCollection<T> CreateCollection() => new UniqueList<T>();
 }

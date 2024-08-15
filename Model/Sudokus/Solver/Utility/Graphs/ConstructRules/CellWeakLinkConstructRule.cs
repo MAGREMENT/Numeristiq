@@ -3,8 +3,15 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class CellWeakLinkConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement>
+public class CellWeakLinkConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement>,
+    IConstructRule<ISudokuSolverData, CellPossibility>
 {
+    public static CellWeakLinkConstructRule Instance { get; } = new();
+    
+    private CellWeakLinkConstructRule() {}
+    
+    public int ID { get; } = UniqueID.Next();
+    
     public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
     {
         for (int row = 0; row < 9; row++)

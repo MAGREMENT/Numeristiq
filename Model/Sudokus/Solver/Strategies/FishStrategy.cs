@@ -177,7 +177,7 @@ public class FishStrategy : SudokuStrategy
         }
         else
         {
-            foreach (var ssc in SudokuCellUtility.SharedSeenCells(_fins))
+            foreach (var ssc in SudokuUtility.SharedSeenCells(_fins))
             {
                 if (!diff.Contains(ssc)) continue;
                     
@@ -212,7 +212,7 @@ public class FishStrategy : SudokuStrategy
             bool ok = true;
             foreach (var fin in _fins)
             {
-                if (!SudokuCellUtility.ShareAUnit(fin, cell))
+                if (!SudokuUtility.ShareAUnit(fin, cell))
                 {
                     ok = false;
                     break;

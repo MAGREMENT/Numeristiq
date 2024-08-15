@@ -2,9 +2,11 @@
 using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -20,14 +22,14 @@ public class XYZRingStrategy : SudokuStrategy
 
     public override void Apply(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.Graphs.ConstructComplex(
-            SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink, SudokuConstructRuleBank.PointingPossibilities);
+        solverData.PreComputer.ComplexGraph.Construct(UnitStrongLinkConstructRule.Instance,
+            UnitWeakLinkConstructRule.Instance, PointingPossibilitiesConstructRule.Instance);
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
                 var poss = solverData.PossibilitiesAt(row, col);
-                if (poss.Count == 3 && SearchBaseWing(solverData, solverData.PreComputer.Graphs.ComplexLinkGraph,
+                if (poss.Count == 3 && SearchBaseWing(solverData, solverData.PreComputer.ComplexGraph.Graph,
                         new Cell(row, col), poss)) return;
             }
         }
@@ -101,7 +103,7 @@ public class XYZRingStrategy : SudokuStrategy
         List<Cell> buffer = new() { hingeRow, hinge };
         buffer.AddRange(rowFriend.EnumerateCell());
 
-        foreach (var cell in SudokuCellUtility.SharedSeenCells(buffer))
+        foreach (var cell in SudokuUtility.SharedSeenCells(buffer))
         {
             if (cell == hinge || cell == hingeCol ||
                 columnFriend.Contains(cell)) continue;
@@ -114,7 +116,7 @@ public class XYZRingStrategy : SudokuStrategy
         buffer.Add(hinge);
         buffer.AddRange(columnFriend.EnumerateCell());
         
-        foreach (var cell in SudokuCellUtility.SharedSeenCells(buffer))
+        foreach (var cell in SudokuUtility.SharedSeenCells(buffer))
         {
             if (cell == hinge || cell == hingeRow ||
                 rowFriend.Contains(cell)) continue;

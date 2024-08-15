@@ -107,7 +107,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
 
             IReadOnlyList<CellPossibility> targets = outPossibilities.Count == 1 
                 ? outPossibilities 
-                : SudokuCellUtility.SharedSeenExistingPossibilities(solverData, outPossibilities).ToArray();
+                : SudokuUtility.SharedSeenExistingPossibilities(solverData, outPossibilities).ToArray();
             if (targets.Count == 0 || IsPatternValid(perfect, combination, poss.Count))
             {
                 outPossibilities.Clear();

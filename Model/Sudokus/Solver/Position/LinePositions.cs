@@ -14,6 +14,11 @@ public class LinePositions : IReadOnlyLinePositions
 
     public LinePositions(){}
 
+    public LinePositions(params int[] values)
+    {
+        foreach (var v in values) Add(v);
+    }
+    
     private LinePositions(int pos, int count)
     {
         _pos = pos;

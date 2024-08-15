@@ -13,6 +13,7 @@ using DesktopApplication.View.Tectonics.Controls;
 using DesktopApplication.View.Utility;
 using Model.Core.Changes;
 using Model.Core.Explanation;
+using Model.Core.Graphs;
 using Model.Sudokus.Player;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
@@ -1398,7 +1399,7 @@ public class TectonicGridDrawableComponent : IDrawableComponent<ITectonicDrawing
     }
 }
 
-public class KakuroGridDrawableComponent : IDrawableComponent<IKakuroDrawingData> //TODO fix amount cell lines diagonal
+public class KakuroGridDrawableComponent : IDrawableComponent<IKakuroDrawingData>
 { 
     public void Draw(DrawingContext context, IKakuroDrawingData data)
     {
@@ -1422,7 +1423,7 @@ public class KakuroGridDrawableComponent : IDrawableComponent<IKakuroDrawingData
                 if (cell.Column <= 0 || cell.Row < 0 || !data.IsPresent(cell.Row, cell.Column - 1))
                 {
                     xTl -= data.AmountHeight;
-                    if (data.GetAmount(cell.Row, cell.Column - 1, Orientation.Vertical) != -1)
+                    if (data.GetAmount(cell.Row, cell.Column - 1, Orientation.Vertical) == -1)
                     {
                         var xBl = data.GetLeftOfCell(cell.Column) - half;
                         context.DrawLine(pen, new Point(xTl, yTr), new Point(xBl, yBr));

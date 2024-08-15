@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Strategies.AlternatingInference;
 using Model.Sudokus.Solver.Utility;
@@ -58,7 +59,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer<NumericChange>
         Queue<NRCZTChain> queue = new();
 
         blockStartVisited.Add(start);
-        foreach (var to in SudokuCellUtility.DefaultStrongLinks(solverData, start))
+        foreach (var to in SudokuUtility.GetStrongLinks(solverData, start))
         {
             queue.Enqueue(new NRCZTChain(solverData, start, to));
         }
@@ -67,7 +68,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer<NumericChange>
         {
             var current = queue.Dequeue();
 
-            foreach (var from in SudokuCellUtility.SeenExistingPossibilities(solverData,  current.Last()))
+            foreach (var from in SudokuUtility.SeenExistingPossibilities(solverData,  current.Last()))
             {
                 if (blockStartVisited.Contains(from) || current.Contains(from)) continue;
                 
@@ -176,7 +177,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer<NumericChange>
         var last = chain.Last();
         foreach (var target in chain.PossibleTargets)
         {
-            if (SudokuCellUtility.AreLinked(target, last)) solverData.ChangeBuffer.ProposePossibilityRemoval(target);
+            if (SudokuUtility.AreLinked(target, last)) solverData.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
         if (!solverData.ChangeBuffer.NeedCommit()) return false;

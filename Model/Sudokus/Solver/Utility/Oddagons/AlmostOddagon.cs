@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Model.Core.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.Collections;
@@ -19,7 +20,7 @@ public class AlmostOddagon
 
     public override string ToString()
     {
-        return $"{Loop} with guardians {Guardians.ToStringSequence(", ")}";
+        return $"{Loop.ToLinkLoopString()} with guardians {Guardians.ToStringSequence(", ")}";
     }
 
     public override int GetHashCode()

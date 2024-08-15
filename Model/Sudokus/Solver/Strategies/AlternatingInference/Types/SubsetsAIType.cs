@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
+using Model.Core.Graphs;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -19,10 +21,10 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
     public SudokuStrategy? Strategy { get; set; }
     public ILinkGraph<ISudokuElement> GetGraph(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.Graphs.ConstructComplex(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
-            SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink, SudokuConstructRuleBank.PointingPossibilities,
-            SudokuConstructRuleBank.AlmostNakedPossibilities, SudokuConstructRuleBank.JuniorExocet);
-        return solverData.PreComputer.Graphs.ComplexLinkGraph;
+        solverData.PreComputer.ComplexGraph.Construct(CellStrongLinkConstructRule.Instance, CellWeakLinkConstructRule.Instance,
+            UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
+            PointingPossibilitiesConstructRule.Instance, AlmostNakedSetConstructRule.Instance);
+        return solverData.PreComputer.ComplexGraph.Graph;
     }
 
     public bool ProcessFullLoop(ISudokuSolverData solverData, Loop<ISudokuElement, LinkStrength> loop)
@@ -69,7 +71,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
                 if (cp.Possibilities.Contains(possibility)) cells.Add(cp.Cell);
             }
 
-            foreach (var cell in SudokuCellUtility.SharedSeenCells(cells))
+            foreach (var cell in SudokuUtility.SharedSeenCells(cells))
             {
                 view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
             }
@@ -88,7 +90,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
                     if (cp.Possibilities.Contains(possibility)) cells.Add(cp.Cell);
                 }
                 
-                foreach (var cell in SudokuCellUtility.SharedSeenCells(cells))
+                foreach (var cell in SudokuUtility.SharedSeenCells(cells))
                 {
                     view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
                 }

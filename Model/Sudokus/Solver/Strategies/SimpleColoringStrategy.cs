@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies;
@@ -19,11 +21,10 @@ public class SimpleColoringStrategy : SudokuStrategy
 
     public override void Apply(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink);
-        var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
+        solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructRule.Instance);
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
-                     ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColorWithoutRules, graph,
+                     ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColorWithoutRules, solverData.PreComputer.SimpleGraph.Graph,
                      Coloring.On, !solverData.FastMode))
         {
             if(coloredVertices.Count <= 1) continue;

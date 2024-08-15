@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;

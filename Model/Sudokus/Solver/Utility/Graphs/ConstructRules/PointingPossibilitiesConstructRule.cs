@@ -7,6 +7,12 @@ namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
 public class PointingPossibilitiesConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement>
 {
+    public static PointingPossibilitiesConstructRule Instance { get; } = new();
+    
+    private PointingPossibilitiesConstructRule() {}
+    
+    public int ID { get; } = UniqueID.Next();
+    
     public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
     {
         for (int n = 1; n <= 9; n++)
@@ -21,11 +27,6 @@ public class PointingPossibilitiesConstructRule : IConstructRule<ISudokuSolverDa
                 }
             }
         }
-    }
-
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuSolverData solverData)
-    {
-        
     }
 
     private void SearchForPointingInMiniGrid(ISudokuSolverData solverData, ILinkGraph<ISudokuElement> linkGraph,

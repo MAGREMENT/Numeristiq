@@ -32,7 +32,7 @@ public class SeniorExocet : DoubleTargetExocet
                 if (cell.Row == Target1.Row || cell.Row == Target2.Row) continue;
             }
             else if (cell.Column == Target1.Column || cell.Column == Target2.Column) continue;
-            if(!SudokuCellUtility.ShareAUnit(cell, Base1)) list.Add(cell);
+            if(!SudokuUtility.ShareAUnit(cell, Base1)) list.Add(cell);
         }
         
         foreach (var cell in Cross1.EnumerateCells())
@@ -42,7 +42,7 @@ public class SeniorExocet : DoubleTargetExocet
                 if (cell.Row == Target1.Row || cell.Row == Target2.Row) continue;
             }
             else if (cell.Column == Target1.Column || cell.Column == Target2.Column) continue;
-            if(!SudokuCellUtility.ShareAUnit(cell, Base1)) list.Add(cell);
+            if(!SudokuUtility.ShareAUnit(cell, Base1)) list.Add(cell);
         }
         
         foreach (var cell in Cross2.EnumerateCells())
@@ -52,7 +52,7 @@ public class SeniorExocet : DoubleTargetExocet
                 if (cell.Row == Target1.Row || cell.Row == Target2.Row) continue;
             }
             else if (cell.Column == Target1.Column || cell.Column == Target2.Column) continue;
-            if(!SudokuCellUtility.ShareAUnit(cell, Base1)) list.Add(cell);
+            if(!SudokuUtility.ShareAUnit(cell, Base1)) list.Add(cell);
         }
 
         return list;

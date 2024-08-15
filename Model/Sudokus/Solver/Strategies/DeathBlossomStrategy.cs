@@ -52,7 +52,7 @@ public class DeathBlossomStrategy : SudokuStrategy
                         foreach (var cell in als.EnumerateCells())
                         {
                             if (solverData.PossibilitiesAt(cell).Contains(possibilityInCommon) &&
-                                !SudokuCellUtility.ShareAUnit(cell, current))
+                                !SudokuUtility.ShareAUnit(cell, current))
                             {
                                 ok = false;
                                 break;
@@ -85,7 +85,7 @@ public class DeathBlossomStrategy : SudokuStrategy
                                 if (solverData.PossibilitiesAt(cell).Contains(alsPossibility)) buffer.Add(cell);
                             }
 
-                            foreach (var seenCell in SudokuCellUtility.SharedSeenCells(buffer))
+                            foreach (var seenCell in SudokuUtility.SharedSeenCells(buffer))
                             {
                                 if (seenCell == current || solverData.Sudoku[seenCell.Row, seenCell.Column] != 0) continue;
 
@@ -134,7 +134,7 @@ public class DeathBlossomStrategy : SudokuStrategy
             }
         }
 
-        var allStems = SudokuCellUtility.SharedSeenCells(buffer).ToArray();
+        var allStems = SudokuUtility.SharedSeenCells(buffer).ToArray();
         if (allStems.Length > 1)
         {
             foreach (var cell in allStems)

@@ -13,6 +13,7 @@ namespace DesktopApplication.View.Kakuros.Pages;
 public partial class SolvePage : IKakuroSolveView
 {
     private readonly KakuroSolvePresenter _presenter;
+    private readonly bool _initialized;
 
     public IKakuroSolverDrawer Drawer => (KakuroBoard)ContentControl.OptimizableContent!;
 
@@ -21,7 +22,7 @@ public partial class SolvePage : IKakuroSolveView
         InitializeComponent();
 
         _presenter = PresenterFactory.Instance.Initialize(this);
-        DefaultMode.IsChecked = true;
+        _initialized = true;
     }
     
     public void SetKakuroAsString(string s)
@@ -91,12 +92,12 @@ public partial class SolvePage : IKakuroSolveView
 
     private void ModeToDefault(object sender, RoutedEventArgs e)
     {
-        _presenter.SetEditMode(EditMode.Default);
+        if(_initialized) _presenter.SetEditMode(EditMode.Default);
     }
 
     private void ModeToEdit(object sender, RoutedEventArgs e)
     {
-        _presenter.SetEditMode(EditMode.Edit);
+        if(_initialized) _presenter.SetEditMode(EditMode.Edit);
     }
 
     private void CreateDefault(object sender, MouseButtonEventArgs e)

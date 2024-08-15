@@ -8,7 +8,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Utility;
 
-public static class SudokuCellUtility
+public static class SudokuUtility
 {
     private static readonly ISharedSeenCellSearcher Searcher = new InCommonFindSearcher();
 
@@ -284,13 +284,6 @@ public static class SudokuCellUtility
     {
         return (row1 / 3 != row2 / 3) ^ (col1 / 3 != col2 / 3);
     }
-    
-    public static bool AreLinked(CellPossibility first, CellPossibility second)
-    {
-        if (first == second) return false;
-        return (first.Row == second.Row && first.Column == second.Column) ||
-               (ShareAUnit(first.Row, first.Column, second.Row, second.Column) && first.Possibility == second.Possibility);
-    }
 
     public static IEnumerable<CellPossibility> SeenExistingPossibilities(ISudokuSolverData solverData, CellPossibility cp)
     {
@@ -359,8 +352,15 @@ public static class SudokuCellUtility
             if(ok) yield return cp;
         }
     }
+    
+    public static bool AreLinked(CellPossibility first, CellPossibility second)
+    {
+        if (first == second) return false;
+        return (first.Row == second.Row && first.Column == second.Column) ||
+               (ShareAUnit(first.Row, first.Column, second.Row, second.Column) && first.Possibility == second.Possibility);
+    }
 
-    public static IEnumerable<CellPossibility> DefaultStrongLinks(ISudokuSolverData solverData, CellPossibility cp)
+    public static IEnumerable<CellPossibility> GetStrongLinks(ISudokuSolverData solverData, CellPossibility cp)
     {
         var poss = solverData.PossibilitiesAt(cp.Row, cp.Column);
         if (poss.Count == 2) yield return new CellPossibility(cp.Row, cp.Column, poss.FirstPossibility(cp.Possibility));

@@ -2,9 +2,11 @@
 using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;
 using Model.Utility.Collections;
@@ -32,10 +34,10 @@ public class BlossomLoopStrategy : SudokuStrategy
     
     public override void Apply(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.Graphs.ConstructComplex(SudokuConstructRuleBank.PointingPossibilities,
-            SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
-            SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
-        var graph = solverData.PreComputer.Graphs.ComplexLinkGraph;
+        solverData.PreComputer.ComplexGraph.Construct(CellStrongLinkConstructRule.Instance, CellWeakLinkConstructRule.Instance,
+            UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
+            PointingPossibilitiesConstructRule.Instance);
+        var graph = solverData.PreComputer.ComplexGraph.Graph;
 
         foreach (var cps in _type.Candidates(solverData))
         {
@@ -142,7 +144,7 @@ public class BlossomLoopStrategy : SudokuStrategy
                     }
                 }
 
-                foreach (var ssc in SudokuCellUtility.SharedSeenCells(c))
+                foreach (var ssc in SudokuUtility.SharedSeenCells(c))
                 {
                     solverData.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
                 }
@@ -188,7 +190,7 @@ public class BlossomLoopStrategy : SudokuStrategy
                 if (cp.Possibilities.Contains(possibility)) cells.Add(cp.Cell);
             }
 
-            foreach (var cell in SudokuCellUtility.SharedSeenCells(cells))
+            foreach (var cell in SudokuUtility.SharedSeenCells(cells))
             {
                 var cp = new CellPossibility(cell.Row, cell.Column, possibility);
                 if (!nope.Contains(cp)) solverData.ChangeBuffer.ProposePossibilityRemoval(cp);

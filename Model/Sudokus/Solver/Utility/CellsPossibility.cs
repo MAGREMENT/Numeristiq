@@ -13,7 +13,7 @@ public class CellsPossibility : ISudokuElement
     private readonly int _possibility;
     private readonly Cell[] _cells;
 
-    public CellsPossibility(int possibility, Cell[] cells)
+    public CellsPossibility(int possibility, params Cell[] cells)
     {
         _possibility = possibility;
         _cells = cells;
@@ -109,7 +109,7 @@ public class CellsPossibility : ISudokuElement
             hash ^= c.GetHashCode();
         }
 
-        return HashCode.Combine(_possibility, hash);
+        return HashCode.Combine(_possibility, _cells.Length, hash);
     }
 
     public override string ToString()

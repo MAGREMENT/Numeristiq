@@ -4,13 +4,14 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class XYChainSpecificConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement>
+public class XYChainSpecificConstructRule : IConstructRule<ISudokuSolverData, CellPossibility>
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
-    {
-        
-    }
-
+    public static XYChainSpecificConstructRule Instance { get; } = new();
+    
+    private XYChainSpecificConstructRule() {}
+    
+    public int ID { get; } = UniqueID.Next();
+    
     public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuSolverData solverData)
     {
         for (int number = 1; number <= 9; number++)

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
@@ -62,7 +63,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
                 if (solverData.ChangeBuffer.NeedCommit())
                 {
                     solverData.ChangeBuffer.Commit(new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value, 
-                        possOn, other, solverData.PreComputer.Graphs.ComplexLinkGraph));
+                        possOn, other, ForcingNetsUtility.GetReportGraph(solverData)));
                     if (StopOnFirstCommit) return true;
                 }
             }
@@ -78,7 +79,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
                     if (solverData.ChangeBuffer.NeedCommit())
                     {
                         solverData.ChangeBuffer.Commit(new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
-                            possOff, off.Value, solverData.PreComputer.Graphs.ComplexLinkGraph));
+                            possOff, off.Value, ForcingNetsUtility.GetReportGraph(solverData)));
                         if (StopOnFirstCommit) return true;
                     }
                 }
@@ -92,7 +93,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
                     if (solverData.ChangeBuffer.NeedCommit())
                     {
                         solverData.ChangeBuffer.Commit(new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
-                            possOff, off.Value, solverData.PreComputer.Graphs.ComplexLinkGraph));
+                            possOff, off.Value, ForcingNetsUtility.GetReportGraph(solverData)));
                         if (StopOnFirstCommit) return true;
                     }
                 }

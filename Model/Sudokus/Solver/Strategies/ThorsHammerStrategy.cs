@@ -195,7 +195,7 @@ public class ThorsHammerStrategy : SudokuStrategy
         if (notInPattern.Count == 1) solverData.ChangeBuffer.ProposeSolutionAddition(notInPattern[0]);
         else
         {
-            foreach (var target in SudokuCellUtility.SharedSeenExistingPossibilities(solverData, notInPattern))
+            foreach (var target in SudokuUtility.SharedSeenExistingPossibilities(solverData, notInPattern))
             {
                 solverData.ChangeBuffer.ProposePossibilityRemoval(target);
             }

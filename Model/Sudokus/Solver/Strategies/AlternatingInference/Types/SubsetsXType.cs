@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
+using Model.Core.Graphs;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -19,9 +21,9 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
     
     public ILinkGraph<ISudokuElement> GetGraph(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.Graphs.ConstructComplex(SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink,
-            SudokuConstructRuleBank.PointingPossibilities);
-        return solverData.PreComputer.Graphs.ComplexLinkGraph;
+        solverData.PreComputer.ComplexGraph.Construct(UnitStrongLinkConstructRule.Instance,
+            UnitWeakLinkConstructRule.Instance, PointingPossibilitiesConstructRule.Instance);
+        return solverData.PreComputer.ComplexGraph.Graph;
     }
 
     public bool ProcessFullLoop(ISudokuSolverData solverData, Loop<ISudokuElement, LinkStrength> loop)
@@ -40,7 +42,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
         cells.AddRange(two.EnumerateCell());
 
         var possibility = one.EveryPossibilities().FirstPossibility();
-        foreach (var cell in SudokuCellUtility.SharedSeenCells(cells))
+        foreach (var cell in SudokuUtility.SharedSeenCells(cells))
         {
             view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
         }

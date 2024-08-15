@@ -1,11 +1,8 @@
-﻿using Model.Sudokus.Solver.Utility.Graphs;
-using Model.Utility;
+﻿namespace Model.Core.Graphs;
 
-namespace Model.Core.Graphs;
-
-public interface IConstructRule<in TDataSource, TComplexType> where TComplexType : notnull
+public interface IConstructRule<in TDataSource, TType> where TType : notnull
 {
-    void Apply(ILinkGraph<TComplexType> linkGraph, TDataSource strategyUser);
+    int ID { get; }
     
-    void Apply(ILinkGraph<CellPossibility> linkGraph, TDataSource strategyUser);
+    void Apply(ILinkGraph<TType> linkGraph, TDataSource strategyUser);
 }

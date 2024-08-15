@@ -20,7 +20,7 @@ public class BufferedSearcher : ISharedSeenCellSearcher
 
     public IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2)
     {
-        if (row1 == row2 && col1 == col2) return SudokuCellUtility.SeenCells(new Cell(row1, col1));
+        if (row1 == row2 && col1 == col2) return SudokuUtility.SeenCells(new Cell(row1, col1));
 
         var val1 = row1 * 9 + col1;
         var val2 = row2 * 9 + col2;

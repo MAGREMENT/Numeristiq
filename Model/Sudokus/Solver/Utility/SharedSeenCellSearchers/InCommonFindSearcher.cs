@@ -263,7 +263,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
                     yield return new CellPossibility(row1, col1, p);
                 }
             }
-            else if(SudokuCellUtility.ShareAUnit(row1, col1, row2, col2))
+            else if(SudokuUtility.ShareAUnit(row1, col1, row2, col2))
             {
                 if(solverData.PossibilitiesAt(row1, col1).Contains(pos2)) yield return new CellPossibility(row1, col1, pos2);
                 if(solverData.PossibilitiesAt(row2, col2).Contains(pos1)) yield return new CellPossibility(row2, col2, pos1);

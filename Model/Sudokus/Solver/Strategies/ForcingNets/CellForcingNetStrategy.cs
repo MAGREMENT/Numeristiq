@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
@@ -70,7 +71,7 @@ public class CellForcingNetStrategy : SudokuStrategy
                     if (solverData.ChangeBuffer.NeedCommit())
                     {
                         solverData.ChangeBuffer.Commit(new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.On,
-                            solverData.PreComputer.Graphs.ComplexLinkGraph));
+                            ForcingNetsUtility.GetReportGraph(solverData)));
                         if (StopOnFirstCommit) return true;
                     }
                 }
@@ -80,7 +81,7 @@ public class CellForcingNetStrategy : SudokuStrategy
                     if (solverData.ChangeBuffer.NeedCommit())
                     {
                         solverData.ChangeBuffer.Commit(new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.Off,
-                            solverData.PreComputer.Graphs.ComplexLinkGraph));
+                            ForcingNetsUtility.GetReportGraph(solverData)));
                         if (StopOnFirstCommit) return true;
                     }
                 }

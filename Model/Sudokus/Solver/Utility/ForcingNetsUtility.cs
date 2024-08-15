@@ -2,9 +2,11 @@
 using System.Text;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -12,6 +14,14 @@ namespace Model.Sudokus.Solver.Utility;
 
 public static class ForcingNetsUtility
 {
+    public static ILinkGraph<ISudokuElement> GetReportGraph(ISudokuSolverData data)
+    {
+        data.PreComputer.ComplexGraph.Construct(CellStrongLinkConstructRule.Instance, CellWeakLinkConstructRule.Instance,
+            UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
+            PointingPossibilitiesConstructRule.Instance, AlmostNakedSetConstructRule.Instance);
+        return data.PreComputer.ComplexGraph.Graph;
+    }
+    
     public static void HighlightAllPaths(ISudokuHighlighter lighter, List<Chain<ISudokuElement, LinkStrength>> paths,
         Coloring startColoring)
     {

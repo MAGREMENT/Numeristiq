@@ -58,7 +58,7 @@ public class BandUniquenessStrategy : SudokuStrategy
                     if (buffer.Count == 1) solverData.ChangeBuffer.ProposeSolutionAddition(buffer[0]);
                     else
                     {
-                        foreach (var cp in SudokuCellUtility.SharedSeenExistingPossibilities(solverData, buffer))
+                        foreach (var cp in SudokuUtility.SharedSeenExistingPossibilities(solverData, buffer))
                         {
                             solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
                         }
@@ -105,7 +105,7 @@ public class BandUniquenessStrategy : SudokuStrategy
                     if (buffer.Count == 1) solverData.ChangeBuffer.ProposeSolutionAddition(buffer[0]);
                     else
                     {
-                        foreach (var cp in SudokuCellUtility.SharedSeenExistingPossibilities(solverData, buffer))
+                        foreach (var cp in SudokuUtility.SharedSeenExistingPossibilities(solverData, buffer))
                         {
                             solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
                         }
