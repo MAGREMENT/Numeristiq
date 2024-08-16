@@ -14,7 +14,7 @@ public class XType : IAlternatingInferenceType<CellPossibility>
     public string ChainName => OfficialChainName;
     public Difficulty Difficulty => Difficulty.Hard;
     public SudokuStrategy? Strategy { get; set; }
-    public ILinkGraph<CellPossibility> GetGraph(ISudokuSolverData solverData)
+    public IGraph<CellPossibility, LinkStrength> GetGraph(ISudokuSolverData solverData)
     {
         solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructRule.Instance,
             UnitWeakLinkConstructRule.Instance);
@@ -57,7 +57,7 @@ public class XType : IAlternatingInferenceType<CellPossibility>
         return Strategy!.StopOnFirstCommit;
     }
 
-    public bool ProcessChain(ISudokuSolverData solverData, Chain<CellPossibility, LinkStrength> chain, ILinkGraph<CellPossibility> graph)
+    public bool ProcessChain(ISudokuSolverData solverData, Chain<CellPossibility, LinkStrength> chain, IGraph<CellPossibility, LinkStrength> graph)
     {
         return IAlternatingInferenceType<CellPossibility>.ProcessChainWithSimpleGraph(solverData,
             chain, graph, Strategy!);

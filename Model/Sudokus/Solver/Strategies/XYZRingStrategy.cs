@@ -35,7 +35,7 @@ public class XYZRingStrategy : SudokuStrategy
         }
     }
 
-    private bool SearchBaseWing(ISudokuSolverData solverData, ILinkGraph<ISudokuElement> graph, Cell hinge, ReadOnlyBitSet16 possibilities)
+    private bool SearchBaseWing(ISudokuSolverData solverData, IGraph<ISudokuElement, LinkStrength> graph, Cell hinge, ReadOnlyBitSet16 possibilities)
     {
         for (int col = 0; col < 9; col++)
         {
@@ -57,7 +57,7 @@ public class XYZRingStrategy : SudokuStrategy
         return false;
     }
 
-    private bool SearchRing(ISudokuSolverData solverData, ILinkGraph<ISudokuElement> graph, Cell hinge, Cell hingeRow, Cell hingeCol, int poss)
+    private bool SearchRing(ISudokuSolverData solverData, IGraph<ISudokuElement, LinkStrength> graph, Cell hinge, Cell hingeRow, Cell hingeCol, int poss)
     {
         var cph = new CellPossibility(hinge, poss);
         var cpr = new CellPossibility(hingeRow, poss);

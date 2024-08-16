@@ -7,7 +7,7 @@ using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.Implementations;
 
-public class CellPossibilityArrayLinkGraph : ILinkGraph<CellPossibility>
+public class CellPossibilityArrayLinkGraph : IGraph<CellPossibility, LinkStrength>
 {
     private readonly UniqueList<CellPossibility>?[,,,] _cps = new UniqueList<CellPossibility>[9, 9, 9, 2];
     
@@ -36,7 +36,12 @@ public class CellPossibilityArrayLinkGraph : ILinkGraph<CellPossibility>
             yield return n;
         }
     }
- 
+
+    public IEnumerable<EdgeTo<LinkStrength, CellPossibility>> NeighborsWithEdges(CellPossibility from)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public bool AreNeighbors(CellPossibility from, CellPossibility to, LinkStrength strength)
     {
         if (strength == LinkStrength.Any) return AreNeighbors(from, to);
@@ -54,7 +59,7 @@ public class CellPossibilityArrayLinkGraph : ILinkGraph<CellPossibility>
         return l is not null && l.Contains(to);
     }
 
-    public LinkStrength? LinkBetween(CellPossibility from, CellPossibility to)
+    public LinkStrength LinkBetween(CellPossibility from, CellPossibility to)
     {
         var list = _cps[from.Row, from.Column, from.Possibility - 1, 0];
         if (list is not null && list.Contains(to)) return LinkStrength.Strong;
@@ -62,7 +67,7 @@ public class CellPossibilityArrayLinkGraph : ILinkGraph<CellPossibility>
         list = _cps[from.Row, from.Column, from.Possibility - 1, 1];
         if (list is not null && list.Contains(to)) return LinkStrength.Weak;
 
-        return null;
+        return LinkStrength.None;
     }
 
     public void Clear()

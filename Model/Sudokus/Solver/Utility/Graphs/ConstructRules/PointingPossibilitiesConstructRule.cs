@@ -11,9 +11,9 @@ public class PointingPossibilitiesConstructRule : IConstructRule<ISudokuSolverDa
     
     private PointingPossibilitiesConstructRule() {}
     
-    public int ID { get; } = UniqueID.Next();
+    public int ID { get; } = UniqueConstructRuleID.Next();
     
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
+    public void Apply(IGraph<ISudokuElement, LinkStrength> linkGraph, ISudokuSolverData data)
     {
         for (int n = 1; n <= 9; n++)
         {
@@ -21,15 +21,15 @@ public class PointingPossibilitiesConstructRule : IConstructRule<ISudokuSolverDa
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = solverData.MiniGridPositionsAt(miniRow, miniCol, n);
+                    var ppimn = data.MiniGridPositionsAt(miniRow, miniCol, n);
                     if (ppimn.Count < 2) continue;
-                    SearchForPointingInMiniGrid(solverData, linkGraph, ppimn, miniRow, miniCol, n);
+                    SearchForPointingInMiniGrid(data, linkGraph, ppimn, miniRow, miniCol, n);
                 }
             }
         }
     }
 
-    private void SearchForPointingInMiniGrid(ISudokuSolverData solverData, ILinkGraph<ISudokuElement> linkGraph,
+    private void SearchForPointingInMiniGrid(ISudokuSolverData solverData, IGraph<ISudokuElement, LinkStrength> linkGraph,
         IReadOnlyBoxPositions ppimn, int miniRow, int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)

@@ -1,7 +1,7 @@
 ﻿using Model.Repositories;
 using Model.Utility;
 
-namespace Repository;
+namespace Repository.HardCoded;
 
 public class HardCodedThemeRepository : IThemeRepository
 {

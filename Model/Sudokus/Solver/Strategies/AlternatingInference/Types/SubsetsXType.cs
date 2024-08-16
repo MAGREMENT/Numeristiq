@@ -19,7 +19,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
     public Difficulty Difficulty => Difficulty.Hard;
     public SudokuStrategy? Strategy { get; set; }
     
-    public ILinkGraph<ISudokuElement> GetGraph(ISudokuSolverData solverData)
+    public IGraph<ISudokuElement, LinkStrength> GetGraph(ISudokuSolverData solverData)
     {
         solverData.PreComputer.ComplexGraph.Construct(UnitStrongLinkConstructRule.Instance,
             UnitWeakLinkConstructRule.Instance, PointingPossibilitiesConstructRule.Instance);
@@ -70,7 +70,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
         return Strategy!.StopOnFirstCommit;
     }
 
-    public bool ProcessChain(ISudokuSolverData solverData, Chain<ISudokuElement, LinkStrength> chain, ILinkGraph<ISudokuElement> graph)
+    public bool ProcessChain(ISudokuSolverData solverData, Chain<ISudokuElement, LinkStrength> chain, IGraph<ISudokuElement, LinkStrength> graph)
     {
         return IAlternatingInferenceType<ISudokuElement>.ProcessChainWithComplexGraph(solverData,
             chain, graph, Strategy!);

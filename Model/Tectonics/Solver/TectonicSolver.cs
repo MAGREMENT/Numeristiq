@@ -2,6 +2,7 @@
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
+using Model.Core.Graphs.Implementations;
 using Model.Core.Highlighting;
 using Model.Tectonics.Solver.Utility;
 using Model.Utility;

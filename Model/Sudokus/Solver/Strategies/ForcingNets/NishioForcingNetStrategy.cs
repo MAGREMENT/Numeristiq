@@ -222,10 +222,10 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder<NumericChange,
     private readonly ContradictionCause _cause;
     private readonly CellPossibility _lastChecked;
     private readonly Coloring _causeColoring;
-    private readonly ILinkGraph<ISudokuElement> _graph;
+    private readonly IGraph<ISudokuElement, LinkStrength> _graph;
 
     public NishioForcingNetReportBuilder(ColoringDictionary<ISudokuElement> coloring, int row, int col,
-        int possibility, ContradictionCause cause, CellPossibility lastChecked, Coloring causeColoring, ILinkGraph<ISudokuElement> graph)
+        int possibility, ContradictionCause cause, CellPossibility lastChecked, Coloring causeColoring, IGraph<ISudokuElement, LinkStrength> graph)
     {
         _coloring = coloring;
         _row = row;

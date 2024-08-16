@@ -47,7 +47,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     public Difficulty Difficulty { get; }
     SudokuStrategy? Strategy { set; get; }
     
-    ILinkGraph<T> GetGraph(ISudokuSolverData solverData);
+    IGraph<T, LinkStrength> GetGraph(ISudokuSolverData solverData);
 
     bool ProcessFullLoop(ISudokuSolverData solverData, Loop<T, LinkStrength> loop);
 
@@ -55,10 +55,10 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
 
     bool ProcessStrongInferenceLoop(ISudokuSolverData solverData, T inference, Loop<T, LinkStrength> loop);
 
-    bool ProcessChain(ISudokuSolverData solverData, Chain<T, LinkStrength> chain, ILinkGraph<T> graph);
+    bool ProcessChain(ISudokuSolverData solverData, Chain<T, LinkStrength> chain, IGraph<T, LinkStrength> graph);
 
     static bool ProcessChainWithSimpleGraph(ISudokuSolverData solverData, Chain<CellPossibility, LinkStrength> chain,
-        ILinkGraph<CellPossibility> graph, SudokuStrategy strategy)
+        IGraph<CellPossibility, LinkStrength> graph, SudokuStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
 
@@ -75,7 +75,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     }
     
     static bool ProcessChainWithComplexGraph(ISudokuSolverData solverData, Chain<ISudokuElement, LinkStrength> chain,
-        ILinkGraph<ISudokuElement> graph, SudokuStrategy strategy)
+        IGraph<ISudokuElement, LinkStrength> graph, SudokuStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
 

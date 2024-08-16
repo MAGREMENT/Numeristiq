@@ -1,3 +1,4 @@
+using Model.Core.Graphs;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;

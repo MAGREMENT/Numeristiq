@@ -12,7 +12,7 @@ public class OddagonSearchAlgorithmV3 : IOddagonSearchAlgorithm
     public int MaxLength { get; set; }
     public int MaxGuardians { get; set; }
     
-    public List<AlmostOddagon> Search(ISudokuSolverData solverData, ILinkGraph<CellPossibility> graph)
+    public List<AlmostOddagon> Search(ISudokuSolverData solverData, IGraph<CellPossibility, LinkStrength> graph)
     {
         return CycleBasis.Find(graph, (a, b, c, _, _) 
             => ConstructLoop(a, b, c, solverData));

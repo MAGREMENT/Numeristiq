@@ -9,9 +9,9 @@ public class JuniorExocetConstructRule : IConstructRule<ISudokuSolverData, ISudo
     
     private JuniorExocetConstructRule(){}
     
-    public int ID { get; } = UniqueID.Next();
+    public int ID { get; } = UniqueConstructRuleID.Next();
     
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
+    public void Apply(IGraph<ISudokuElement, LinkStrength> linkGraph, ISudokuSolverData data)
     {
         
     }

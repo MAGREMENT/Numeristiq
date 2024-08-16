@@ -2,7 +2,7 @@
 using Model.Binairos.Strategies;
 using Model.Core;
 
-namespace Repository;
+namespace Repository.HardCoded;
 
 public class HardCodedBinairoStrategyRepository : HardCodedStrategyRepository<Strategy<IBinairoSolverData>>
 {
@@ -14,5 +14,6 @@ public class HardCodedBinairoStrategyRepository : HardCodedStrategyRepository<St
         yield return new UniquenessEnforcementStrategy();
         yield return new AdvancedTripleDenialStrategy();
         yield return new AdvancedUniquenessEnforcementStrategy();
+        yield return new AlternatingInferenceChainStrategy();
     }
 }

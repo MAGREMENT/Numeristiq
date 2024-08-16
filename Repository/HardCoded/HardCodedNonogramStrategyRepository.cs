@@ -2,7 +2,7 @@
 using Model.Nonograms.Solver;
 using Model.Nonograms.Solver.Strategies;
 
-namespace Repository;
+namespace Repository.HardCoded;
 
 public class HardCodedNonogramStrategyRepository : HardCodedStrategyRepository<Strategy<INonogramSolverData>>
 { 

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Graphs;
+using Model.Core.Graphs.Implementations;
 using Model.Core.Highlighting;
 using Model.Utility;
 
@@ -13,6 +15,14 @@ public class BinairoSolver : BinaryStrategySolver<Strategy<IBinairoSolverData>, 
     private int _solutionCount;
     
     public override IBinarySolvingState StartState { get; protected set; } = new DefaultBinarySolvingState(0, 0);
+    
+    public ManagedLinkGraph<IBinairoSolverData, CellPossibility> ManagedGraph { get; }
+
+    public BinairoSolver()
+    {
+        ManagedGraph = new ManagedLinkGraph<IBinairoSolverData, CellPossibility>(
+            new HDictionaryLinkGraph<CellPossibility>(), this);
+    }
 
     public void SetBinairo(Binairo binairo)
     {
@@ -39,7 +49,7 @@ public class BinairoSolver : BinaryStrategySolver<Strategy<IBinairoSolverData>, 
 
     protected override void OnChangeMade()
     {
-        
+        ManagedGraph.Clear();
     }
 
     protected override void ApplyStrategy(Strategy<IBinairoSolverData> strategy)
@@ -89,4 +99,5 @@ public interface IBinairoSolverData : IBinarySolvingState
 {
     BinaryChangeBuffer<IBinarySolvingState, IBinairoHighlighter> ChangeBuffer { get; }
     IReadOnlyBinairo Binairo { get; }
+    ManagedLinkGraph<IBinairoSolverData, CellPossibility> ManagedGraph { get; }
 }

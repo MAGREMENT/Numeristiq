@@ -18,7 +18,7 @@ public class AIType : IAlternatingInferenceType<CellPossibility>
     public Difficulty Difficulty => Difficulty.Extreme;
     public SudokuStrategy? Strategy { get; set; }
 
-    public ILinkGraph<CellPossibility> GetGraph(ISudokuSolverData solverData)
+    public IGraph<CellPossibility, LinkStrength> GetGraph(ISudokuSolverData solverData)
     {
         solverData.PreComputer.SimpleGraph.Construct(CellStrongLinkConstructRule.Instance,
             CellWeakLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
@@ -81,7 +81,7 @@ public class AIType : IAlternatingInferenceType<CellPossibility>
         return Strategy!.StopOnFirstCommit;
     }
 
-    public bool ProcessChain(ISudokuSolverData solverData, Chain<CellPossibility, LinkStrength> chain, ILinkGraph<CellPossibility> graph)
+    public bool ProcessChain(ISudokuSolverData solverData, Chain<CellPossibility, LinkStrength> chain, IGraph<CellPossibility, LinkStrength> graph)
     {
         return IAlternatingInferenceType<CellPossibility>.ProcessChainWithSimpleGraph(solverData,
             chain, graph, Strategy!);

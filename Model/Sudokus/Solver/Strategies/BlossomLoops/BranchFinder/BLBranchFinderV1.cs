@@ -11,7 +11,7 @@ namespace Model.Sudokus.Solver.Strategies.BlossomLoops.BranchFinder;
 
 public class BLBranchFinderV1 : IBlossomLoopBranchFinder
 {
-    public BlossomLoopBranch[]? FindShortestBranches(ILinkGraph<ISudokuElement> graph,
+    public BlossomLoopBranch[]? FindShortestBranches(IGraph<ISudokuElement, LinkStrength> graph,
         CellPossibility[] cps, Loop<ISudokuElement, LinkStrength> loop)
     {
         HashSet<ISudokuElement> nope = new(loop.Elements);
@@ -86,7 +86,7 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
     }
 
     private bool CheckTargetOverlap(BlossomLoopBranch[] branches, int cursor, BlossomLoopBranch current, 
-        ILinkGraph<ISudokuElement> graph)
+        IGraph<ISudokuElement, LinkStrength> graph)
     {
         for (int i = 0; i < cursor; i++)
         {

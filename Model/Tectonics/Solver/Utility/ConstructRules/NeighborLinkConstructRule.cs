@@ -12,28 +12,28 @@ public class NeighborLinkConstructRule : IConstructRule<ITectonicSolverData, ITe
     
     private NeighborLinkConstructRule() {}
     
-    public int ID { get; } = UniqueID.Next();
+    public int ID { get; } = UniqueConstructRuleID.Next();
     
-    public void Apply(ILinkGraph<ITectonicElement> linkGraph, ITectonicSolverData solverData)
+    public void Apply(IGraph<ITectonicElement, LinkStrength> linkGraph, ITectonicSolverData data)
     {
         Dictionary<IZone, List<Cell>> zoneBuffer = new();
         
-        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
+        for (int row = 0; row < data.Tectonic.RowCount; row++)
         {
-            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
+            for (int col = 0; col < data.Tectonic.ColumnCount; col++)
             {
-                var poss = solverData.PossibilitiesAt(row, col);
+                var poss = data.PossibilitiesAt(row, col);
                 if (poss.Count == 0) continue;
 
                 foreach (var p in poss.EnumeratePossibilities())
                 {
                     foreach (var cell in TectonicUtility.GetNeighbors(row, col,
-                                 solverData.Tectonic.RowCount, solverData.Tectonic.ColumnCount))
+                                 data.Tectonic.RowCount, data.Tectonic.ColumnCount))
                     {
-                        if (solverData.PossibilitiesAt(cell).Contains(p))
+                        if (data.PossibilitiesAt(cell).Contains(p))
                         {
                             linkGraph.Add(new CellPossibility(row, col, p), new CellPossibility(cell, p), LinkStrength.Weak);
-                            var zone = solverData.Tectonic.GetZone(cell);
+                            var zone = data.Tectonic.GetZone(cell);
                             if (!zoneBuffer.TryGetValue(zone, out var list))
                             {
                                 list = new List<Cell>();
@@ -48,7 +48,7 @@ public class NeighborLinkConstructRule : IConstructRule<ITectonicSolverData, ITe
                     {
                         if (entry.Value.Count <= 1) continue;
                         
-                        var pos = solverData.ZonePositionsFor(entry.Key, p);
+                        var pos = data.ZonePositionsFor(entry.Key, p);
                         if (pos.Count == entry.Value.Count + 1)
                         {
                             Cell? buffer = null;

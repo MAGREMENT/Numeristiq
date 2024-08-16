@@ -54,7 +54,7 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ISudokuE
         return new Chain<T, LinkStrength>(eArray, lArray);
     }
     
-    public (Chain<T, LinkStrength>, bool) GetPathToRootWithGuessedLinksAndMonoCheck(T from, Coloring coloring, ILinkGraph<T> graph)
+    public (Chain<T, LinkStrength>, bool) GetPathToRootWithGuessedLinksAndMonoCheck(T from, Coloring coloring, IGraph<T, LinkStrength> graph)
     {
         List<T> elements = new();
         List<LinkStrength> links = new();
@@ -85,7 +85,7 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ISudokuE
         return (new Chain<T, LinkStrength>(eArray, lArray), isMono);
     }
     
-    public Chain<T, LinkStrength> GetPathToRootWithRealLinks(T from, ILinkGraph<T> graph, bool reverse = true)
+    public Chain<T, LinkStrength> GetPathToRootWithRealLinks(T from, IGraph<T, LinkStrength> graph, bool reverse = true)
     {
         List<T> elements = new();
         List<LinkStrength> links = new();
@@ -115,7 +115,7 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ISudokuE
         return new Chain<T, LinkStrength>(eArray, lArray);
     }
     
-    public (Chain<T, LinkStrength>, bool) GetPathToRootWithRealLinksAndMonoCheck(T from, ILinkGraph<T> graph)
+    public (Chain<T, LinkStrength>, bool) GetPathToRootWithRealLinksAndMonoCheck(T from, IGraph<T, LinkStrength> graph)
     {
         List<T> elements = new();
         List<LinkStrength> links = new();
@@ -159,9 +159,9 @@ public delegate void HandleChildToParentLink<in T>(T child, T parent);
 public interface IReadOnlyColoringHistory<T> where T : ISudokuElement
 {
     public Chain<T, LinkStrength> GetPathToRootWithGuessedLinks(T to, Coloring coloring, bool reverse = true);
-    public Chain<T, LinkStrength> GetPathToRootWithRealLinks(T from, ILinkGraph<T> graph, bool reverse = true);
-    public (Chain<T, LinkStrength>, bool) GetPathToRootWithGuessedLinksAndMonoCheck(T from, Coloring coloring, ILinkGraph<T> graph);
-    public (Chain<T, LinkStrength>, bool) GetPathToRootWithRealLinksAndMonoCheck(T from, ILinkGraph<T> graph);
+    public Chain<T, LinkStrength> GetPathToRootWithRealLinks(T from, IGraph<T, LinkStrength> graph, bool reverse = true);
+    public (Chain<T, LinkStrength>, bool) GetPathToRootWithGuessedLinksAndMonoCheck(T from, Coloring coloring, IGraph<T, LinkStrength> graph);
+    public (Chain<T, LinkStrength>, bool) GetPathToRootWithRealLinksAndMonoCheck(T from, IGraph<T, LinkStrength> graph);
 
     public void ForeachLink(HandleChildToParentLink<T> handler);
 }

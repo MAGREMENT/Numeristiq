@@ -67,7 +67,7 @@ public class BlankTectonic : ITectonic
     public bool MergeZones(Cell c1, Cell c2) => false;
     public bool MergeZones(IZone z1, IZone z2) => false;
 
-    public bool SplitZone(IEnumerable<Cell> cells) => false;
+    public bool CreateZone(IEnumerable<Cell> cells) => false;
 
     public void AddZone(IReadOnlyList<Cell> cells)
     {

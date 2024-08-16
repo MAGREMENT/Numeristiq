@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using Model.Core.Graphs;
+using Model.Core.Graphs.Implementations;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
@@ -27,8 +27,8 @@ public class SudokuPreComputer
     private List<JuniorExocet>? _jes;
     private List<AlmostOddagon>? _oddagons;
 
-    private PossibilitiesGraph<IPossibilitySet>? _alsGraph;
-    private PositionsGraph<IPossibilitySet>? _ahsGraph;
+    private IGraph<IPossibilitySet, ReadOnlyBitSet16>? _alsGraph;
+    private IGraph<IPossibilitySet, Cell[]>? _ahsGraph;
     
     public ManagedLinkGraph<ISudokuSolverData, CellPossibility> SimpleGraph { get; }
     public ManagedLinkGraph<ISudokuSolverData, ISudokuElement> ComplexGraph { get; }
@@ -103,7 +103,7 @@ public class SudokuPreComputer
         return _oddagons;
     }
 
-    public PossibilitiesGraph<IPossibilitySet> AlmostLockedSetGraph()
+    public IGraph<IPossibilitySet, ReadOnlyBitSet16> AlmostLockedSetGraph()
     {
         _alsGraph ??= DoAlmostLockedSetGraph();
         return _alsGraph;
@@ -111,11 +111,11 @@ public class SudokuPreComputer
 
     public IEnumerable<LinkedAlmostLockedSets> ConstructAlmostLockedSetGraph()
     {
-        _alsGraph = new PossibilitiesGraph<IPossibilitySet>();
+        _alsGraph = new HDictionaryGraph<IPossibilitySet, ReadOnlyBitSet16>();
         return DoAlmostLockedSetGraph(_alsGraph);
     }
 
-    public PositionsGraph<IPossibilitySet> AlmostHiddenSetGraph()
+    public IGraph<IPossibilitySet, Cell[]> AlmostHiddenSetGraph()
     {
         _ahsGraph ??= DoAlmostHiddenSetGraph();
         return _ahsGraph;
@@ -123,7 +123,7 @@ public class SudokuPreComputer
 
     public IEnumerable<LinkedAlmostHiddenSets> ConstructAlmostHiddenSetGraph()
     {
-        _ahsGraph = new PositionsGraph<IPossibilitySet>();
+        _ahsGraph = new HDictionaryGraph<IPossibilitySet, Cell[]>();
         return DoAlmostHiddenSetGraph(_ahsGraph);
     }
     
@@ -154,9 +154,9 @@ public class SudokuPreComputer
         return OddagonSearcher.Search(_solverData, 7, 3);
     }
 
-    private PossibilitiesGraph<IPossibilitySet> DoAlmostLockedSetGraph()
+    private IGraph<IPossibilitySet, ReadOnlyBitSet16> DoAlmostLockedSetGraph()
     {
-        var graph = new PossibilitiesGraph<IPossibilitySet>();
+        var graph = new HDictionaryGraph<IPossibilitySet, ReadOnlyBitSet16>();
         var allAls = AlmostLockedSets();
 
         for (int i = 0; i < allAls.Count; i++)
@@ -176,7 +176,7 @@ public class SudokuPreComputer
     }
 
     private IEnumerable<LinkedAlmostLockedSets> DoAlmostLockedSetGraph(
-        PossibilitiesGraph<IPossibilitySet> graph)
+        IGraph<IPossibilitySet, ReadOnlyBitSet16> graph)
     {
         var allAls = AlmostLockedSets();
 
@@ -197,9 +197,9 @@ public class SudokuPreComputer
         }
     }
 
-    private PositionsGraph<IPossibilitySet> DoAlmostHiddenSetGraph()
+    private IGraph<IPossibilitySet, Cell[]> DoAlmostHiddenSetGraph()
     {
-        var graph = new PositionsGraph<IPossibilitySet>();
+        var graph = new HDictionaryGraph<IPossibilitySet, Cell[]>();
         var allAhs = _solverData.AlmostHiddenSetSearcher.FullGrid(5, 1);
 
         for (int i = 0; i < allAhs.Count; i++)
@@ -219,7 +219,7 @@ public class SudokuPreComputer
         return graph;
     }
     
-    private IEnumerable<LinkedAlmostHiddenSets> DoAlmostHiddenSetGraph(PositionsGraph<IPossibilitySet> graph)
+    private IEnumerable<LinkedAlmostHiddenSets> DoAlmostHiddenSetGraph(IGraph<IPossibilitySet, Cell[]> graph)
     {
         var allAhs = _solverData.AlmostHiddenSetSearcher.FullGrid(5, 1);
 

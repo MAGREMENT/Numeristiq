@@ -38,11 +38,11 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(ISudokuSolverData solverData, PositionsGraph<IPossibilitySet> graph,
+    private bool Search(ISudokuSolverData solverData, IGraph<IPossibilitySet, Cell[]> graph,
         ReadOnlyBitSet16 occupied, HashSet<IPossibilitySet> explored, ChainBuilder<IPossibilitySet, Cell> chain,
-        ILinkGraph<CellPossibility> linkGraph)
+        IGraph<CellPossibility, LinkStrength> linkGraph)
     {
-        foreach (var friend in graph.GetLinks(chain.LastElement()))
+        foreach (var friend in graph.NeighborsWithEdges(chain.LastElement()))
         {
             /*if (chain.Count > 2 && chain.FirstElement().Equals(friend.To) &&
                  CheckForLoop(strategyManager, chain, friend.Cells)) return true;*/
@@ -50,7 +50,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
             if (explored.Contains(friend.To) || occupied.ContainsAny(friend.To.Possibilities)) continue;
 
             var lastLink = chain.LastLink();
-            foreach (var possibleLink in friend.Cells)
+            foreach (var possibleLink in friend.Edge)
             {
                 if (chain.Count > 0 && lastLink == possibleLink) continue;
 
@@ -108,11 +108,11 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
         return false;
     }
 
-    private bool CheckForChain(ISudokuSolverData solverData, ChainBuilder<IPossibilitySet, Cell> chain, ILinkGraph<CellPossibility> linkGraph)
+    private bool CheckForChain(ISudokuSolverData solverData, ChainBuilder<IPossibilitySet, Cell> chain, IGraph<CellPossibility, LinkStrength> linkGraph)
     {
         if (!_checkLength2 && chain.Count == 2) return false;
         
-        List<Link<CellPossibility>> links = new();
+        List<Edge<CellPossibility>> links = new();
 
         var first = chain.FirstElement();
         var last = chain.LastElement();
@@ -140,8 +140,8 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
 
                         if (last.Positions.Contains(friendOfFriend.ToCell()) && asCell != cell && !nope.Contains(asCell))
                         {
-                            links.Add(new Link<CellPossibility>(current, friend));
-                            links.Add(new Link<CellPossibility>(friend, friendOfFriend));
+                            links.Add(new Edge<CellPossibility>(current, friend));
+                            links.Add(new Edge<CellPossibility>(friend, friendOfFriend));
 
                             solverData.ChangeBuffer.ProposeSolutionAddition(friend);
                         }
@@ -163,10 +163,10 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
 public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Chain<IPossibilitySet, Cell> _chain;
-    private readonly List<Link<CellPossibility>> _links;
+    private readonly List<Edge<CellPossibility>> _links;
     private readonly Cell? _additionalLink;
 
-    public AlmostHiddenSetsChainReportBuilder(Chain<IPossibilitySet, Cell> chain, List<Link<CellPossibility>> links)
+    public AlmostHiddenSetsChainReportBuilder(Chain<IPossibilitySet, Cell> chain, List<Edge<CellPossibility>> links)
     {
         _chain = chain;
         _links = links;
@@ -176,7 +176,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericCh
     public AlmostHiddenSetsChainReportBuilder(Chain<IPossibilitySet, Cell> chain, Cell additionalLink)
     {
         _chain = chain;
-        _links = new List<Link<CellPossibility>>();
+        _links = new List<Edge<CellPossibility>>();
         _additionalLink = additionalLink;
     }
 

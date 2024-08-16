@@ -67,7 +67,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
         if (solverData.ChangeBuffer.NeedCommit())
         {
             solverData.ChangeBuffer.Commit( new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two,
-                Array.Empty<Link<CellPossibility>>()));
+                Array.Empty<Edge<CellPossibility>>()));
             if (StopOnFirstCommit) return true;
         }
 
@@ -75,9 +75,9 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
     }
 
     private bool Process1CommonCell(ISudokuSolverData solverData, IPossibilitySet one,
-        IPossibilitySet two, ILinkGraph<CellPossibility> graph)
+        IPossibilitySet two, IGraph<CellPossibility, LinkStrength> graph)
     {
-        List<Link<CellPossibility>> links = new();
+        List<Edge<CellPossibility>> links = new();
 
         foreach (var cell in one.EnumerateCells())
         {
@@ -94,8 +94,8 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
 
                         if (two.Positions.Contains(asCell) && asCell != cell)
                         {
-                            links.Add(new Link<CellPossibility>(current, friend));
-                            links.Add(new Link<CellPossibility>(friend, friendOfFriend));
+                            links.Add(new Edge<CellPossibility>(current, friend));
+                            links.Add(new Edge<CellPossibility>(friend, friendOfFriend));
 
                             solverData.ChangeBuffer.ProposeSolutionAddition(friend);
                         }
@@ -118,9 +118,9 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder<
 {
     private readonly IPossibilitySet _one;
     private readonly IPossibilitySet _two;
-    private readonly IReadOnlyList<Link<CellPossibility>> _links;
+    private readonly IReadOnlyList<Edge<CellPossibility>> _links;
 
-    public AlmostHiddenSetsAndStrongLinksReportBuilder(IPossibilitySet one, IPossibilitySet two, IReadOnlyList<Link<CellPossibility>> links)
+    public AlmostHiddenSetsAndStrongLinksReportBuilder(IPossibilitySet one, IPossibilitySet two, IReadOnlyList<Edge<CellPossibility>> links)
     {
         _one = one;
         _two = two;

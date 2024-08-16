@@ -4,7 +4,7 @@ using Model.Repositories;
 using Model.Sudokus;
 using MySql.Data.MySqlClient;
 
-namespace Repository;
+namespace Repository.MySql;
 
 public class MySqlSudokuBankRepository : ISudokuBankRepository
 {

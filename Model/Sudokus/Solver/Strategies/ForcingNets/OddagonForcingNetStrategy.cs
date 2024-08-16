@@ -83,9 +83,9 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder<NumericChange
     private readonly Coloring _changeColoring;
     private readonly CellPossibility _change;
     private readonly AlmostOddagon _oddagon;
-    private readonly ILinkGraph<ISudokuElement> _graph;
+    private readonly IGraph<ISudokuElement, LinkStrength> _graph;
 
-    public OddagonForcingNetReportBuilder(ColoringDictionary<ISudokuElement>[] colorings, Coloring changeColoring, AlmostOddagon oddagon, ILinkGraph<ISudokuElement> graph, CellPossibility change)
+    public OddagonForcingNetReportBuilder(ColoringDictionary<ISudokuElement>[] colorings, Coloring changeColoring, AlmostOddagon oddagon, IGraph<ISudokuElement, LinkStrength> graph, CellPossibility change)
     {
         _colorings = colorings;
         _changeColoring = changeColoring;

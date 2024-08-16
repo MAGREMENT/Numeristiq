@@ -3,7 +3,7 @@ using Model.Core.Settings;
 using Model.Repositories;
 using Model.Sudokus.Solver;
 
-namespace Repository;
+namespace Repository.Json;
 
 public class SudokuStrategyJsonRepository : JsonRepository, IStrategyRepository<SudokuStrategy>
 {

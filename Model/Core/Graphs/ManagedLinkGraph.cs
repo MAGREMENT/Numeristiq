@@ -2,11 +2,11 @@
 
 public class ManagedLinkGraph<TDataSource, TType> where TType : notnull
 {
-    public ILinkGraph<TType> Graph { get; }
+    public IGraph<TType, LinkStrength> Graph { get; }
     private ulong _rulesApplied;
     private readonly TDataSource _dataSource;
 
-    public ManagedLinkGraph(ILinkGraph<TType> graph, TDataSource dataSource)
+    public ManagedLinkGraph(IGraph<TType, LinkStrength> graph, TDataSource dataSource)
     {
         Graph = graph;
         _dataSource = dataSource;

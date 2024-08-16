@@ -7,6 +7,6 @@ namespace Model.Sudokus.Solver.Strategies.BlossomLoops;
 
 public interface IBlossomLoopBranchFinder
 {
-    BlossomLoopBranch[]? FindShortestBranches(ILinkGraph<ISudokuElement> graph,
+    BlossomLoopBranch[]? FindShortestBranches(IGraph<ISudokuElement, LinkStrength> graph,
         CellPossibility[] cps, Loop<ISudokuElement, LinkStrength> loop);
 }

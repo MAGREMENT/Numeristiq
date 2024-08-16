@@ -1,7 +1,7 @@
 ﻿using Model.Core;
 using Model.Repositories;
 
-namespace Repository;
+namespace Repository.HardCoded;
 
 public abstract class HardCodedStrategyRepository<T> : IStrategyRepository<T> where T : Strategy
 {

@@ -14,7 +14,7 @@ public class OddagonSearchAlgorithmV2 : IOddagonSearchAlgorithm
     
     public int MaxLength { get; set; }
     public int MaxGuardians { get; set; }
-    public List<AlmostOddagon> Search(ISudokuSolverData solverData, ILinkGraph<CellPossibility> graph)
+    public List<AlmostOddagon> Search(ISudokuSolverData solverData, IGraph<CellPossibility, LinkStrength> graph)
     {
         var result = new List<AlmostOddagon>();
         foreach (var start in graph)
@@ -25,7 +25,7 @@ public class OddagonSearchAlgorithmV2 : IOddagonSearchAlgorithm
         return result;
     }
 
-    private void Search(ISudokuSolverData data, ILinkGraph<CellPossibility> graph, List<AlmostOddagon> result,
+    private void Search(ISudokuSolverData data, IGraph<CellPossibility, LinkStrength> graph, List<AlmostOddagon> result,
         CellPossibility start)
     {
         Dictionary<CellPossibility, List<OddagonPath>> dic = new();

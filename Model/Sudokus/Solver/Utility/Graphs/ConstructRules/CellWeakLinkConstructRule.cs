@@ -10,17 +10,17 @@ public class CellWeakLinkConstructRule : IConstructRule<ISudokuSolverData, ISudo
     
     private CellWeakLinkConstructRule() {}
     
-    public int ID { get; } = UniqueID.Next();
+    public int ID { get; } = UniqueConstructRuleID.Next();
     
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
+    public void Apply(IGraph<ISudokuElement, LinkStrength> linkGraph, ISudokuSolverData data)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if(solverData.PossibilitiesAt(row, col).Count < 3) continue;
+                if(data.PossibilitiesAt(row, col).Count < 3) continue;
 
-                var asArray = solverData.PossibilitiesAt(row, col).ToArray();
+                var asArray = data.PossibilitiesAt(row, col).ToArray();
                 for (int i = 0; i < asArray.Length; i++)
                 {
                     for (int j = i + 1; j < asArray.Length; j++)
@@ -33,15 +33,15 @@ public class CellWeakLinkConstructRule : IConstructRule<ISudokuSolverData, ISudo
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuSolverData solverData)
+    public void Apply(IGraph<CellPossibility, LinkStrength> linkGraph, ISudokuSolverData data)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if(solverData.PossibilitiesAt(row, col).Count < 3) continue;
+                if(data.PossibilitiesAt(row, col).Count < 3) continue;
 
-                var asArray = solverData.PossibilitiesAt(row, col).ToArray();
+                var asArray = data.PossibilitiesAt(row, col).ToArray();
                 for (int i = 0; i < asArray.Length; i++)
                 {
                     for (int j = i + 1; j < asArray.Length; j++)

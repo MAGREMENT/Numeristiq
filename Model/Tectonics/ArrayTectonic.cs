@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Tectonics;
 
@@ -137,36 +138,39 @@ public class ArrayTectonic : ITectonic
         return true;
     }
 
-    public bool SplitZone(IEnumerable<Cell> cells)
+    public bool CreateZone(IEnumerable<Cell> cells)
     {
-        IZone? zone = null;
-        List<Cell> first = new();
-        
+        UniqueList<IZone> zones = new();
+        List<Cell> cellsIn = new();
+
         foreach (var cell in cells)
         {
-            if (zone is null) zone = GetZone(cell);
-            else if (!zone.Contains(cell)) return false;
-
-            first.Add(cell);
+            zones.Add(GetZone(cell));
+            cellsIn.Add(cell);
         }
 
-        if (zone is null) return false;
+        if (cellsIn.Count > IZone.MaxCount) return false;
 
-        List<Cell> second = new();
-        foreach (var cell in zone)
+        foreach (var zone in zones)
         {
-            if (!first.Contains(cell)) second.Add(cell);
+            List<Cell> notIn = new();
+            foreach (var cell in zone)
+            {
+                if(!cellsIn.Contains(cell)) notIn.Add(cell);
+            }
+
+            RemoveZone(zone);
+            if(notIn.Count == 0) continue;
+            
+            foreach (var otherZone in TectonicUtility.DivideInAdjacentCells(notIn))
+            {
+                AddZoneUnchecked(otherZone);
+                CheckZoneIntegrity(_zones.Count - 1);
+            }
         }
 
-        RemoveZone(zone);
-        AddZoneUnchecked(first);
+        AddZoneUnchecked(cellsIn);
         CheckZoneIntegrity(_zones.Count - 1);
-
-        foreach (var otherZone in TectonicUtility.DivideInAdjacentCells(second))
-        {
-            AddZoneUnchecked(otherZone);
-            CheckZoneIntegrity(_zones.Count - 1);
-        }
 
         return true;
     }

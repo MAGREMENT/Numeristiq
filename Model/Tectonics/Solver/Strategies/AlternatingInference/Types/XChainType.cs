@@ -12,7 +12,7 @@ public class XChainType : IAlternatingInferenceType
 
     public Difficulty Difficulty => Difficulty.Hard;
     
-    public ILinkGraph<ITectonicElement> GetGraph(ITectonicSolverData solverData)
+    public IGraph<ITectonicElement, LinkStrength> GetGraph(ITectonicSolverData solverData)
     {
         solverData.ManagedGraph.Construct(ZoneLinkConstructRule.Instance,
             NeighborLinkConstructRule.Instance);

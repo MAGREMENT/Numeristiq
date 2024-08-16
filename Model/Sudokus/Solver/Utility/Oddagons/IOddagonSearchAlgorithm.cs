@@ -10,5 +10,5 @@ public interface IOddagonSearchAlgorithm
     public int MaxLength { set; }
     public int MaxGuardians { set; }
     
-    List<AlmostOddagon> Search(ISudokuSolverData solverData, ILinkGraph<CellPossibility> graph);
+    List<AlmostOddagon> Search(ISudokuSolverData solverData, IGraph<CellPossibility, LinkStrength> graph);
 }

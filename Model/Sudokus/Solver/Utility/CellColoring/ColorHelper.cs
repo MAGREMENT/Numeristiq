@@ -9,7 +9,7 @@ public static class ColorHelper
 {
     public static IColoringAlgorithm Algorithm { get; } = new QueueColoringAlgorithm();
 
-    public static TR ColorFromStart<TB, TR>(Color<TB> colorMethod, ILinkGraph<TB> graph, TB start,
+    public static TR ColorFromStart<TB, TR>(Color<TB> colorMethod, IGraph<TB, LinkStrength> graph, TB start,
         Coloring firstColor = Coloring.On, bool history = false) where TB : ISudokuElement where TR : IColoringResult<TB>, new()
     {
         var result = new TR();
@@ -22,7 +22,7 @@ public static class ColorHelper
         return result;
     }
     
-    public static TR ColorAll<TB, TR>(Color<TB> colorMethod, ILinkGraph<TB> graph, Coloring firstColor = Coloring.On,
+    public static TR ColorAll<TB, TR>(Color<TB> colorMethod, IGraph<TB, LinkStrength> graph, Coloring firstColor = Coloring.On,
         bool history = false) where TB : ISudokuElement where TR : IColoringResult<TB>, new()
     {
         var result = new TR();
@@ -41,5 +41,5 @@ public static class ColorHelper
     }
 }
 
-public delegate void Color<T>(ILinkGraph<T> graph, IColoringResult<T> result,
+public delegate void Color<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result,
     HashSet<T> visited, T start, Coloring firstColor) where T : ISudokuElement;

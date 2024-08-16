@@ -6,6 +6,9 @@ using Model.Repositories;
 using Model.Sudokus.Solver;
 using Model.Tectonics.Solver;
 using Repository;
+using Repository.HardCoded;
+using Repository.Json;
+using Repository.MySql;
 
 namespace ConsoleApplication;
 

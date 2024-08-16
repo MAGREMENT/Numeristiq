@@ -12,7 +12,7 @@ public class AlternatingInferenceChainType : IAlternatingInferenceType
 
     public Difficulty Difficulty => Difficulty.Extreme;
     
-    public ILinkGraph<ITectonicElement> GetGraph(ITectonicSolverData solverData)
+    public IGraph<ITectonicElement, LinkStrength> GetGraph(ITectonicSolverData solverData)
     {
         solverData.ManagedGraph.Construct(ZoneLinkConstructRule.Instance,
             CellLinkConstructRule.Instance, NeighborLinkConstructRule.Instance);

@@ -135,9 +135,9 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, I
     private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly CellPossibility _target;
     private readonly Coloring _targetColoring;
-    private readonly ILinkGraph<ISudokuElement> _graph;
+    private readonly IGraph<ISudokuElement, LinkStrength> _graph;
 
-    public UnitForcingNetReportBuilder(ColoringDictionary<ISudokuElement>[] colorings, CellPossibility target, Coloring targetColoring, ILinkGraph<ISudokuElement> graph)
+    public UnitForcingNetReportBuilder(ColoringDictionary<ISudokuElement>[] colorings, CellPossibility target, Coloring targetColoring, IGraph<ISudokuElement, LinkStrength> graph)
     {
         _colorings = colorings;
         _target = target;

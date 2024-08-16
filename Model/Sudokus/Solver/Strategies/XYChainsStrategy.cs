@@ -35,7 +35,7 @@ public class XYChainsStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(ISudokuSolverData solverData, ILinkGraph<CellPossibility> graph, CellPossibility current,
+    private bool Search(ISudokuSolverData solverData, IGraph<CellPossibility, LinkStrength> graph, CellPossibility current,
         List<XYCell> route, HashSet<CellPossibility> visited)
     {
         var friend = graph.Neighbors(current, LinkStrength.Strong).First();

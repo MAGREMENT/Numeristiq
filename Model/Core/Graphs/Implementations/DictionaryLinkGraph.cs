@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Model.Utility.Collections;
 
-namespace Model.Core.Graphs;
+namespace Model.Core.Graphs.Implementations;
 
-public abstract class DictionaryLinkGraph<T> : ILinkGraph<T> where T : notnull
+public abstract class DictionaryLinkGraph<T> : IGraph<T, LinkStrength> where T : notnull
 {
     private readonly Dictionary<T, IContainingCollection<T>[]> _links = new();
 
@@ -51,6 +51,21 @@ public abstract class DictionaryLinkGraph<T> : ILinkGraph<T> where T : notnull
         }
     }
 
+    public IEnumerable<EdgeTo<LinkStrength, T>> NeighborsWithEdges(T from)
+    {
+        if (!_links.TryGetValue(from, out var resume)) yield break;
+        
+        foreach (var friend in resume[0])
+        {
+            yield return new EdgeTo<LinkStrength, T>(LinkStrength.Strong, friend);
+        }
+            
+        foreach (var friend in resume[1])
+        {
+            yield return new EdgeTo<LinkStrength, T>(LinkStrength.Weak, friend);
+        }
+    }
+
     public bool AreNeighbors(T from, T to, LinkStrength strength)
     {
         return _links.TryGetValue(from, out var resume) && resume[(int)strength - 1].Contains(to);
@@ -62,17 +77,17 @@ public abstract class DictionaryLinkGraph<T> : ILinkGraph<T> where T : notnull
                                                             resume[1].Contains(to));
     }
 
-    public LinkStrength? LinkBetween(T from, T to)
+    public LinkStrength LinkBetween(T from, T to)
     {
         if (!_links.TryGetValue(from, out var sets))
         {
-            return null;
+            return LinkStrength.None;
         }
 
         if (sets[0].Contains(to)) return LinkStrength.Strong;
         if (sets[1].Contains(to)) return LinkStrength.Weak;
 
-        return null;
+        return LinkStrength.None;
     }
 
     public void Clear()

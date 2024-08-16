@@ -1,8 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
-using Model;
 
-namespace Repository;
+namespace Repository.Json;
 
 public abstract class JsonRepository
 {

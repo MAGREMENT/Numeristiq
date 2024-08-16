@@ -1,11 +1,10 @@
 ﻿using Model.Core;
-using Model.Repositories;
 using Model.Tectonics.Solver;
 using Model.Tectonics.Solver.Strategies;
 using Model.Tectonics.Solver.Strategies.AlternatingInference;
 using Model.Tectonics.Solver.Strategies.AlternatingInference.Types;
 
-namespace Repository;
+namespace Repository.HardCoded;
 
 public class HardCodedTectonicStrategyRepository : HardCodedStrategyRepository<Strategy<ITectonicSolverData>>
 { 

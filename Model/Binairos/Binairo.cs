@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Model.Core.BackTracking;
 using Model.Core.Generators;
@@ -281,6 +282,17 @@ public readonly struct ReadOnlyBinairoUnitBitSet
                 set.OnesCount, set.TwosCount - 1),
             _ => set
         };
+    }
+
+    public List<int> EmptyToList(int until)
+    {
+        List<int> result = new();
+        for (int i = 0; i < until; i++)
+        {
+            if (this[i] == 0) result.Add(i);
+        }
+
+        return result;
     }
 
     public static bool operator ==(ReadOnlyBinairoUnitBitSet set1, ReadOnlyBinairoUnitBitSet set2)

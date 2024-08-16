@@ -29,7 +29,7 @@ public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : 
         }
     }
 
-    private bool Search(ISudokuSolverData view, ILinkGraph<T> graph, IAlternatingInferenceType<T> inferenceType,
+    private bool Search(ISudokuSolverData view, IGraph<T, LinkStrength> graph, IAlternatingInferenceType<T> inferenceType,
         ChainBuilder<T, LinkStrength> builder, Dictionary<T, HashSet<T>> globallySearched, Dictionary<T, HashSet<T>> locallySearched)
     {
         if (builder.Count > _maxLoopSize) return false;

@@ -11,15 +11,15 @@ public class CellLinkConstructRule : IConstructRule<ITectonicSolverData, ITecton
     
     private CellLinkConstructRule() {}
     
-    public int ID { get; } = UniqueID.Next();
+    public int ID { get; } = UniqueConstructRuleID.Next();
     
-    public void Apply(ILinkGraph<ITectonicElement> linkGraph, ITectonicSolverData solverData)
+    public void Apply(IGraph<ITectonicElement, LinkStrength> linkGraph, ITectonicSolverData data)
     {
-        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
+        for (int row = 0; row < data.Tectonic.RowCount; row++)
         {
-            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
+            for (int col = 0; col < data.Tectonic.ColumnCount; col++)
             {
-                var poss = solverData.PossibilitiesAt(row, col);
+                var poss = data.PossibilitiesAt(row, col);
                 if (poss.Count == 2)
                 {
                     var a = poss.NextPossibility(0);

@@ -33,24 +33,31 @@
                                            HorizontalAlignment="Center"/>
                 <controls:DimensionChooser TitleText="Columns" DimensionChangeAsked="OnColumnDimensionChangeAsked"
                                            HorizontalAlignment="Center"/>
-                <TextBlock FontSize="18" Margin="0, 20, 0, 0" Foreground="{DynamicResource Text}">
-                    Selection Mode
-                </TextBlock>
+                <Border Padding="5" CornerRadius="5" Background="{DynamicResource Background3}"
+                        HorizontalAlignment="Center" Margin="0 10 0 0">
+                    <StackPanel Orientation="Vertical">
+                        <RadioButton Checked="ModeToDefault" Style="{StaticResource SideControlRadioButton}"
+                                     IsChecked="True" Margin="0 0 0 10" ToolTip="Select cell number">
+                            <Path Width="30" Height="30" Stroke="{Binding Path=Foreground,
+								 RelativeSource={RelativeSource AncestorType={x:Type RadioButton}}}"
+                                  StrokeThickness="2" Data="M 8,12 18,4 V 26"/>
+                        </RadioButton>
+                        
+                        <RadioButton Checked="ModeToMerge" Style="{StaticResource SideControlRadioButton}"
+                                     ToolTip="Merge two zones" Margin="0 0 0 10">
+                            <Path Width="30" Height="30" Stroke="{Binding Path=Foreground,
+								 RelativeSource={RelativeSource AncestorType={x:Type RadioButton}}}"
+                                  StrokeThickness="2" Data="M 8,8 12,15, 8,22 M 22,8 18,15 22,22"/>
+                        </RadioButton>
             
-                <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}" 
-                             Checked="ModeToDefault" Style="{StaticResource ArrowRadioButton}">
-                    Default
-                </RadioButton>
-            
-                <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
-                             Checked="ModeToMerge" Style="{StaticResource ArrowRadioButton}">
-                    Merge
-                </RadioButton>
-            
-                <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
-                             Checked="ModeToSplit" Style="{StaticResource ArrowRadioButton}">
-                    Split
-                </RadioButton>
+                        <RadioButton Checked="ModeToEdit" Style="{StaticResource SideControlRadioButton}"
+                                     ToolTip="Create a zone">
+                            <Path Width="30" Height="30" Stroke="{Binding Path=Foreground,
+								 RelativeSource={RelativeSource AncestorType={x:Type RadioButton}}}"
+                                  StrokeThickness="2" Data="M 22,1 28,7 12,23 6,17 Z M 6,17 3,26 12,23"/>
+                        </RadioButton>
+                    </StackPanel>
+                </Border>
             </global:SizeOptimizedContentControl.SideControls>
         </global:SizeOptimizedContentControl>
         
@@ -96,6 +103,6 @@
             </Grid>
         </Grid>
         
-        <global:HideableTextBox Grid.Column="0" Grid.ColumnSpan="3" TextChanged="CreateNewTectonic" Showed="OnHideableTextboxShowed" x:Name="TextBox"/>
+        <global:HideableTextBox Grid.Column="0" Grid.ColumnSpan="2" TextChanged="CreateNewTectonic" Showed="OnHideableTextboxShowed" x:Name="TextBox"/>
     </Grid>
 </v:SolveWithStepsPage>

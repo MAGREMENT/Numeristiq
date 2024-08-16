@@ -129,7 +129,7 @@ public class TectonicSolvePresenter : SolveWithStepsPresenter<ITectonicHighlight
                     _selectedZone = null;
                 }
                 break;
-            case SelectionMode.Split :
+            case SelectionMode.Edit :
                 if (!_selectedCells.Contains(c)) _selectedCells.Add(c);
                 _view.Drawer.PutCursorOn(_selectedCells);
                 
@@ -141,10 +141,10 @@ public class TectonicSolvePresenter : SolveWithStepsPresenter<ITectonicHighlight
 
     public void EndCellSelection()
     {
-        if (_selectionMode == SelectionMode.Split)
+        if (_selectionMode == SelectionMode.Edit)
         {
             var tectonic = _solver.Tectonic.Copy();
-            if (tectonic.SplitZone(_selectedCells.ToArray())) SetNewTectonic(tectonic, true);
+            if (tectonic.CreateZone(_selectedCells.ToArray())) SetNewTectonic(tectonic, true);
             _selectedCells.Clear();
             
             _view.Drawer.ClearCursor();
@@ -275,5 +275,5 @@ public class TectonicSolvePresenter : SolveWithStepsPresenter<ITectonicHighlight
 
 public enum SelectionMode
 {
-    Default, Merge, Split
+    Default, Merge, Edit
 }

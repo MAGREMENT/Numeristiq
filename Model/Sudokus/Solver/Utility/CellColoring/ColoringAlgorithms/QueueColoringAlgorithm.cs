@@ -7,7 +7,7 @@ namespace Model.Sudokus.Solver.Utility.CellColoring.ColoringAlgorithms;
 
 public class QueueColoringAlgorithm : IColoringAlgorithm
 {
-    public void ColorWithoutRules<T>(ILinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
+    public void ColorWithoutRules<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
         where T : ISudokuElement
     {
         result.AddColoredElement(start, firstColor);
@@ -41,7 +41,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
         }
     }
 
-    public void ColorWithRules<T>(ILinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On) where T : ISudokuElement
+    public void ColorWithRules<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On) where T : ISudokuElement
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -77,7 +77,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
         }
     }
 
-    public void ColorWithRulesAndLinksJump<T>(ILinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
+    public void ColorWithRulesAndLinksJump<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
         where T : ISudokuElement
     {
         result.AddColoredElement(start, firstColor);

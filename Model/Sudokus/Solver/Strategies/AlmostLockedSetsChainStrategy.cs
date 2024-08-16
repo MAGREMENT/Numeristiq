@@ -35,10 +35,10 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(ISudokuSolverData solverData, PossibilitiesGraph<IPossibilitySet> graph,
+    private bool Search(ISudokuSolverData solverData, IGraph<IPossibilitySet, ReadOnlyBitSet16> graph,
         GridPositions occupied, HashSet<IPossibilitySet> explored, ChainBuilder<IPossibilitySet, int> chain)
     {
-        foreach (var friend in graph.GetLinks(chain.LastElement()))
+        foreach (var friend in graph.NeighborsWithEdges(chain.LastElement()))
         {
             /*if (chain.Count > 2 && chain.FirstElement().Equals(friend.To) &&
                 CheckForLoop(strategyManager, chain, friend.Possibilities, occupied)) return true;*/
@@ -46,7 +46,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
             if (explored.Contains(friend.To) || occupied.ContainsAny(friend.To.Positions)) continue;
 
             var lastLink = chain.LastLink();
-            foreach (var possibleLink in friend.Possibilities.EnumeratePossibilities())
+            foreach (var possibleLink in friend.Edge.EnumeratePossibilities())
             {
                 if (lastLink == possibleLink) continue;
 

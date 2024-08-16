@@ -15,7 +15,7 @@ public class BLLoopFinderV1 : IBlossomLoopLoopFinder
         _maxLoopSize = maxLoopSize;
     }
 
-    public List<Loop<ISudokuElement, LinkStrength>> Find(CellPossibility[] cps, ILinkGraph<ISudokuElement> graph)
+    public List<Loop<ISudokuElement, LinkStrength>> Find(CellPossibility[] cps, IGraph<ISudokuElement, LinkStrength> graph)
     {
         List<Loop<ISudokuElement, LinkStrength>> result = new();
 
@@ -27,7 +27,7 @@ public class BLLoopFinderV1 : IBlossomLoopLoopFinder
         return result;
     }
 
-    private void Search(CellPossibility[] cps, ILinkGraph<ISudokuElement> graph,
+    private void Search(CellPossibility[] cps, IGraph<ISudokuElement, LinkStrength> graph,
         ChainBuilder<ISudokuElement, LinkStrength> builder, List<Loop<ISudokuElement, LinkStrength>> result)
     {
         if (builder.Count > _maxLoopSize) return;

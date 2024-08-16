@@ -4,12 +4,12 @@ namespace Model.Core.Graphs;
 
 public static class CycleBasis //TODO test
 {
-    public static List<TLoop> Find<TElement, TLoop>(ILinkGraph<TElement> graph, ConstructLoop<TElement, TLoop> constructor)
+    public static List<TLoop> Find<TElement, TLoop>(IGraph<TElement, LinkStrength> graph, ConstructLoop<TElement, TLoop> constructor)
         where TLoop : class where TElement : notnull
     {
         var result = new List<TLoop>();
         var forest = FindSpanningForest(graph);
-        HashSet<Link<TElement>> done = new();
+        HashSet<Edge<TElement>> done = new();
 
         foreach (var start in graph)
         {
@@ -18,7 +18,7 @@ public static class CycleBasis //TODO test
                 if((forest.TryGetValue(start, out var startSource) && startSource.To.Equals(friend))
                    || (forest.TryGetValue(friend, out var friendSource) && friendSource.To.Equals(start))) continue;
 
-                var link = new Link<TElement>(start, friend);
+                var link = new Edge<TElement>(start, friend);
                 if(done.Contains(link)) continue;
                 
                 ChainBuilder<TElement, LinkStrength> path1 = new(start);
@@ -38,14 +38,14 @@ public static class CycleBasis //TODO test
                             var index = path2.IndexOf(next1.To);
                             if (index == -1)
                             {
-                                path1.Add(next1.Link, next1.To);
+                                path1.Add(next1.Edge, next1.To);
                                 cur1 = next1.To;
                             }
                             else
                             {
                                 var loop = constructor(path1.ToChain(), path2.ToChain(), index,
-                                    graph.LinkBetween(cur1, next1.To)!.Value, 
-                                    graph.LinkBetween(start, friend)!.Value);
+                                    graph.LinkBetween(cur1, next1.To), 
+                                    graph.LinkBetween(start, friend));
                                 if (loop is not null)
                                 {
                                     result.Add(loop);
@@ -63,14 +63,14 @@ public static class CycleBasis //TODO test
                             var index = path1.IndexOf(next2.To);
                             if (index == -1)
                             {
-                                path2.Add(next2.Link, next2.To);
+                                path2.Add(next2.Edge, next2.To);
                                 cur2 = next2.To;
                             }
                             else
                             {
                                 var loop = constructor(path2.ToChain(), path1.ToChain(), index,
-                                    graph.LinkBetween(cur2, next2.To)!.Value,
-                                    graph.LinkBetween(start, friend)!.Value);
+                                    graph.LinkBetween(cur2, next2.To),
+                                    graph.LinkBetween(start, friend));
                                 if (loop is not null)
                                 {
                                     result.Add(loop);
@@ -104,10 +104,10 @@ public static class CycleBasis //TODO test
         return result;
     }
 
-    private static Dictionary<TElement, LinkTo<LinkStrength, TElement>> FindSpanningForest<TElement>(ILinkGraph<TElement> graph)
+    private static Dictionary<TElement, EdgeTo<LinkStrength, TElement>> FindSpanningForest<TElement>(IGraph<TElement, LinkStrength> graph)
         where TElement : notnull
     {
-        Dictionary<TElement, LinkTo<LinkStrength, TElement>> result = new();
+        Dictionary<TElement, EdgeTo<LinkStrength, TElement>> result = new();
         HashSet<TElement> starts = new();
         Queue<TElement> queue = new();
 
@@ -125,9 +125,9 @@ public static class CycleBasis //TODO test
                     if(result.ContainsKey(friend) || starts.Contains(friend)) continue;
 
                     var link = graph.LinkBetween(friend, current);
-                    if(link is null) continue;
+                    if(link is LinkStrength.None) continue;
                     
-                    result.Add(friend, new LinkTo<LinkStrength, TElement>(link.Value, current));
+                    result.Add(friend, new EdgeTo<LinkStrength, TElement>(link, current));
                     queue.Enqueue(friend);
                 }
             }
@@ -160,29 +160,17 @@ public static class CycleBasis //TODO test
     public static Loop<TElement, LinkStrength>? CombineLoops<TElement>(Loop<TElement, LinkStrength> one,
         Loop<TElement, LinkStrength> two) where TElement : notnull
     {
-        Dictionary<TElement, LinkTo<LinkStrength, TElement>> dic = new();
+        Dictionary<TElement, EdgeTo<LinkStrength, TElement>> dic = new();
         for (int i = 0; i < one.Count; i++)
         {
-            if(i == one.Count - 1) dic.Add(one.Elements[i], new LinkTo<LinkStrength, TElement>(one.LastLink,
+            if(i == one.Count - 1) dic.Add(one.Elements[i], new EdgeTo<LinkStrength, TElement>(one.LastLink,
                 one.Elements[0]));
-            else dic.Add(one.Elements[i], new LinkTo<LinkStrength, TElement>(one.Links[i],
+            else dic.Add(one.Elements[i], new EdgeTo<LinkStrength, TElement>(one.Links[i],
                 one.Elements[i + 1]));
         }
 
         return null; //TODO
     }
-}
-
-public class LinkTo<TLink, TElement>
-{
-    public LinkTo(TLink link, TElement to)
-    {
-        Link = link;
-        To = to;
-    }
-
-    public TLink Link { get; }
-    public TElement To { get; }
 }
 
 public delegate TLoop? ConstructLoop<TElement, out TLoop>(Chain<TElement, LinkStrength> fullPath,

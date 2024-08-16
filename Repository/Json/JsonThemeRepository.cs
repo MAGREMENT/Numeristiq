@@ -1,7 +1,7 @@
 ﻿using Model.Repositories;
 using Model.Utility;
 
-namespace Repository;
+namespace Repository.Json;
 
 public class JsonThemeRepository : JsonRepository, IThemeRepository
 {

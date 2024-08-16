@@ -7,7 +7,7 @@ using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.Implementations;
 
-public class SudokuElementArrayLinkGraph : ILinkGraph<ISudokuElement>
+public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength>
 {
     private UniqueList<ISudokuElement>?[,,,] _cps = new UniqueList<ISudokuElement>[9, 9, 9, 2];
     private readonly Dictionary<ISudokuElement, UniqueList<ISudokuElement>[]> _others = new();
@@ -56,7 +56,12 @@ public class SudokuElementArrayLinkGraph : ILinkGraph<ISudokuElement>
             }
         }
     }
- 
+
+    public IEnumerable<EdgeTo<LinkStrength, ISudokuElement>> NeighborsWithEdges(ISudokuElement from)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public bool AreNeighbors(ISudokuElement from, ISudokuElement to, LinkStrength strength)
     {
         if (from is not CellPossibility cp)
@@ -78,9 +83,9 @@ public class SudokuElementArrayLinkGraph : ILinkGraph<ISudokuElement>
         return l is not null && l.Contains(to);
     }
 
-    public LinkStrength? LinkBetween(ISudokuElement from, ISudokuElement to)
+    public LinkStrength LinkBetween(ISudokuElement from, ISudokuElement to)
     {
-        return null; //TODO
+        return LinkStrength.None; //TODO
     }
 
     public void Clear()

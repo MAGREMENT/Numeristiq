@@ -9,7 +9,7 @@ namespace Model.Sudokus.Solver.Strategies.BlossomLoops.LoopFinders;
 
 public class BLLoopFinderV2 : IBlossomLoopLoopFinder //TODO fix
 {
-    public List<Loop<ISudokuElement, LinkStrength>> Find(CellPossibility[] cps, ILinkGraph<ISudokuElement> graph)
+    public List<Loop<ISudokuElement, LinkStrength>> Find(CellPossibility[] cps, IGraph<ISudokuElement, LinkStrength> graph)
     {
         List<Loop<ISudokuElement, LinkStrength>> result = new();
 
@@ -21,7 +21,7 @@ public class BLLoopFinderV2 : IBlossomLoopLoopFinder //TODO fix
         return result;
     }
 
-    private void Search(List<Loop<ISudokuElement, LinkStrength>> result, ILinkGraph<ISudokuElement> graph,
+    private void Search(List<Loop<ISudokuElement, LinkStrength>> result, IGraph<ISudokuElement, LinkStrength> graph,
         CellPossibility start, CellPossibility[] cps)
     {
         Dictionary<ISudokuElement, ISudokuElement> on = new();

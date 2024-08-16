@@ -121,11 +121,11 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, 
     private readonly Coloring _onColoring;
     private readonly CellPossibility _offPos;
     private readonly Coloring _offColoring;
-    private readonly ILinkGraph<ISudokuElement> _graph;
+    private readonly IGraph<ISudokuElement, LinkStrength> _graph;
 
     public DigitForcingNetReportBuilder(ColoringDictionary<ISudokuElement> on, 
         ColoringDictionary<ISudokuElement> off, CellPossibility onPos, Coloring onColoring,
-        CellPossibility offPos, Coloring offColoring, ILinkGraph<ISudokuElement> graph)
+        CellPossibility offPos, Coloring offColoring, IGraph<ISudokuElement, LinkStrength> graph)
     {
         _on = on;
         _off = off;

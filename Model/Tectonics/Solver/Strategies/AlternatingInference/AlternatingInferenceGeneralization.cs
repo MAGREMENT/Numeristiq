@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
@@ -30,7 +29,7 @@ public class AlternatingInferenceGeneralization : Strategy<ITectonicSolverData>
         }
     }
 
-    private bool Search(ITectonicSolverData solverData, ILinkGraph<ITectonicElement> graph, CellPossibility start)
+    private bool Search(ITectonicSolverData solverData, IGraph<ITectonicElement, LinkStrength> graph, CellPossibility start)
     {
         //TODO multiple calls for same cell ???
         
@@ -103,116 +102,7 @@ public interface IAlternatingInferenceType
     
     Difficulty Difficulty { get; }
 
-    ILinkGraph<ITectonicElement> GetGraph(ITectonicSolverData solverData);
-}
-
-public static class AlternatingInferenceReportBuilderHelper
-{
-    public static Chain<ITectonicElement, LinkStrength> ReconstructChain(Dictionary<ITectonicElement, ITectonicElement> on,
-        Dictionary<ITectonicElement, ITectonicElement> off, ITectonicElement startElement, ITectonicElement? endElement,
-        LinkStrength firstLink, bool isLoop)
-    {
-        List<ITectonicElement> e = new();
-        List<LinkStrength> l = new();
-
-        e.Add(startElement);
-        var link = firstLink;
-        var current = on;
-        while (current.TryGetValue(e[^1], out var friend))
-        {
-            if (friend.Equals(endElement)) break;
-            
-            e.Add(friend);
-            l.Add(link);
-            if (link == firstLink)
-            {
-                link = firstLink == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
-                current = off;
-            }
-            else
-            {
-                link = firstLink;
-                current = on;
-            }
-        }
-        
-        e.Reverse();
-        l.Reverse();
-
-        return isLoop ? new Loop<ITectonicElement, LinkStrength>(e.ToArray(), l.ToArray(), firstLink) :
-            new Chain<ITectonicElement, LinkStrength>(e.ToArray(), l.ToArray());
-    }
-
-    public static string Description(Chain<ITectonicElement, LinkStrength> chain)
-    {
-        var builder = new StringBuilder();
-        var shift = 0;
-        if (chain is Loop<ITectonicElement, LinkStrength>)
-        {
-            shift++;
-            builder.Append("Loop : ");
-        }
-        else builder.Append("Chain : ");
-        
-        builder.Append(chain.Elements[0]);
-
-        for (int i = 0; i < chain.Links.Length - shift; i++)
-        {
-            var link = chain.Links[i] == LinkStrength.Strong ? '=' : '-';
-            builder.Append($" {link} {chain.Elements[i + 1]}");
-        }
-
-        if (shift > 0) builder.Append($" {chain.Links[^1]}");
-
-        return builder.ToString();
-    }
-}
-
-public class AlternatingInferenceLoopReportBuilder : IChangeReportBuilder<NumericChange, INumericSolvingState,
-        ITectonicHighlighter>
-{
-    private readonly ITectonicElement _loopPoint;
-    private readonly bool _isStrong;
-    private readonly Dictionary<ITectonicElement, ITectonicElement> _on;
-    private readonly Dictionary<ITectonicElement, ITectonicElement> _off;
-
-    public AlternatingInferenceLoopReportBuilder(ITectonicElement loopPoint, bool isStrong, Dictionary<ITectonicElement, ITectonicElement> on, Dictionary<ITectonicElement, ITectonicElement> off)
-    {
-        _loopPoint = loopPoint;
-        _isStrong = isStrong;
-        _on = on;
-        _off = off;
-    }
-
-    public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, INumericSolvingState snapshot)
-    {
-        var loop = (Loop<ITectonicElement, LinkStrength>)(_isStrong
-            ? AlternatingInferenceReportBuilderHelper.ReconstructChain(_off, _on, _loopPoint,
-                _loopPoint, LinkStrength.Strong, true)
-            : AlternatingInferenceReportBuilderHelper.ReconstructChain(_on, _off, _loopPoint,
-                _loopPoint, LinkStrength.Weak, true));
-        return new ChangeReport<ITectonicHighlighter>(AlternatingInferenceReportBuilderHelper.Description(loop),
-            lighter =>
-            {
-                lighter.HighlightElement(loop.Elements[0], StepColor.Cause1);
-            
-                for (int i = 0; i < loop.Links.Length - 1; i++)
-                {
-                    lighter.CreateLink(loop.Elements[i], loop.Elements[i + 1], loop.Links[i]);
-                    lighter.HighlightElement(loop.Elements[i + 1], loop.Links[i] == LinkStrength.Strong ? StepColor.On :
-                        StepColor.Cause1);
-                }
-
-                lighter.CreateLink(loop.Elements[^1], loop.Elements[0], loop.Links[^1]);
-
-                ChangeReportHelper.HighlightChanges(lighter, changes);
-            });
-    }
-
-    public Clue<ITectonicHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, INumericSolvingState snapshot)
-    {
-        return Clue<ITectonicHighlighter>.Default();
-    }
+    IGraph<ITectonicElement, LinkStrength> GetGraph(ITectonicSolverData solverData);
 }
 
 public class AlternatingInferenceChainReportBuilder : IChangeReportBuilder<NumericChange, INumericSolvingState, ITectonicHighlighter>
@@ -231,9 +121,8 @@ public class AlternatingInferenceChainReportBuilder : IChangeReportBuilder<Numer
 
     public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, INumericSolvingState snapshot)
     {
-        var chain = AlternatingInferenceReportBuilderHelper.ReconstructChain(_on, _off, _end, null,
-            LinkStrength.Strong, false);
-        return new ChangeReport<ITectonicHighlighter>(AlternatingInferenceReportBuilderHelper.Description(chain),
+        var chain = ChainExtensions.ReconstructChain(_on, _off, _end, LinkStrength.Strong, false);
+        return new ChangeReport<ITectonicHighlighter>($"Chain : {chain.ToLinkChainString()}",
             lighter =>
         {
             lighter.HighlightElement(chain.Elements[0], StepColor.Cause1);

@@ -234,10 +234,10 @@ public class CellForcingNetBuilder : IChangeReportBuilder<NumericChange, ISudoku
     private readonly int _col;
     private readonly CellPossibility _target;
     private readonly Coloring _targetColoring;
-    private readonly ILinkGraph<ISudokuElement> _graph;
+    private readonly IGraph<ISudokuElement, LinkStrength> _graph;
 
     public CellForcingNetBuilder(ColoringDictionary<ISudokuElement>[] colorings, int row, int col,
-        CellPossibility target, Coloring targetColoring, ILinkGraph<ISudokuElement> graph)
+        CellPossibility target, Coloring targetColoring, IGraph<ISudokuElement, LinkStrength> graph)
     {
         _colorings = colorings;
         _row = row;

@@ -11,15 +11,15 @@ public class UnitStrongLinkConstructRule : IConstructRule<ISudokuSolverData, ISu
     
     private UnitStrongLinkConstructRule() {}
     
-    public int ID { get; } = UniqueID.Next();
+    public int ID { get; } = UniqueConstructRuleID.Next();
     
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
+    public void Apply(IGraph<ISudokuElement, LinkStrength> linkGraph, ISudokuSolverData data)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = solverData.RowPositionsAt(row, number);
+                var ppir = data.RowPositionsAt(row, number);
                 if(ppir.Count != 2) continue;
 
                 var asArray = ppir.ToArray();
@@ -29,7 +29,7 @@ public class UnitStrongLinkConstructRule : IConstructRule<ISudokuSolverData, ISu
             
             for (int col = 0; col < 9; col++)
             {
-                var ppic = solverData.ColumnPositionsAt(col, number);
+                var ppic = data.ColumnPositionsAt(col, number);
                 if(ppic.Count != 2) continue;
 
                 var asArray = ppic.ToArray();
@@ -41,7 +41,7 @@ public class UnitStrongLinkConstructRule : IConstructRule<ISudokuSolverData, ISu
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = solverData.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var ppimn = data.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count != 2) continue;
 
                     var asArray = ppimn.ToArray();
@@ -52,13 +52,13 @@ public class UnitStrongLinkConstructRule : IConstructRule<ISudokuSolverData, ISu
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuSolverData solverData)
+    public void Apply(IGraph<CellPossibility, LinkStrength> linkGraph, ISudokuSolverData data)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = solverData.RowPositionsAt(row, number);
+                var ppir = data.RowPositionsAt(row, number);
                 if(ppir.Count != 2) continue;
 
                 var asArray = ppir.ToArray();
@@ -68,7 +68,7 @@ public class UnitStrongLinkConstructRule : IConstructRule<ISudokuSolverData, ISu
             
             for (int col = 0; col < 9; col++)
             {
-                var ppic = solverData.ColumnPositionsAt(col, number);
+                var ppic = data.ColumnPositionsAt(col, number);
                 if(ppic.Count != 2) continue;
 
                 var asArray = ppic.ToArray();
@@ -80,7 +80,7 @@ public class UnitStrongLinkConstructRule : IConstructRule<ISudokuSolverData, ISu
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = solverData.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var ppimn = data.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count != 2) continue;
 
                     var asArray = ppimn.ToArray();

@@ -16,13 +16,14 @@ namespace DesktopApplication.View.Tectonics.Pages;
 public partial class SolvePage : ITectonicSolveView //TODO side controls visual
 {
     private readonly TectonicSolvePresenter _presenter;
+    private readonly bool _intialized;
     
     public SolvePage()
     {
         InitializeComponent();
 
         _presenter = PresenterFactory.Instance.Initialize(this);
-        ((RadioButton)EmbeddedDrawer.SideControls[3]!).IsChecked = true; //Do NOT move this to XAML
+        _intialized = true;
     }
 
     public ITectonicDrawer Drawer => (TectonicBoard)EmbeddedDrawer.OptimizableContent!;
@@ -99,7 +100,7 @@ public partial class SolvePage : ITectonicSolveView //TODO side controls visual
 
     private void ModeToDefault(object sender, RoutedEventArgs e)
     {
-        _presenter.SetSelectionMode(SelectionMode.Default);
+        if(_intialized) _presenter.SetSelectionMode(SelectionMode.Default);
     }
     
     private void ModeToMerge(object sender, RoutedEventArgs e)
@@ -107,9 +108,9 @@ public partial class SolvePage : ITectonicSolveView //TODO side controls visual
         _presenter.SetSelectionMode(SelectionMode.Merge);
     }
     
-    private void ModeToSplit(object sender, RoutedEventArgs e)
+    private void ModeToEdit(object sender, RoutedEventArgs e)
     {
-        _presenter.SetSelectionMode(SelectionMode.Split);
+        _presenter.SetSelectionMode(SelectionMode.Edit);
     }
     
     private void DoBoardInput(object sender, KeyEventArgs e)

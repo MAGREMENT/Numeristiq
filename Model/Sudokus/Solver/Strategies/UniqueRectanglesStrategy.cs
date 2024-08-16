@@ -241,7 +241,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
                             if (solverData.ChangeBuffer.NeedCommit())
                             {
                                 solverData.ChangeBuffer.Commit(new UniqueRectanglesWithStrongLinkReportBuilder(
-                                    floor, roof, new Link<CellPossibility>(cpr1, cpf1)));
+                                    floor, roof, new Edge<CellPossibility>(cpr1, cpf1)));
                                 if (StopOnFirstCommit) return true;
                             }
                         }
@@ -256,7 +256,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
                             if (solverData.ChangeBuffer.NeedCommit())
                             {
                                 solverData.ChangeBuffer.Commit(new UniqueRectanglesWithStrongLinkReportBuilder(
-                                    floor, roof, new Link<CellPossibility>(cpr2, cpf2)));
+                                    floor, roof, new Edge<CellPossibility>(cpr2, cpf2)));
                                 if (StopOnFirstCommit) return true;
                             }
                         }
@@ -476,13 +476,13 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
-    private readonly Link<CellPossibility> _link;
+    private readonly Edge<CellPossibility> _edge;
 
-    public UniqueRectanglesWithStrongLinkReportBuilder(Cell[] floor, Cell[] roof, Link<CellPossibility> link)
+    public UniqueRectanglesWithStrongLinkReportBuilder(Cell[] floor, Cell[] roof, Edge<CellPossibility> edge)
     {
         _floor = floor;
         _roof = roof;
-        _link = link;
+        _edge = edge;
     }
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
@@ -499,7 +499,7 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<
                 lighter.HighlightCell(roof, StepColor.Cause1);
             }
 
-            lighter.CreateLink(_link.From, _link.To, LinkStrength.Strong);
+            lighter.CreateLink(_edge.From, _edge.To, LinkStrength.Strong);
             
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });

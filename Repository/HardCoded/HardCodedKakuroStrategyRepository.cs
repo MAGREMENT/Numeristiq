@@ -2,7 +2,7 @@
 using Model.Kakuros;
 using Model.Kakuros.Strategies;
 
-namespace Repository;
+namespace Repository.HardCoded;
 
 public class HardCodedKakuroStrategyRepository : HardCodedStrategyRepository<Strategy<IKakuroSolverData>>
 {

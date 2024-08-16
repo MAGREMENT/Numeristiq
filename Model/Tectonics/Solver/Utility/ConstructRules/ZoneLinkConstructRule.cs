@@ -11,16 +11,16 @@ public class ZoneLinkConstructRule : IConstructRule<ITectonicSolverData, ITecton
     
     private ZoneLinkConstructRule(){}
     
-    public int ID { get; } = UniqueID.Next();
+    public int ID { get; } = UniqueConstructRuleID.Next();
     
-    public void Apply(ILinkGraph<ITectonicElement> linkGraph, ITectonicSolverData solverData)
+    public void Apply(IGraph<ITectonicElement, LinkStrength> linkGraph, ITectonicSolverData data)
     {
-        for (int i = 0; i < solverData.Tectonic.Zones.Count; i++)
+        for (int i = 0; i < data.Tectonic.Zones.Count; i++)
         {
-            var zone = solverData.Tectonic.Zones[i];
+            var zone = data.Tectonic.Zones[i];
             for (int n = 1; n <= zone.Count; n++)
             {
-                var pos = solverData.ZonePositionsFor(i, n);
+                var pos = data.ZonePositionsFor(i, n);
                 if (pos.Count == 2)
                 {
                     var a = pos.NextPosition(-1);

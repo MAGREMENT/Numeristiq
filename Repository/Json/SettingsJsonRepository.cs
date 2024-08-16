@@ -1,7 +1,7 @@
 ﻿using Model.Core.Settings;
 using Model.Repositories;
 
-namespace Repository;
+namespace Repository.Json;
 
 public class SettingsJsonRepository : JsonRepository, ISettingRepository
 {

@@ -14,7 +14,7 @@ namespace Model.Sudokus.Solver.Utility;
 
 public static class ForcingNetsUtility
 {
-    public static ILinkGraph<ISudokuElement> GetReportGraph(ISudokuSolverData data)
+    public static IGraph<ISudokuElement, LinkStrength> GetReportGraph(ISudokuSolverData data)
     {
         data.PreComputer.ComplexGraph.Construct(CellStrongLinkConstructRule.Instance, CellWeakLinkConstructRule.Instance,
             UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
@@ -67,7 +67,7 @@ public static class ForcingNetsUtility
     }
 
     public static List<Chain<ISudokuElement, LinkStrength>> FindEveryNeededPaths(Chain<ISudokuElement, LinkStrength> basePath,
-        IColoringResult<ISudokuElement> result, ILinkGraph<ISudokuElement> graph, ISudokuSolvingState snapshot)
+        IColoringResult<ISudokuElement> result, IGraph<ISudokuElement, LinkStrength> graph, ISudokuSolvingState snapshot)
     {
         var list = new List<Chain<ISudokuElement, LinkStrength>> {basePath};
         HashSet<ISudokuElement> allElements = new(basePath.Elements);

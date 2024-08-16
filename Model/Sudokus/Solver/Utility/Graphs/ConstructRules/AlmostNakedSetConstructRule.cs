@@ -12,11 +12,11 @@ public class AlmostNakedSetConstructRule : IConstructRule<ISudokuSolverData, ISu
     
     private AlmostNakedSetConstructRule(){}
     
-    public int ID { get; } = UniqueID.Next();
+    public int ID { get; } = UniqueConstructRuleID.Next();
 
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
+    public void Apply(IGraph<ISudokuElement, LinkStrength> linkGraph, ISudokuSolverData data)
     {
-        foreach (var als in solverData.PreComputer.AlmostLockedSets())
+        foreach (var als in data.PreComputer.AlmostLockedSets())
         {
             foreach (var p in als.Possibilities.EnumeratePossibilities())
             {
@@ -67,7 +67,7 @@ public class AlmostNakedSetConstructRule : IConstructRule<ISudokuSolverData, ISu
 
                     foreach (var ssc in SudokuUtility.SharedSeenCells(notIn))
                     {
-                        if (solverData.PossibilitiesAt(ssc).Contains(p)) linkGraph.Add(new CellPossibility(ssc, p),
+                        if (data.PossibilitiesAt(ssc).Contains(p)) linkGraph.Add(new CellPossibility(ssc, p),
                                 element, LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
@@ -79,7 +79,7 @@ public class AlmostNakedSetConstructRule : IConstructRule<ISudokuSolverData, ISu
 
                     foreach (var ssc in SudokuUtility.SharedSeenCells(cells))
                     {
-                        if(solverData.PossibilitiesAt(ssc).Contains(possibility)) linkGraph.Add(nakedSet,
+                        if(data.PossibilitiesAt(ssc).Contains(possibility)) linkGraph.Add(nakedSet,
                             new CellPossibility(ssc, possibility), LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }

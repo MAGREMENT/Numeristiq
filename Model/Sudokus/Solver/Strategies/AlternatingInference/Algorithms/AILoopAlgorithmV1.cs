@@ -26,7 +26,7 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
         }
     }
 
-    private void Search(ILinkGraph<T> graph, ChainBuilder<T, LinkStrength> path, IAlternatingInferenceType<T> inferenceType, ISudokuSolverData view)
+    private void Search(IGraph<T, LinkStrength> graph, ChainBuilder<T, LinkStrength> path, IAlternatingInferenceType<T> inferenceType, ISudokuSolverData view)
     {
         if (path.Count > _maxLoopSize) return;
         var last = path.LastElement();

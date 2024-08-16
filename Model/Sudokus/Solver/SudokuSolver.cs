@@ -344,7 +344,7 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, ISudokuSolving
             _rowsPositions[row, i].Remove(col);
             _colsPositions[col, i].Remove(row);
             _minisPositions[miniRow, miniCol, i].Remove(gridRow, gridCol);
-            RemovePossibilityCheckLess(number, row, i); //TODO look into clearing this
+            RemovePossibilityCheckLess(number, row, i); //TODO look into cleaning this
             RemovePossibilityCheckLess(number, i, col);
             RemovePossibilityCheckLess(number,  startRow + i / 3, startCol + i % 3);
         }
