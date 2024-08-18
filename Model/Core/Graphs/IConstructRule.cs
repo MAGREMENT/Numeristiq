@@ -7,7 +7,7 @@ public interface IConstructRule<in TDataSource, TType> where TType : notnull
     void Apply(IGraph<TType, LinkStrength> linkGraph, TDataSource data);
 }
 
-public class UniqueConstructRuleID
+public static class UniqueConstructRuleID
 {
     private static int _current;
 

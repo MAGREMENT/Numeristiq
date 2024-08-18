@@ -42,4 +42,4 @@ public static class ColorHelper
 }
 
 public delegate void Color<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result,
-    HashSet<T> visited, T start, Coloring firstColor) where T : ISudokuElement;
+    HashSet<T> visited, T start, Coloring firstColor) where T : notnull;

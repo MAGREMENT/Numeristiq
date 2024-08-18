@@ -314,7 +314,7 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawingData, ISudokuSolverDrawer
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
         LinkStrength strength)
     {
-        Layers[LinksIndex].Add(new PossibilityLinkDrawableComponent(rowFrom, colFrom, possibilityFrom,
+        Layers[LinksIndex].Add(new LinkDrawableComponent(rowFrom, colFrom, possibilityFrom,
             rowTo, colTo, possibilityTo, strength));
     }
 

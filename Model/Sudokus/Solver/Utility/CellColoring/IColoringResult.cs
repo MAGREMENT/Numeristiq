@@ -1,8 +1,6 @@
-using Model.Sudokus.Solver.Utility.Graphs;
-
 namespace Model.Sudokus.Solver.Utility.CellColoring;
 
-public interface IColoringResult<T> where T : ISudokuElement
+public interface IColoringResult<T> where T : notnull
 {
     public IReadOnlyColoringHistory<T>? History { get; }
 

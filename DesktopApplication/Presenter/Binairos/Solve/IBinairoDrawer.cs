@@ -1,10 +1,8 @@
-﻿using Model.Core.Changes;
-using Model.Utility;
-using Model.Utility.Collections;
+﻿using Model.Core.Highlighting;
 
 namespace DesktopApplication.Presenter.Binairos.Solve;
 
-public interface IBinairoDrawer : IDrawer
+public interface IBinairoDrawer : IDrawer, IBinairoHighlighter
 {
     LinkOffsetSidePriority LinkOffsetSidePriority { set; }
     bool AreSolutionNumbers { set; }
@@ -15,6 +13,4 @@ public interface IBinairoDrawer : IDrawer
     void ClearSolutions();
     void ShowSolution(int solution, int row, int col);
     void SetClue(int row, int col, bool isClue);
-    void HighlightCell(int row, int col, StepColor color);
-    void EncircleCells(IContainingEnumerable<Cell> cells, StepColor color);
 }

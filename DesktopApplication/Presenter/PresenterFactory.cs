@@ -1,4 +1,5 @@
-﻿using DesktopApplication.Presenter.Binairos.Solve;
+﻿using System.Collections.Generic;
+using DesktopApplication.Presenter.Binairos.Solve;
 using DesktopApplication.Presenter.Kakuros.Solve;
 using DesktopApplication.Presenter.Nonograms.Solve;
 using DesktopApplication.Presenter.Sudokus.Generate;
@@ -15,8 +16,9 @@ using Model.Repositories;
 using Model.Sudokus.Solver;
 using Model.Tectonics.Solver;
 using Repository;
+using Repository.Files;
+using Repository.Files.Types;
 using Repository.HardCoded;
-using Repository.Json;
 
 namespace DesktopApplication.Presenter;
 
@@ -117,13 +119,13 @@ public class PresenterFactory
     
     private static PresenterFactory InitializeInstance()
     {
-        var themeRepository = new ThemeMultiRepository(new JsonThemeRepository("themes.json",
-                !IsForProduction, true),
+        var themeRepository = new ThemeMultiRepository(new FileThemeRepository("themes",
+                !IsForProduction, true, new ThemeNativeType()),
             new HardCodedThemeRepository());
-        var settingsRepository = new SettingsJsonRepository("settings.json", 
-            !IsForProduction, true);
-        var sudokuRepository = new SudokuStrategyJsonRepository("strategies.json", 
-            !IsForProduction, true);
+        var settingsRepository = new FileSettingsRepository("settings", 
+            !IsForProduction, true, new JsonType<Dictionary<string, string>>());
+        var sudokuRepository = new FileSudokuStrategiesRepository("strategies", 
+            !IsForProduction, true, new JsonType<List<StrategyDAO>>());
         var tectonicRepository = new HardCodedTectonicStrategyRepository();
         var kakuroRepository = new HardCodedKakuroStrategyRepository();
         var nonogramRepository = new HardCodedNonogramStrategyRepository();

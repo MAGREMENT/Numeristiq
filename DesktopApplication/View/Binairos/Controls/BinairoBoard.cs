@@ -18,6 +18,8 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
     private const int LinesIndex = 2;
     private const int EncircleIndex = 3;
     private const int NumbersIndex = 4;
+    private const int FakeNumbersIndex = 5;
+    private const int LinksIndex = 6;
 
     private double _lineWidth;
     private double _cellSize;
@@ -26,7 +28,7 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
 
     private bool[,] _clues = new bool[0, 0];
 
-    public BinairoBoard() : base(5)
+    public BinairoBoard() : base(7)
     {
         Layers[BackgroundIndex].Add(new BackgroundDrawableComponent());
         Layers[LinesIndex].Add(new BinairoGridDrawableComponent());
@@ -123,6 +125,8 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
         }
     }
 
+    public double SolutionSimulationSizeFactor => 0.5;
+
     public double BigLineWidth
     {
         get => _lineWidth;
@@ -213,10 +217,23 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
         Layers[EncircleIndex].Add(new MultiCellGeometryDrawableComponent(cells, (int)color, FillColorType.Step));
     }
 
+    public void CreateLink(Cell one, Cell two)
+    {
+        Layers[LinksIndex].Add(new LinkDrawableComponent(one.Row, one.Column,
+            two.Row, two.Column));
+    }
+
+    public void SimulateSolution(int solution, int row, int col)
+    {
+        Layers[FakeNumbersIndex].Add(new BinairoSolutionDrawableComponent(solution, row, col, true));
+    }
+
     public void ClearHighlights()
     {
         Layers[HighlightIndex].Clear();
         Layers[EncircleIndex].Clear();
+        Layers[LinksIndex].Clear();
+        Layers[FakeNumbersIndex].Clear();
     }
 
     private void AdaptClueArray()

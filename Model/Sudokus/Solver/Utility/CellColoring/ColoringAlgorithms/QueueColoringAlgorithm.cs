@@ -7,8 +7,8 @@ namespace Model.Sudokus.Solver.Utility.CellColoring.ColoringAlgorithms;
 
 public class QueueColoringAlgorithm : IColoringAlgorithm
 {
-    public void ColorWithoutRules<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
-        where T : ISudokuElement
+    public void ColorWithoutRules<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited,
+        T start, Coloring firstColor = Coloring.On) where T : notnull
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -41,7 +41,8 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
         }
     }
 
-    public void ColorWithRules<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On) where T : ISudokuElement
+    public void ColorWithRules<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited, 
+        T start, Coloring firstColor = Coloring.On) where T : notnull
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -77,8 +78,8 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
         }
     }
 
-    public void ColorWithRulesAndLinksJump<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
-        where T : ISudokuElement
+    public void ColorWithRulesAndLinksJump<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, 
+        HashSet<T> visited, T start, Coloring firstColor = Coloring.On) where T : ISudokuElement
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -111,7 +112,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                     queue.Enqueue(new ColoredElement<T>(friend, opposite));
                 }
             }
-            else if (current.Element is CellPossibility pos)
+            else if (current.Element is CellPossibility pos) //TODO replace with conditional graph ?
             {
                 T? row = default;
                 bool rowB = true;

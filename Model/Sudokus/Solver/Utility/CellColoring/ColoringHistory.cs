@@ -5,7 +5,7 @@ using Model.Sudokus.Solver.Utility.Graphs;
 
 namespace Model.Sudokus.Solver.Utility.CellColoring;
 
-public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ISudokuElement
+public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : notnull
 {
     private readonly Dictionary<T, T> _parents = new();
 
@@ -156,7 +156,7 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ISudokuE
 
 public delegate void HandleChildToParentLink<in T>(T child, T parent);
 
-public interface IReadOnlyColoringHistory<T> where T : ISudokuElement
+public interface IReadOnlyColoringHistory<T> where T : notnull
 {
     public Chain<T, LinkStrength> GetPathToRootWithGuessedLinks(T to, Coloring coloring, bool reverse = true);
     public Chain<T, LinkStrength> GetPathToRootWithRealLinks(T from, IGraph<T, LinkStrength> graph, bool reverse = true);

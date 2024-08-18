@@ -1,11 +1,8 @@
-﻿using Model.Core.Changes;
-using Model.Core.Highlighting;
-using Model.Utility;
-using Model.Utility.Collections;
+﻿using Model.Core.Highlighting;
 
 namespace DesktopApplication.Presenter.Binairos.Solve;
 
-public class BinairoHighlightTranslator : IHighlighterTranslator<IBinairoHighlighter>, IBinairoHighlighter
+public class BinairoHighlightTranslator : IHighlighterTranslator<IBinairoHighlighter>
 {
     private readonly IBinairoDrawer _drawer;
 
@@ -17,17 +14,7 @@ public class BinairoHighlightTranslator : IHighlighterTranslator<IBinairoHighlig
     public void Translate(IHighlightable<IBinairoHighlighter> highlightable, bool clear)
     {
         if(clear) _drawer.ClearHighlights();
-        highlightable.Highlight(this);
+        highlightable.Highlight(_drawer);
         _drawer.Refresh();
-    }
-
-    public void HighlightCell(int row, int col, StepColor color)
-    {
-        _drawer.HighlightCell(row, col, color);
-    }
-
-    public void EncircleCells(IContainingEnumerable<Cell> cells, StepColor color)
-    {
-        _drawer.EncircleCells(cells, color);
     }
 }

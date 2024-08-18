@@ -6,16 +6,18 @@ using Model.Repositories;
 using Model.Sudokus.Solver;
 using Model.Tectonics.Solver;
 using Repository;
+using Repository.Files;
+using Repository.Files.Types;
 using Repository.HardCoded;
-using Repository.Json;
 using Repository.MySql;
 
 namespace ConsoleApplication;
 
 public class Instantiator
 {
-    private readonly IStrategyRepository<SudokuStrategy> _sudokuRepository = new SudokuStrategyJsonRepository(
-        "strategies.json", !Program.IsForProduction, true);
+    private readonly IStrategyRepository<SudokuStrategy> _sudokuRepository = new FileSudokuStrategiesRepository(
+        "strategies", !Program.IsForProduction, true,
+        new JsonType<List<StrategyDAO>>());
     private readonly IStrategyRepository<Strategy<ITectonicSolverData>> _tectonicRepository = 
         new HardCodedTectonicStrategyRepository();
     private readonly IStrategyRepository<Strategy<IKakuroSolverData>> _kakuroRepository = 
@@ -69,8 +71,9 @@ public class Instantiator
 
     public ThemeMultiRepository InstantiateThemeRepository()
     {
-        _themeRepository ??= new ThemeMultiRepository(new JsonThemeRepository("themes.json",
-            !Program.IsForProduction, true), new HardCodedThemeRepository());
+        _themeRepository ??= new ThemeMultiRepository(new FileThemeRepository("themes",
+            !Program.IsForProduction, true, new JsonType<List<ThemeDto>>()),
+            new HardCodedThemeRepository());
         return _themeRepository;
     }
 

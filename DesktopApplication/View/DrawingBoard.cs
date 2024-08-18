@@ -322,6 +322,7 @@ public interface IBinairoDrawingData : INumericCellGameDrawingData
     
     int RowCount { get; }
     int ColumnCount { get; }
+    double SolutionSimulationSizeFactor { get; }
     
     bool AreSolutionNumbers { get; }
 }
@@ -578,21 +579,27 @@ public class BinairoSolutionDrawableComponent : IDrawableComponent<IBinairoDrawi
     private readonly int _row;
     private readonly int _col;
     private readonly int _solution;
+    private readonly bool _isSimulation;
 
-    public BinairoSolutionDrawableComponent(int solution, int row, int col)
+    public BinairoSolutionDrawableComponent(int solution, int row, int col, bool isSimulation)
     {
         _solution = solution;
         _row = row;
         _col = col;
+        _isSimulation = isSimulation;
     }
+
+    public BinairoSolutionDrawableComponent(int solution, int row, int col) : this(solution, row, col, false) {}
 
     public void Draw(DrawingContext context, IBinairoDrawingData data)
     {
+        var size = data.CellSize;
+        if (_isSimulation) size *= data.SolutionSimulationSizeFactor;
         if (data.AreSolutionNumbers)
         {
             var brush = data.IsClue(_row, _col) ? data.ClueNumberBrush : data.DefaultNumberBrush;
             var text = new FormattedText((_solution - 1).ToString(), data.CultureInfo, FlowDirection.LeftToRight, data.Typeface,
-                data.CellSize / 4 * 3, brush, 1);
+                size / 4 * 3, brush, 1);
             DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfCell(_col),
                     data.GetTopOfCell(_row), data.CellSize, data.CellSize), ComponentHorizontalAlignment.Center,
                 ComponentVerticalAlignment.Center);
@@ -603,10 +610,10 @@ public class BinairoSolutionDrawableComponent : IDrawableComponent<IBinairoDrawi
             var center = data.GetCenterOfCell(_row, _col);
             if (data.IsClue(_row, _col))
             {
-                radius = data.CellSize * 13 / 32;
+                radius = size * 13 / 32;
                 context.DrawEllipse(data.ClueNumberBrush, null, center, radius, radius);
             }
-            radius = data.CellSize * 3 / 8;
+            radius = size * 3 / 8;
             var brush = _solution == 1 ? data.CircleFirstColor : data.CircleSecondColor;
             context.DrawEllipse(brush, null, center, radius, radius);
         }
@@ -900,8 +907,8 @@ public class PossibilityPatchDrawableComponent : IDrawableComponent<INinePossibi
     }
 }
 
-public class PossibilityLinkDrawableComponent : IDrawableComponent<INinePossibilitiesGameDrawingData>,
-    IDrawableComponent<IVaryingPossibilitiesGameDrawingData>
+public class LinkDrawableComponent : IDrawableComponent<INinePossibilitiesGameDrawingData>,
+    IDrawableComponent<IVaryingPossibilitiesGameDrawingData>, IDrawableComponent<IBinairoDrawingData>
 {
     private readonly int _rowFrom;
     private readonly int _colFrom;
@@ -911,7 +918,10 @@ public class PossibilityLinkDrawableComponent : IDrawableComponent<INinePossibil
     private readonly int _possibilityTo;
     private readonly LinkStrength _link;
 
-    public PossibilityLinkDrawableComponent(int rowFrom, int colFrom, int possibilityFrom, int rowTo, 
+    public LinkDrawableComponent(int rowFrom, int colFrom, int rowTo, 
+        int colTo) : this(rowFrom, colFrom, -1, rowTo, colTo, -1, LinkStrength.Strong) {}
+    
+    public LinkDrawableComponent(int rowFrom, int colFrom, int possibilityFrom, int rowTo, 
         int colTo, int possibilityTo, LinkStrength link)
     {
         _rowFrom = rowFrom;
@@ -922,50 +932,48 @@ public class PossibilityLinkDrawableComponent : IDrawableComponent<INinePossibil
         _possibilityTo = possibilityTo;
         _link = link;
     }
+    
+    public void Draw(DrawingContext context, IBinairoDrawingData data)
+    {
+        var from = data.GetCenterOfCell(_rowFrom, _colFrom);
+        var to = data.GetCenterOfCell(_rowTo, _colTo);
+        var size = data.CellSize * data.SolutionSimulationSizeFactor;
+        Draw(context, data, from, size, to, size);
+    }
 
     public void Draw(DrawingContext context, INinePossibilitiesGameDrawingData data)
     {
         var from = data.GetCenterOfPossibility(_rowFrom, _colFrom, _possibilityFrom);
         var to = data.GetCenterOfPossibility(_rowTo, _colTo, _possibilityTo);
-        var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
-
-        var offsets = MathUtility.ShiftSecondPointPerpendicularly(from, middle, data.LinkOffset);
-
-        var validOffsets = new List<Point>();
-        for (int i = 0; i < 2; i++)
-        {
-            var p = offsets[i];
-            if(p.X > 0 && p.X < data.Width && p.Y > 0 && p.Y < data.Height) validOffsets.Add(p);
-        }
-
-        bool isWeak = _link == LinkStrength.Weak;
-        var pSize = data.CellSize / 3;
-        switch (validOffsets.Count)
-        {
-            case 0 : 
-                AddShortenedLine(context, data, from, pSize, to, pSize, isWeak);
-                break;
-            case 1 :
-                AddShortenedLine(context, data, from, pSize, validOffsets[0], to, pSize, isWeak);
-                break;
-            case 2 :
-                if(data.LinkOffsetSidePriority == LinkOffsetSidePriority.Any) 
-                    AddShortenedLine(context, data, from, pSize, validOffsets[0], to, pSize, isWeak);
-                else
-                {
-                    var left = MathUtility.IsLeft(from, to, validOffsets[0]) ? 0 : 1;
-                    AddShortenedLine(context, data, from, pSize, data.LinkOffsetSidePriority == LinkOffsetSidePriority.Left 
-                        ? validOffsets[left] 
-                        : validOffsets[(left + 1) % 2], to, pSize, isWeak);
-                }
-                break;
-        }
+        var size = data.CellSize / 3;
+        Draw(context, data, from, size, to, size);
     }
     
     public void Draw(DrawingContext context, IVaryingPossibilitiesGameDrawingData data)
     {
         var from = data.GetCenterOfPossibility(_rowFrom, _colFrom, _possibilityFrom);
         var to = data.GetCenterOfPossibility(_rowTo, _colTo, _possibilityTo);
+        var fromSize = data.GetPossibilitySize(_rowFrom, _colFrom);
+        var toSize = data.GetPossibilitySize(_rowTo, _colTo);
+        Draw(context, data, from, fromSize, to, toSize);
+    }
+    
+    public void Draw(DrawingContext context, object data)
+    {
+        switch (data)
+        {
+            case IBinairoDrawingData bd : Draw(context, bd);
+                break;
+            case IVaryingPossibilitiesGameDrawingData vd : Draw(context, vd);
+                break;
+            case INinePossibilitiesGameDrawingData nd : Draw(context, nd);
+                break;
+        }
+    }
+
+    private void Draw(DrawingContext context, ICellGameDrawingData data,
+        Point from, double fromSize, Point to, double toSize)
+    {
         var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
 
         var offsets = MathUtility.ShiftSecondPointPerpendicularly(from, middle, data.LinkOffset);
@@ -978,8 +986,6 @@ public class PossibilityLinkDrawableComponent : IDrawableComponent<INinePossibil
         }
 
         var isWeak = _link == LinkStrength.Weak;
-        var fromSize = data.GetPossibilitySize(_rowFrom, _colFrom);
-        var toSize = data.GetPossibilitySize(_rowTo, _colTo);
         switch (validOffsets.Count)
         {
             case 0 : 
@@ -996,8 +1002,8 @@ public class PossibilityLinkDrawableComponent : IDrawableComponent<INinePossibil
                     var left = MathUtility.IsLeft(from, to, validOffsets[0]) ? 0 : 1;
                     AddShortenedLine(context, data, from, fromSize,
                         data.LinkOffsetSidePriority == LinkOffsetSidePriority.Left 
-                        ? validOffsets[left] 
-                        : validOffsets[(left + 1) % 2], to, toSize, isWeak);
+                            ? validOffsets[left] 
+                            : validOffsets[(left + 1) % 2], to, toSize, isWeak);
                 }
                 break;
         }
@@ -1045,17 +1051,6 @@ public class PossibilityLinkDrawableComponent : IDrawableComponent<INinePossibil
         {
             DashStyle = isWeak ? DashStyles.DashDot : DashStyles.Solid
         }, from, to);
-    }
-
-    public void Draw(DrawingContext context, object data)
-    {
-        switch (data)
-        {
-            case IVaryingPossibilitiesGameDrawingData vd : Draw(context, vd);
-                break;
-            case INinePossibilitiesGameDrawingData nd : Draw(context, nd);
-                break;
-        }
     }
 }
 

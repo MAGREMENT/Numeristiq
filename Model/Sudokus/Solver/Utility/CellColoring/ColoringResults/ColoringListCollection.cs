@@ -5,7 +5,7 @@ using Model.Sudokus.Solver.Utility.Graphs;
 
 namespace Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 
-public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<ColoringList<T>> where T : ISudokuElement
+public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<ColoringList<T>> where T : notnull
 {
     private bool _withHistory;
     
@@ -73,7 +73,7 @@ public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<Colorin
     }
 }
 
-public class ColoringList<T> where T : ISudokuElement
+public class ColoringList<T> where T : notnull
 {
     private readonly List<T> _on = new();
     private readonly List<T> _off = new();

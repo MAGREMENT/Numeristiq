@@ -1,26 +1,26 @@
 ﻿using Model.Core.Settings;
 using Model.Repositories;
 
-namespace Repository.Json;
+namespace Repository.Files;
 
-public class SettingsJsonRepository : JsonRepository, ISettingRepository
+public class FileSettingsRepository : FileRepository<Dictionary<string, string>>, ISettingRepository
 {
     private Dictionary<string, string>? _buffer;
     
-    public SettingsJsonRepository(string filePath, bool searchParentDirectories, bool createIfNotFound)
-        : base(filePath, searchParentDirectories, createIfNotFound)
+    public FileSettingsRepository(string fileName, bool searchParentDirectories, bool createIfNotFound,
+        IFileType<Dictionary<string, string>> type) : base(fileName, searchParentDirectories, createIfNotFound, type)
     {
     }
-
+    
     public Dictionary<string, SettingValue> GetSettings()
     {
-        _buffer ??= Download<Dictionary<string, string>>();
+        _buffer ??= Download();
         return _buffer is null ? new Dictionary<string, SettingValue>() : To(_buffer);
     }
 
     public void UpdateSetting(ISetting setting)
     {
-        _buffer ??= Download<Dictionary<string, string>>();
+        _buffer ??= Download();
         if (_buffer is null) return;
  
         _buffer[setting.Name] = setting.Get().ToString()!;
@@ -29,7 +29,7 @@ public class SettingsJsonRepository : JsonRepository, ISettingRepository
 
     public void UpdateSettings(IEnumerable<ISetting> settings)
     {
-        _buffer ??= Download<Dictionary<string, string>>();
+        _buffer ??= Download();
         if (_buffer is null) return;
 
         foreach (var setting in settings)

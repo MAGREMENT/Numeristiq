@@ -1,19 +1,19 @@
-using Model.Core;
+﻿using Model.Core;
 using Model.Core.Settings;
 using Model.Repositories;
 using Model.Sudokus.Solver;
 
-namespace Repository.Json;
+namespace Repository.Files;
 
-public class SudokuStrategyJsonRepository : JsonRepository, IStrategyRepository<SudokuStrategy>
+public class FileSudokuStrategiesRepository : FileRepository<List<StrategyDAO>>, IStrategyRepository<SudokuStrategy>
 {
     private List<StrategyDAO>? _buffer;
     
-    public SudokuStrategyJsonRepository(string filePath, bool searchParentDirectories, bool createIfNotFound) 
-        : base(filePath, searchParentDirectories, createIfNotFound)
+    public FileSudokuStrategiesRepository(string fileName, bool searchParentDirectories, bool createIfNotFound,
+        IFileType<List<StrategyDAO>> type) : base(fileName, searchParentDirectories, createIfNotFound, type)
     {
     }
-
+    
     public void SetStrategies(IReadOnlyList<SudokuStrategy> list)
     {
         _buffer = From(list);
@@ -22,13 +22,13 @@ public class SudokuStrategyJsonRepository : JsonRepository, IStrategyRepository<
 
     public IEnumerable<SudokuStrategy> GetStrategies()
     {
-        _buffer ??= Download<List<StrategyDAO>>();
+        _buffer ??= Download();
         return _buffer is null ? Enumerable.Empty<SudokuStrategy>() : To(_buffer);
     }
 
     public void UpdateStrategy(SudokuStrategy strategy)
     {
-        _buffer ??= Download<List<StrategyDAO>>();
+        _buffer ??= Download();
         if (_buffer is null) return;
 
         var index = IndexOf(strategy.Name);
@@ -41,13 +41,12 @@ public class SudokuStrategyJsonRepository : JsonRepository, IStrategyRepository<
 
     public void AddPreset(IReadOnlyList<SudokuStrategy> list, Stream stream)
     {
-        Upload(From(list), stream);
+        //TODO
     }
 
     public IEnumerable<SudokuStrategy> GetPreset(Stream stream)
     {
-        _buffer = Download<List<StrategyDAO>>(stream);
-        return _buffer is null ? Enumerable.Empty<SudokuStrategy>() : To(_buffer);
+        return Enumerable.Empty<SudokuStrategy>(); //TODO
     }
 
     private int IndexOf(string name)

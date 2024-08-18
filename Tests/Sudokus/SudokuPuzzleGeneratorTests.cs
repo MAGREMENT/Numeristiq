@@ -3,8 +3,8 @@ using Model.Core.Trackers;
 using Model.Sudokus;
 using Model.Sudokus.Generator;
 using Model.Sudokus.Solver;
-using Repository;
-using Repository.Json;
+using Repository.Files;
+using Repository.Files.Types;
 
 namespace Tests.Sudokus;
 
@@ -17,7 +17,8 @@ public class SudokuPuzzleGeneratorTests
     [Test]
     public void GenerationTest()
     {
-        var repo = new SudokuStrategyJsonRepository("strategies.json", true, true);
+        var repo = new FileSudokuStrategiesRepository("strategies", true, true,
+            new JsonType<List<StrategyDAO>>());
 
         var solver = new SudokuSolver();
         solver.StrategyManager.AddStrategies(repo.GetStrategies());

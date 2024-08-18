@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
@@ -7,7 +8,7 @@ using Model.Utility;
 
 namespace Model.Binairos.Strategies;
 
-public class AlternatingInferenceChainStrategy : Strategy<IBinairoSolverData> //TODO error chain
+public class AlternatingInferenceChainStrategy : Strategy<IBinairoSolverData> //TODO to simple coloring
 {
     public AlternatingInferenceChainStrategy() : base("Alternating Inference Chain", Difficulty.Extreme, InstanceHandling.UnorderedAll)
     {
@@ -108,20 +109,43 @@ public class AlternatingInferenceChainReportBuilder : IChangeReportBuilder<Binar
     public ChangeReport<IBinairoHighlighter> BuildReport(IReadOnlyList<BinaryChange> changes, IBinarySolvingState snapshot)
     {
         var chain = ChainExtensions.ReconstructChain(_on, _off, _end, LinkStrength.Strong, false);
-        return new ChangeReport<IBinairoHighlighter>($"Chain : {chain.ToLinkChainString()}",
+        return new ChangeReport<IBinairoHighlighter>(Description(chain),
             lighter =>
             {
-                lighter.HighlightCell(chain.Elements[0].ToCell(), StepColor.Cause1);
+                var e = chain.Elements[0];
+                lighter.HighlightCell(e.ToCell(), StepColor.Cause1);
+                lighter.SimulateSolution(e.Possibility, e.Row, e.Column);
             
                 for (int i = 0; i < chain.Links.Length; i++)
                 {
-                    //lighter.CreateLink(chain.Elements[i], chain.Elements[i + 1], chain.Links[i]);
-                    lighter.HighlightCell(chain.Elements[i + 1].ToCell(), chain.Links[i] == LinkStrength.Strong ? StepColor.On :
-                        StepColor.Cause1);
+                    lighter.CreateLink(chain.Elements[i].ToCell(), chain.Elements[i + 1].ToCell());
+                    
+                    e = chain.Elements[i + 1];
+                    lighter.HighlightCell(e.ToCell(), chain.Links[i] == LinkStrength.Strong 
+                        ? StepColor.On 
+                        : StepColor.Cause1);
+                    lighter.SimulateSolution(e.Possibility, e.Row, e.Column);
                 }
 
                 ChangeReportHelper.HighlightChanges(lighter, changes);
             });
+    }
+
+    private static string Description(Chain<CellPossibility, LinkStrength> chain)
+    {
+        var builder = new StringBuilder($"Chain : {ToString(chain.Elements[0])}");
+        for (int i = 0; i < chain.Links.Length; i++)
+        {
+            builder.Append(" = ");
+            builder.Append(ToString(chain.Elements[i + 1]));
+        }
+
+        return builder.ToString();
+    }
+
+    private static string ToString(CellPossibility cp)
+    {
+        return $"{cp.Possibility - 1}r{cp.Row + 1}c{cp.Column + 1}";
     }
 
     public Clue<IBinairoHighlighter> BuildClue(IReadOnlyList<BinaryChange> changes, IBinarySolvingState snapshot)

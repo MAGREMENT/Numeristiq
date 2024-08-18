@@ -25,9 +25,10 @@
                 <lc:BinairoBoard CellSize="50" BigLineWidth="3"
                                  LineBrush="{DynamicResource Text}"
                                  DefaultNumberBrush="{DynamicResource Text}"
-                                 ClueNumberBrush="{DynamicResource Accent}"
-                                 CircleFirstColor="{DynamicResource Primary1}"
-                                 CircleSecondColor="{DynamicResource Secondary1}"/>
+                                 ClueNumberBrush="{DynamicResource Primary1}"
+                                 CircleFirstColor="{DynamicResource Text}"
+                                 CircleSecondColor="{DynamicResource Secondary1}"
+                                 LinkBrush="{DynamicResource Accent}"/>
             </c:SizeOptimizedContentControl.OptimizableContent>
         </c:SizeOptimizedContentControl>
         

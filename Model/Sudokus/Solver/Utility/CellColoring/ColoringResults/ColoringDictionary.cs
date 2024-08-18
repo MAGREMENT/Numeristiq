@@ -3,7 +3,7 @@ using Model.Sudokus.Solver.Utility.Graphs;
 
 namespace Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 
-public class ColoringDictionary<T> : Dictionary<T, Coloring>, IColoringResult<T> where T : ISudokuElement
+public class ColoringDictionary<T> : Dictionary<T, Coloring>, IColoringResult<T> where T : notnull
 {
     private ColoringHistory<T>? _history;
 

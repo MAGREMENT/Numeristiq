@@ -1,32 +1,32 @@
 ﻿using Model.Repositories;
 using Model.Utility;
 
-namespace Repository.Json;
+namespace Repository.Files;
 
-public class JsonThemeRepository : JsonRepository, IThemeRepository
+public class FileThemeRepository : FileRepository<List<ThemeDto>>, IThemeRepository
 {
     private List<ThemeDto>? _buffer;
     
-    public JsonThemeRepository(string filePath, bool searchParentDirectories, bool createIfNotFound)
-        : base(filePath, searchParentDirectories, createIfNotFound)
+    public FileThemeRepository(string fileName, bool searchParentDirectories, bool createIfNotFound,
+        IFileType<List<ThemeDto>> type) : base(fileName, searchParentDirectories, createIfNotFound, type)
     {
     }
-
+    
     public IReadOnlyList<Theme> GetThemes()
     {
-        _buffer ??= Download<List<ThemeDto>>();
+        _buffer ??= Download();
         return _buffer is null ? Array.Empty<Theme>() : To(_buffer);
     }
 
     public int Count()
     {
-        _buffer ??= Download<List<ThemeDto>>();
+        _buffer ??= Download();
         return _buffer?.Count ?? 0;
     }
 
     public void AddTheme(Theme theme)
     {
-        _buffer ??= Download<List<ThemeDto>>();
+        _buffer ??= Download();
         if (_buffer is null) return;
 
         _buffer.Add(ThemeDto.From(theme));
@@ -35,7 +35,7 @@ public class JsonThemeRepository : JsonRepository, IThemeRepository
 
     public void ChangeTheme(int index, Theme newTheme)
     {
-        _buffer ??= Download<List<ThemeDto>>();
+        _buffer ??= Download();
         if (_buffer is null || index < 0 || index >= _buffer.Count) return;
 
         _buffer[index] = ThemeDto.From(newTheme);
@@ -44,7 +44,7 @@ public class JsonThemeRepository : JsonRepository, IThemeRepository
 
     public Theme? FindTheme(string name)
     {
-        _buffer ??= Download<List<ThemeDto>>();
+        _buffer ??= Download();
         if (_buffer is null) return null;
         foreach (var theme in _buffer)
         {
@@ -84,6 +84,8 @@ public record ThemeDto(string Name,
     int HighlightColor1, int HighlightColor2, int HighlightColor3, int HighlightColor4,
     int HighlightColor5, int HighlightColor6, int HighlightColor7)
 {
+    public const int ColorCount = 40;
+    
     public static ThemeDto From(Theme theme)
     {
         return new ThemeDto(theme.Name, theme.Background1.ToHex(), theme.Background2.ToHex(), theme.Background3.ToHex()
@@ -122,5 +124,64 @@ public record ThemeDto(string Name,
             , RGB.FromHex(StepColorCause10), RGB.FromHex(StepColorOn)
             , RGB.FromHex(HighlightColor1), RGB.FromHex(HighlightColor2), RGB.FromHex(HighlightColor3), RGB.FromHex(HighlightColor4)
             , RGB.FromHex(HighlightColor5), RGB.FromHex(HighlightColor6), RGB.FromHex(HighlightColor7));
+    }
+
+    public ThemeDto(string name, List<int> colors) : this(name,colors[0],colors[1],
+        colors[2],colors[3],colors[4],colors[5],
+        colors[6],colors[7],colors[8],colors[9],colors[10],colors[11],
+        colors[12],colors[13],colors[14],colors[15],
+        colors[16],colors[17],colors[18],colors[18],
+        colors[20],colors[21],colors[22],
+        colors[23],colors[24],colors[25],colors[26],
+        colors[27],colors[28],colors[29],
+        colors[30],colors[31],colors[32],
+        colors[33],colors[34],colors[35],colors[36],
+        colors[37],colors[38], colors[39])
+    {
+        Name = name;
+    }
+    
+    public IEnumerable<int> AllColors()
+    {
+        yield return Background1;
+        yield return Background2;
+        yield return Background3;
+        yield return Primary1;
+        yield return Primary2;
+        yield return Secondary1;
+        yield return Secondary2;
+        yield return Accent;
+        yield return Text;
+        yield return On;
+        yield return Off;
+        yield return Disabled;
+        yield return DifficultyBasic;
+        yield return DifficultyEasy;
+        yield return DifficultyMedium;
+        yield return DifficultyHard;
+        yield return DifficultyExtreme;
+        yield return DifficultyInhuman;
+        yield return DifficultyByTrial;
+        yield return StepColorNeutral;
+        yield return StepColorChange1;
+        yield return StepColorChange2;
+        yield return StepColorCause1;
+        yield return StepColorCause2;
+        yield return StepColorCause3;
+        yield return StepColorCause4;
+        yield return StepColorCause5;
+        yield return StepColorCause6;
+        yield return StepColorCause7;
+        yield return StepColorCause8;
+        yield return StepColorCause9;
+        yield return StepColorCause10;
+        yield return StepColorOn;
+        yield return HighlightColor1;
+        yield return HighlightColor2;
+        yield return HighlightColor3;
+        yield return HighlightColor4;
+        yield return HighlightColor5;
+        yield return HighlightColor7;
+        yield return HighlightColor6;
     }
 }

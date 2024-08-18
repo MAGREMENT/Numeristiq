@@ -7,11 +7,11 @@ namespace Model.Sudokus.Solver.Utility.CellColoring;
 public interface IColoringAlgorithm
 {
     void ColorWithoutRules<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited, T start,
-        Coloring firstColor = Coloring.On) where T : ISudokuElement;
-    
+        Coloring firstColor = Coloring.On) where T : notnull;
+
     void ColorWithRules<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited, T start,
-        Coloring firstColor = Coloring.On) where T : ISudokuElement;
-    
+        Coloring firstColor = Coloring.On) where T : notnull;
+
     void ColorWithRulesAndLinksJump<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited, T start,
         Coloring firstColor = Coloring.On) where T : ISudokuElement;
 }
