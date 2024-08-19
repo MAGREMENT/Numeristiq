@@ -6,13 +6,13 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class AlmostNakedSetConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement>
+public class AlmostNakedSetConstructionRule : IConstructionRule<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>
 {
-    public static AlmostNakedSetConstructRule Instance { get; } = new();
+    public static AlmostNakedSetConstructionRule Instance { get; } = new();
     
-    private AlmostNakedSetConstructRule(){}
+    private AlmostNakedSetConstructionRule(){}
     
-    public int ID { get; } = UniqueConstructRuleID.Next();
+    public int ID { get; } = UniqueConstructionRuleID.Next();
 
     public void Apply(IGraph<ISudokuElement, LinkStrength> linkGraph, ISudokuSolverData data)
     {

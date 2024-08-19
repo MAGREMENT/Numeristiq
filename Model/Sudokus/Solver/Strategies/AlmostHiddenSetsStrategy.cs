@@ -22,7 +22,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
     
     public override void Apply(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructRule.Instance);
+        solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructionRule.Instance);
         var graph = solverData.PreComputer.SimpleGraph.Graph;
 
         foreach (var linked in solverData.PreComputer.ConstructAlmostHiddenSetGraph())

@@ -16,7 +16,7 @@ public class AlternatingInferenceChainStrategy : Strategy<IBinairoSolverData> //
     
     public override void Apply(IBinairoSolverData data)
     {
-        data.ManagedGraph.Construct(BinairoConstructRule.Instance);
+        data.ManagedGraph.Construct(BinairoConstructionRule.Instance);
         var graph = data.ManagedGraph.Graph;
         foreach (var element in graph)
         {

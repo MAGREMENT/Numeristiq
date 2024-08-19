@@ -20,5 +20,5 @@ public interface ITectonicSolverData : IPossibilitiesGiver
     ReadOnlyBitSet8 ZonePositionsFor(int zone, int n);
     ReadOnlyBitSet8 ZonePositionsFor(IZone zone, int n);
     NumericChangeBuffer<INumericSolvingState, ITectonicHighlighter> ChangeBuffer { get; }
-    ManagedLinkGraph<ITectonicSolverData, ITectonicElement> ManagedGraph { get; }
+    ConstructedGraph<ITectonicSolverData, IGraph<ITectonicElement, LinkStrength>> ManagedGraph { get; }
 }

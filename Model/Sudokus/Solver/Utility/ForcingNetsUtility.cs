@@ -4,7 +4,7 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
-using Model.Sudokus.Solver.Utility.CellColoring;
+using Model.Sudokus.Solver.Utility.Coloring;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
@@ -16,14 +16,14 @@ public static class ForcingNetsUtility
 {
     public static IGraph<ISudokuElement, LinkStrength> GetReportGraph(ISudokuSolverData data)
     {
-        data.PreComputer.ComplexGraph.Construct(CellStrongLinkConstructRule.Instance, CellWeakLinkConstructRule.Instance,
-            UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
-            PointingPossibilitiesConstructRule.Instance, AlmostNakedSetConstructRule.Instance);
+        data.PreComputer.ComplexGraph.Construct(CellStrongLinkConstructionRule.Instance, CellWeakLinkConstructionRule.Instance,
+            UnitStrongLinkConstructionRule.Instance, UnitWeakLinkConstructionRule.Instance,
+            PointingPossibilitiesConstructionRule.Instance, AlmostNakedSetConstructionRule.Instance);
         return data.PreComputer.ComplexGraph.Graph;
     }
     
     public static void HighlightAllPaths(ISudokuHighlighter lighter, List<Chain<ISudokuElement, LinkStrength>> paths,
-        Coloring startColoring)
+        ElementColor startColoring)
     {
         HashSet<ISudokuElement> alreadyHighlighted = new();
 
@@ -46,7 +46,7 @@ public static class ForcingNetsUtility
 
             if (!alreadyHighlighted.Contains(first))
             {
-                lighter.HighlightElement(first, startColoring == Coloring.On ?
+                lighter.HighlightElement(first, startColoring == ElementColor.On ?
                     StepColor.On : StepColor.Cause1);
                 alreadyHighlighted.Add(first);
             }
@@ -91,7 +91,7 @@ public static class ForcingNetsUtility
                 {
                     if (allElements.Contains(offCell)) continue;
 
-                    var path = result.History!.GetPathToRootWithGuessedLinks(offCell, Coloring.Off);
+                    var path = result.History!.GetPathToRootWithGuessedLinks(offCell, ElementColor.Off);
                     list.Add(path);
                     allElements.UnionWith(path.Elements);
                     queue.Enqueue(path);
@@ -119,7 +119,7 @@ public static class ForcingNetsUtility
                     if (col == from.Column || col == to.Column) continue;
                     var current = new CellPossibility(from.Row, col, from.Possibility);
 
-                    if (result.TryGetColoredElement(current, out var coloring) && coloring == Coloring.Off)
+                    if (result.TryGetColoredElement(current, out var coloring) && coloring == ElementColor.Off)
                         continue;
 
                     ok = false;
@@ -150,7 +150,7 @@ public static class ForcingNetsUtility
                     if (row == from.Row || row == to.Row) continue;
                     var current = new CellPossibility(row, from.Column, from.Possibility);
 
-                    if (result.TryGetColoredElement(current, out var coloring) && coloring == Coloring.Off)
+                    if (result.TryGetColoredElement(current, out var coloring) && coloring == ElementColor.Off)
                         continue;
 
                     ok = false;
@@ -181,7 +181,7 @@ public static class ForcingNetsUtility
                     var current = new CellPossibility(pos, from.Possibility);
                     if (current == from || current == to) continue;
 
-                    if (result.TryGetColoredElement(current, out var coloring) && coloring == Coloring.Off)
+                    if (result.TryGetColoredElement(current, out var coloring) && coloring == ElementColor.Off)
                         continue;
 
                     ok = false;
@@ -213,7 +213,7 @@ public static class ForcingNetsUtility
                 if (pos == from.Possibility || pos == to.Possibility) continue;
 
                 var current = new CellPossibility(from.Row, from.Column, pos);
-                if (result.TryGetColoredElement(current, out var coloring) && coloring == Coloring.Off)
+                if (result.TryGetColoredElement(current, out var coloring) && coloring == ElementColor.Off)
                     continue;
 
                 ok = false;

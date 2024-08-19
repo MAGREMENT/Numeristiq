@@ -20,9 +20,9 @@ public class AIType : IAlternatingInferenceType<CellPossibility>
 
     public IGraph<CellPossibility, LinkStrength> GetGraph(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.SimpleGraph.Construct(CellStrongLinkConstructRule.Instance,
-            CellWeakLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
-            UnitStrongLinkConstructRule.Instance);
+        solverData.PreComputer.SimpleGraph.Construct(CellStrongLinkConstructionRule.Instance,
+            CellWeakLinkConstructionRule.Instance, UnitWeakLinkConstructionRule.Instance,
+            UnitStrongLinkConstructionRule.Instance);
         return solverData.PreComputer.SimpleGraph.Graph;
     }
 

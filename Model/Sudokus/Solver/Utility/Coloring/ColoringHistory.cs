@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Model.Core.Graphs;
-using Model.Sudokus.Solver.Utility.Graphs;
 
-namespace Model.Sudokus.Solver.Utility.CellColoring;
+namespace Model.Sudokus.Solver.Utility.Coloring;
 
 public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : notnull
 {
@@ -24,7 +23,7 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : notnull
         _parents.Remove(child);
     }
 
-    public Chain<T, LinkStrength> GetPathToRootWithGuessedLinks(T from, Coloring coloring, bool reverse = true)
+    public Chain<T, LinkStrength> GetPathToRootWithGuessedLinks(T from, ElementColor coloring, bool reverse = true)
     {
         List<T> elements = new();
         List<LinkStrength> links = new();
@@ -33,7 +32,7 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : notnull
 
         elements.Add(from);
         elements.Add(parent);
-        links.Add(coloring == Coloring.On ? LinkStrength.Strong : LinkStrength.Weak);
+        links.Add(coloring == ElementColor.On ? LinkStrength.Strong : LinkStrength.Weak);
 
         while (_parents.TryGetValue(parent, out var next))
         {
@@ -54,7 +53,7 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : notnull
         return new Chain<T, LinkStrength>(eArray, lArray);
     }
     
-    public (Chain<T, LinkStrength>, bool) GetPathToRootWithGuessedLinksAndMonoCheck(T from, Coloring coloring, IGraph<T, LinkStrength> graph)
+    public (Chain<T, LinkStrength>, bool) GetPathToRootWithGuessedLinksAndMonoCheck(T from, ElementColor coloring, IGraph<T, LinkStrength> graph)
     {
         List<T> elements = new();
         List<LinkStrength> links = new();
@@ -64,7 +63,7 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : notnull
 
         elements.Add(from);
         elements.Add(parent);
-        links.Add(coloring == Coloring.On ? LinkStrength.Strong : LinkStrength.Weak);
+        links.Add(coloring == ElementColor.On ? LinkStrength.Strong : LinkStrength.Weak);
         if (!graph.AreNeighbors(from, parent)) isMono = true;
 
         while (_parents.TryGetValue(parent, out var next))
@@ -158,9 +157,9 @@ public delegate void HandleChildToParentLink<in T>(T child, T parent);
 
 public interface IReadOnlyColoringHistory<T> where T : notnull
 {
-    public Chain<T, LinkStrength> GetPathToRootWithGuessedLinks(T to, Coloring coloring, bool reverse = true);
+    public Chain<T, LinkStrength> GetPathToRootWithGuessedLinks(T to, ElementColor coloring, bool reverse = true);
     public Chain<T, LinkStrength> GetPathToRootWithRealLinks(T from, IGraph<T, LinkStrength> graph, bool reverse = true);
-    public (Chain<T, LinkStrength>, bool) GetPathToRootWithGuessedLinksAndMonoCheck(T from, Coloring coloring, IGraph<T, LinkStrength> graph);
+    public (Chain<T, LinkStrength>, bool) GetPathToRootWithGuessedLinksAndMonoCheck(T from, ElementColor coloring, IGraph<T, LinkStrength> graph);
     public (Chain<T, LinkStrength>, bool) GetPathToRootWithRealLinksAndMonoCheck(T from, IGraph<T, LinkStrength> graph);
 
     public void ForeachLink(HandleChildToParentLink<T> handler);

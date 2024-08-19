@@ -6,13 +6,13 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Solver.Utility.ConstructRules;
 
-public class NeighborLinkConstructRule : IConstructRule<ITectonicSolverData, ITectonicElement>
+public class NeighborLinkConstructionRule : IConstructionRule<ITectonicSolverData, IGraph<ITectonicElement, LinkStrength>>
 {
-    public static NeighborLinkConstructRule Instance { get; } = new();
+    public static NeighborLinkConstructionRule Instance { get; } = new();
     
-    private NeighborLinkConstructRule() {}
+    private NeighborLinkConstructionRule() {}
     
-    public int ID { get; } = UniqueConstructRuleID.Next();
+    public int ID { get; } = UniqueConstructionRuleID.Next();
     
     public void Apply(IGraph<ITectonicElement, LinkStrength> linkGraph, ITectonicSolverData data)
     {

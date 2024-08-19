@@ -14,8 +14,8 @@ public class XChainType : IAlternatingInferenceType
     
     public IGraph<ITectonicElement, LinkStrength> GetGraph(ITectonicSolverData solverData)
     {
-        solverData.ManagedGraph.Construct(ZoneLinkConstructRule.Instance,
-            NeighborLinkConstructRule.Instance);
+        solverData.ManagedGraph.Construct(ZoneLinkConstructionRule.Instance,
+            NeighborLinkConstructionRule.Instance);
         return solverData.ManagedGraph.Graph;
     }
 }

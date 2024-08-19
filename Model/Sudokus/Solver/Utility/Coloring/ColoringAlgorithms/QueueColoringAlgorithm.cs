@@ -3,12 +3,12 @@ using Model.Core.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 
-namespace Model.Sudokus.Solver.Utility.CellColoring.ColoringAlgorithms;
+namespace Model.Sudokus.Solver.Utility.Coloring.ColoringAlgorithms;
 
 public class QueueColoringAlgorithm : IColoringAlgorithm
 {
     public void ColorWithoutRules<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited,
-        T start, Coloring firstColor = Coloring.On) where T : notnull
+        T start, ElementColor firstColor = ElementColor.On) where T : notnull
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -19,7 +19,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
         while (queue.Count > 0)
         {
             var current = queue.Dequeue();
-            var opposite = current.Coloring == Coloring.Off ? Coloring.On : Coloring.Off;
+            var opposite = current.Coloring == ElementColor.Off ? ElementColor.On : ElementColor.Off;
 
             foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Strong))
             {
@@ -42,7 +42,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
     }
 
     public void ColorWithRules<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, HashSet<T> visited, 
-        T start, Coloring firstColor = Coloring.On) where T : notnull
+        T start, ElementColor firstColor = ElementColor.On) where T : notnull
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -53,7 +53,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
         while (queue.Count > 0)
         {
             var current = queue.Dequeue();
-            var opposite = current.Coloring == Coloring.Off ? Coloring.On : Coloring.Off;
+            var opposite = current.Coloring == ElementColor.Off ? ElementColor.On : ElementColor.Off;
 
             foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Strong))
             {
@@ -64,7 +64,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                 queue.Enqueue(new ColoredElement<T>(friend, opposite));
             }
 
-            if (opposite == Coloring.Off)
+            if (opposite == ElementColor.Off)
             {
                 foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Weak))
                 {
@@ -79,7 +79,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
     }
 
     public void ColorWithRulesAndLinksJump<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result, 
-        HashSet<T> visited, T start, Coloring firstColor = Coloring.On) where T : ISudokuElement
+        HashSet<T> visited, T start, ElementColor firstColor = ElementColor.On) where T : ISudokuElement
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -90,7 +90,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
         while (queue.Count > 0)
         {
             var current = queue.Dequeue();
-            var opposite = current.Coloring == Coloring.Off ? Coloring.On : Coloring.Off;
+            var opposite = current.Coloring == ElementColor.Off ? ElementColor.On : ElementColor.Off;
 
             foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Strong))
             {
@@ -101,7 +101,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                 queue.Enqueue(new ColoredElement<T>(friend, opposite));
             }
 
-            if (opposite == Coloring.Off)
+            if (opposite == ElementColor.Off)
             {
                 foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Weak))
                 {
@@ -133,7 +133,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                         {
                             if (result.TryGetColoredElement(friend, out var coloring))
                             {
-                                if (coloring == Coloring.On) rowB = false;
+                                if (coloring == ElementColor.On) rowB = false;
                             }
                             else
                             {
@@ -147,7 +147,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                         {
                             if (result.TryGetColoredElement(friend, out var coloring))
                             {
-                                if (coloring == Coloring.On) colB = false;
+                                if (coloring == ElementColor.On) colB = false;
                             }
                             else
                             {
@@ -160,7 +160,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                         {
                             if (result.TryGetColoredElement(friend, out var coloring))
                             {
-                                if (coloring == Coloring.On) miniB = false;
+                                if (coloring == ElementColor.On) miniB = false;
                             }
                             else
                             {
@@ -175,7 +175,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                         {
                             if (result.TryGetColoredElement(friend, out var coloring))
                             {
-                                if (coloring == Coloring.On) cellB = false;
+                                if (coloring == ElementColor.On) cellB = false;
                             }
                             else
                             {
@@ -189,30 +189,30 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
 
                 if (row is not null && rowB)
                 {
-                    result.AddColoredElement(row, Coloring.On, current.Element);
+                    result.AddColoredElement(row, ElementColor.On, current.Element);
                     visited.Add(row);
-                    queue.Enqueue(new ColoredElement<T>(row, Coloring.On));
+                    queue.Enqueue(new ColoredElement<T>(row, ElementColor.On));
                 }
 
                 if (col is not null && colB)
                 {
-                    result.AddColoredElement(col, Coloring.On, current.Element);
+                    result.AddColoredElement(col, ElementColor.On, current.Element);
                     visited.Add(col);
-                    queue.Enqueue(new ColoredElement<T>(col, Coloring.On));
+                    queue.Enqueue(new ColoredElement<T>(col, ElementColor.On));
                 }
 
                 if (mini is not null && miniB)
                 {
-                    result.AddColoredElement(mini, Coloring.On, current.Element);
+                    result.AddColoredElement(mini, ElementColor.On, current.Element);
                     visited.Add(mini);
-                    queue.Enqueue(new ColoredElement<T>(mini, Coloring.On));
+                    queue.Enqueue(new ColoredElement<T>(mini, ElementColor.On));
                 }
 
                 if (cell is not null && cellB)
                 {
-                    result.AddColoredElement(cell, Coloring.On, current.Element);
+                    result.AddColoredElement(cell, ElementColor.On, current.Element);
                     visited.Add(cell);
-                    queue.Enqueue(new ColoredElement<T>(cell, Coloring.On));
+                    queue.Enqueue(new ColoredElement<T>(cell, ElementColor.On));
                 }
             }
         }
@@ -221,12 +221,12 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
 
 public class ColoredElement<T>
 {
-    public ColoredElement(T element, Coloring coloring)
+    public ColoredElement(T element, ElementColor coloring)
     {
         Element = element;
         Coloring = coloring;
     }
 
     public T Element { get; }
-    public Coloring Coloring { get; }
+    public ElementColor Coloring { get; }
 }

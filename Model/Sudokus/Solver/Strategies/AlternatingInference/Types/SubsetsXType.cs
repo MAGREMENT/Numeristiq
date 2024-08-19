@@ -21,8 +21,8 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
     
     public IGraph<ISudokuElement, LinkStrength> GetGraph(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.ComplexGraph.Construct(UnitStrongLinkConstructRule.Instance,
-            UnitWeakLinkConstructRule.Instance, PointingPossibilitiesConstructRule.Instance);
+        solverData.PreComputer.ComplexGraph.Construct(UnitStrongLinkConstructionRule.Instance,
+            UnitWeakLinkConstructionRule.Instance, PointingPossibilitiesConstructionRule.Instance);
         return solverData.PreComputer.ComplexGraph.Graph;
     }
 

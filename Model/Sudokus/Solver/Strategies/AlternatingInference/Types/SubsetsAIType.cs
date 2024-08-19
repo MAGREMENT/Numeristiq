@@ -21,9 +21,9 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
     public SudokuStrategy? Strategy { get; set; }
     public IGraph<ISudokuElement, LinkStrength> GetGraph(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.ComplexGraph.Construct(CellStrongLinkConstructRule.Instance, CellWeakLinkConstructRule.Instance,
-            UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
-            PointingPossibilitiesConstructRule.Instance, AlmostNakedSetConstructRule.Instance);
+        solverData.PreComputer.ComplexGraph.Construct(CellStrongLinkConstructionRule.Instance, CellWeakLinkConstructionRule.Instance,
+            UnitStrongLinkConstructionRule.Instance, UnitWeakLinkConstructionRule.Instance,
+            PointingPossibilitiesConstructionRule.Instance, AlmostNakedSetConstructionRule.Instance);
         return solverData.PreComputer.ComplexGraph.Graph;
     }
 

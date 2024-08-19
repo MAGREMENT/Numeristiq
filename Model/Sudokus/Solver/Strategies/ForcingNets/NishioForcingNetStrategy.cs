@@ -5,8 +5,8 @@ using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.CellColoring;
-using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+using Model.Sudokus.Solver.Utility.Coloring;
+using Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -38,22 +38,22 @@ public class NishioForcingNetStrategy : SudokuStrategy
                         
                         switch (entry.Value)
                         {
-                            case Coloring.Off when cs.AddOff(cell):
+                            case ElementColor.Off when cs.AddOff(cell):
                                 solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                                 if (solverData.ChangeBuffer.NeedCommit())
                                 {
                                     solverData.ChangeBuffer.Commit(new NishioForcingNetReportBuilder(coloring, row, col, possibility,
-                                        cs.Cause, cell, Coloring.Off, ForcingNetsUtility.GetReportGraph(solverData)));
+                                        cs.Cause, cell, ElementColor.Off, ForcingNetsUtility.GetReportGraph(solverData)));
                                     if (StopOnFirstCommit) return;
                                 }
                                 break;
                             
-                            case Coloring.On when cs.AddOn(cell):
+                            case ElementColor.On when cs.AddOn(cell):
                                 solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                                 if (solverData.ChangeBuffer.NeedCommit())
                                 {
                                     solverData.ChangeBuffer.Commit(new NishioForcingNetReportBuilder(coloring, row, col, possibility,
-                                        cs.Cause, cell, Coloring.On, ForcingNetsUtility.GetReportGraph(solverData)));
+                                        cs.Cause, cell, ElementColor.On, ForcingNetsUtility.GetReportGraph(solverData)));
                                     if (StopOnFirstCommit) return;
                                 }
                                 break;
@@ -221,11 +221,11 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder<NumericChange,
     private readonly int _possibility;
     private readonly ContradictionCause _cause;
     private readonly CellPossibility _lastChecked;
-    private readonly Coloring _causeColoring;
+    private readonly ElementColor _causeColoring;
     private readonly IGraph<ISudokuElement, LinkStrength> _graph;
 
     public NishioForcingNetReportBuilder(ColoringDictionary<ISudokuElement> coloring, int row, int col,
-        int possibility, ContradictionCause cause, CellPossibility lastChecked, Coloring causeColoring, IGraph<ISudokuElement, LinkStrength> graph)
+        int possibility, ContradictionCause cause, CellPossibility lastChecked, ElementColor causeColoring, IGraph<ISudokuElement, LinkStrength> graph)
     {
         _coloring = coloring;
         _row = row;
@@ -254,7 +254,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder<NumericChange,
                     {
                         var paths = ForcingNetsUtility.FindEveryNeededPaths(_coloring.History!
                                 .GetPathToRootWithGuessedLinks(current, c), _coloring, _graph, snapshot);
-                        ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
+                        ForcingNetsUtility.HighlightAllPaths(lighter, paths, ElementColor.Off);
                         
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         ChangeReportHelper.HighlightChanges(lighter, changes);
@@ -273,7 +273,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder<NumericChange,
                     {
                         var paths = ForcingNetsUtility.FindEveryNeededPaths(_coloring.History!
                             .GetPathToRootWithGuessedLinks(current, c), _coloring, _graph, snapshot);
-                        ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
+                        ForcingNetsUtility.HighlightAllPaths(lighter, paths, ElementColor.Off);
                         
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         ChangeReportHelper.HighlightChanges(lighter, changes);
@@ -293,7 +293,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder<NumericChange,
                     {
                         var paths = ForcingNetsUtility.FindEveryNeededPaths(_coloring.History!
                             .GetPathToRootWithGuessedLinks(current, c), _coloring, _graph, snapshot);
-                        ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
+                        ForcingNetsUtility.HighlightAllPaths(lighter, paths, ElementColor.Off);
                         
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         ChangeReportHelper.HighlightChanges(lighter, changes);
@@ -314,7 +314,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder<NumericChange,
                     {
                         var paths = ForcingNetsUtility.FindEveryNeededPaths(_coloring.History!
                             .GetPathToRootWithGuessedLinks(current, c), _coloring, _graph, snapshot);
-                        ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
+                        ForcingNetsUtility.HighlightAllPaths(lighter, paths, ElementColor.Off);
                         
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         ChangeReportHelper.HighlightChanges(lighter, changes);
@@ -331,7 +331,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder<NumericChange,
     {
         var result = $"{_possibility}r{_row + 1}c{_col + 1} being ON will lead to ";
 
-        result += _causeColoring == Coloring.On ? "multiple candidates being ON in " : "all candidates being OFF in ";
+        result += _causeColoring == ElementColor.On ? "multiple candidates being ON in " : "all candidates being OFF in ";
 
         result += _cause switch
         {

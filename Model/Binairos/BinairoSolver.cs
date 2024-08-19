@@ -16,11 +16,11 @@ public class BinairoSolver : BinaryStrategySolver<Strategy<IBinairoSolverData>, 
     
     public override IBinarySolvingState StartState { get; protected set; } = new DefaultBinarySolvingState(0, 0);
     
-    public ManagedLinkGraph<IBinairoSolverData, CellPossibility> ManagedGraph { get; }
+    public ConstructedGraph<IBinairoSolverData, IGraph<CellPossibility, LinkStrength>> ManagedGraph { get; }
 
     public BinairoSolver()
     {
-        ManagedGraph = new ManagedLinkGraph<IBinairoSolverData, CellPossibility>(
+        ManagedGraph = new ConstructedGraph<IBinairoSolverData, IGraph<CellPossibility, LinkStrength>>(
             new HDictionaryLinkGraph<CellPossibility>(), this);
     }
 
@@ -99,5 +99,5 @@ public interface IBinairoSolverData : IBinarySolvingState
 {
     BinaryChangeBuffer<IBinarySolvingState, IBinairoHighlighter> ChangeBuffer { get; }
     IReadOnlyBinairo Binairo { get; }
-    ManagedLinkGraph<IBinairoSolverData, CellPossibility> ManagedGraph { get; }
+    ConstructedGraph<IBinairoSolverData, IGraph<CellPossibility, LinkStrength>> ManagedGraph { get; }
 }

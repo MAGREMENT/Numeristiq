@@ -22,8 +22,8 @@ public class XYZRingStrategy : SudokuStrategy
 
     public override void Apply(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.ComplexGraph.Construct(UnitStrongLinkConstructRule.Instance,
-            UnitWeakLinkConstructRule.Instance, PointingPossibilitiesConstructRule.Instance);
+        solverData.PreComputer.ComplexGraph.Construct(UnitStrongLinkConstructionRule.Instance,
+            UnitWeakLinkConstructionRule.Instance, PointingPossibilitiesConstructionRule.Instance);
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)

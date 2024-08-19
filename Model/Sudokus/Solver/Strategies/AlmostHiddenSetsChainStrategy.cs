@@ -28,7 +28,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
     public override void Apply(ISudokuSolverData solverData)
     {
         var graph = solverData.PreComputer.AlmostHiddenSetGraph();
-        solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructRule.Instance);
+        solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructionRule.Instance);
         var linkGraph = solverData.PreComputer.SimpleGraph.Graph;
 
         foreach (var start in graph)

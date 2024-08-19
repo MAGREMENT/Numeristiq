@@ -4,8 +4,8 @@ using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.CellColoring;
-using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+using Model.Sudokus.Solver.Utility.Coloring;
+using Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 
@@ -103,12 +103,12 @@ public class UnitForcingNetStrategy : SudokuStrategy
 
             if (sameInAll)
             {
-                if (col == Coloring.On)
+                if (col == ElementColor.On)
                 {
                     solverData.ChangeBuffer.ProposeSolutionAddition(current.Possibility, current.Row, current.Column);
                     if (solverData.ChangeBuffer.NeedCommit())
                     {
-                        solverData.ChangeBuffer.Commit(new UnitForcingNetReportBuilder(colorings, current, Coloring.On,
+                        solverData.ChangeBuffer.Commit(new UnitForcingNetReportBuilder(colorings, current, ElementColor.On,
                             ForcingNetsUtility.GetReportGraph(solverData)));
                         if (StopOnFirstCommit) return true;
                     }
@@ -118,7 +118,7 @@ public class UnitForcingNetStrategy : SudokuStrategy
                     solverData.ChangeBuffer.ProposePossibilityRemoval(current.Possibility, current.Row, current.Column);
                     if (solverData.ChangeBuffer.NeedCommit())
                     {
-                        solverData.ChangeBuffer.Commit(new UnitForcingNetReportBuilder(colorings, current, Coloring.Off,
+                        solverData.ChangeBuffer.Commit(new UnitForcingNetReportBuilder(colorings, current, ElementColor.Off,
                             ForcingNetsUtility.GetReportGraph(solverData)));
                         if (StopOnFirstCommit) return true;
                     }
@@ -134,10 +134,10 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, I
 {
     private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly CellPossibility _target;
-    private readonly Coloring _targetColoring;
+    private readonly ElementColor _targetColoring;
     private readonly IGraph<ISudokuElement, LinkStrength> _graph;
 
-    public UnitForcingNetReportBuilder(ColoringDictionary<ISudokuElement>[] colorings, CellPossibility target, Coloring targetColoring, IGraph<ISudokuElement, LinkStrength> graph)
+    public UnitForcingNetReportBuilder(ColoringDictionary<ISudokuElement>[] colorings, CellPossibility target, ElementColor targetColoring, IGraph<ISudokuElement, LinkStrength> graph)
     {
         _colorings = colorings;
         _target = target;
@@ -158,7 +158,7 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, I
             var iForDelegate = i;
             highlights[i] = lighter =>
             {
-                ForcingNetsUtility.HighlightAllPaths(lighter, paths[iForDelegate], Coloring.On);
+                ForcingNetsUtility.HighlightAllPaths(lighter, paths[iForDelegate], ElementColor.On);
                 
                 if (paths[iForDelegate][0].Elements[0] is CellPossibility start) lighter.EncirclePossibility(start);
                 ChangeReportHelper.HighlightChanges(lighter, changes);

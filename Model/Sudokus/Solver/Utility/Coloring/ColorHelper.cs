@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using Model.Core.Graphs;
-using Model.Sudokus.Solver.Utility.CellColoring.ColoringAlgorithms;
+using Model.Sudokus.Solver.Utility.Coloring.ColoringAlgorithms;
 using Model.Sudokus.Solver.Utility.Graphs;
 
-namespace Model.Sudokus.Solver.Utility.CellColoring;
+namespace Model.Sudokus.Solver.Utility.Coloring;
 
 public static class ColorHelper
 {
     public static IColoringAlgorithm Algorithm { get; } = new QueueColoringAlgorithm();
 
     public static TR ColorFromStart<TB, TR>(Color<TB> colorMethod, IGraph<TB, LinkStrength> graph, TB start,
-        Coloring firstColor = Coloring.On, bool history = false) where TB : ISudokuElement where TR : IColoringResult<TB>, new()
+        ElementColor firstColor = ElementColor.On, bool history = false) where TB : ISudokuElement where TR : IColoringResult<TB>, new()
     {
         var result = new TR();
         if(history) result.ActivateHistoryTracking();
@@ -22,7 +22,7 @@ public static class ColorHelper
         return result;
     }
     
-    public static TR ColorAll<TB, TR>(Color<TB> colorMethod, IGraph<TB, LinkStrength> graph, Coloring firstColor = Coloring.On,
+    public static TR ColorAll<TB, TR>(Color<TB> colorMethod, IGraph<TB, LinkStrength> graph, ElementColor firstColor = ElementColor.On,
         bool history = false) where TB : ISudokuElement where TR : IColoringResult<TB>, new()
     {
         var result = new TR();
@@ -42,4 +42,4 @@ public static class ColorHelper
 }
 
 public delegate void Color<T>(IGraph<T, LinkStrength> graph, IColoringResult<T> result,
-    HashSet<T> visited, T start, Coloring firstColor) where T : notnull;
+    HashSet<T> visited, T start, ElementColor firstColor) where T : notnull;

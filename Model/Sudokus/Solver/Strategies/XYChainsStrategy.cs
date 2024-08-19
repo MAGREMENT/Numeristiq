@@ -22,8 +22,8 @@ public class XYChainsStrategy : SudokuStrategy
 
     public override void Apply(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.SimpleGraph.Construct(XYChainSpecificConstructRule.Instance,
-            CellStrongLinkConstructRule.Instance);
+        solverData.PreComputer.SimpleGraph.Construct(XyChainSpecificConstructionRule.Instance,
+            CellStrongLinkConstructionRule.Instance);
         var graph = solverData.PreComputer.SimpleGraph.Graph;
         var route = new List<XYCell>();
         var visited = new HashSet<CellPossibility>();

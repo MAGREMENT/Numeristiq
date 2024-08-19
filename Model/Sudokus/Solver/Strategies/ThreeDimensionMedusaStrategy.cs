@@ -2,8 +2,8 @@
 using Model.Core;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.CellColoring;
-using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+using Model.Sudokus.Solver.Utility.Coloring;
+using Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
@@ -20,13 +20,13 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
     
     public override void Apply(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructRule.Instance,
-            CellStrongLinkConstructRule.Instance);
+        solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructionRule.Instance,
+            CellStrongLinkConstructionRule.Instance);
         var graph = solverData.PreComputer.SimpleGraph.Graph;
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
                      ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColorWithoutRules, graph,
-                     Coloring.On, !solverData.FastMode))
+                     ElementColor.On, !solverData.FastMode))
         {
             if(coloredVertices.Count <= 1) continue;
             

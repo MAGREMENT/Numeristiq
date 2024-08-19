@@ -4,8 +4,8 @@ using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.CellColoring;
-using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+using Model.Sudokus.Solver.Utility.Coloring;
+using Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 
@@ -65,12 +65,12 @@ public class CellForcingNetStrategy : SudokuStrategy
 
             if (isSameInAll)
             {
-                if (currentColoring == Coloring.On)
+                if (currentColoring == ElementColor.On)
                 {
                     solverData.ChangeBuffer.ProposeSolutionAddition(cell.Possibility, cell.Row, cell.Column);
                     if (solverData.ChangeBuffer.NeedCommit())
                     {
-                        solverData.ChangeBuffer.Commit(new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.On,
+                        solverData.ChangeBuffer.Commit(new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, ElementColor.On,
                             ForcingNetsUtility.GetReportGraph(solverData)));
                         if (StopOnFirstCommit) return true;
                     }
@@ -80,7 +80,7 @@ public class CellForcingNetStrategy : SudokuStrategy
                     solverData.ChangeBuffer.ProposePossibilityRemoval(cell.Possibility, cell.Row, cell.Column);
                     if (solverData.ChangeBuffer.NeedCommit())
                     {
-                        solverData.ChangeBuffer.Commit(new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.Off,
+                        solverData.ChangeBuffer.Commit(new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, ElementColor.Off,
                             ForcingNetsUtility.GetReportGraph(solverData)));
                         if (StopOnFirstCommit) return true;
                     }
@@ -233,11 +233,11 @@ public class CellForcingNetBuilder : IChangeReportBuilder<NumericChange, ISudoku
     private readonly int _row;
     private readonly int _col;
     private readonly CellPossibility _target;
-    private readonly Coloring _targetColoring;
+    private readonly ElementColor _targetColoring;
     private readonly IGraph<ISudokuElement, LinkStrength> _graph;
 
     public CellForcingNetBuilder(ColoringDictionary<ISudokuElement>[] colorings, int row, int col,
-        CellPossibility target, Coloring targetColoring, IGraph<ISudokuElement, LinkStrength> graph)
+        CellPossibility target, ElementColor targetColoring, IGraph<ISudokuElement, LinkStrength> graph)
     {
         _colorings = colorings;
         _row = row;
@@ -261,7 +261,7 @@ public class CellForcingNetBuilder : IChangeReportBuilder<NumericChange, ISudoku
             var iForDelegate = i;
             highlights[i] = lighter =>
             {
-                ForcingNetsUtility.HighlightAllPaths(lighter, paths[iForDelegate], Coloring.On);
+                ForcingNetsUtility.HighlightAllPaths(lighter, paths[iForDelegate], ElementColor.On);
                 
                 lighter.EncircleCell(_row, _col);
                 ChangeReportHelper.HighlightChanges(lighter, changes);

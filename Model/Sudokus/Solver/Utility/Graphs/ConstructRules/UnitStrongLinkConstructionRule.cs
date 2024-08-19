@@ -4,14 +4,14 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class UnitStrongLinkConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement>,
-    IConstructRule<ISudokuSolverData, CellPossibility>//TODO another rule with merged weak & strong links
+public class UnitStrongLinkConstructionRule : IConstructionRule<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>,
+    IConstructionRule<ISudokuSolverData, IGraph<CellPossibility, LinkStrength>>//TODO another rule with merged weak & strong links
 {
-    public static UnitStrongLinkConstructRule Instance { get; } = new();
+    public static UnitStrongLinkConstructionRule Instance { get; } = new();
     
-    private UnitStrongLinkConstructRule() {}
+    private UnitStrongLinkConstructionRule() {}
     
-    public int ID { get; } = UniqueConstructRuleID.Next();
+    public int ID { get; } = UniqueConstructionRuleID.Next();
     
     public void Apply(IGraph<ISudokuElement, LinkStrength> linkGraph, ISudokuSolverData data)
     {

@@ -2,8 +2,8 @@
 using System.Linq;
 using Model.Core.Graphs;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.CellColoring;
-using Model.Sudokus.Solver.Utility.CellColoring.ColoringAlgorithms;
+using Model.Sudokus.Solver.Utility.Coloring;
+using Model.Sudokus.Solver.Utility.Coloring.ColoringAlgorithms;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 
@@ -24,14 +24,14 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
             
             ColoringHistory<ISudokuElement> parents = new();
             Queue<ColoredElement<ISudokuElement>> queue = new();
-            queue.Enqueue(new ColoredElement<ISudokuElement>(cp, Coloring.On));
+            queue.Enqueue(new ColoredElement<ISudokuElement>(cp, ElementColor.On));
             bool ok = true;
 
             while (queue.Count > 0 && ok)
             {
                 var current = queue.Dequeue();
-                var link = current.Coloring == Coloring.On ? LinkStrength.Any : LinkStrength.Strong;
-                var opposite = current.Coloring == Coloring.On ? Coloring.Off : Coloring.On;
+                var link = current.Coloring == ElementColor.On ? LinkStrength.Any : LinkStrength.Strong;
+                var opposite = current.Coloring == ElementColor.On ? ElementColor.Off : ElementColor.On;
 
                 foreach (var friend in graph.Neighbors(current.Element, link))
                 {

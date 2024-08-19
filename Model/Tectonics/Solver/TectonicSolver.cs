@@ -18,14 +18,14 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
 
     public override INumericSolvingState StartState { get; protected set; } = new DefaultNumericSolvingState(0, 0);
     public IReadOnlyTectonic Tectonic => _tectonic;
-    public ManagedLinkGraph<ITectonicSolverData, ITectonicElement> ManagedGraph { get; }
+    public ConstructedGraph<ITectonicSolverData, IGraph<ITectonicElement, LinkStrength>> ManagedGraph { get; }
 
     public TectonicSolver()
     {
         _tectonic = new BlankTectonic();
         _possibilities = new ReadOnlyBitSet8[0, 0];
 
-        ManagedGraph = new ManagedLinkGraph<ITectonicSolverData, ITectonicElement>(
+        ManagedGraph = new ConstructedGraph<ITectonicSolverData, IGraph<ITectonicElement, LinkStrength>>(
             new HDictionaryLinkGraph<ITectonicElement>(), this);
     }
 

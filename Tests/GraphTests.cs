@@ -21,12 +21,12 @@ public class GraphTests
         
         ImplementationSpeedComparator.Compare(graph =>
         {
-            graph.Construct(CellStrongLinkConstructRule.Instance, CellWeakLinkConstructRule.Instance,
-                UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
-                PointingPossibilitiesConstructRule.Instance, AlmostNakedSetConstructRule.Instance);
+            graph.Construct(CellStrongLinkConstructionRule.Instance, CellWeakLinkConstructionRule.Instance,
+                UnitStrongLinkConstructionRule.Instance, UnitWeakLinkConstructionRule.Instance,
+                PointingPossibilitiesConstructionRule.Instance, AlmostNakedSetConstructionRule.Instance);
         }, 30000, 
-            new ManagedLinkGraph<ISudokuSolverData, ISudokuElement>(new HDictionaryLinkGraph<ISudokuElement>(), solver),
-            new ManagedLinkGraph<ISudokuSolverData, ISudokuElement>(new ULDictionaryLinkGraph<ISudokuElement>(), solver));
+            new ConstructedGraph<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>(new HDictionaryLinkGraph<ISudokuElement>(), solver),
+            new ConstructedGraph<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>(new ULDictionaryLinkGraph<ISudokuElement>(), solver));
     }
     
     [Test]
@@ -38,7 +38,7 @@ public class GraphTests
             new AlphabeticalBase32Translator());
         solver.SetState(sudoku);
 
-        var graphs = new ManagedLinkGraph<ISudokuSolverData, ISudokuElement>[]
+        var graphs = new ConstructedGraph<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>[]
         {
             new(new HDictionaryLinkGraph<ISudokuElement>(), solver),
             new(new ULDictionaryLinkGraph<ISudokuElement>(), solver)
@@ -46,9 +46,9 @@ public class GraphTests
 
         foreach (var graph in graphs)
         {
-            graph.Construct(CellStrongLinkConstructRule.Instance, CellWeakLinkConstructRule.Instance,
-                UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
-                PointingPossibilitiesConstructRule.Instance, AlmostNakedSetConstructRule.Instance);
+            graph.Construct(CellStrongLinkConstructionRule.Instance, CellWeakLinkConstructionRule.Instance,
+                UnitStrongLinkConstructionRule.Instance, UnitWeakLinkConstructionRule.Instance,
+                PointingPossibilitiesConstructionRule.Instance, AlmostNakedSetConstructionRule.Instance);
         }
 
         foreach (var start in graphs[0].Graph)

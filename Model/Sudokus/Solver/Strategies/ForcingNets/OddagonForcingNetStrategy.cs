@@ -6,8 +6,8 @@ using Model.Core.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.CellColoring;
-using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+using Model.Sudokus.Solver.Utility.Coloring;
+using Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Oddagons;
 using Model.Utility;
@@ -62,7 +62,7 @@ public class OddagonForcingNetStrategy : SudokuStrategy
 
                 if (ok)
                 {
-                    if (element.Value == Coloring.On) solverData.ChangeBuffer.ProposeSolutionAddition(cp);
+                    if (element.Value == ElementColor.On) solverData.ChangeBuffer.ProposeSolutionAddition(cp);
                     else solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
 
                     if (solverData.ChangeBuffer.NeedCommit())
@@ -80,12 +80,12 @@ public class OddagonForcingNetStrategy : SudokuStrategy
 public class OddagonForcingNetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringDictionary<ISudokuElement>[] _colorings;
-    private readonly Coloring _changeColoring;
+    private readonly ElementColor _changeColoring;
     private readonly CellPossibility _change;
     private readonly AlmostOddagon _oddagon;
     private readonly IGraph<ISudokuElement, LinkStrength> _graph;
 
-    public OddagonForcingNetReportBuilder(ColoringDictionary<ISudokuElement>[] colorings, Coloring changeColoring, AlmostOddagon oddagon, IGraph<ISudokuElement, LinkStrength> graph, CellPossibility change)
+    public OddagonForcingNetReportBuilder(ColoringDictionary<ISudokuElement>[] colorings, ElementColor changeColoring, AlmostOddagon oddagon, IGraph<ISudokuElement, LinkStrength> graph, CellPossibility change)
     {
         _colorings = colorings;
         _changeColoring = changeColoring;
@@ -105,7 +105,7 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder<NumericChange
                 var paths = ForcingNetsUtility.FindEveryNeededPaths(_colorings[iForDelegate].History!.GetPathToRootWithGuessedLinks(_change,
                     _changeColoring), _colorings[iForDelegate], _graph, snapshot);
 
-                ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.On);
+                ForcingNetsUtility.HighlightAllPaths(lighter, paths, ElementColor.On);
                 lighter.EncirclePossibility(_oddagon.Guardians[iForDelegate]);
                 ChangeReportHelper.HighlightChanges(lighter, changes);
             };

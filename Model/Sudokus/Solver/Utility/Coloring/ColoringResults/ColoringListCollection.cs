@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Model.Sudokus.Solver.Utility.Graphs;
 
-namespace Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+namespace Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
 
 public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<ColoringList<T>> where T : notnull
 {
@@ -13,19 +12,19 @@ public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<Colorin
 
     private readonly List<ColoringList<T>> _lists = new();
 
-    public void AddColoredElement(T vertex, Coloring coloring)
+    public void AddColoredElement(T vertex, ElementColor coloring)
     {
         if (_lists.Count == 0) return;
         _lists[^1].Add(vertex, coloring);
     }
 
-    public void AddColoredElement(T element, Coloring coloring, T parent)
+    public void AddColoredElement(T element, ElementColor coloring, T parent)
     {
         if (_lists.Count == 0) return;
         _lists[^1].Add(element, coloring, parent);
     }
 
-    public bool TryGetColoredElement(T element, out Coloring coloring)
+    public bool TryGetColoredElement(T element, out ElementColor coloring)
     {
         foreach (var list in _lists)
         {
@@ -33,7 +32,7 @@ public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<Colorin
             {
                 if (element.Equals(e))
                 {
-                    coloring = Coloring.On;
+                    coloring = ElementColor.On;
                     return true;
                 }
             }
@@ -42,13 +41,13 @@ public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<Colorin
             {
                 if (element.Equals(e))
                 {
-                    coloring = Coloring.Off;
+                    coloring = ElementColor.Off;
                     return true;
                 }
             }
         }
 
-        coloring = Coloring.None;
+        coloring = ElementColor.None;
         return false;
     }
 
@@ -90,25 +89,25 @@ public class ColoringList<T> where T : notnull
         _history = withHistory ? new ColoringHistory<T>() : null;
     }
 
-    public void Add(T vertex, Coloring coloring)
+    public void Add(T vertex, ElementColor coloring)
     {
         switch (coloring)
         {
-            case Coloring.On : _on.Add(vertex);
+            case ElementColor.On : _on.Add(vertex);
                 break;
-            case Coloring.Off : _off.Add(vertex);
+            case ElementColor.Off : _off.Add(vertex);
                 break;
             default: throw new ArgumentException("Invalid coloring");
         }
     }
     
-    public void Add(T vertex, Coloring coloring, T parent)
+    public void Add(T vertex, ElementColor coloring, T parent)
     {
         switch (coloring)
         {
-            case Coloring.On : _on.Add(vertex);
+            case ElementColor.On : _on.Add(vertex);
                 break;
-            case Coloring.Off : _off.Add(vertex);
+            case ElementColor.Off : _off.Add(vertex);
                 break;
             default: throw new ArgumentException("Invalid coloring");
         }

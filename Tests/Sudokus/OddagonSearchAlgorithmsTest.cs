@@ -15,9 +15,9 @@ public class OddagonSearchAlgorithmsTest
     {
         var solver = new SudokuSolver();
         solver.SetState(SudokuTranslator.TranslateBase32Format("h00ht021s003l00509j009u005s0t0l00h0303l005h0090h8121l005h0030hs0s02109l0k0810h0911210503k00921l00305k0l0810hn0l0608103090hh0050h03h041210509h081810509h00hh0034121", new AlphabeticalBase32Translator()));
-        solver.PreComputer.SimpleGraph.Construct(CellStrongLinkConstructRule.Instance,
-            CellWeakLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
-            UnitStrongLinkConstructRule.Instance);
+        solver.PreComputer.SimpleGraph.Construct(CellStrongLinkConstructionRule.Instance,
+            CellWeakLinkConstructionRule.Instance, UnitWeakLinkConstructionRule.Instance,
+            UnitStrongLinkConstructionRule.Instance);
         var graph = solver.PreComputer.SimpleGraph.Graph;
         var write = new bool[2];
         

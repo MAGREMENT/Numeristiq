@@ -1,26 +1,25 @@
 using System.Collections.Generic;
-using Model.Sudokus.Solver.Utility.Graphs;
 
-namespace Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+namespace Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
 
-public class ColoringDictionary<T> : Dictionary<T, Coloring>, IColoringResult<T> where T : notnull
+public class ColoringDictionary<T> : Dictionary<T, ElementColor>, IColoringResult<T> where T : notnull
 {
     private ColoringHistory<T>? _history;
 
     public IReadOnlyColoringHistory<T>? History => _history;
 
-    public void AddColoredElement(T element, Coloring coloring)
+    public void AddColoredElement(T element, ElementColor coloring)
     {
         TryAdd(element, coloring);
     }
 
-    public void AddColoredElement(T element, Coloring coloring, T parent)
+    public void AddColoredElement(T element, ElementColor coloring, T parent)
     {
         AddColoredElement(element, coloring);
         _history?.Add(element, parent);
     }
 
-    public bool TryGetColoredElement(T element, out Coloring coloring)
+    public bool TryGetColoredElement(T element, out ElementColor coloring)
     {
         return TryGetValue(element, out coloring);
     }

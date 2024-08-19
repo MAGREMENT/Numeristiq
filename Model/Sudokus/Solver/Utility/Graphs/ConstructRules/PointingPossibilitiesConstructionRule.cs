@@ -5,13 +5,13 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class PointingPossibilitiesConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement>
+public class PointingPossibilitiesConstructionRule : IConstructionRule<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>
 {
-    public static PointingPossibilitiesConstructRule Instance { get; } = new();
+    public static PointingPossibilitiesConstructionRule Instance { get; } = new();
     
-    private PointingPossibilitiesConstructRule() {}
+    private PointingPossibilitiesConstructionRule() {}
     
-    public int ID { get; } = UniqueConstructRuleID.Next();
+    public int ID { get; } = UniqueConstructionRuleID.Next();
     
     public void Apply(IGraph<ISudokuElement, LinkStrength> linkGraph, ISudokuSolverData data)
     {

@@ -15,9 +15,9 @@ public static class OddagonSearcher
 
     public static List<AlmostOddagon> Search(ISudokuSolverData solverData, int maxLength, int maxGuardians)
     {
-        solverData.PreComputer.SimpleGraph.Construct(CellStrongLinkConstructRule.Instance,
-            CellWeakLinkConstructRule.Instance,
-            UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance);
+        solverData.PreComputer.SimpleGraph.Construct(CellStrongLinkConstructionRule.Instance,
+            CellWeakLinkConstructionRule.Instance,
+            UnitStrongLinkConstructionRule.Instance, UnitWeakLinkConstructionRule.Instance);
 
         Algorithm.MaxLength = maxLength;
         Algorithm.MaxGuardians = maxGuardians;

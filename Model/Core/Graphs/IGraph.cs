@@ -2,7 +2,13 @@
 
 namespace Model.Core.Graphs;
 
-public interface IGraph<TElement, TEdge> : IEnumerable<TElement> where TElement : notnull where TEdge : notnull
+public interface IClearable
+{
+    public void Clear();
+}
+
+public interface IGraph<TElement, TEdge> : IEnumerable<TElement>, IClearable 
+    where TElement : notnull where TEdge : notnull
 {
     public void Add(TElement from, TElement to, TEdge edge, LinkType type = LinkType.BiDirectional);
     public IEnumerable<TElement> Neighbors(TElement from, TEdge edge);
@@ -11,7 +17,25 @@ public interface IGraph<TElement, TEdge> : IEnumerable<TElement> where TElement 
     public bool AreNeighbors(TElement from, TElement to, TEdge edge);
     public bool AreNeighbors(TElement from, TElement to);
     public TEdge? LinkBetween(TElement from, TElement to);
-    public void Clear();
+}
+
+public interface IConditionalGraph<TElement, TEdge, TValue> : IGraph<TElement, TEdge>
+    where TElement : notnull where TEdge : notnull
+{
+    public ValueCollection<TElement, TValue>? Values { set; }
+    
+    public void Add(ICondition<TElement, TValue> condition, TElement from, TElement to, TEdge edge,
+        LinkType type = LinkType.BiDirectional);
+}
+
+public interface ICondition<TElement, TValue> where TElement : notnull
+{
+    public bool IsMet(ValueCollection<TElement, TValue> values);
+}
+
+public interface ValueCollection<in TElement, TValue>
+{
+    bool TryGetValue(TElement element, out TValue value);
 }
 
 public enum LinkStrength

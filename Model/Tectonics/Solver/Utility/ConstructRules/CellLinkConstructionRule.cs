@@ -5,13 +5,13 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Solver.Utility.ConstructRules;
 
-public class CellLinkConstructRule : IConstructRule<ITectonicSolverData, ITectonicElement>
+public class CellLinkConstructionRule : IConstructionRule<ITectonicSolverData, IGraph<ITectonicElement, LinkStrength>>
 {
-    public static CellLinkConstructRule Instance { get; } = new();
+    public static CellLinkConstructionRule Instance { get; } = new();
     
-    private CellLinkConstructRule() {}
+    private CellLinkConstructionRule() {}
     
-    public int ID { get; } = UniqueConstructRuleID.Next();
+    public int ID { get; } = UniqueConstructionRuleID.Next();
     
     public void Apply(IGraph<ITectonicElement, LinkStrength> linkGraph, ITectonicSolverData data)
     {

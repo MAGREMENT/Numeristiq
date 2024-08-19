@@ -4,8 +4,8 @@ using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.CellColoring;
-using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+using Model.Sudokus.Solver.Utility.Coloring;
+using Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -52,10 +52,10 @@ public class DigitForcingNetStrategy : SudokuStrategy
             {
                 switch (other)
                 {
-                    case Coloring.Off when on.Value == Coloring.Off :
+                    case ElementColor.Off when on.Value == ElementColor.Off :
                         solverData.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, possOn.Row, possOn.Column);
                         break;
-                    case Coloring.On when on.Value == Coloring.On :
+                    case ElementColor.On when on.Value == ElementColor.On :
                         solverData.ChangeBuffer.ProposeSolutionAddition(possOn.Possibility, possOn.Row, possOn.Column);
                         break;
                 }
@@ -68,11 +68,11 @@ public class DigitForcingNetStrategy : SudokuStrategy
                 }
             }
 
-            if (on.Value != Coloring.On) continue;
+            if (on.Value != ElementColor.On) continue;
             
             foreach (var off in offColoring)
             {
-                if (off.Value != Coloring.On || off.Key is not CellPossibility possOff) continue;
+                if (off.Value != ElementColor.On || off.Key is not CellPossibility possOff) continue;
                 if (possOff.Row == possOn.Row && possOn.Column == possOff.Column)
                 {
                     RemoveAll(solverData, possOn.Row, possOn.Column, possOn.Possibility, possOff.Possibility);
@@ -118,14 +118,14 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, 
     private readonly ColoringDictionary<ISudokuElement> _on;
     private readonly ColoringDictionary<ISudokuElement> _off;
     private readonly CellPossibility _onPos;
-    private readonly Coloring _onColoring;
+    private readonly ElementColor _onColoring;
     private readonly CellPossibility _offPos;
-    private readonly Coloring _offColoring;
+    private readonly ElementColor _offColoring;
     private readonly IGraph<ISudokuElement, LinkStrength> _graph;
 
     public DigitForcingNetReportBuilder(ColoringDictionary<ISudokuElement> on, 
-        ColoringDictionary<ISudokuElement> off, CellPossibility onPos, Coloring onColoring,
-        CellPossibility offPos, Coloring offColoring, IGraph<ISudokuElement, LinkStrength> graph)
+        ColoringDictionary<ISudokuElement> off, CellPossibility onPos, ElementColor onColoring,
+        CellPossibility offPos, ElementColor offColoring, IGraph<ISudokuElement, LinkStrength> graph)
     {
         _on = on;
         _off = off;
@@ -147,13 +147,13 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, 
         
         return new ChangeReport<ISudokuHighlighter>( Explanation(onPaths, offPaths, first), lighter =>
         {
-            ForcingNetsUtility.HighlightAllPaths(lighter, onPaths, Coloring.On);
+            ForcingNetsUtility.HighlightAllPaths(lighter, onPaths, ElementColor.On);
             lighter.EncirclePossibility(first);
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         }, lighter =>
         {
-            ForcingNetsUtility.HighlightAllPaths(lighter, offPaths, Coloring.Off);
+            ForcingNetsUtility.HighlightAllPaths(lighter, offPaths, ElementColor.Off);
             lighter.EncirclePossibility(first);
 
             ChangeReportHelper.HighlightChanges(lighter, changes);

@@ -3,13 +3,13 @@ using Model.Utility;
 
 namespace Model.Binairos;
 
-public class BinairoConstructRule : IConstructRule<IBinairoSolverData, CellPossibility>
+public class BinairoConstructionRule : IConstructionRule<IBinairoSolverData, IGraph<CellPossibility, LinkStrength>>
 {
-    public static BinairoConstructRule Instance { get; } = new();
+    public static BinairoConstructionRule Instance { get; } = new();
     
-    private BinairoConstructRule() {}
+    private BinairoConstructionRule() {}
     
-    public int ID { get; } = UniqueConstructRuleID.Next();
+    public int ID { get; } = UniqueConstructionRuleID.Next();
     public void Apply(IGraph<CellPossibility, LinkStrength> linkGraph, IBinairoSolverData data)
     {
         int n;

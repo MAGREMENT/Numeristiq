@@ -34,9 +34,9 @@ public class BlossomLoopStrategy : SudokuStrategy
     
     public override void Apply(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.ComplexGraph.Construct(CellStrongLinkConstructRule.Instance, CellWeakLinkConstructRule.Instance,
-            UnitStrongLinkConstructRule.Instance, UnitWeakLinkConstructRule.Instance,
-            PointingPossibilitiesConstructRule.Instance);
+        solverData.PreComputer.ComplexGraph.Construct(CellStrongLinkConstructionRule.Instance, CellWeakLinkConstructionRule.Instance,
+            UnitStrongLinkConstructionRule.Instance, UnitWeakLinkConstructionRule.Instance,
+            PointingPossibilitiesConstructionRule.Instance);
         var graph = solverData.PreComputer.ComplexGraph.Graph;
 
         foreach (var cps in _type.Candidates(solverData))

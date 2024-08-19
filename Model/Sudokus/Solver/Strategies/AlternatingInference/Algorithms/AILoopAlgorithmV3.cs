@@ -1,6 +1,6 @@
 using Model.Core.Graphs;
-using Model.Sudokus.Solver.Utility.CellColoring;
-using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+using Model.Sudokus.Solver.Utility.Coloring;
+using Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 
@@ -18,9 +18,9 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
         {
             if (start is not CellPossibility) continue;
             var onColoring = ColorHelper.ColorFromStart<T, ColoringDictionary<T>>(
-                ColorHelper.Algorithm.ColorWithRules, graph, start, Coloring.On, true);
+                ColorHelper.Algorithm.ColorWithRules, graph, start, ElementColor.On, true);
             var offColoring = ColorHelper.ColorFromStart<T, ColoringDictionary<T>>(
-                ColorHelper.Algorithm.ColorWithRules, graph, start, Coloring.Off, true);
+                ColorHelper.Algorithm.ColorWithRules, graph, start, ElementColor.Off, true);
 
             foreach (var entry in onColoring)
             {
@@ -35,16 +35,16 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
 
                     switch (entry.Value, coloring)
                     {
-                        case (Coloring.On, Coloring.Off) :
-                        case (Coloring.Off, Coloring.On) :
+                        case (ElementColor.On, ElementColor.Off) :
+                        case (ElementColor.Off, ElementColor.On) :
                             if (type.ProcessFullLoop(solverData, loop) &&
                                 type.Strategy!.StopOnFirstCommit) return;
                             break;
-                        case(Coloring.On, Coloring.On) :
+                        case(ElementColor.On, ElementColor.On) :
                             if (type.ProcessStrongInferenceLoop(solverData, entry.Key, loop) &&
                                 type.Strategy!.StopOnFirstCommit) return;
                             break;
-                        case (Coloring.Off, Coloring.Off) :
+                        case (ElementColor.Off, ElementColor.Off) :
                             if (type.ProcessWeakInferenceLoop(solverData, entry.Key, loop) &&
                                 type.Strategy!.StopOnFirstCommit) return;
                             break;

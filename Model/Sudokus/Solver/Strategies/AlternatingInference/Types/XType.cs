@@ -16,8 +16,8 @@ public class XType : IAlternatingInferenceType<CellPossibility>
     public SudokuStrategy? Strategy { get; set; }
     public IGraph<CellPossibility, LinkStrength> GetGraph(ISudokuSolverData solverData)
     {
-        solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructRule.Instance,
-            UnitWeakLinkConstructRule.Instance);
+        solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructionRule.Instance,
+            UnitWeakLinkConstructionRule.Instance);
         return solverData.PreComputer.SimpleGraph.Graph;
     }
 

@@ -1,18 +1,18 @@
 ﻿namespace Model.Core.Graphs;
 
-public class ManagedLinkGraph<TDataSource, TType> where TType : notnull
+public class ConstructedGraph<TDataSource, TGraph> where TGraph : IClearable
 {
-    public IGraph<TType, LinkStrength> Graph { get; }
+    public TGraph Graph { get; }
     private ulong _rulesApplied;
     private readonly TDataSource _dataSource;
 
-    public ManagedLinkGraph(IGraph<TType, LinkStrength> graph, TDataSource dataSource)
+    public ConstructedGraph(TGraph graph, TDataSource dataSource)
     {
         Graph = graph;
         _dataSource = dataSource;
     }
 
-    public void Construct(params IConstructRule<TDataSource, TType>[] rules)
+    public void Construct(params IConstructionRule<TDataSource, TGraph>[] rules)
     {
         if(IsOverConstructed(rules)) Clear();
         foreach (var rule in rules)
@@ -27,7 +27,7 @@ public class ManagedLinkGraph<TDataSource, TType> where TType : notnull
         _rulesApplied = 0;
     }
     
-    private void DoConstruct(IConstructRule<TDataSource, TType> rule)
+    private void DoConstruct(IConstructionRule<TDataSource, TGraph> rule)
     {
         if(((_rulesApplied >> rule.ID) & 1) > 0) return;
 
@@ -35,7 +35,7 @@ public class ManagedLinkGraph<TDataSource, TType> where TType : notnull
         _rulesApplied |= 1UL << rule.ID;
     }
     
-    private bool IsOverConstructed(params IConstructRule<TDataSource, TType>[] rules)
+    private bool IsOverConstructed(params IConstructionRule<TDataSource, TGraph>[] rules)
     {
         var buffer = 0UL;
         foreach (var rule in rules)
