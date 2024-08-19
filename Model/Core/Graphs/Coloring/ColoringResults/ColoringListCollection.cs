@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
+namespace Model.Core.Graphs.Coloring.ColoringResults;
 
 public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<ColoringList<T>> where T : notnull
 {

@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Model.Core.Graphs;
 
-namespace Model.Sudokus.Solver.Utility.Coloring;
+namespace Model.Core.Graphs.Coloring;
 
 public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : notnull
 {

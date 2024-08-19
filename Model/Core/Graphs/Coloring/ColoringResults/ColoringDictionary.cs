@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
+namespace Model.Core.Graphs.Coloring.ColoringResults;
 
 public class ColoringDictionary<T> : Dictionary<T, ElementColor>, IColoringResult<T> where T : notnull
 {

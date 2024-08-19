@@ -1,6 +1,6 @@
-namespace Model.Sudokus.Solver.Utility.Coloring;
+namespace Model.Core.Graphs.Coloring;
 
-public interface IColoringResult<T> where T : notnull
+public interface IColoringResult<T> : IValueCollection<T, ElementColor> where T : notnull
 {
     public IReadOnlyColoringHistory<T>? History { get; }
 
@@ -13,4 +13,7 @@ public interface IColoringResult<T> where T : notnull
     public void NewStart();
 
     public void ActivateHistoryTracking();
+
+    bool IValueCollection<T, ElementColor>.TryGetElementValue(T element, out ElementColor value)
+        => TryGetColoredElement(element, out value);
 }

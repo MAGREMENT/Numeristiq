@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Model.Utility;
 using Model.Utility.Collections;
 
 namespace Model.Core.Graphs.Implementations;
@@ -122,7 +123,7 @@ public class ULDictionaryLinkGraph<T> : DictionaryLinkGraph<T> where T : notnull
 public abstract class DictionaryConditionalLinkGraph<TElement, TValue> : DictionaryLinkGraph<TElement>,
     IConditionalGraph<TElement, LinkStrength, TValue> where TElement : notnull
 {
-    public ValueCollection<TElement, TValue>? Values { get; set; }
+    public IValueCollection<TElement, TValue>? Values { get; set; }
     
     private readonly Dictionary<TElement, IContainingCollection<(TElement, ICondition<TElement, TValue>)>[]>
         _conditionalLinks = new();

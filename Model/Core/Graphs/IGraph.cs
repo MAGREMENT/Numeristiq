@@ -22,20 +22,20 @@ public interface IGraph<TElement, TEdge> : IEnumerable<TElement>, IClearable
 public interface IConditionalGraph<TElement, TEdge, TValue> : IGraph<TElement, TEdge>
     where TElement : notnull where TEdge : notnull
 {
-    public ValueCollection<TElement, TValue>? Values { set; }
+    public IValueCollection<TElement, TValue>? Values { set; }
     
     public void Add(ICondition<TElement, TValue> condition, TElement from, TElement to, TEdge edge,
         LinkType type = LinkType.BiDirectional);
 }
 
-public interface ICondition<TElement, TValue> where TElement : notnull
+public interface ICondition<out TElement, TValue> where TElement : notnull
 {
-    public bool IsMet(ValueCollection<TElement, TValue> values);
+    public bool IsMet(IValueCollection<TElement, TValue> values);
 }
 
-public interface ValueCollection<in TElement, TValue>
+public interface IValueCollection<in TElement, TValue>
 {
-    bool TryGetValue(TElement element, out TValue value);
+    bool TryGetElementValue(TElement element, out TValue value);
 }
 
 public enum LinkStrength

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Model.Core.Graphs;
+using Model.Core.Graphs.Coloring;
+using Model.Core.Graphs.Coloring.ColoringResults;
 using Model.Core.Graphs.Implementations;
 using Model.Sudokus.Solver.PossibilitySets;
-using Model.Sudokus.Solver.Utility.Coloring;
-using Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Exocet;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
@@ -31,15 +31,15 @@ public class SudokuPreComputer
     private IGraph<IPossibilitySet, Cell[]>? _ahsGraph;
     
     public ConstructedGraph<ISudokuSolverData, IGraph<CellPossibility, LinkStrength>> SimpleGraph { get; }
-    public ConstructedGraph<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>> ComplexGraph { get; }
+    public ConstructedGraph<ISudokuSolverData, IConditionalGraph<ISudokuElement, LinkStrength, ElementColor>> ComplexGraph { get; }
 
     public SudokuPreComputer(ISudokuSolverData solverData)
     {
         _solverData = solverData;
         SimpleGraph = new ConstructedGraph<ISudokuSolverData, IGraph<CellPossibility, LinkStrength>>(
             new HDictionaryLinkGraph<CellPossibility>(), _solverData);
-        ComplexGraph = new ConstructedGraph<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>(
-            new HDictionaryLinkGraph<ISudokuElement>(), _solverData);
+        ComplexGraph = new ConstructedGraph<ISudokuSolverData, IConditionalGraph<ISudokuElement, LinkStrength, ElementColor>>(
+            new HDictionaryConditionalLinkGraph<ISudokuElement, ElementColor>(), _solverData);
     }
 
     public void Reset()
@@ -138,10 +138,11 @@ public class SudokuPreComputer
     {
         ComplexGraph.Construct(CellStrongLinkConstructionRule.Instance, CellWeakLinkConstructionRule.Instance,
             UnitStrongLinkConstructionRule.Instance, UnitWeakLinkConstructionRule.Instance,
-            PointingPossibilitiesConstructionRule.Instance, AlmostNakedSetConstructionRule.Instance);
+            PointingPossibilitiesConstructionRule.Instance, AlmostNakedSetConstructionRule.Instance,
+            ConditionalStrongLinkConstructionRule.Instance);
 
         return ColorHelper.ColorFromStart<ISudokuElement, ColoringDictionary<ISudokuElement>>(
-            ColorHelper.Algorithm.ColorWithRulesAndLinksJump, ComplexGraph.Graph, start, firstColor, true);
+            ColorHelper.Algorithm.ColorConditionalWithRules, ComplexGraph.Graph, start, firstColor, true);
     }
 
     private List<JuniorExocet> DoJuniorExocet()

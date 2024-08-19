@@ -2,12 +2,12 @@
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
+using Model.Core.Graphs.Coloring;
+using Model.Core.Graphs.Coloring.ColoringResults;
 using Model.Core.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.Coloring;
-using Model.Sudokus.Solver.Utility.Coloring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Oddagons;
 using Model.Utility;

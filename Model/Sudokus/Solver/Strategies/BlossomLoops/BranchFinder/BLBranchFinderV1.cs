@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Model.Core.Graphs;
+using Model.Core.Graphs.Coloring;
+using Model.Core.Graphs.Coloring.ColoringAlgorithms;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.Coloring;
-using Model.Sudokus.Solver.Utility.Coloring.ColoringAlgorithms;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 

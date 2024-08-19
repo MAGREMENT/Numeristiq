@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Model.Core.Graphs;
-using Model.Sudokus.Solver.Utility.Coloring;
+using Model.Core.Graphs.Coloring;
 using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
@@ -38,7 +38,7 @@ public class ConditionalStrongLinkConstructionRule : IConstructionRule<ISudokuSo
                         
                         linkGraph.Add(new ISudokuStrongLinkCondition(off),
                             new CellPossibility(row, asArray[i], number),
-                            new CellPossibility(row, asArray[j], number), LinkStrength.Weak);
+                            new CellPossibility(row, asArray[j], number), LinkStrength.Strong);
                     }
                 }
             }
@@ -63,7 +63,7 @@ public class ConditionalStrongLinkConstructionRule : IConstructionRule<ISudokuSo
                         
                         linkGraph.Add(new ISudokuStrongLinkCondition(off),
                             new CellPossibility(asArray[i], col, number),
-                            new CellPossibility(asArray[j], col, number), LinkStrength.Weak);
+                            new CellPossibility(asArray[j], col, number), LinkStrength.Strong);
                     }
                 }
             }
@@ -90,7 +90,7 @@ public class ConditionalStrongLinkConstructionRule : IConstructionRule<ISudokuSo
                             
                             linkGraph.Add(new ISudokuStrongLinkCondition(off),
                                 new CellPossibility(asArray[i], number),
-                                new CellPossibility(asArray[j], number), LinkStrength.Weak);
+                                new CellPossibility(asArray[j], number), LinkStrength.Strong);
                         }
                     }
                 }
@@ -118,7 +118,7 @@ public class ConditionalStrongLinkConstructionRule : IConstructionRule<ISudokuSo
                         
                         linkGraph.Add(new ISudokuStrongLinkCondition(off),
                             new CellPossibility(row, col, asArray[i]),
-                            new CellPossibility(row, col, asArray[j]), LinkStrength.Weak);
+                            new CellPossibility(row, col, asArray[j]), LinkStrength.Strong);
                     }
                 }
             }
@@ -135,11 +135,11 @@ public class ISudokuStrongLinkCondition : ICondition<ISudokuElement, ElementColo
         _off = off;
     }
 
-    public bool IsMet(ValueCollection<ISudokuElement, ElementColor> values)
+    public bool IsMet(IValueCollection<ISudokuElement, ElementColor> values)
     {
         foreach (var element in _off)
         {
-            if (!values.TryGetValue(element, out var v) || v != ElementColor.Off) return false;
+            if (!values.TryGetElementValue(element, out var v) || v != ElementColor.Off) return false;
         }
 
         return true;
