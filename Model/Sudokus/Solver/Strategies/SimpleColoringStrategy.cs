@@ -64,15 +64,14 @@ public class SimpleColoringStrategy : SudokuStrategy
         {
             for (int j = i + 1; j < toSearch.Count; j++)
             {
-                if (toSearch[i].ShareAUnit(toSearch[j]))
+                if (!toSearch[i].ShareAUnit(toSearch[j])) continue;
+                
+                foreach (var coord in other)
                 {
-                    foreach (var coord in other)
-                    {
-                        solverData.ChangeBuffer.ProposeSolutionAddition(coord);
-                    }
-
-                    return true;
+                    solverData.ChangeBuffer.ProposeSolutionAddition(coord);
                 }
+
+                return true;
             }
         }
 
@@ -155,7 +154,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder<NumericChange, I
             };
         }
 
-        return new ChangeReport<ISudokuHighlighter>( "", highlights);
+        return new ChangeReport<ISudokuHighlighter>("Simple Coloring", highlights);
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

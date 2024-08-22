@@ -20,7 +20,7 @@ public class ThemeNativeType : IFileType<List<ThemeDto>>
             stream.Write(BitConverter.GetBytes(-1));
         }
     }
-
+    
     public List<ThemeDto> Read(Stream stream)
     {
         var intSize = sizeof(int);

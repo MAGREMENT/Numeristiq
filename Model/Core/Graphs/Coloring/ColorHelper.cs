@@ -9,7 +9,7 @@ public static class ColorHelper
     public static IColoringAlgorithm Algorithm { get; } = new QueueColoringAlgorithm();
 
     public static TR ColorFromStart<TB, TR>(Color<TB> colorMethod, IGraph<TB, LinkStrength> graph, TB start,
-        ElementColor firstColor = ElementColor.On, bool history = false) where TB : ISudokuElement where TR : IColoringResult<TB>, new()
+        ElementColor firstColor = ElementColor.On, bool history = false) where TR : IColoringResult<TB>, new() where TB : notnull
     {
         var result = new TR();
         if(history) result.ActivateHistoryTracking();
@@ -22,7 +22,7 @@ public static class ColorHelper
     }
     
     public static TR ColorFromStart<TB, TR>(ConditionalColor<TB> colorMethod, IConditionalGraph<TB, LinkStrength, ElementColor> graph, TB start,
-        ElementColor firstColor = ElementColor.On, bool history = false) where TB : ISudokuElement where TR : IColoringResult<TB>, new()
+        ElementColor firstColor = ElementColor.On, bool history = false) where TB : notnull where TR : IColoringResult<TB>, new()
     {
         var result = new TR();
         if(history) result.ActivateHistoryTracking();
@@ -35,7 +35,7 @@ public static class ColorHelper
     }
     
     public static TR ColorAll<TB, TR>(Color<TB> colorMethod, IGraph<TB, LinkStrength> graph, ElementColor firstColor = ElementColor.On,
-        bool history = false) where TB : ISudokuElement where TR : IColoringResult<TB>, new()
+        bool history = false) where TB : notnull where TR : IColoringResult<TB>, new()
     {
         var result = new TR();
         if(history) result.ActivateHistoryTracking();

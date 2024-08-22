@@ -48,6 +48,20 @@ public class FileRepository<T> where T : class
 
         _filePath = null;
     }
+
+    public void TearDown()
+    {
+        if (_filePath is null) return;
+
+        try
+        {
+            File.Delete(_filePath);
+        }
+        catch
+        {
+            //ignored
+        }
+    }
     
     protected T? Download()
     {
@@ -87,5 +101,5 @@ public interface IFileType<T> where T : class
 {
     string Extension { get; }
     void Write(Stream stream, T DAO);
-    T? Read(Stream stram);
+    T? Read(Stream stream);
 }

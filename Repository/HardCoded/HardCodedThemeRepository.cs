@@ -86,4 +86,9 @@ public class HardCodedThemeRepository : IThemeRepository
     {
         return _themes.FirstOrDefault(t => t is not null && t.Name.Equals(name), null);
     }
+
+    public void ClearThemes()
+    {
+        
+    }
 }

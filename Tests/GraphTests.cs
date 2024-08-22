@@ -19,14 +19,20 @@ public class GraphTests
             new AlphabeticalBase32Translator());
         solver.SetState(sudoku);
         
+        var graphs = new ConstructedGraph<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>[]
+        {
+            new(new HDictionaryLinkGraph<ISudokuElement>(), solver),
+            new(new ULDictionaryLinkGraph<ISudokuElement>(), solver),
+            new(new HDoubleDictionaryLinkGraph<ISudokuElement>(), solver),
+            new(new ULDoubleDictionaryLinkGraph<ISudokuElement>(), solver)
+        };
+        
         ImplementationSpeedComparator.Compare(graph =>
         {
             graph.Construct(CellStrongLinkConstructionRule.Instance, CellWeakLinkConstructionRule.Instance,
                 UnitStrongLinkConstructionRule.Instance, UnitWeakLinkConstructionRule.Instance,
                 PointingPossibilitiesConstructionRule.Instance, AlmostNakedSetConstructionRule.Instance);
-        }, 30000, 
-            new ConstructedGraph<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>(new HDictionaryLinkGraph<ISudokuElement>(), solver),
-            new ConstructedGraph<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>(new ULDictionaryLinkGraph<ISudokuElement>(), solver));
+        }, 300000, graphs);
     }
     
     [Test]
@@ -41,7 +47,9 @@ public class GraphTests
         var graphs = new ConstructedGraph<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>[]
         {
             new(new HDictionaryLinkGraph<ISudokuElement>(), solver),
-            new(new ULDictionaryLinkGraph<ISudokuElement>(), solver)
+            new(new ULDictionaryLinkGraph<ISudokuElement>(), solver),
+            new(new HDoubleDictionaryLinkGraph<ISudokuElement>(), solver),
+            new(new ULDoubleDictionaryLinkGraph<ISudokuElement>(), solver)
         };
 
         foreach (var graph in graphs)
@@ -71,13 +79,13 @@ public class GraphTests
         
         ImplementationSpeedComparator.Compare(graph =>
         {
-            foreach (var start in graph)
+            foreach (var start in graph.Graph)
             {
-                foreach (var friend in graph.Neighbors(start))
+                foreach (var friend in graph.Graph.Neighbors(start))
                 {
                     var a = friend.EveryCell();
                 }
             }
-        }, 30, graphs[0].Graph, graphs[1].Graph);
+        }, 300, graphs);
     }
 }

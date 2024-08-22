@@ -26,8 +26,7 @@ public class FileThemeRepository : FileRepository<List<ThemeDto>>, IThemeReposit
 
     public void AddTheme(Theme theme)
     {
-        _buffer ??= Download();
-        if (_buffer is null) return;
+        _buffer ??= Download() ?? new List<ThemeDto>();
 
         _buffer.Add(ThemeDto.From(theme));
         Upload(_buffer);
@@ -52,6 +51,12 @@ public class FileThemeRepository : FileRepository<List<ThemeDto>>, IThemeReposit
         }
 
         return null;
+    }
+
+    public void ClearThemes()
+    {
+        _buffer = null;
+        Upload(new List<ThemeDto>());
     }
 
     private static Theme[] To(IReadOnlyList<ThemeDto> dtos)

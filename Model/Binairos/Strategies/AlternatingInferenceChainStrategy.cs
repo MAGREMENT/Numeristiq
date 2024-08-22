@@ -8,7 +8,7 @@ using Model.Utility;
 
 namespace Model.Binairos.Strategies;
 
-public class AlternatingInferenceChainStrategy : Strategy<IBinairoSolverData> //TODO to simple coloring
+public class AlternatingInferenceChainStrategy : Strategy<IBinairoSolverData> //TODO error chain
 {
     public AlternatingInferenceChainStrategy() : base("Alternating Inference Chain", Difficulty.Extreme, InstanceHandling.UnorderedAll)
     {

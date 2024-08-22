@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Model.Utility;
 using Model.Utility.Collections;
 
 namespace Model.Core.Graphs.Implementations;
@@ -35,19 +34,19 @@ public abstract class DictionaryLinkGraph<T> : IGraph<T, LinkStrength> where T :
     public virtual IEnumerable<T> Neighbors(T from, LinkStrength strength)
     {
         if (strength == LinkStrength.Any) return Neighbors(from);
-        return _links.TryGetValue(from, out var resume) ? resume[(int)strength - 1] : Enumerable.Empty<T>();
+        return _links.TryGetValue(from, out var collection) ? collection[(int)strength - 1] : Enumerable.Empty<T>();
     }
 
     public virtual IEnumerable<T> Neighbors(T from)
     {
-        if (!_links.TryGetValue(from, out var resume)) yield break;
+        if (!_links.TryGetValue(from, out var collection)) yield break;
         
-        foreach (var friend in resume[0])
+        foreach (var friend in collection[0])
         {
             yield return friend;
         }
             
-        foreach (var friend in resume[1])
+        foreach (var friend in collection[1])
         {
             yield return friend;
         }
@@ -55,14 +54,14 @@ public abstract class DictionaryLinkGraph<T> : IGraph<T, LinkStrength> where T :
 
     public virtual IEnumerable<EdgeTo<LinkStrength, T>> NeighborsWithEdges(T from)
     {
-        if (!_links.TryGetValue(from, out var resume)) yield break;
+        if (!_links.TryGetValue(from, out var collection)) yield break;
         
-        foreach (var friend in resume[0])
+        foreach (var friend in collection[0])
         {
             yield return new EdgeTo<LinkStrength, T>(LinkStrength.Strong, friend);
         }
             
-        foreach (var friend in resume[1])
+        foreach (var friend in collection[1])
         {
             yield return new EdgeTo<LinkStrength, T>(LinkStrength.Weak, friend);
         }
@@ -70,13 +69,13 @@ public abstract class DictionaryLinkGraph<T> : IGraph<T, LinkStrength> where T :
 
     public virtual bool AreNeighbors(T from, T to, LinkStrength strength)
     {
-        return _links.TryGetValue(from, out var resume) && resume[(int)strength - 1].Contains(to);
+        return _links.TryGetValue(from, out var collection) && collection[(int)strength - 1].Contains(to);
     }
 
     public virtual bool AreNeighbors(T from, T to)
     {
-        return _links.TryGetValue(from, out var resume) && (resume[0].Contains(to) ||
-                                                            resume[1].Contains(to));
+        return _links.TryGetValue(from, out var collection) && (collection[0].Contains(to) ||
+                                                            collection[1].Contains(to));
     }
 
     public virtual LinkStrength LinkBetween(T from, T to)

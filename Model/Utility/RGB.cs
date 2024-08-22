@@ -50,4 +50,24 @@ public readonly struct RGB
         var s = delta == 0 ? 0 : delta / (1 - Math.Abs(2 * l - 1));
         return new HSL(h, s, l);
     }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is RGB rgb && rgb == this;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Red, Green, Blue);
+    }
+
+    public static bool operator ==(RGB left, RGB right)
+    {
+        return left.Red == right.Red && left.Blue == right.Blue && left.Green == right.Green;
+    }
+
+    public static bool operator !=(RGB left, RGB right)
+    {
+        return left.Red != right.Red || left.Blue != right.Blue || left.Green != right.Green;
+    }
 }

@@ -56,4 +56,9 @@ public class ThemeMultiRepository : IThemeRepository
 
         return null;
     }
+
+    public void ClearThemes()
+    {
+        _repositories[0].ClearThemes();
+    }
 }

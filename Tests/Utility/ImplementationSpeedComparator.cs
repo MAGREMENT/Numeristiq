@@ -6,10 +6,15 @@ public static class ImplementationSpeedComparator
 {
     public static void Compare<T>(Test<T> test, int repeatCount, params T[] implementations)
     {
+        Compare(test, repeatCount, (IReadOnlyList<T>)implementations);
+    }
+    
+    public static void Compare<T>(Test<T> test, int repeatCount, IReadOnlyList<T> implementations)
+    {
         var stopWatch = new Stopwatch();
         var nanosPerTick = 1000L * 1000L * 1000L / Stopwatch.Frequency;
         
-        for(int i = 0; i < implementations.Length; i++)
+        for(int i = 0; i < implementations.Count; i++)
         {
             var implementation = implementations[i];
             var result = new SpeedTestResult();

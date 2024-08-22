@@ -12,6 +12,7 @@ public interface IThemeRepository
     void AddTheme(Theme theme);
     void ChangeTheme(int index, Theme newTheme);
     Theme? FindTheme(string name);
+    void ClearThemes();
 }
 
 public class Theme : INamed, ICopyable<Theme>
@@ -198,5 +199,17 @@ public class Theme : INamed, ICopyable<Theme>
     public Theme Copy()
     {
         return Copy(Name);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Theme t) return false;
+
+        foreach (var color in t.AllColors())
+        {
+            if (GetColor(color.Item1) != color.Item2) return false;
+        }
+
+        return true;
     }
 }
