@@ -10,6 +10,8 @@ public class ThemePresenter
     private readonly Settings _settings;
     private string? _currentColor;
 
+    public SettingsPresenter SettingsPresenter => new(_settings, SettingCollections.ThemeWindow);
+
     public ThemePresenter(ThemeManager themeManager, Settings setting, IThemeView view)
     {
         _view = view;
@@ -17,6 +19,9 @@ public class ThemePresenter
         _settings = setting;
 
         UpdateThemeStuff();
+
+        _view.SetContinuousUpdate(setting.ThemeContinuousUpdate.Get().ToBool());
+        setting.ThemeContinuousUpdate.ValueChanged += v => _view.SetContinuousUpdate(v.ToBool());
     }
 
     public void SelectColor(string name)

@@ -16,14 +16,14 @@ public class FileSudokuStrategiesRepository : FileRepository<List<StrategyDAO>>,
     
     public void SetStrategies(IReadOnlyList<SudokuStrategy> list)
     {
-        _buffer = From(list);
+        _buffer = DAOManager.To(list);
         Upload(_buffer);
     }
 
     public IEnumerable<SudokuStrategy> GetStrategies()
     {
         _buffer ??= Download();
-        return _buffer is null ? Enumerable.Empty<SudokuStrategy>() : To(_buffer);
+        return _buffer is null ? Enumerable.Empty<SudokuStrategy>() : DAOManager.To(_buffer);
     }
 
     public void UpdateStrategy(SudokuStrategy strategy)
@@ -34,19 +34,9 @@ public class FileSudokuStrategiesRepository : FileRepository<List<StrategyDAO>>,
         var index = IndexOf(strategy.Name);
         if (index != -1)
         {
-            _buffer[index] = StrategyDAO.From(strategy);
+            _buffer[index] = DAOManager.To(strategy);
             Upload(_buffer);
         }
-    }
-
-    public void AddPreset(IReadOnlyList<SudokuStrategy> list, Stream stream)
-    {
-        //TODO
-    }
-
-    public IEnumerable<SudokuStrategy> GetPreset(Stream stream)
-    {
-        return Enumerable.Empty<SudokuStrategy>(); //TODO
     }
 
     private int IndexOf(string name)
@@ -58,54 +48,5 @@ public class FileSudokuStrategiesRepository : FileRepository<List<StrategyDAO>>,
 
         return -1;
     }
-
-    private static List<SudokuStrategy> To(IEnumerable<StrategyDAO> download)
-    {
-        var result = new List<SudokuStrategy>();
-        foreach (var d in download)
-        {
-            var s = d.To();
-            if (s is not null) result.Add(s);
-        }
-
-        return result;
-    }
-
-    private static List<StrategyDAO> From(IReadOnlyList<SudokuStrategy> list)
-    {
-        var result = new List<StrategyDAO>(list.Count);
-        foreach (var e in list) result.Add(StrategyDAO.From(e));
-        return result;
-    }
 }
 
-public record StrategyDAO(string Name, bool Enabled, bool Locked, InstanceHandling InstanceHandling,
-    Dictionary<string, string>? Settings)
-{
-    public static StrategyDAO From(SudokuStrategy strategy)
-    {
-        Dictionary<string, string> settings = new();
-
-        foreach (var s in strategy.EnumerateSettings())
-        {
-            settings.Add(s.Name, s.Get().ToString()!);
-        }
-
-        return new StrategyDAO(strategy.Name, strategy.Enabled, strategy.Locked, strategy.InstanceHandling, settings);
-    }
-
-    public SudokuStrategy? To()
-    {
-        var result = StrategyPool.CreateFrom(Name, Enabled, Locked, InstanceHandling);
-        if (result is null) return null;
-
-        if (Settings is null) return result;
-        
-        foreach (var entry in Settings)
-        {
-            result.TrySetSetting(entry.Key, new StringSettingValue(entry.Value));
-        }
-
-        return result;
-    }
-}

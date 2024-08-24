@@ -67,7 +67,7 @@ public class KakuroSolver : NumericStrategySolver<Strategy<IKakuroSolverData>, I
     }
 
     protected override INumericSolvingState ApplyChangesToState(INumericSolvingState state, IEnumerable<NumericChange> changes)
-    {
+    { //TODO fix
         var result = DefaultNumericSolvingState.Copy(state);
 
         foreach (var change in changes)
@@ -86,7 +86,7 @@ public class KakuroSolver : NumericStrategySolver<Strategy<IKakuroSolverData>, I
                     {
                         if (cell.Row == change.Row && cell.Column == change.Column) continue;
 
-                        _possibilities[cell.Row, cell.Column] &= pos;
+                        result.AndPossibilities(pos, change.Row, change.Column);
                     }
                 }
             }

@@ -13,4 +13,5 @@ public interface IThemeView
     void UnselectColor();
     void ShowNameError(string error);
     void ShowNameIsCorrect();
+    void SetContinuousUpdate(bool yes);
 }

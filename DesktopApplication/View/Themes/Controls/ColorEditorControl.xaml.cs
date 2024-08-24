@@ -22,6 +22,8 @@ public partial class ColorEditorControl
         set => SetColor(value, true, true);
     }
     
+    public bool ContinuousUpdate { get; set; }
+    
     public ColorEditorControl()
     {
         InitializeComponent();
@@ -33,7 +35,7 @@ public partial class ColorEditorControl
         _fireEvent = true;
     }
 
-    public void NoColor()
+    public void NoColor() //TODO
     {
         _fireEvent = false;
         SetColor(new RGB(), false, false);
@@ -273,46 +275,44 @@ public partial class ColorEditorControl
         SLCursor.Visibility = Visibility.Visible;
         var left = (SLWrapper.Width - SLMap.Width) / 2 
             + _hsl.Saturation * SLMap.Width - SLCursor.Width / 2;
-        //l = temp - 0.5 * s * temp;
-        //temp - l = 0.5 * s * temp
-        //1 - l / temp = 0.5 * s
-        //l / temp = 1 - 0.5 * s
-        //temp = l / (1 - 0.5 * s)
-        //temp = 1 - y
-        //y = 1 - l / (1 - 0.5 * s)
         var y = 1 - _hsl.Lightness / (1 - 0.5 * _hsl.Saturation);
         var top = (SLWrapper.Height - SLMap.Height) / 2 
             + y * SLMap.Height - SLCursor.Height / 2;
         SLCursor.Margin = new Thickness(left, top, 0, 0);
     }
 
-    private void OnHueChange(object sender, MouseEventArgs e)
+    private void OnHueMove(object sender, MouseEventArgs e)
     {
+        if (e.LeftButton != MouseButtonState.Pressed) return;
+        
         var x = e.MouseDevice.GetPosition(HueSlider).X;
         SetHSL(_hsl.WithHue((int)Math.Round(x / (HueSlider.Width - 1) * 360)),
             true, true, false, true);
-        ColorChanged?.Invoke(Color);
+        
+        if(ContinuousUpdate) ColorChanged?.Invoke(Color);
     }
     
-    private void OnHueDrag(object sender, MouseEventArgs e)
+    private void OnSLMove(object sender, MouseEventArgs e)
     {
-        if (e.LeftButton == MouseButtonState.Pressed) OnHueChange(sender, e);
-    }
-    
-    private void OnSLChange(object sender, MouseEventArgs e)
-    {
+        if (e.LeftButton != MouseButtonState.Pressed) return;
+        
         var p = e.MouseDevice.GetPosition(SLMap);
         var s = p.X / SLMap.Width;
         var temp = 1 - p.Y / SLMap.Height;
         var l = temp - 0.5 * s * temp;
         SetHSL(new HSL(_hsl.Hue, s, l),
             true, false, true, true);
-        ColorChanged?.Invoke(Color);
+        if(ContinuousUpdate) ColorChanged?.Invoke(Color);
     }
 
-    private void OnSLDrag(object sender, MouseEventArgs e)
+    private void StopOnUp(object sender, MouseEventArgs e)
     {
-        if (e.LeftButton == MouseButtonState.Pressed) OnSLChange(sender, e);
+        if(!ContinuousUpdate) ColorChanged?.Invoke(Color);
+    }
+    
+    private void StopOnLeave(object sender, MouseEventArgs e)
+    {
+        if(!ContinuousUpdate && e.LeftButton == MouseButtonState.Pressed) ColorChanged?.Invoke(Color);
     }
 }
 

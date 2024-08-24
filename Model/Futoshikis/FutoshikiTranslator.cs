@@ -7,7 +7,7 @@ public static class FutoshikiTranslator
 {
     public static Futoshiki TranslateLineFormat(string s)
     {
-        var split = s.Split(':');
+        var split = s.Split(':', StringSplitOptions.RemoveEmptyEntries);
         if (split.Length != 3) return new Futoshiki();
 
         try
@@ -51,7 +51,7 @@ public static class FutoshikiTranslator
             
             if(split[2].Length == 0) return result;
 
-            foreach (var constraint in split[2].Split(';'))
+            foreach (var constraint in split[2].Split(';', StringSplitOptions.RemoveEmptyEntries))
             {
                 if(constraint.Length != 5) continue;
 

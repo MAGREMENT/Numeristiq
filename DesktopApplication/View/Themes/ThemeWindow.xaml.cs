@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Themes;
+using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.Themes.Controls;
 using Model.Repositories;
 using Model.Utility;
@@ -94,6 +95,11 @@ public partial class ThemeWindow : IThemeView
         SaveAsButton.IsEnabled = true;
     }
 
+    public void SetContinuousUpdate(bool yes)
+    {
+        CurrentColorValue.ContinuousUpdate = yes;
+    }
+
     private void EvaluateName(object sender, TextChangedEventArgs e)
     {
         if (sender is not TextBox box) return;
@@ -128,5 +134,11 @@ public partial class ThemeWindow : IThemeView
     private void ToSecondary2(object sender, MouseEventArgs e)
     {
         if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "Secondary2");
+    }
+
+    private void OpenSettings()
+    {
+        var window = new SettingWindow(_presenter.SettingsPresenter);
+        window.Show();
     }
 }

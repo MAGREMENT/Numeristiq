@@ -74,4 +74,14 @@ public class StrategyManager<TStrategy> where TStrategy : Strategy
             s.Locked = !yes;
         }
     }
+
+    public TStrategy? FindStrategy(string name)
+    {
+        foreach (var s in Strategies)
+        {
+            if (s.Name.Equals(name)) return s;
+        }
+
+        return null;
+    }
 }

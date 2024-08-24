@@ -66,14 +66,14 @@ public class SumListKakuro : IKakuro, INumericSolvingState
         if (c.HorizontalSum is not null) yield return c.HorizontalSum;
     }
     
-    public IKakuroSum? VerticalSumFor(Cell cell)
+    public IKakuroSum VerticalSumFor(Cell cell)
     {
-        return _cells[cell.Row, cell.Column].VerticalSum;
+        return _cells[cell.Row, cell.Column].VerticalSum!;
     }
 
-    public IKakuroSum? HorizontalSumFor(Cell cell)
+    public IKakuroSum HorizontalSumFor(Cell cell)
     {
-        return _cells[cell.Row, cell.Column].HorizontalSum;
+        return _cells[cell.Row, cell.Column].HorizontalSum!;
     }
 
     public List<int> GetSolutions(IKakuroSum sum)

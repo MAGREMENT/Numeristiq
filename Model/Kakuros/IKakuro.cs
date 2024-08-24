@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Core.BackTracking;
 using Model.Utility;
 
 namespace Model.Kakuros;
@@ -42,7 +43,7 @@ public interface IKakuro : IReadOnlyKakuro
     }
 }
 
-public interface IReadOnlyKakuro
+public interface IReadOnlyKakuro : ICopyable<IKakuro>
 {
     int RowCount { get; }
     int ColumnCount { get; }
@@ -52,8 +53,8 @@ public interface IReadOnlyKakuro
     IEnumerable<Cell> EnumerateCells();
     
     IEnumerable<IKakuroSum> SumsFor(Cell cell);
-    IKakuroSum? VerticalSumFor(Cell cell);
-    IKakuroSum? HorizontalSumFor(Cell cell);
+    IKakuroSum VerticalSumFor(Cell cell);
+    IKakuroSum HorizontalSumFor(Cell cell);
     IKakuroSum? FindSum(Cell amountCell);
     List<int> GetSolutions(IKakuroSum sum);
 
@@ -61,8 +62,6 @@ public interface IReadOnlyKakuro
 
     bool IsComplete();
     bool IsCorrect();
-
-    IKakuro Copy();
 }
 
 public interface IKakuroSum : IEnumerable<Cell>

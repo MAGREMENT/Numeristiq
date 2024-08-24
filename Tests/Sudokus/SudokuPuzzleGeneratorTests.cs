@@ -3,6 +3,7 @@ using Model.Core.Trackers;
 using Model.Sudokus;
 using Model.Sudokus.Generator;
 using Model.Sudokus.Solver;
+using Repository;
 using Repository.Files;
 using Repository.Files.Types;
 

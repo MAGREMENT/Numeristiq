@@ -53,7 +53,7 @@ public static class KakuroTranslator
         try
         {
             var result = new SumListKakuro();
-            foreach (var sum in sums.Split(';'))
+            foreach (var sum in sums.Split(';', StringSplitOptions.RemoveEmptyEntries))
             {
                 if (sum.Length == 0) continue;
                 
@@ -91,8 +91,9 @@ public static class KakuroTranslator
             }
             
             if(index == -1) return result;
-            
-            foreach (var p in s[(index + 1)..].Split(';'))
+
+            var splits = s[(index + 1)..].Split(';', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var p in splits)
             {
                 var buffer = 0;
                 var cursor = 0;

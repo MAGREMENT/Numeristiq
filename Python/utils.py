@@ -46,7 +46,14 @@ def split_boxes(img):
 
 
 def predict(model, number):
-    img = cv2.resize(number, (28, 28))  # For cv2.imshow: dimensions should be 28x28
-    img = img.reshape(1, 28, 28, 1)
+    img = numpy.asarray(number)
+    img = img[6:img.shape[0] - 6, 6:img.shape[1] - 6]
+    img = cv2.resize(img, (28, 28))
 
-    return numpy.argmax(model.predict(img))
+    if len(numpy.argwhere(img < 250)) == 0:
+        return 0
+
+    img = img / 255.0
+    img = img.reshape(1, 28, 28, 1)
+    return numpy.argmax(model.predict(img, verbose=0))
+

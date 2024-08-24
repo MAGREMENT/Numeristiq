@@ -1,4 +1,5 @@
-﻿using Repository.Files;
+﻿using Repository;
+using Repository.Files;
 using Repository.Files.Types;
 using Repository.HardCoded;
 using Tests.Utility;
@@ -13,7 +14,7 @@ public class FileThemeRepositoryTests
     public void SetUp()
     {
         _repositories.Add(new FileThemeRepository("theme-tests", false, true,
-            new JsonType<List<ThemeDto>>()));
+            new JsonType<List<ThemeDAO>>()));
         _repositories.Add(new FileThemeRepository("theme-tests", false, true,
             new ThemeNativeType()));
     }

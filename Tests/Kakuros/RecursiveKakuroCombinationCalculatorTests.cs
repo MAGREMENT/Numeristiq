@@ -11,6 +11,18 @@ public class RecursiveKakuroCombinationCalculatorTests
         var cc = new RecursiveKakuroCombinationCalculator();
         var result = new ReadOnlyBitSet16(7, 9);
         Assert.That(cc.CalculatePossibilities(16, 2), Is.EqualTo(result));
+        
+        result = new ReadOnlyBitSet16(8, 9);
+        var forced = new List<int>();
+        Assert.That(cc.CalculatePossibilities(17, 2, forced), Is.EqualTo(result));
+
+        result = new ReadOnlyBitSet16(8);
+        forced.Add(9);
+        Assert.That(cc.CalculatePossibilities(17, 2, forced), Is.EqualTo(result));
+        
+        result = new ReadOnlyBitSet16();
+        forced.Add(8);
+        Assert.That(cc.CalculatePossibilities(17, 2, forced), Is.EqualTo(result));
     }
     
     [Test]

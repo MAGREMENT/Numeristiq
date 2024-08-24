@@ -63,7 +63,7 @@ public static class NonogramTranslator
 
             if (cells)
             {
-                foreach (var cell in s[i..].Split('-'))
+                foreach (var cell in s[i..].Split('-', StringSplitOptions.RemoveEmptyEntries))
                 {
                     var index = cell.IndexOf('.');
                     if(index == -1) continue;

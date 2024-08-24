@@ -11,3 +11,5 @@
 MySqlCredentials.cs
 
 **/venv/
+**/dist/
+**/build/

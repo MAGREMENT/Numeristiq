@@ -4,10 +4,8 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using DesktopApplication.Presenter;
-using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Sudokus.Manage;
 using DesktopApplication.View.Settings;
 using DesktopApplication.View.Utility;
@@ -23,12 +21,15 @@ public partial class ManagePage : ISudokuManageView
     private const int DragScrollOffset = 60;
     
     private readonly SudokuManagePresenter _presenter;
+    private readonly bool _initialized;
     
     public ManagePage()
     {
         InitializeComponent();
         _presenter = PresenterFactory.Instance.Initialize(this);
         _presenter.Initialize();
+
+        _initialized = true;
     }
 
     public void ClearSearchResults()
@@ -117,6 +118,13 @@ public partial class ManagePage : ISudokuManageView
                 InfoPanel.Children.Add(control);
             }
         }
+    }
+
+    public void SetNotFoundSettings()
+    {
+        InfoPanel.Children.Clear();
+        
+        //TODO
     }
 
     public void SetStrategyDescription(IDescription description)
@@ -309,6 +317,16 @@ public partial class ManagePage : ISudokuManageView
     {
         if (sender is not FrameworkElement element) return;
         element.SetResourceReference(BackgroundProperty, "Background2");
+    }
+
+    private void OnCheckedSettings(object sender, RoutedEventArgs e)
+    {
+        if (_initialized) _presenter.ChangeDisplay(ShownInfo.Settings);
+    }
+    
+    private void OnCheckedDocumentation(object sender, RoutedEventArgs e)
+    {
+        if (_initialized) _presenter.ChangeDisplay(ShownInfo.Documentation);
     }
 }
 

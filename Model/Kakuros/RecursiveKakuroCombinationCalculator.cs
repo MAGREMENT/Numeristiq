@@ -26,14 +26,15 @@ public class RecursiveKakuroCombinationCalculator : IKakuroCombinationCalculator
     public ReadOnlyBitSet16 CalculatePossibilities(int amount, int cellCount, List<int> forced)
     {
         ReadOnlyBitSet16 result = new();
-        CalculateWithForced(ref result, new List<int>(), 0, amount, cellCount, 1);
-        return result;
+        var toRemove = new ReadOnlyBitSet16(forced);
+        CalculateWithForced(ref result, forced, Sum(forced), amount, cellCount, 1);
+        return result - toRemove;
     }
 
     private static void Calculate(List<IReadOnlyList<int>> result, List<int> currentNumbers, int currentTotal,
         int amount, int cellCount, int start)
     {
-        for (; start < 9; start++)
+        for (; start <= 9; start++)
         {
             currentNumbers.Add(start);
             var newTotal = currentTotal + start;
@@ -57,27 +58,23 @@ public class RecursiveKakuroCombinationCalculator : IKakuroCombinationCalculator
     private static void CalculateWithForced(ref ReadOnlyBitSet16 result, List<int> currentNumbers, int currentTotal,
         int amount, int cellCount, int start)
     {
-        for (; start < 9; start++)
+        if (currentNumbers.Count == cellCount)
+        {
+            if (currentTotal != amount) return;
+            
+            foreach (var p in currentNumbers)
+            {
+                result += p;
+            }
+        }
+        
+        for (; start <= 9; start++)
         {
             if (currentNumbers.Contains(start)) continue;
             
             currentNumbers.Add(start);
             var newTotal = currentTotal + start;
-                
-            if (currentNumbers.Count == cellCount - 1)
-            {
-                var last = amount - newTotal;
-                if (last >= start + 1 && last is >= 1 and <= 9 && !currentNumbers.Contains(last))
-                {
-                    foreach (var p in currentNumbers)
-                    {
-                        result += p;
-                    }
-
-                    result += last;
-                }
-            }
-            else Calculate(ref result, currentNumbers, newTotal, amount, cellCount, start + 1);
+            CalculateWithForced(ref result, currentNumbers, newTotal, amount, cellCount, start + 1);
             
             currentNumbers.RemoveAt(currentNumbers.Count - 1);
         }
@@ -86,7 +83,7 @@ public class RecursiveKakuroCombinationCalculator : IKakuroCombinationCalculator
     private static void Calculate(ref ReadOnlyBitSet16 result, List<int> currentNumbers, int currentTotal,
         int amount, int cellCount, int start)
     {
-        for (; start < 9; start++)
+        for (; start <= 9; start++)
         {
             currentNumbers.Add(start);
             var newTotal = currentTotal + start;
@@ -108,5 +105,12 @@ public class RecursiveKakuroCombinationCalculator : IKakuroCombinationCalculator
             
             currentNumbers.RemoveAt(currentNumbers.Count - 1);
         }
-    } 
+    }
+
+    private static int Sum(List<int> list)
+    {
+        var total = 0;
+        foreach (var n in list) total += n;
+        return total;
+    }
 }

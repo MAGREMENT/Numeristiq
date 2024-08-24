@@ -1,5 +1,6 @@
 ﻿using Model.Repositories;
 using Model.Sudokus.Solver;
+using Repository.Files;
 
 namespace DesktopApplication.Presenter.Sudokus.Manage;
 
@@ -8,6 +9,9 @@ public class SudokuManagePresenter
     private readonly ISudokuManageView _view;
     private readonly StrategyManager<SudokuStrategy> _manager;
     private readonly IStrategyRepository<SudokuStrategy> _repo;
+    
+    private ShownInfo _shownInfo = ShownInfo.Documentation;
+    private string? _currentlyDisplayed;
 
     public SudokuManagePresenter(ISudokuManageView view, StrategyManager<SudokuStrategy> manager, 
         IStrategyRepository<SudokuStrategy> repo)
@@ -37,10 +41,20 @@ public class SudokuManagePresenter
         }
     }
 
+    public void ChangeDisplay(ShownInfo info)
+    {
+        _shownInfo = info;
+        if (_currentlyDisplayed is null) return;
+
+        DisplayFromName(_currentlyDisplayed);
+    }
+
     public void OnSearchResultSelection(string s)
     {
         _view.SetSelectedStrategyName(s);
-        _view.SetStrategyDescription(StrategyPool.GetDescription(s));
+        _currentlyDisplayed = s;
+
+        DisplayFromName(s);
     }
     
     public void OnActiveStrategySelection(int index)
@@ -49,7 +63,10 @@ public class SudokuManagePresenter
 
         var s = _manager.Strategies[index];
         _view.SetSelectedStrategyName(s.Name);
-        _view.SetManageableSettings(new StrategySettingsPresenter(s, _repo));
+        _currentlyDisplayed = s.Name;
+        
+        if(_shownInfo == ShownInfo.Settings) _view.SetManageableSettings(new StrategySettingsPresenter(s, _repo));
+        else _view.SetStrategyDescription(StrategyPool.GetDescription(s.Name));
     }
 
     public void AddStrategy(string s, int position)
@@ -79,6 +96,7 @@ public class SudokuManagePresenter
 
     public void OnShow()
     {
+        _currentlyDisplayed = null;
         _view.ClearSelectedStrategy();
     }
     
@@ -88,7 +106,8 @@ public class SudokuManagePresenter
         using var stream = _view.GetUploadPresetStream();
         if (stream is null) return;
 
-        _repo.AddPreset(_manager.Strategies, stream);
+        var repo = new FileSudokuPresetRepository(stream);
+        repo.SetStrategies(_manager.Strategies);
     }
 
     public void DownloadPreset()
@@ -96,8 +115,26 @@ public class SudokuManagePresenter
         using var stream = _view.GetDownloadPresetStream();
         if (stream is null) return;
 
+        var repo = new FileSudokuPresetRepository(stream);
+        
         _manager.ClearStrategies();
-        _manager.AddStrategies(_repo.GetPreset(stream));
+        _manager.AddStrategies(repo.GetStrategies());
         _view.SetStrategyList(_manager.Strategies);
     }
+
+    private void DisplayFromName(string s)
+    {
+        if (_shownInfo == ShownInfo.Settings)
+        {
+            var strategy = _manager.FindStrategy(s);
+            if(strategy is null) _view.SetNotFoundSettings();
+            else _view.SetManageableSettings(new StrategySettingsPresenter(strategy, _repo));
+        }
+        else _view.SetStrategyDescription(StrategyPool.GetDescription(s));
+    }
+}
+
+public enum ShownInfo
+{
+    Settings, Documentation
 }

@@ -7,8 +7,8 @@ public class FileSettingsRepository : FileRepository<Dictionary<string, string>>
 {
     private Dictionary<string, string>? _buffer;
     
-    public FileSettingsRepository(string fileName, bool searchParentDirectories, bool createIfNotFound,
-        IFileType<Dictionary<string, string>> type) : base(fileName, searchParentDirectories, createIfNotFound, type)
+    public FileSettingsRepository(string name, bool searchParentDirectories, bool createIfNotFound,
+        IFileType<Dictionary<string, string>> type) : base(name, searchParentDirectories, createIfNotFound, type)
     {
     }
     

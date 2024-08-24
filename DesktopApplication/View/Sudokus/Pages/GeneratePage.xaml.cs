@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using DesktopApplication.Presenter;
-using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Sudokus.Generate;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.HelperWindows;
@@ -27,7 +26,7 @@ public partial class GeneratePage : ISudokuGenerateView
         InitializeComponent();
         _presenter = PresenterFactory.Instance.Initialize(this);
 
-        RenderOptions.SetBitmapScalingMode(Bin, BitmapScalingMode.Fant);
+        //RenderOptions.SetBitmapScalingMode(Bin, BitmapScalingMode.Fant);
 
         _initialized = true;
     }
@@ -78,7 +77,7 @@ public partial class GeneratePage : ISudokuGenerateView
             TransitionPlace.ToEvaluator => ToEvaluator,
             TransitionPlace.ToFinalList => ToFinalList,
             TransitionPlace.ToRDR => ToRDR,
-            TransitionPlace.ToBin => ToBin,
+            //TransitionPlace.ToBin => ToBin,
             _ => throw new ArgumentOutOfRangeException()
         };
         
@@ -91,12 +90,10 @@ public partial class GeneratePage : ISudokuGenerateView
     {
         Evaluated.Dispatcher.Invoke(() =>
         {
-            if(Evaluated.Children.Count > 4)
-                Evaluated.Children.RemoveRange(4, Evaluated.Children.Count - 4);
-            if(Evaluated.RowDefinitions.Count > 1) 
-                Evaluated.RowDefinitions.RemoveRange(1, Evaluated.RowDefinitions.Count - 1);
+            Evaluated.Children.Clear();
+            Evaluated.RowDefinitions.Clear();
 
-            var r = 1;
+            var r = 0;
             foreach (var sudoku in sudokus)
             {
                 Evaluated.RowDefinitions.Add(new RowDefinition
@@ -128,89 +125,18 @@ public partial class GeneratePage : ISudokuGenerateView
                 Grid.SetColumn(border, 0);
                 Evaluated.Children.Add(border);
 
-                var grid = new Grid
-                {
-                    VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Stretch
-                };
-                grid.ColumnDefinitions.Add(new ColumnDefinition
-                {
-                    Width = new GridLength(1, GridUnitType.Star)
-                });
-                grid.ColumnDefinitions.Add(new ColumnDefinition
-                {
-                    Width = GridLength.Auto
-                });
-                grid.ColumnDefinitions.Add(new ColumnDefinition
-                {
-                    Width = GridLength.Auto
-                });
-
                 var asString = new TextBlock
                 {
                     VerticalAlignment = VerticalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Left,
+                    HorizontalAlignment = HorizontalAlignment.Center,
                     FontSize = 16,
                     Text = sudoku.AsString(),
                     Margin = new Thickness(5, 0, 5, 0)
                 };
                 asString.SetResourceReference(ForegroundProperty, "Text");
-                Grid.SetColumn(asString, 0);
-                grid.Children.Add(asString);
-
-                var p1 = new Path
-                {
-                    Data = Geometry.Parse("M 7,35 V 10 H 27 V 35 H 7 M 15,10 V 5 H 35 V 30 H 27"),
-                    Width = 40,
-                    Height = 40
-                };
-                p1.SetResourceReference(Shape.StrokeProperty, "Text");
-                var b1 = new Button
-                {
-                    Style = (Style)FindResource("SimpleHoverButton"),
-                    Content = p1,
-                    Visibility = Visibility.Collapsed
-                };
-                b1.Click += (_, _) => Clipboard.SetText(sudoku.AsString());
-                Grid.SetColumn(b1, 1);
-                grid.Children.Add(b1);
-                
-                var p2 = new Path
-                {
-                    Data = Geometry.Parse("M 3,20 C 15,8 25,8 37,20 C 25,32 15,32 3,20 M 20,20 M 16,20 A 4,4 0 1 1 24,20 A 4,4 0 1 1 16,20"),
-                    Width = 40,
-                    Height = 40
-                };
-                p2.SetResourceReference(Shape.StrokeProperty, "Text");
-                var b2 = new Button
-                {
-                    Style = (Style)FindResource("SimpleHoverButton"),
-                    Content = p2,
-                    Visibility = Visibility.Collapsed
-                };
-                b2.Click += (_, _) =>
-                {
-                    var dialog = new ShowSudokuDialog(sudoku.Puzzle);
-                    dialog.Show();
-                };
-                Grid.SetColumn(b2, 2);
-                grid.Children.Add(b2);
-
-                grid.MouseEnter += (_, _) =>
-                {
-                    b1.Visibility = Visibility.Visible;
-                    b2.Visibility = Visibility.Visible;
-                };
-                
-                grid.MouseLeave += (_, _) =>
-                {
-                    b1.Visibility = Visibility.Collapsed;
-                    b2.Visibility = Visibility.Collapsed;
-                };
-
-                Grid.SetRow(grid, r);
-                Grid.SetColumn(grid, 1);
-                Evaluated.Children.Add(grid);
+                Grid.SetColumn(asString, 1);
+                Grid.SetRow(asString, r);
+                Evaluated.Children.Add(asString);
 
                 var rating = new TextBlock
                 {
@@ -241,6 +167,60 @@ public partial class GeneratePage : ISudokuGenerateView
                     Grid.SetColumn(hardest, 3);
                     Evaluated.Children.Add(hardest);
                 }
+                
+                var grid = new Grid
+                {
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+                grid.ColumnDefinitions.Add(new ColumnDefinition
+                {
+                    Width = GridLength.Auto
+                });
+                grid.ColumnDefinitions.Add(new ColumnDefinition
+                {
+                    Width = GridLength.Auto
+                });
+                
+                var p1 = new Path
+                {
+                    Data = Geometry.Parse("M 7,35 V 10 H 27 V 35 H 7 M 15,10 V 5 H 35 V 30 H 27"),
+                    Width = 40,
+                    Height = 40
+                };
+                p1.SetResourceReference(Shape.StrokeProperty, "Text");
+                var b1 = new Button
+                {
+                    Style = (Style)FindResource("PrimaryLightUpButtonStyle"),
+                    Content = p1,
+                };
+                b1.Click += (_, _) => Clipboard.SetText(sudoku.AsString());
+                Grid.SetColumn(b1, 0);
+                grid.Children.Add(b1);
+                
+                var p2 = new Path
+                {
+                    Data = Geometry.Parse("M 3,20 C 15,8 25,8 37,20 C 25,32 15,32 3,20 M 20,20 M 16,20 A 4,4 0 1 1 24,20 A 4,4 0 1 1 16,20"),
+                    Width = 40,
+                    Height = 40
+                };
+                p2.SetResourceReference(Shape.StrokeProperty, "Text");
+                var b2 = new Button
+                {
+                    Style = (Style)FindResource("SecondaryLightUpButtonStyle"),
+                    Content = p2,
+                };
+                b2.Click += (_, _) =>
+                {
+                    var dialog = new ShowSudokuDialog(sudoku.Puzzle);
+                    dialog.Show();
+                };
+                Grid.SetColumn(b2, 1);
+                grid.Children.Add(b2);
+
+                Grid.SetRow(grid, r);
+                Grid.SetColumn(grid, 4);
+                Evaluated.Children.Add(grid);
 
                 r++;
             }

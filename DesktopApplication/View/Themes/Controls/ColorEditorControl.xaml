@@ -20,7 +20,8 @@
         
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Width="220" Height="220" x:Name="SLWrapper">
             <Border VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="5"
-                    Width="200" Height="200" x:Name="SLMap" MouseLeftButtonDown="OnSLChange" MouseMove="OnSLDrag">
+                    Width="200" Height="200" x:Name="SLMap" MouseMove="OnSLMove" MouseLeftButtonUp="StopOnUp"
+                    MouseLeave="StopOnLeave">
                 <Border.Background>
                     <ImageBrush Stretch="Fill"/>
                 </Border.Background>
@@ -33,7 +34,8 @@
         
         <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Width="220" x:Name="HueWrapper">
             <Border HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="3"
-                    Height="15" Width="200" x:Name="HueSlider" MouseLeftButtonDown="OnHueChange" MouseMove="OnHueDrag">
+                    Height="15" Width="200" x:Name="HueSlider" MouseMove="OnHueMove"
+                    MouseLeftButtonUp="StopOnUp" MouseLeave="StopOnLeave">
                 <Border.Background>
                     <ImageBrush Stretch="Fill"/>
                 </Border.Background>

@@ -48,37 +48,42 @@ public class Settings
             new BooleanSetting("Fast possibility display", "Display the Sudoku's possibilities in a" +
                                                            " faster but less elegant way."),
             new BooleanSetting("Are solution numbers", "Defines if the solutions should be represented as " +
-                                                       "numbers")
+                                                       "numbers"),
+            new BooleanSetting("Theme continuous update", "Updates the theme when dragging the color cursors")
         };
         _collections = new[]
         {
-            new[] //WelcomeView
+            new[] //WelcomeWindow
             {
                 new NamedListSpan<ISetting>("Themes", _settings, 0)
             },
-            new[] //SudokuSolverView
+            new[] //SudokuSolverPage
             {
-                new NamedListSpan<ISetting>("Themes", _settings, 0),
+                new NamedListSpan<ISetting>("Theme", _settings, 0),
                 new NamedListSpan<ISetting>("Board", _settings, 1, 2),
                 new NamedListSpan<ISetting>("Solver", _settings, 3, 14),
                 new NamedListSpan<ISetting>("Editing", _settings, 6, 7, 8, 9, 10, 11)
             },
-            new[] //SudokuPlayerView
+            new[] //SudokuPlayerPage
             {
-                new NamedListSpan<ISetting>("Themes", _settings, 0),
+                new NamedListSpan<ISetting>("Theme", _settings, 0),
                 new NamedListSpan<ISetting>("Highlighting", _settings, 4, 5),
                 new NamedListSpan<ISetting>("Player", _settings, 12, 13),
                 new NamedListSpan<ISetting>("Editing", _settings, 8, 9, 11)
             },
-            new [] //SudokuGenerateView
+            new [] //SudokuGeneratePage
             {
-                new NamedListSpan<ISetting>("Themes", _settings, 0),
+                new NamedListSpan<ISetting>("Theme", _settings, 0),
             },
-            new[] //BinairoSolveView
+            new[] //BinairoSolvePage
             {
-                new NamedListSpan<ISetting>("Themes", _settings, 0),
+                new NamedListSpan<ISetting>("Theme", _settings, 0),
                 new NamedListSpan<ISetting>("Board", _settings, 15)
-            }
+            },
+            new[] //ThemeWindow
+            {
+                new NamedListSpan<ISetting>("General", _settings, 16)
+            } 
         };
         _repository = repository;
     }
@@ -127,6 +132,7 @@ public class Settings
     public ISetting TestSolutionCount => _settings[13];
     public ISetting FastPossibilityDisplay => _settings[14];
     public ISetting AreSolutionNumbers => _settings[15];
+    public ISetting ThemeContinuousUpdate => _settings[16];
 }
 
 public enum SettingCollections
@@ -135,7 +141,8 @@ public enum SettingCollections
     SudokuSolvePage,
     SudokuPlayPage,
     SudokuGeneratePage,
-    BinairoSolvePage
+    BinairoSolvePage,
+    ThemeWindow
 }
 
 public enum RotationDirection

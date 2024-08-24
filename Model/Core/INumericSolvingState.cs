@@ -125,7 +125,12 @@ public class DefaultNumericSolvingState : ISudokuSolvingState
     public void RemovePossibility(int p, int row, int col)
     {
         if((_bits[row, col] & 1) == 0) _bits[row, col] &= (ushort)~(1 << p);
-    } 
+    }
+
+    public void AndPossibilities(ReadOnlyBitSet16 set, int row, int col)
+    {
+        if ((_bits[row, col] & 1) == 0) _bits[row, col] &= set.Bits;
+    }
 
     public DefaultNumericSolvingState Copy() => new(_bits);
     

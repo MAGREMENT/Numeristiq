@@ -2,10 +2,10 @@
 
 namespace Repository.Files.Types;
 
-public class ThemeNativeType : IFileType<List<ThemeDto>>
+public class ThemeNativeType : IFileType<List<ThemeDAO>>
 {
     public string Extension => ".nqth";
-    public void Write(Stream stream, List<ThemeDto> DAO)
+    public void Write(Stream stream, List<ThemeDAO> DAO)
     {
         foreach (var t in DAO)
         {
@@ -21,12 +21,12 @@ public class ThemeNativeType : IFileType<List<ThemeDto>>
         }
     }
     
-    public List<ThemeDto> Read(Stream stream)
+    public List<ThemeDAO> Read(Stream stream)
     {
-        var intSize = sizeof(int);
+        const int intSize = sizeof(int);
         var intBuffer = new byte[intSize];
         var n = stream.Read(intBuffer, 0, intSize);
-        List<ThemeDto> list = new();
+        List<ThemeDAO> list = new();
         while (n == intSize)
         {
             var nameSize = BitConverter.ToInt32(intBuffer);
@@ -36,9 +36,9 @@ public class ThemeNativeType : IFileType<List<ThemeDto>>
 
             var name = Encoding.UTF8.GetString(nameBuffer);
             var colors = GetColors(stream, intSize, intBuffer);
-            if(colors.Count != ThemeDto.ColorCount) break;
+            if(colors.Count != ThemeDAO.ColorCount) break;
 
-            list.Add(new ThemeDto(name, colors));
+            list.Add(new ThemeDAO(name, colors));
             n = stream.Read(intBuffer, 0, intSize);
         }
 

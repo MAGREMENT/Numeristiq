@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using Model.Utility;
 
 namespace Repository.Files;
 
@@ -7,48 +7,12 @@ public class FileRepository<T> where T : class
     private readonly string? _filePath;
     private readonly IFileType<T> _type;
     
-    protected FileRepository(string fileName, bool searchParentDirectories, bool createIfNotFound, IFileType<T> type)
+    protected FileRepository(string name, bool searchParentDirectories, bool createIfNotFound, IFileType<T> type)
     {
         _type = type;
-        
-        var directory = Directory.GetCurrentDirectory();
-        var fullName = fileName + type.Extension;
-        var initialPath = $@"{directory}\{fullName}";
-        _filePath = initialPath;
-        if (File.Exists(initialPath)) return;
-        
-        if (searchParentDirectories)
-        {
-            var buffer = Directory.GetParent(_filePath);
-            while (buffer is not null)
-            {
-                var p = $@"{buffer.FullName}\{fullName}";
-                if (File.Exists(p))
-                {
-                    _filePath = p;
-                    return;
-                }
-
-                buffer = Directory.GetParent(buffer.FullName);
-            }
-        }
-
-        if (createIfNotFound)
-        {
-            try
-            {
-                using var stream = File.Create(initialPath);
-                return;
-            }
-            catch
-            {
-                //ignored
-            }
-        }
-
-        _filePath = null;
+        _filePath = PathFinder.Find(name + type.Extension, searchParentDirectories, createIfNotFound);
     }
-
+    
     public void TearDown()
     {
         if (_filePath is null) return;

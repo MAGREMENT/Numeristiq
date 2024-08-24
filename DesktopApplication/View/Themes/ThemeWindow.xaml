@@ -28,7 +28,11 @@
         
         <controls:TitleBarControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" AppTitle="Themes"
                                   x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
-                                  AllowResize="False"/>
+                                  AllowResize="False">
+            <controls:TitleBarControl.InsideContent>
+                <controls:SettingsButton Clicked="OpenSettings"></controls:SettingsButton>
+            </controls:TitleBarControl.InsideContent>
+        </controls:TitleBarControl>
         
         <Border Grid.Row="1" Grid.Column="0" Margin="10 10 0 10"
                 BorderThickness="2" BorderBrush="{DynamicResource Text}" CornerRadius="5">

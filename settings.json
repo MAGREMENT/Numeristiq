@@ -1,5 +1,5 @@
 ﻿{
-  "Theme": "3",
+  "Theme": "1",
   "Show same cell links": "False",
   "Link offset side priority": "1",
   "Unique solution": "True",
@@ -14,5 +14,6 @@
   "Main possibilities location": "9",
   "Test solution count for clue": "False",
   "Fast possibility display": "False",
-  "Are solution numbers": "True"
+  "Are solution numbers": "True",
+  "Theme continuous update": "False"
 }

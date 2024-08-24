@@ -22,7 +22,7 @@ public static class TectonicTranslator
     {
         Dictionary<int, List<Cell>> zones = new();
 
-        var split = line.Split(':');
+        var split = line.Split(':', StringSplitOptions.RemoveEmptyEntries);
         if (split.Length != 2) return new BlankTectonic();
 
         var separator = split[0].IndexOf('.');
@@ -105,7 +105,7 @@ public static class TectonicTranslator
 
     public static ITectonic TranslateRdFormat(string s)
     {
-        var split = s.Split(':');
+        var split = s.Split(':', StringSplitOptions.RemoveEmptyEntries);
         if (split.Length != 2) return new BlankTectonic();
         
         var separator = split[0].IndexOf('.');
