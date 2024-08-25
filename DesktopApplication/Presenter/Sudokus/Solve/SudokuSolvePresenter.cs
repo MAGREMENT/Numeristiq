@@ -71,7 +71,8 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
 
     public void OnSudokuAsStringBoxShowed()
     {
-        _view.SetSudokuAsString(SudokuTranslator.TranslateLineFormat(_solver.Sudoku, SudokuLineFormatEmptyCellRepresentation.Shortcuts));
+        _view.SetSudokuAsString(SudokuTranslator.TranslateLineFormat(_solver.Sudoku, 
+            SudokuLineFormatEmptyCellRepresentation.Shortcuts));
     }
 
     public void SetNewSudoku(string s)

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace DesktopApplication.View.Tectonics.Controls;
+namespace DesktopApplication.View.Controls;
 
 public partial class DimensionChooser
 {

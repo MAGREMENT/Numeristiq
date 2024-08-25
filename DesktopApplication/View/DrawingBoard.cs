@@ -239,6 +239,13 @@ public interface ICellGameDrawingData : IDefaultDrawingData
     Point GetCenterOfCell(int row, int col);
 }
 
+public interface IVaryingBordersCellGameData : ICellGameDrawingData
+{
+    int RowCount { get; }
+    int ColumnCount { get; }
+    NeighborBorder? GetBorder(BorderDirection direction, int row, int col);
+}
+
 public interface IDichotomousCellGameDrawingData : ICellGameDrawingData
 {
     Brush FillingBrush { get; }
@@ -282,11 +289,9 @@ public interface ISudokuDrawingData : INinePossibilitiesGameDrawingData
     double LinePossibilitiesOutlineWidth { get; }
 }
 
-public interface ITectonicDrawingData : IVaryingPossibilitiesGameDrawingData
+public interface ITectonicDrawingData : IVaryingPossibilitiesGameDrawingData, IVaryingBordersCellGameData
 {
-    int RowCount { get; }
-    int ColumnCount { get; }
-    NeighborBorder? GetBorder(BorderDirection direction, int row, int col);
+    
 }
 
 public interface IKakuroDrawingData : INinePossibilitiesGameDrawingData
@@ -1322,9 +1327,9 @@ public class BinairoGridDrawableComponent : IDrawableComponent<IBinairoDrawingDa
     }
 }
 
-public class TectonicGridDrawableComponent : IDrawableComponent<ITectonicDrawingData>
+public class VaryingBordersGridDrawableComponent : IDrawableComponent<IVaryingBordersCellGameData>
 {
-    public void Draw(DrawingContext context, ITectonicDrawingData data)
+    public void Draw(DrawingContext context, IVaryingBordersCellGameData data)
     {
         if (data.RowCount == 0 || data.ColumnCount == 0) return;
         

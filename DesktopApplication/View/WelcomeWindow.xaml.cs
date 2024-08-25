@@ -2,12 +2,9 @@
 using System.Windows.Media;
 using DesktopApplication.Presenter;
 using DesktopApplication.View.HelperWindows;
-using DesktopApplication.View.Kakuros;
-using DesktopApplication.View.Nonograms;
-using DesktopApplication.View.Sudokus;
 using DesktopApplication.View.Sudokus.Pages;
-using DesktopApplication.View.Tectonics;
 using DesktopApplication.View.Themes;
+using DesktopApplication.View.YourPuzzles.Pages;
 using SolvePage = DesktopApplication.View.Tectonics.Pages.SolvePage;
 
 namespace DesktopApplication.View;
@@ -72,6 +69,13 @@ public partial class WelcomeWindow
     private void OnBinairoClick(object sender, RoutedEventArgs e)
     {
         var window = new PageWindow(1050, 700, new Binairos.Pages.SolvePage());
+        window.Show();
+        Close();
+    }
+    
+    private void OnNumeBoardClick(object sender, RoutedEventArgs e)
+    {
+        var window = new PageWindow(1100, 720, new CreatePage());
         window.Show();
         Close();
     }

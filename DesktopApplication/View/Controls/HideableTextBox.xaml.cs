@@ -68,6 +68,16 @@ public partial class HideableTextBox
         UpperPart.Visibility = Visibility.Collapsed;
         Arrow.Data = _downArrow;
     }
+
+    private void Copy(object sender, RoutedEventArgs e)
+    {
+        TextBox.Text = Clipboard.GetText();
+    }
+    
+    private void Paste(object sender, RoutedEventArgs e)
+    {
+        Clipboard.SetText(TextBox.Text);
+    }
 }
 
 public delegate void OnTextChange(string s);

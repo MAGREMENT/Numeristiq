@@ -8,6 +8,9 @@ public static class AttachedProperties
     public static readonly DependencyProperty HoverBackgroundProperty = DependencyProperty.RegisterAttached(
         "HoverBackground", typeof(Brush), typeof(AttachedProperties));
     
+    public static readonly DependencyProperty ButtonCornerRadiusProperty = DependencyProperty.RegisterAttached(
+        "ButtonCornerRadius", typeof(CornerRadius), typeof(AttachedProperties));
+    
     public static void SetHoverBackground(DependencyObject element, Brush value)
     {
         element.SetValue(HoverBackgroundProperty, value);
@@ -17,4 +20,10 @@ public static class AttachedProperties
     {
         return (Brush)element.GetValue(HoverBackgroundProperty);
     }
+
+    public static void SetButtonCornerRadius(DependencyObject element, CornerRadius radius) =>
+        element.SetValue(ButtonCornerRadiusProperty, radius);
+
+    public static CornerRadius GetButtonCornerRadius(DependencyObject element) =>
+        (CornerRadius)element.GetValue(ButtonCornerRadiusProperty);
 }

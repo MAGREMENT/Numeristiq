@@ -8,6 +8,7 @@ using DesktopApplication.Presenter.Sudokus.Play;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.Presenter.Tectonics.Solve;
 using DesktopApplication.Presenter.Themes;
+using DesktopApplication.Presenter.YourPuzzles;
 using Model.Binairos;
 using Model.Core;
 using Model.Kakuros;
@@ -103,6 +104,8 @@ public class PresenterFactory
     {
         StrategyManager = _binairoManager
     }, _settings);
+
+    public YourPuzzlePresenter Initialize(IYourPuzzleView view) => new(view);
     
     #region Instance
 

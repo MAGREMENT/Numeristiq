@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:v="clr-namespace:DesktopApplication.View"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
@@ -11,8 +12,34 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
-        <Border Grid.Row="0" Background="{DynamicResource Background2}" Padding="5" x:Name="UpperPart" Visibility="Collapsed">
-            <TextBox x:Name="TextBox" Style="{StaticResource HideableTextBox}" TextChanged="OnTextChange" LostFocus="Hide"/>
+        <Border Grid.Row="0" Background="{DynamicResource Background2}" Padding="5"
+                x:Name="UpperPart" Visibility="Collapsed">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBox Grid.Column="0" x:Name="TextBox" Style="{StaticResource HideableTextBox}"
+                         TextChanged="OnTextChange" LostFocus="Hide"/>
+                
+                <Button Grid.Column="1" Template="{StaticResource RoundedButton}"
+                        Background="{DynamicResource Primary2}" ToolTip="Copy" Click="Copy"
+                        v:AttachedProperties.HoverBackground="{DynamicResource Primary1}"
+                        Margin="5 0 0 0">
+                    <Path Stroke="{DynamicResource Text}" Height="15" Width="15" 
+                          Data="M 1,4 V 14 H 11 V 4 H 1 M 4,4 V 1 H 14 V 11 H 11"/>
+                </Button>
+                
+                <Button Grid.Column="2" Template="{StaticResource RoundedButton}"
+                        Background="{DynamicResource Secondary2}" ToolTip="Paste" Click="Paste"
+                        v:AttachedProperties.HoverBackground="{DynamicResource Secondary1}" 
+                        Margin="5 0 0 0">
+                    <Path Stroke="{DynamicResource Text}" Height="15" Width="15" 
+                          Data="M 1,1 H 12 V 8 M 10,13 H 1 V 1 M 10,8 H 14 V 14 H 10 Z"/>
+                </Button>
+            </Grid>
         </Border>
         
         <Button Grid.Row="1" HorizontalAlignment="Center" Style="{StaticResource HideableTextBoxButton}" Click="Show">

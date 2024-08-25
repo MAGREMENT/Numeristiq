@@ -53,7 +53,7 @@ public class TectonicBoard : DrawingBoard, ITectonicDrawingData, ITectonicDrawer
         
         _associatedCells = new CellsAssociations(RowCount, ColumnCount);
         Layers[BackgroundIndex].Add(new BackgroundDrawableComponent());
-        Layers[LinesIndex].Add(new TectonicGridDrawableComponent());
+        Layers[LinesIndex].Add(new VaryingBordersGridDrawableComponent());
         
         Borders.Cleared += () =>
         {
