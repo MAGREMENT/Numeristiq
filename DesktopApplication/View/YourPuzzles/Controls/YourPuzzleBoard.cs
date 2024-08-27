@@ -1,31 +1,56 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Tectonics.Solve;
 using DesktopApplication.Presenter.YourPuzzles;
 using DesktopApplication.View.Controls;
-using DesktopApplication.View.Tectonics.Controls;
+using Model.Utility;
+using Model.Utility.Collections;
 
 namespace DesktopApplication.View.YourPuzzles.Controls;
 
-public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameData, ISizeOptimizable, IYourPuzzleDrawer
+public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameDrawingData, ISizeOptimizable, IYourPuzzleDrawer
 {
     private const int BackgroundIndex = 0;
-    private const int GridIndex = 1;
-    private const int NumbersIndex = 2;
+    private const int CursorIndex = 1;
+    private const int GridIndex = 2;
+    private const int NumbersIndex = 3;
 
     private double _bigLineWidth;
     private double _smallLineWidth;
     private int _rowCount;
     private int _columnCount;
     private double _cellSize;
+
+    public event OnCellSelection? CellSelected;
+    public event OnCellSelection? CellAddedToSelection;
+
+    public event OnDimensionCountChange? RowCountChanged;
+    public event OnDimensionCountChange? ColumnCountChanged;
     
-    public YourPuzzleBoard() : base(3)
+    public YourPuzzleBoard() : base(4)
     {
         Layers[BackgroundIndex].Add(new BackgroundDrawableComponent());
         Layers[GridIndex].Add(new VaryingBordersGridDrawableComponent());
+        
+        MouseLeftButtonDown += (_, args) =>
+        {
+            Focus();
+            
+            var pos = ComputeSelectedCell(args.GetPosition(this));
+            if (pos is not null) CellSelected?.Invoke(pos[0], pos[1]);
+        };
+
+        MouseMove += (_, args) =>
+        {
+            if(args.LeftButton != MouseButtonState.Pressed) return;
+
+            var pos = ComputeSelectedCell(args.GetPosition(this));
+            if (pos is not null) CellAddedToSelection?.Invoke(pos[0], pos[1]);
+        };
     }
 
     #region DrawingData
@@ -38,7 +63,12 @@ public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameData, ISizeO
     public Typeface Typeface { get; } = new(new FontFamily(new Uri("pack://application:,,,/View/Fonts/"), "./#Roboto Mono"),
         FontStyles.Normal, FontWeights.Regular, FontStretches.Normal);
     public CultureInfo CultureInfo { get; } =  CultureInfo.CurrentUICulture;
-    public Brush CursorBrush => (Brush)GetValue(CursorBrushProperty);
+
+    public Brush CursorBrush
+    {
+        get => (Brush)GetValue(CursorBrushProperty);
+        set => SetValue(CursorBrushProperty, value);
+    } 
     public Brush LinkBrush => (Brush)GetValue(LinkBrushProperty);
 
     public Brush LineBrush
@@ -82,6 +112,7 @@ public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameData, ISizeO
         {
             _rowCount = value;
             UpdateSize(true);
+            RowCountChanged?.Invoke(_rowCount);
         }
     }
     public int ColumnCount
@@ -91,6 +122,7 @@ public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameData, ISizeO
         {
             _columnCount = value;
             UpdateSize(true);
+            ColumnCountChanged?.Invoke(_columnCount);
         }
     }
     public double LinkOffset => 20;
@@ -132,7 +164,19 @@ public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameData, ISizeO
 
     public void ClearHighlights()
     {
-        throw new NotImplementedException();
+        
+    }
+    
+    public void PutCursorOn(IContainingEnumerable<Cell> cells)
+    {
+        ClearCursor();
+
+        Layers[CursorIndex].Add(new InwardMultiCellDrawableComponent(cells, InwardBrushType.Cursor));
+    }
+
+    public void ClearCursor()
+    {
+        Layers[CursorIndex].Clear();
     }
 
     #endregion
@@ -150,6 +194,33 @@ public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameData, ISizeO
         Refresh();
         
         if(fireEvent) OptimizableSizeChanged?.Invoke();
+    }
+    
+    private int[]? ComputeSelectedCell(Point point)
+    {
+        var row = 0;
+        var col = 0;
+
+        var y = point.Y;
+        var x = point.X;
+
+        for (; row < RowCount; row++)
+        {
+            if (y < _bigLineWidth) return null;
+            y -= _bigLineWidth;
+            if (y < _cellSize) break;
+            y -= _cellSize;
+        }
+
+        for (; col < ColumnCount; col++)
+        {
+            if (x < _bigLineWidth) return null;
+            x -= _bigLineWidth;
+            if (x < _cellSize) break;
+            x -= _cellSize;
+        }
+
+        return row == RowCount || col == ColumnCount ? null : new[] { row, col };
     }
 
     #endregion

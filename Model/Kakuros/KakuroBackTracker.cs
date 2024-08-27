@@ -6,7 +6,7 @@ using Model.Utility;
 
 namespace Model.Kakuros;
 
-public class KakuroBackTracker : BackTracker<IKakuro, IPossibilitiesGiver> //TODO test
+public class KakuroBackTracker : BackTracker<IKakuro, IPossibilitiesGiver>
 {
     private Cell[] _cells = Array.Empty<Cell>();
     private readonly Dictionary<IKakuroSum, List<int>> _sumInfos = new();

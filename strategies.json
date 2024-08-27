@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "Name": "Naked Single",
     "Enabled": true,
@@ -411,13 +411,6 @@
   },
   {
     "Name": "Distributed Disjoint Subset",
-    "Enabled": false,
-    "Locked": false,
-    "InstanceHandling": 0,
-    "Settings": {}
-  },
-  {
-    "Name": "Multi-Sector Locked Sets",
     "Enabled": false,
     "Locked": false,
     "InstanceHandling": 0,

@@ -75,7 +75,7 @@ public partial class WelcomeWindow
     
     private void OnNumeBoardClick(object sender, RoutedEventArgs e)
     {
-        var window = new PageWindow(1100, 720, new CreatePage());
+        var window = new PageWindow(1300, 720, new CreatePage());
         window.Show();
         Close();
     }

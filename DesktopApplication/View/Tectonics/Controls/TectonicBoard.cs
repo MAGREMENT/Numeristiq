@@ -10,7 +10,6 @@ using DesktopApplication.View.Controls;
 using DesktopApplication.View.Utility;
 using Model.Core.Changes;
 using Model.Core.Graphs;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.Collections;
 
@@ -482,15 +481,3 @@ public class TectonicBoard : DrawingBoard, ITectonicDrawingData, ITectonicDrawer
 
     #endregion
 }
-
-public record NeighborBorder(int InsideRow, int InsideColumn, BorderDirection Direction, bool IsThin)
-{
-    public (Cell, Cell) ComputeNeighboringCells()
-    {
-        return Direction == BorderDirection.Horizontal 
-            ? (new Cell(InsideRow, InsideColumn), new Cell(InsideRow + 1, InsideColumn)) 
-            : (new Cell(InsideRow, InsideColumn), new Cell(InsideRow, InsideColumn + 1));
-    }
-}
-
-public delegate void OnDimensionCountChange(int number);

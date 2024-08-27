@@ -13,6 +13,25 @@ public class InfiniteBitSet : IEnumerable<int>
     
     public int Count { get; private set; }
 
+    public InfiniteBitSet()
+    {
+        
+    }
+
+    private InfiniteBitSet(ulong[] bits, int count)
+    {
+        _bits = bits;
+        Count = count;
+    }
+
+    public InfiniteBitSet Copy()
+    {
+        var buffer = new ulong[_bits.Length];
+        Array.Copy(_bits, buffer, _bits.Length);
+
+        return new InfiniteBitSet(buffer, Count);
+    }
+
     public void Add(int i)
     {
         if (i < 0) return;

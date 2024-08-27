@@ -239,7 +239,7 @@ public interface ICellGameDrawingData : IDefaultDrawingData
     Point GetCenterOfCell(int row, int col);
 }
 
-public interface IVaryingBordersCellGameData : ICellGameDrawingData
+public interface IVaryingBordersCellGameDrawingData : ICellGameDrawingData
 {
     int RowCount { get; }
     int ColumnCount { get; }
@@ -289,7 +289,7 @@ public interface ISudokuDrawingData : INinePossibilitiesGameDrawingData
     double LinePossibilitiesOutlineWidth { get; }
 }
 
-public interface ITectonicDrawingData : IVaryingPossibilitiesGameDrawingData, IVaryingBordersCellGameData
+public interface ITectonicDrawingData : IVaryingPossibilitiesGameDrawingData, IVaryingBordersCellGameDrawingData
 {
     
 }
@@ -1327,9 +1327,9 @@ public class BinairoGridDrawableComponent : IDrawableComponent<IBinairoDrawingDa
     }
 }
 
-public class VaryingBordersGridDrawableComponent : IDrawableComponent<IVaryingBordersCellGameData>
+public class VaryingBordersGridDrawableComponent : IDrawableComponent<IVaryingBordersCellGameDrawingData>
 {
-    public void Draw(DrawingContext context, IVaryingBordersCellGameData data)
+    public void Draw(DrawingContext context, IVaryingBordersCellGameDrawingData data)
     {
         if (data.RowCount == 0 || data.ColumnCount == 0) return;
         
@@ -1635,8 +1635,18 @@ public class LinePossibilitiesDrawableComponent : IDrawableComponent<ISudokuDraw
     }
 }
 
-public delegate void OnCellSelection(int row, int col);
+public record NeighborBorder(int InsideRow, int InsideColumn, BorderDirection Direction, bool IsThin)
+{
+    public (Cell, Cell) ComputeNeighboringCells()
+    {
+        return Direction == BorderDirection.Horizontal 
+            ? (new Cell(InsideRow, InsideColumn), new Cell(InsideRow + 1, InsideColumn)) 
+            : (new Cell(InsideRow, InsideColumn), new Cell(InsideRow, InsideColumn + 1));
+    }
+}
 
+public delegate void OnDimensionCountChange(int number);
+public delegate void OnCellSelection(int row, int col);
 public delegate void OnSelectionEnd();
 
 public enum ComponentVerticalAlignment

@@ -13,7 +13,7 @@ using SelectionMode = DesktopApplication.Presenter.Tectonics.Solve.SelectionMode
 
 namespace DesktopApplication.View.Tectonics.Pages;
 
-public partial class SolvePage : ITectonicSolveView //TODO side controls visual
+public partial class SolvePage : ITectonicSolveView
 {
     private readonly TectonicSolvePresenter _presenter;
     private readonly bool _intialized;

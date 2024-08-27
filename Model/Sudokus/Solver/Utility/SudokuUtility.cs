@@ -2,7 +2,6 @@
 using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
-using Model.Sudokus.Solver.Utility.SharedSeenCellSearchers;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -10,8 +9,6 @@ namespace Model.Sudokus.Solver.Utility;
 
 public static class SudokuUtility
 {
-    private static readonly ISharedSeenCellSearcher Searcher = new InCommonFindSearcher();
-
     public static CellPossibility[] Cast(IReadOnlyList<NumericChange> changes)
     {
         var result = new CellPossibility[changes.Count];
@@ -123,7 +120,7 @@ public static class SudokuUtility
     
     public static IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2)
     {
-        return Searcher.SharedSeenCells(row1, col1, row2, col2);
+        return SharedSeenAlgorithms.InCommonSharedSeenCells(row1, col1, row2, col2);
     }
 
     public static IEnumerable<Cell> SharedSeenCells(Cell one, Cell two)
@@ -229,7 +226,7 @@ public static class SudokuUtility
 
     public static IEnumerable<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, int row1, int col1, int row2, int col2)
     {
-        return Searcher.SharedSeenEmptyCells(solverData, row1, col1, row2, col2);
+        return SharedSeenAlgorithms.InCommonSharedSeenEmptyCells(solverData, row1, col1, row2, col2);
     }
     
     public static IEnumerable<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, IReadOnlyList<Cell> list)
@@ -244,7 +241,7 @@ public static class SudokuUtility
 
     private static IEnumerable<Cell> CheckedSharedSeenEmptyCells(ISudokuSolverData solverData, IReadOnlyList<Cell> list)
     {
-        foreach (var coord in Searcher.SharedSeenEmptyCells(solverData, list[0].Row, list[0].Column,
+        foreach (var coord in SharedSeenEmptyCells(solverData, list[0].Row, list[0].Column,
                      list[1].Row, list[1].Column))
         {
             bool ok = true;
@@ -319,7 +316,8 @@ public static class SudokuUtility
     public static IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuSolverData solverData, CellPossibility first,
         CellPossibility second)
     {
-        return Searcher.SharedSeenExistingPossibilities(solverData, first.Row, first.Column, first.Possibility,
+        return SharedSeenAlgorithms.InCommonSharedSeenExistingPossibilities(solverData, first.Row, 
+            first.Column, first.Possibility,
             second.Row, second.Column, second.Possibility);
     }
 

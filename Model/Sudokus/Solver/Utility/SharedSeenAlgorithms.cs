@@ -1,12 +1,69 @@
 ﻿using System.Collections.Generic;
+using Model.Sudokus.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
 
-namespace Model.Sudokus.Solver.Utility.SharedSeenCellSearchers;
+namespace Model.Sudokus.Solver.Utility;
 
-public class InCommonFindSearcher : ISharedSeenCellSearcher
+public static class SharedSeenAlgorithms
 {
-    public IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2)
+    public static IEnumerable<Cell> FullGridSharedSeenCells(int row1, int col1, int row2, int col2)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if ((row == row1 && col == col1) || (row == row2 && col == col2)) continue;
+                
+                if (SudokuUtility.ShareAUnit(row, col, row1, col1)
+                    && SudokuUtility.ShareAUnit(row, col, row2, col2))
+                {
+                    yield return new Cell(row, col); 
+                }
+            }
+        }
+    }
+
+    public static IEnumerable<Cell> FullGridSharedSeenEmptyCells(ISudokuSolverData solverData, int row1, int col1,
+        int row2, int col2)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (solverData.Sudoku[row, col] != 0 ||
+                    (row == row1 && col == col1) || (row == row2 && col == col2)) continue;
+                
+                if (SudokuUtility.ShareAUnit(row, col, row1, col1)
+                    && SudokuUtility.ShareAUnit(row, col, row2, col2))
+                {
+                    yield return new Cell(row, col);  
+                }
+            }
+        }
+    }
+    
+    public static IEnumerable<Cell> GridPositionsSharedSeenCells(int row1, int col1, int row2, int col2)
+    {
+        var one = new GridPositions();
+        var two = new GridPositions();
+
+        one.FillRow(row1);
+        one.FillColumn(col1);
+        one.FillMiniGrid(row1 / 3, col1 / 3);
+
+        two.FillRow(row2);
+        two.FillColumn(col2);
+        two.FillMiniGrid(row2 / 3, col2 / 3);
+
+        var and = one.And(two);
+        and.Remove(row1, col1);
+        and.Remove(row2, col2);
+
+        return and;
+    }
+    
+    public static IEnumerable<Cell> InCommonSharedSeenCells(int row1, int col1, int row2, int col2)
     {
         int miniRow1 = row1 / 3;
         int miniCol1 = col1 / 3;
@@ -117,7 +174,8 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
         yield return new Cell(row2, col1);
     }
 
-    public IEnumerable<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, int row1, int col1, int row2, int col2)
+    public static IEnumerable<Cell> InCommonSharedSeenEmptyCells(ISudokuSolverData solverData, int row1, int col1,
+        int row2, int col2)
     {
         int miniRow1 = row1 / 3;
         int miniCol1 = col1 / 3;
@@ -228,27 +286,13 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
         if(solverData.Sudoku[row2, col1] == 0) yield return new Cell(row2, col1);
     }
 
-    public IEnumerable<CellPossibility> SharedSeenPossibilities(int row1, int col1, int pos1, int row2, int col2, int pos2)
-    {
-        if (pos1 == pos2)
-        {
-            foreach (var cell in SharedSeenCells(row1, col1, row2, col2))
-            {
-                yield return new CellPossibility(cell, pos1);
-            }
-        }
-        else
-        {
-            //TODO
-        }
-    }
-
-    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuSolverData solverData, int row1, int col1, int pos1, int row2,
+    public static IEnumerable<CellPossibility> InCommonSharedSeenExistingPossibilities(ISudokuSolverData solverData,
+        int row1, int col1, int pos1, int row2,
         int col2, int pos2)
     {
         if (pos1 == pos2)
         {
-            foreach (var cell in SharedSeenCells(row1, col1, row2, col2))
+            foreach (var cell in InCommonSharedSeenCells(row1, col1, row2, col2))
             {
                 if(solverData.PossibilitiesAt(cell).Contains(pos1)) yield return new CellPossibility(cell, pos1);
             }
@@ -267,6 +311,39 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
             {
                 if(solverData.PossibilitiesAt(row1, col1).Contains(pos2)) yield return new CellPossibility(row1, col1, pos2);
                 if(solverData.PossibilitiesAt(row2, col2).Contains(pos1)) yield return new CellPossibility(row2, col2, pos1);
+            }
+        }
+    }
+    
+    public static IEnumerable<Cell> SharedUnitSharedSeenCells(int row1, int col1, int row2, int col2)
+    {
+        for (int unit = 0; unit < 9; unit++)
+        {
+            if (unit != row1)
+            {
+                if (SudokuUtility.ShareAUnit(unit, col1, row2, col2) &&
+                    !(unit == row2 && col1 == col2)) yield return new Cell(unit, col1);
+            }
+
+            if (unit != col1)
+            {
+                if (SudokuUtility.ShareAUnit(row1, unit, row2, col2) &&
+                    !(row1 == row2 && unit == col2)) yield return new Cell(row1, unit);
+            }
+        }
+
+        int startRow = row1 / 3 * 3;
+        int startCol = col1 / 3 * 3;
+        for (int gridRow = 0; gridRow < 3; gridRow++)
+        {
+            for (int gridCol = 0; gridCol < 3; gridCol++)
+            {
+                int row = startRow + gridRow;
+                int col = startCol + gridCol;
+                
+                if(row == row1 || col == col1 || (row == row2 && col == col2)) continue;
+
+                if (SudokuUtility.ShareAUnit(row, col, row2, col2)) yield return new Cell(row, col);
             }
         }
     }
