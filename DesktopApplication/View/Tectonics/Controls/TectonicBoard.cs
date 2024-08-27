@@ -41,9 +41,8 @@ public class TectonicBoard : DrawingBoard, ITectonicDrawingData, ITectonicDrawer
     public event OnCellSelection? CellAddedToSelection;
     public event OnSelectionEnd? SelectionEnded;
     
-    public NotifyingList<NeighborBorder> Borders { get; } = new();
-    
     private readonly CellsAssociations _associatedCells;
+    private readonly Dictionary<NeighborBorder, bool> _borders = new();
     private bool _isSelecting;
 
     public TectonicBoard() : base(7)
@@ -54,21 +53,6 @@ public class TectonicBoard : DrawingBoard, ITectonicDrawingData, ITectonicDrawer
         Layers[BackgroundIndex].Add(new BackgroundDrawableComponent());
         Layers[LinesIndex].Add(new VaryingBordersGridDrawableComponent());
         
-        Borders.Cleared += () =>
-        {
-            _associatedCells.New(RowCount, ColumnCount);
-            Refresh();
-        };
-
-        Borders.ElementAdded += e =>
-        {
-            if (!e.IsThin) return;
-            
-            var cells = e.ComputeNeighboringCells();
-            _associatedCells.Merge(cells.Item1, cells.Item2);
-            Refresh();
-        };
-
         MouseLeftButtonDown += (_, args) =>
         {
             Focus();
@@ -292,15 +276,9 @@ public class TectonicBoard : DrawingBoard, ITectonicDrawingData, ITectonicDrawer
         };
     }
     
-    public NeighborBorder? GetBorder(BorderDirection direction, int row, int col)
+    public bool IsThin(BorderDirection direction, int row, int col)
     {
-        foreach (var item in Borders)
-        {
-            if (item is not NeighborBorder nb) continue;
-            if (nb.Direction == direction && nb.InsideRow == row && nb.InsideColumn == col) return nb;
-        }
-
-        return null;
+        return _borders.TryGetValue(new NeighborBorder(row, col, direction), out var b) && b;
     }
 
     #endregion
@@ -335,16 +313,18 @@ public class TectonicBoard : DrawingBoard, ITectonicDrawingData, ITectonicDrawer
 
     public void ClearBorderDefinitions()
     {
-        RefreshAllowed = false;
-        Borders.Clear();
-        RefreshAllowed = true;
+        _borders.Clear();
+        _associatedCells.New(RowCount, ColumnCount);
     }
 
     public void AddBorderDefinition(int insideRow, int insideColumn, BorderDirection direction, bool isThin)
     {
-        RefreshAllowed = false;
-        Borders.Add(new NeighborBorder(insideRow, insideColumn, direction, isThin));
-        RefreshAllowed = true;
+        var nb = new NeighborBorder(insideRow, insideColumn, direction);
+        _borders[nb] = isThin;
+        if (!isThin) return;
+            
+        var cells = nb.ComputeNeighboringCells();
+        _associatedCells.Merge(cells.Item1, cells.Item2);
     }
 
     public void PutCursorOn(Cell cell)

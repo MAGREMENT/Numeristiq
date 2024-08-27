@@ -13,6 +13,14 @@ public readonly struct Cell
         Row = row;
         Column = col;
     }
+    
+    public bool IsAdjacentTo(Cell other)
+    {
+        var rowDiff = Math.Abs(Row - other.Row);
+        var colDiff = Math.Abs(Column - other.Column);
+        
+        return (rowDiff == 1 && colDiff == 0) || (rowDiff == 0 && colDiff == 1);
+    }
 
     public override int GetHashCode()
     {

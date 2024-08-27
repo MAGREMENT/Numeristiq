@@ -12,16 +12,16 @@ public class UniqueBatchNumericPuzzleRule : ILocalNumericPuzzleRule
 
     public string Name => OfficialName;
     
-    private readonly Cell[] _cells;
+    public Cell[] Cells { get; }
 
     public UniqueBatchNumericPuzzleRule(Cell[] cells)
     {
-        _cells = cells;
+        Cells = cells;
     }
 
     public IEnumerable<Cell> EnumerateCells()
     {
-        return _cells;
+        return Cells;
     }
 
     public IEnumerable<ISetting> EnumerateSettings()
@@ -32,10 +32,10 @@ public class UniqueBatchNumericPuzzleRule : ILocalNumericPuzzleRule
     public bool IsRespected(IReadOnlyNumericYourPuzzle board)
     {
         var bitSet = new ReadOnlyBitSet16();
-        foreach (var cell in _cells)
+        foreach (var cell in Cells)
         {
             var n = board[cell];
-            if (n <= 0 || n > _cells.Length || bitSet.Contains(n)) return false;
+            if (n <= 0 || n > Cells.Length || bitSet.Contains(n)) return false;
 
             bitSet += n;
         }
@@ -48,11 +48,11 @@ public class UniqueBatchNumericPuzzleRule : ILocalNumericPuzzleRule
         return ILocalNumericPuzzleRule.DefaultIsStillApplicable(this, rowCount, colCount);
     }
 
-    public bool Overlaps(IReadOnlyList<Cell> cells)
+    public bool Overlaps(IEnumerable<Cell> cells)
     {
         foreach (var cell in cells)
         {
-            if (_cells.Contains(cell)) return true;
+            if (Cells.Contains(cell)) return true;
         }
 
         return false;
@@ -65,7 +65,7 @@ public class UniqueBatchNumericPuzzleRuleCrafter : ILocalNumericPuzzleRuleCrafte
 
     public bool CanCraft(IReadOnlyNumericYourPuzzle puzzle, IReadOnlyList<Cell> cells)
     {
-        if (cells.Count is <= 0 or > 9 || !puzzle.AreAllEnabled(cells)) return false;
+        if (cells.Count is <= 0 or > 9 || !puzzle.AreAllEnabled(cells)) return false; //TODO check for adjacency
 
         foreach (var local in puzzle.LocalRules)
         {

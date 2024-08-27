@@ -54,7 +54,8 @@ public class GreaterThanNumericPuzzleRuleCrafter : ILocalNumericPuzzleRuleCrafte
 
     public bool CanCraft(IReadOnlyNumericYourPuzzle puzzle, IReadOnlyList<Cell> cells)
     {
-        if (cells.Count != 2 || !puzzle.AreAllEnabled(cells)) return false;
+        if (cells.Count != 2 || !puzzle.AreAllEnabled(cells) 
+                             || !cells[0].IsAdjacentTo(cells[1])) return false;
 
         foreach (var local in puzzle.LocalRules)
         {

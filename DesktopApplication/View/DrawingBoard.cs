@@ -9,13 +9,11 @@ using System.Windows.Media.Imaging;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Tectonics.Solve;
 using DesktopApplication.View.Kakuros.Controls;
-using DesktopApplication.View.Tectonics.Controls;
 using DesktopApplication.View.Utility;
 using Model.Core.Changes;
 using Model.Core.Explanation;
 using Model.Core.Graphs;
 using Model.Sudokus.Player;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.Collections;
 using MathUtility = DesktopApplication.View.Utility.MathUtility;
@@ -243,7 +241,7 @@ public interface IVaryingBordersCellGameDrawingData : ICellGameDrawingData
 {
     int RowCount { get; }
     int ColumnCount { get; }
-    NeighborBorder? GetBorder(BorderDirection direction, int row, int col);
+    bool IsThin(BorderDirection direction, int row, int col);
 }
 
 public interface IDichotomousCellGameDrawingData : ICellGameDrawingData
@@ -1272,6 +1270,59 @@ public class CellSectionDrawableComponent : IDrawableComponent<INonogramDrawingD
     }
 }
 
+public class GreaterThanDrawableComponent : IDrawableComponent<ICellGameDrawingData>
+{
+    private readonly Cell _smaller;
+    private readonly Cell _greater;
+
+    public GreaterThanDrawableComponent(Cell smaller, Cell greater)
+    {
+        _smaller = smaller;
+        _greater = greater;
+    }
+
+    public void Draw(DrawingContext context, ICellGameDrawingData data)
+    {
+        Point p1, p2, p3;
+        var middle = data.GetCenterOfCell(_smaller.Row, _smaller.Column);
+        var delta = data.CellSize / 6;
+
+        if (_greater.Column == _smaller.Column + 1)
+        {
+            var x = data.GetLeftOfCellWithBorder(_greater.Column) + data.BigLineWidth / 2;
+            p1 = new Point(x + delta / 2, middle.Y - delta / 2);
+            p2 = middle with { X = x - delta / 2 };
+            p3 = new Point(x + delta / 2, middle.Y + delta / 2);
+        }
+        else if (_greater.Column == _smaller.Column - 1)
+        {
+            var x = data.GetLeftOfCellWithBorder(_smaller.Column) + data.BigLineWidth / 2;
+            p1 = new Point(x - delta / 2, middle.Y - delta / 2);
+            p2 = middle with { X = x + delta / 2 };
+            p3 = new Point(x - delta / 2, middle.Y + delta / 2);
+        }
+        else if (_greater.Row == _smaller.Row + 1)
+        {
+            var y = data.GetTopOfCellWithBorder(_greater.Row) + data.BigLineWidth / 2;
+            p1 = new Point(middle.X - delta / 2, y + delta / 2);
+            p2 = middle with { Y = y - delta / 2 };
+            p3 = new Point(middle.X + delta / 2, y + delta / 2);
+        }
+        else if (_greater.Row == _smaller.Row - 1)
+        {
+            var y = data.GetTopOfCellWithBorder(_smaller.Row) + data.BigLineWidth / 2;
+            p1 = new Point(middle.X - delta / 2, y - delta / 2);
+            p2 = middle with { Y = y + delta / 2 };
+            p3 = new Point(middle.X + delta / 2, y - delta / 2);
+        }
+        else return;
+
+        var pen = new Pen(data.LineBrush, data.BigLineWidth);
+        context.DrawLine(pen, p1, p2);
+        context.DrawLine(pen, p2, p3);
+    }
+}
+
 public class SudokuGridDrawableComponent : IDrawableComponent<ICellGameDrawingData>
 {
     public void Draw(DrawingContext context, ICellGameDrawingData data)
@@ -1350,18 +1401,10 @@ public class VaryingBordersGridDrawableComponent : IDrawableComponent<IVaryingBo
             
             for (int col = 0; col < data.ColumnCount; col++)
             {
-                var b = data.GetBorder(BorderDirection.Horizontal, row, col);
-
-                if (b is not null && b.IsThin)
-                {
-                    context.DrawRectangle(data.LineBrush, null,
-                        new Rect(deltaX, deltaY + diff, length, data.SmallLineWidth));
-                }
-                else
-                {
-                    context.DrawRectangle(data.LineBrush, null,
-                        new Rect(deltaX, deltaY, length, data.BigLineWidth));
-                }
+                context.DrawRectangle(data.LineBrush, null,
+                    data.IsThin(BorderDirection.Horizontal, row, col)
+                        ? new Rect(deltaX, deltaY + diff, length, data.SmallLineWidth)
+                        : new Rect(deltaX, deltaY, length, data.BigLineWidth));
 
                 deltaX += data.CellSize + data.BigLineWidth;
             }
@@ -1378,18 +1421,10 @@ public class VaryingBordersGridDrawableComponent : IDrawableComponent<IVaryingBo
             
             for (int col = 0; col < data.ColumnCount - 1; col++)
             {
-                var b = data.GetBorder(BorderDirection.Vertical, row, col);
-
-                if (b is not null && b.IsThin)
-                {
-                    context.DrawRectangle(data.LineBrush, null,
-                        new Rect(deltaX + diff, deltaY, data.SmallLineWidth, length));
-                }
-                else
-                {
-                    context.DrawRectangle(data.LineBrush, null,
-                        new Rect(deltaX, deltaY, data.BigLineWidth, length));
-                }
+                context.DrawRectangle(data.LineBrush, null,
+                    data.IsThin(BorderDirection.Vertical, row, col)
+                        ? new Rect(deltaX + diff, deltaY, data.SmallLineWidth, length)
+                        : new Rect(deltaX, deltaY, data.BigLineWidth, length));
 
                 deltaX += data.CellSize + data.BigLineWidth;
             }
@@ -1635,13 +1670,45 @@ public class LinePossibilitiesDrawableComponent : IDrawableComponent<ISudokuDraw
     }
 }
 
-public record NeighborBorder(int InsideRow, int InsideColumn, BorderDirection Direction, bool IsThin)
+public readonly struct NeighborBorder
 {
+    public NeighborBorder(int insideRow, int insideColumn, BorderDirection direction)
+    {
+        InsideRow = insideRow;
+        InsideColumn = insideColumn;
+        Direction = direction;
+    }
+
+    public int InsideRow { get; }
+    public int InsideColumn { get; }
+    public BorderDirection Direction { get; }
+    
     public (Cell, Cell) ComputeNeighboringCells()
     {
         return Direction == BorderDirection.Horizontal 
             ? (new Cell(InsideRow, InsideColumn), new Cell(InsideRow + 1, InsideColumn)) 
             : (new Cell(InsideRow, InsideColumn), new Cell(InsideRow, InsideColumn + 1));
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(InsideRow, InsideColumn, Direction);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is NeighborBorder nb && nb == this;
+    }
+
+    public static bool operator ==(NeighborBorder left, NeighborBorder right)
+    {
+        return left.InsideColumn == right.InsideColumn && left.InsideRow == right.InsideRow
+                                                       && left.Direction == right.Direction;
+    }
+
+    public static bool operator !=(NeighborBorder left, NeighborBorder right)
+    {
+        return !(left == right);
     }
 }
 

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         mc:Ignorable="d"
-        Height="540" Width="650"
+        Height="560" Width="650"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
@@ -64,7 +64,7 @@
                     x:Name="Nonogram" Margin="5 5 5 0" Click="OnNonogramClick"/>
         </Grid>
         
-        <Button Grid.Row="3" Margin="20 0 20 10" Style="{StaticResource BigPrimaryGradientButton}"
+        <Button Grid.Row="3" Margin="10 10 10 10" Style="{StaticResource BigPrimaryGradientButton}"
                 Height="70" Click="OnNumeBoardClick">Create Your Own Puzzle</Button>
     </Grid>
 </Window>

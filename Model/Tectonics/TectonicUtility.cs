@@ -20,15 +20,6 @@ public static class TectonicUtility
         return AreNeighbors(one, two) || tectonic.GetZone(one).Contains(two);
     }
 
-    public static bool AreAdjacent(Cell c1, Cell c2)
-    {
-        if (c1 == c2) return false;
-        var rowDiff = Math.Abs(c1.Row - c2.Row);
-        var colDiff = Math.Abs(c1.Column - c2.Column);
-        
-        return (rowDiff == 1 && colDiff == 0) || (rowDiff == 0 && colDiff == 1);
-    }
-
     public static bool AreAdjacent(IZone z1, IZone z2)
     {
         foreach (var c1 in z1)
@@ -43,7 +34,7 @@ public static class TectonicUtility
     {
         foreach (var c in zone)
         {
-            if (AreAdjacent(c, cell)) return true;
+            if (c.IsAdjacentTo(cell)) return true;
         }
 
         return false;
@@ -53,7 +44,7 @@ public static class TectonicUtility
     {
         foreach (var c in cells)
         {
-            if (AreAdjacent(c, cell)) return true;
+            if (c.IsAdjacentTo(cell)) return true;
         }
 
         return false;

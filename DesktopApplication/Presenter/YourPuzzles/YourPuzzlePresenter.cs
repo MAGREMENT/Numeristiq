@@ -1,6 +1,9 @@
-﻿using Model.Utility;
+﻿using System.Linq;
+using DesktopApplication.Presenter.Tectonics.Solve;
+using Model.Utility;
 using Model.Utility.Collections;
 using Model.YourPuzzles;
+using Model.YourPuzzles.Rules;
 
 namespace DesktopApplication.Presenter.YourPuzzles;
 
@@ -82,6 +85,27 @@ public class YourPuzzlePresenter
 
         drawer.RowCount = _puzzle.RowCount;
         drawer.ColumnCount = _puzzle.ColumnCount;
+        
+        drawer.ClearBorderDefinitions();
+        drawer.ClearGreaterThanSigns();
+        foreach (var rule in _puzzle.LocalRules)
+        {
+            switch (rule)
+            {
+                case UniqueBatchNumericPuzzleRule ub :
+                    foreach (var cell in ub.Cells)
+                    {
+                        if (ub.Cells.Contains(new Cell(cell.Row + 1, cell.Column)))
+                            drawer.AddBorderDefinition(cell.Row, cell.Column, BorderDirection.Horizontal, true);
+                        if (ub.Cells.Contains(new Cell(cell.Row, cell.Column + 1)))
+                            drawer.AddBorderDefinition(cell.Row, cell.Column, BorderDirection.Vertical, true);
+                    }
+                    break;
+                case GreaterThanNumericPuzzleRule gt :
+                    drawer.AddGreaterThanSign(gt.Smaller, gt.Greater);
+                    break;
+            }
+        }
         
         drawer.Refresh();
     }

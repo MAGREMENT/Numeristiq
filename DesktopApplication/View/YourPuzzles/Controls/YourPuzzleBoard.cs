@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
@@ -17,7 +18,8 @@ public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameDrawingData,
     private const int BackgroundIndex = 0;
     private const int CursorIndex = 1;
     private const int GridIndex = 2;
-    private const int NumbersIndex = 3;
+    private const int GreaterThanIndex = 3;
+    private const int NumbersIndex = 4;
 
     private double _bigLineWidth;
     private double _smallLineWidth;
@@ -25,13 +27,15 @@ public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameDrawingData,
     private int _columnCount;
     private double _cellSize;
 
+    private readonly Dictionary<NeighborBorder, bool> _borders = new();
+
     public event OnCellSelection? CellSelected;
     public event OnCellSelection? CellAddedToSelection;
 
     public event OnDimensionCountChange? RowCountChanged;
     public event OnDimensionCountChange? ColumnCountChanged;
     
-    public YourPuzzleBoard() : base(4)
+    public YourPuzzleBoard() : base(5)
     {
         Layers[BackgroundIndex].Add(new BackgroundDrawableComponent());
         Layers[GridIndex].Add(new VaryingBordersGridDrawableComponent());
@@ -134,7 +138,7 @@ public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameDrawingData,
 
     public double GetLeftOfCellWithBorder(int col)
     {
-        return _smallLineWidth + col * (_bigLineWidth + _cellSize);
+        return col * (_bigLineWidth + _cellSize);
     }
 
     public double GetTopOfCell(int row)
@@ -144,7 +148,7 @@ public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameDrawingData,
 
     public double GetTopOfCellWithBorder(int row)
     {
-        return _smallLineWidth + row * (_bigLineWidth + _cellSize);
+        return row * (_bigLineWidth + _cellSize);
     }
 
     public Point GetCenterOfCell(int row, int col)
@@ -153,9 +157,9 @@ public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameDrawingData,
         return new Point(GetLeftOfCell(col) + half, GetTopOfCell(row) + half);
     }
 
-    public NeighborBorder? GetBorder(BorderDirection direction, int row, int col)
+    public bool IsThin(BorderDirection direction, int row, int col)
     {
-        return null;
+        return _borders.TryGetValue(new NeighborBorder(row, col, direction), out var b) && b;
     }
 
     #endregion
@@ -177,6 +181,26 @@ public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameDrawingData,
     public void ClearCursor()
     {
         Layers[CursorIndex].Clear();
+    }
+    
+    public void ClearBorderDefinitions()
+    {
+        _borders.Clear();
+    }
+    
+    public void AddBorderDefinition(int insideRow, int insideColumn, BorderDirection direction, bool isThin)
+    {
+        _borders[new NeighborBorder(insideRow, insideColumn, direction)] = isThin;
+    }
+
+    public void ClearGreaterThanSigns()
+    {
+        Layers[GreaterThanIndex].Clear();
+    }
+
+    public void AddGreaterThanSign(Cell smaller, Cell greater)
+    {
+        Layers[GreaterThanIndex].Add(new GreaterThanDrawableComponent(smaller, greater));
     }
 
     #endregion

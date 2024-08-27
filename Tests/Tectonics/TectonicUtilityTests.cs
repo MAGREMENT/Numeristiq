@@ -8,7 +8,9 @@ public class TectonicCellUtilityTests
     [Test]
     public void NonAdjacentTest()
     {
-        Assert.That(TectonicUtility.AreAdjacent(new Cell(1, 0), new Cell(0, 2)), Is.False);
+        Assert.That(new Cell(1, 0).IsAdjacentTo(new Cell(0, 2)), Is.False);
+        Assert.That(new Cell(1, 1).IsAdjacentTo(new Cell(1, 1)), Is.False);
+        Assert.That(new Cell(1, 1).IsAdjacentTo(new Cell(1, 2)), Is.True);
     }
 
     [Test]
