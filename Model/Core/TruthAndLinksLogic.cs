@@ -5,11 +5,11 @@ using Model.Utility.BitSets;
 
 namespace Model.Core;
 
-public static class TruthAndLinksLogic //TODO complete and test
+public static class TruthAndLinksLogic
 {
-    public static IEnumerable<(TLink[], TLink[])> FindRank0<TElement, TLink>(ITruthBank<TElement, TLink> bank,
-        int maxSize, Construct<TElement> construct)
-        where TLink : ITruthLink<TElement> where TElement : notnull
+    public static IEnumerable<(TLink[], TLink[])> FindRank0<TElement, TLink>(ITruthAndLinkBank<TElement, TLink> bank,
+        int maxSize, bool ignoreEqual, Construct<TElement> construct)
+        where TLink : ITruthOrLink<TElement> where TElement : notnull
     {
         HashSet<Done> explored = new();
         List<(TLink[], TLink[])> result = new();
@@ -18,43 +18,50 @@ public static class TruthAndLinksLogic //TODO complete and test
         {
             var current = new Current<TElement, TLink>(construct);
             current.AddTruth(start, bank.GetIndex(start));
-            SearchRank0(bank, maxSize, current, explored, result);
+            SearchRank0(bank, maxSize, ignoreEqual, current, explored, result);
         }
 
         return result;
     }
 
-    private static void SearchRank0<TElement, TLink>(ITruthBank<TElement, TLink> bank, int maxSize, 
-        Current<TElement, TLink> current,
-        HashSet<Done> explored, List<(TLink[], TLink[])> result)
-        where TLink : ITruthLink<TElement> where TElement : notnull
+    private static void SearchRank0<TElement, TLink>(ITruthAndLinkBank<TElement, TLink> bank, int maxSize, 
+        bool ignoreEqual, Current<TElement, TLink> current, HashSet<Done> explored, List<(TLink[], TLink[])> result)
+        where TLink : ITruthOrLink<TElement> where TElement : notnull
     {
-        if (current.TruthSet.Count > current.LinksSets.Count)
+        if (current.TruthSet.Count > current.LinkSet.Count)
         {
             var last = current.TruthSet[^1];
             foreach (var element in last)
             {
-                if(current.LinksElementSet.Contains(element)) continue;
+                if(current.LinkElementSet.Contains(element)) continue;
                 
                 foreach (var link in bank.GetLinks(element))
                 {
-                    if(current.DoesOverlapWithLinksSet(link)) continue;
-                    
-                    var a = current.AddLink(link, bank.GetIndex(link));
-                    if(explored.Contains(current.Done)) continue;
+                    if(current.DoesOverlapWithLinksSet(link) || current.TruthSet.Contains(link)) continue;
 
-                    explored.Add(current.Done.Copy());
-                    switch (current.TruthElementSet.IsOneCoveredByTheOther(current.LinksElementSet))
+                    var index = bank.GetIndex(link);
+                    var a = current.AddLink(link, index);
+                    if (explored.Contains(current.Done))
                     {
-                        case 0 :
-                            result.Add((current.TruthSet.ToArray(), current.LinksSets.ToArray()));
+                        current.RemoveLastLink(a);
+                        continue;
+                    }
+                    
+                    explored.Add(current.Done.Copy());
+                    switch (current.TruthElementSet.IsOneCoveredByTheOther(current.LinkElementSet))
+                    {
+                        case CoverResult.FirstCoveredBySecond :
+                            result.Add((current.TruthSet.ToArray(), current.LinkSet.ToArray()));
                             break;
-                        case 1 :
-                            result.Add((current.LinksSets.ToArray(), current.TruthSet.ToArray()));
+                        case CoverResult.SecondCoveredByFirst :
+                            result.Add((current.LinkSet.ToArray(), current.TruthSet.ToArray()));
+                            break;
+                        case CoverResult.Equals :
+                            if(!ignoreEqual) result.Add((current.TruthSet.ToArray(), current.LinkSet.ToArray()));
                             break;
                     }
                     
-                    SearchRank0(bank, maxSize, current, explored, result);
+                    SearchRank0(bank, maxSize, ignoreEqual, current, explored, result);
                     current.RemoveLastLink(a);
                 }
             }
@@ -63,39 +70,54 @@ public static class TruthAndLinksLogic //TODO complete and test
         {
             if (current.TruthSet.Count == maxSize) return;
             
-            var last = current.LinksSets[^1];
+            var last = current.LinkSet[^1];
             foreach (var element in last)
             {
                 if(current.TruthElementSet.Contains(element)) continue;
                 
                 foreach (var truth in bank.GetTruths(element))
                 {
-                    if(current.DoesOverlapWithTruthSet(truth)) continue;
+                    if(current.DoesOverlapWithTruthSet(truth) || current.LinkSet.Contains(truth)) continue;
                     
-                    var a = current.AddTruth(truth, bank.GetIndex(truth));
-                    if(explored.Contains(current.Done)) continue;
+                    var index = bank.GetIndex(truth);
+                    var a = current.AddTruth(truth, index);
+                    if (explored.Contains(current.Done))
+                    {
+                        current.RemoveLastTruth(a);
+                        continue;
+                    }
 
                     explored.Add(current.Done.Copy());
-                    SearchRank0(bank, maxSize, current, explored, result);
+                    SearchRank0(bank, maxSize, ignoreEqual, current, explored, result);
 
                     current.RemoveLastTruth(a);
                 }
             }
         }
     }
+    
+    public static bool DefaultDoesOverlap<TElement>(ITruthOrLink<TElement> t1, ITruthOrLink<TElement> t2)
+    {
+        foreach (var cp in t2)
+        {
+            if (t1.Contains(cp)) return true;
+        }
 
-    private class Current<TElement, TLink> where TLink : ITruthLink<TElement>
+        return false;
+    }
+
+    private class Current<TElement, TLink> where TLink : ITruthOrLink<TElement>
     {
         public List<TLink> TruthSet { get; } = new();
-        public List<TLink> LinksSets { get; } = new();
+        public List<TLink> LinkSet { get; } = new();
         public IElementSet<TElement> TruthElementSet { get; }
-        public IElementSet<TElement> LinksElementSet { get; }
+        public IElementSet<TElement> LinkElementSet { get; }
         public Done Done { get; } = new();
 
         public Current(Construct<TElement> construct)
         {
             TruthElementSet = construct();
-            LinksElementSet = construct();
+            LinkElementSet = construct();
         }
 
         public bool DoesOverlapWithTruthSet(TLink link)
@@ -133,7 +155,7 @@ public static class TruthAndLinksLogic //TODO complete and test
         
         public bool DoesOverlapWithLinksSet(TLink link)
         {
-            foreach (var l in LinksSets)
+            foreach (var l in LinkSet)
             {
                 if (l.DoesOverlap(link)) return true;
             }
@@ -143,24 +165,24 @@ public static class TruthAndLinksLogic //TODO complete and test
 
         public AdditionResult<TElement> AddLink(TLink link, int index)
         {
-            LinksSets.Add(link);
-            Done.LinksBitSet.Add(index);
+            LinkSet.Add(link);
+            Done.LinkBitSet.Add(index);
             
             var result = new AdditionResult<TElement>(index);
             foreach (var e in link)
             {
-                if (LinksElementSet.Add(e)) result.Elements.Add(e);
+                if (LinkElementSet.Add(e)) result.Elements.Add(e);
             }
             return result;
         }
 
         public void RemoveLastLink(AdditionResult<TElement> result)
         {
-            LinksSets.RemoveAt(LinksSets.Count - 1);
-            Done.LinksBitSet.Remove(result.Index);
+            LinkSet.RemoveAt(LinkSet.Count - 1);
+            Done.LinkBitSet.Remove(result.Index);
             foreach (var e in result.Elements)
             {
-                LinksElementSet.Remove(e);
+                LinkElementSet.Remove(e);
             }
         }
     }
@@ -179,40 +201,41 @@ public static class TruthAndLinksLogic //TODO complete and test
     private class Done
     {
         public InfiniteBitSet TruthBitSet { get; }
-        public InfiniteBitSet LinksBitSet { get; }
+        public InfiniteBitSet LinkBitSet { get; }
 
         public Done()
         {
             TruthBitSet = new InfiniteBitSet();
-            LinksBitSet = new InfiniteBitSet();
+            LinkBitSet = new InfiniteBitSet();
         }
 
-        private Done(InfiniteBitSet truthBitSet, InfiniteBitSet linksBitSet)
+        private Done(InfiniteBitSet truthBitSet, InfiniteBitSet linkBitSet)
         {
             TruthBitSet = truthBitSet;
-            LinksBitSet = linksBitSet;
+            LinkBitSet = linkBitSet;
         }
 
         public override bool Equals(object? obj)
         {
-            return obj is Done ld && ld.TruthBitSet.Equals(TruthBitSet) && ld.LinksBitSet.Equals(LinksBitSet);
+            return obj is Done ld && ld.TruthBitSet.Equals(TruthBitSet) && ld.LinkBitSet.Equals(LinkBitSet);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(TruthBitSet.GetHashCode(), LinksBitSet.GetHashCode());
+            return HashCode.Combine(TruthBitSet.GetHashCode(), LinkBitSet.GetHashCode());
         }
 
-        public Done Copy() => new(TruthBitSet.Copy(), LinksBitSet.Copy());
+        public Done Copy() => new(TruthBitSet.Copy(), LinkBitSet.Copy());
     }
 }
 
-public interface ITruthLink<TElement> : IEnumerable<TElement>
+public interface ITruthOrLink<TElement> : IEnumerable<TElement>
 {
-    public bool DoesOverlap(ITruthLink<TElement> link);
+    public bool DoesOverlap(ITruthOrLink<TElement> link);
+    public bool Contains(TElement element);
 }
 
-public interface ITruthBank<in TElement, TLink> where TElement : notnull where TLink : ITruthLink<TElement>
+public interface ITruthAndLinkBank<in TElement, TLink> where TElement : notnull where TLink : ITruthOrLink<TElement>
 {
     public void Add(TLink link, bool isTruth);
     public IEnumerable<TLink> GetTruths(TElement element);
@@ -228,11 +251,16 @@ public interface IElementSet<TElement>
     bool Add(TElement element);
     void Remove(TElement element);
     bool Contains(TElement element);
-    int IsOneCoveredByTheOther(IElementSet<TElement> set);
+    CoverResult IsOneCoveredByTheOther(IElementSet<TElement> set);
 }
 
-public class DefaultTruthBank<TElement, TLink> : ITruthBank<TElement, TLink> where TElement : notnull
-    where TLink : ITruthLink<TElement>
+public enum CoverResult
+{
+    NoCover, FirstCoveredBySecond, SecondCoveredByFirst, Equals
+}
+
+public class DefaultTruthAndLinkBank<TElement, TLink> : ITruthAndLinkBank<TElement, TLink> where TElement : notnull
+    where TLink : ITruthOrLink<TElement>
 {
     private readonly Dictionary<TElement, List<TLink>> _links = new();
     private readonly Dictionary<TLink, int> _indexes = new();

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Model.Core;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 
 namespace Model.Sudokus.Solver.Position;
 
-public class GridPositions : IReadOnlyGridPositions
+public class GridPositions : IReadOnlyGridPositions, IElementSet<Cell>
 {
     private const int FirstLimit = 53;
     private const ulong LongRowMask = 0x1FF;
@@ -81,9 +82,24 @@ public class GridPositions : IReadOnlyGridPositions
         return Contains(coord.Row, coord.Column);
     }
 
+    public CoverResult IsOneCoveredByTheOther(IElementSet<Cell> set)
+    {
+        if (set is not GridPositions gp) return CoverResult.NoCover; //TODO
+
+        if (Equals(gp)) return CoverResult.Equals;
+        if (ContainsEvery(gp)) return CoverResult.FirstCoveredBySecond;
+        if (gp.ContainsEvery(this)) return CoverResult.SecondCoveredByFirst;
+        return CoverResult.NoCover;
+    }
+
     public bool ContainsAny(GridPositions gp)
     {
         return (gp._first & _first) != 0ul || (gp._second & _second) != 0ul;
+    }
+
+    public bool ContainsEvery(GridPositions gp)
+    {
+        return (gp._first | _first) == gp._first && (gp._second | _second) == gp._second;
     }
 
     public void Remove(int row, int col)
@@ -91,6 +107,13 @@ public class GridPositions : IReadOnlyGridPositions
         int n = row * 9 + col;
         if (n > FirstLimit) _second &= ~(1u << (n - FirstLimit - 1));
         else _first &= ~(1ul << n);
+    }
+
+    bool IElementSet<Cell>.Add(Cell element)
+    {
+        var contains = Contains(element);
+        Add(element);
+        return !contains;
     }
 
     public void Remove(Cell cell)
