@@ -18,7 +18,7 @@ public class TruthAndLinksLogicTests
         var solver = new SudokuSolver();
         solver.SetState(state);
 
-        var bank = new DefaultTruthAndLinkBank<Cell, ITruthOrLink<Cell>>();
+        var bank = new DefaultTruthAndLinkBank<Cell, HouseCellsSudokuTruthOrLink>();
         SudokuTruthAndLinksLogic.AddTruthAndLinks(solver, bank, 5, true);
         var result = TruthAndLinksLogic.FindRank0(bank, 2, true,
             () => new GridPositions());
@@ -27,7 +27,7 @@ public class TruthAndLinksLogicTests
         Assert.That(FindXWing(result), Is.True);
     }
 
-    private static bool FindXWing(IEnumerable<(ITruthOrLink<Cell>[], ITruthOrLink<Cell>[])> result)
+    private static bool FindXWing(IEnumerable<(HouseCellsSudokuTruthOrLink[], HouseCellsSudokuTruthOrLink[])> result)
     {
         foreach (var (truths, links) in result)
         {
@@ -35,8 +35,8 @@ public class TruthAndLinksLogicTests
 
             HashSet<House> truthSet = new();
             HashSet<House> linkSet = new();
-            foreach (var truth in truths) truthSet.Add(((HouseCellsSudokuTruthOrLink) truth).House);
-            foreach (var link in links) linkSet.Add(((HouseCellsSudokuTruthOrLink) link).House);
+            foreach (var truth in truths) truthSet.Add(truth.House);
+            foreach (var link in links) linkSet.Add(link.House);
 
             if (truthSet.Contains(new House(Unit.Row, 2)) && truthSet.Contains(new House(Unit.Row, 3))
                                                           && linkSet.Contains(new House(Unit.Column, 4)) &&

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Model.Utility.BitSets;
 
@@ -40,13 +39,14 @@ public static class TruthAndLinksLogic
                     if(current.DoesOverlapWithLinksSet(link) || current.TruthSet.Contains(link)) continue;
 
                     var index = bank.GetIndex(link);
-                    var a = current.AddLink(link, index);
+                    current.Done.LinkBitSet.Add(index);
                     if (explored.Contains(current.Done))
                     {
-                        current.RemoveLastLink(a);
+                        current.Done.LinkBitSet.Remove(index);
                         continue;
                     }
                     
+                    var a = current.AddLink(link, index);
                     explored.Add(current.Done.Copy());
                     switch (current.TruthElementSet.IsOneCoveredByTheOther(current.LinkElementSet))
                     {
@@ -80,13 +80,14 @@ public static class TruthAndLinksLogic
                     if(current.DoesOverlapWithTruthSet(truth) || current.LinkSet.Contains(truth)) continue;
                     
                     var index = bank.GetIndex(truth);
-                    var a = current.AddTruth(truth, index);
+                    current.Done.TruthBitSet.Add(index);
                     if (explored.Contains(current.Done))
                     {
-                        current.RemoveLastTruth(a);
+                        current.Done.TruthBitSet.Remove(index);
                         continue;
                     }
 
+                    var a = current.AddTruth(truth, index);
                     explored.Add(current.Done.Copy());
                     SearchRank0(bank, maxSize, ignoreEqual, current, explored, result);
 
@@ -217,12 +218,13 @@ public static class TruthAndLinksLogic
 
         public override bool Equals(object? obj)
         {
-            return obj is Done ld && ld.TruthBitSet.Equals(TruthBitSet) && ld.LinkBitSet.Equals(LinkBitSet);
+            return obj is Done ld && ((ld.TruthBitSet.Equals(TruthBitSet) && ld.LinkBitSet.Equals(LinkBitSet))
+                    || (ld.TruthBitSet.Equals(LinkBitSet) && ld.LinkBitSet.Equals(TruthBitSet)));
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(TruthBitSet.GetHashCode(), LinkBitSet.GetHashCode());
+            return TruthBitSet.GetHashCode() ^ LinkBitSet.GetHashCode();
         }
 
         public Done Copy() => new(TruthBitSet.Copy(), LinkBitSet.Copy());

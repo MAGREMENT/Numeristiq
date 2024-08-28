@@ -9,6 +9,25 @@ namespace Model.Sudokus.Solver.Utility;
 public static class SudokuTruthAndLinksLogic
 {
     public static void AddTruthAndLinks(ISudokuSolverData data, ITruthAndLinkBank<Cell,
+        HouseCellsSudokuTruthOrLink> bank, int digit, bool isTruth)
+    {
+        for (int u = 0; u < 9; u++)
+        {
+            var lp = data.RowPositionsAt(u, digit);
+            if(lp.Count > 0) bank.Add(new HouseCellsSudokuTruthOrLink(new House(Unit.Row, u),
+                lp.ToCellArray(Unit.Row, u)), isTruth);
+            
+            lp = data.ColumnPositionsAt(u, digit);
+            if(lp.Count > 0) bank.Add(new HouseCellsSudokuTruthOrLink(new House(Unit.Column, u),
+                lp.ToCellArray(Unit.Column, u)), isTruth);
+
+            var bp = data.MiniGridPositionsAt(u / 3, u % 3, digit);
+            if(bp.Count > 0) bank.Add(new HouseCellsSudokuTruthOrLink(new House(Unit.Box, u),
+                bp.ToCellArray()), isTruth);
+        }
+    }
+    
+    public static void AddTruthAndLinks(ISudokuSolverData data, ITruthAndLinkBank<Cell,
         ITruthOrLink<Cell>> bank, int digit, bool isTruth)
     {
         for (int u = 0; u < 9; u++)
