@@ -4,6 +4,7 @@ using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Tests;
 
@@ -18,8 +19,8 @@ public class TruthAndLinksLogicTests
         var solver = new SudokuSolver();
         solver.SetState(state);
 
-        var bank = new DefaultTruthAndLinkBank<Cell, HouseCellsSudokuTruthOrLink>();
-        SudokuTruthAndLinksLogic.AddTruthAndLinks(solver, bank, 5, true);
+        var bank = new MergedTruthAndLinkBank<Cell, HouseCellsSudokuTruthOrLink>();
+        SudokuTruthAndLinksLogic.AddHouseTruthAndLinks(solver, bank, 5, true);
         var result = TruthAndLinksLogic.FindRank0(bank, 2, true,
             () => new GridPositions());
 
@@ -44,5 +45,22 @@ public class TruthAndLinksLogicTests
         }
 
         return false;
+    }
+
+    [Test]
+    public void MSLSTest()
+    {
+        var state = SudokuTranslator.TranslateBase32Format(
+            "g1810s410u2q3s363q214u4sg611gq81k6gq4u5u4si6gu817sn6jq114ucs86210ag1c28ic666u40ho6h27009b28q2qqop2oa413gb205csg1esb0cg3g03b4b8c86811q2s205280hq88k2k0309ogjg34r441",
+            new AlphabeticalBase32Translator());
+        var solver = new SudokuSolver();
+        solver.SetState(state);
+
+        var bank = new SeparatedTruthAndLinkBank<CellPossibility, ITruthOrLink<CellPossibility>>();
+        SudokuTruthAndLinksLogic.SetUpForMSLS(solver, bank);
+        var result = TruthAndLinksLogic.FindRank0(bank, 16, true,
+            () => new InfiniteBitSet());
+        
+        Console.WriteLine(result.Count());
     }
 }

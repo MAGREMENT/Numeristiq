@@ -79,21 +79,24 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     
-                    <RadioButton Grid.Column="0" Style="{StaticResource BottomSelectionRadioButtonStyle}"
-                                 IsChecked="True" Checked="OnCheckedSettings">
+                    <RadioButton Grid.Column="0" Style="{StaticResource ManagePageRadioButton}"
+                                 IsChecked="True" Checked="OnCheckedSettings" Margin="30 0">
                         Settings
                     </RadioButton>
                     
-                    <RadioButton Grid.Column="1" Style="{StaticResource BottomSelectionRadioButtonStyle}"
-                                 Checked="OnCheckedDocumentation">
+                    <RadioButton Grid.Column="1" Style="{StaticResource ManagePageRadioButton}"
+                                 Checked="OnCheckedDocumentation" Margin="30 0">
                         Documentation
                     </RadioButton>
                 </Grid>
                     
-                <ScrollViewer Grid.Row="2" Style="{StaticResource TransparentBarScrollViewer}"
-                              Margin="0 5 0 0">
-                    <StackPanel x:Name="InfoPanel"/>
-                </ScrollViewer>
+                <Border Grid.Row="2" Margin="10 0 10 10" Background="{DynamicResource Background3}"
+                        CornerRadius="5" BorderBrush="{DynamicResource Background3}">
+                    <ScrollViewer Style="{StaticResource TransparentBarScrollViewer}" Background="Transparent"
+                                  Margin="10 10 10 0">
+                        <StackPanel x:Name="InfoPanel"/>
+                    </ScrollViewer>
+                </Border>
             </Grid>
         </Border>
     </Grid>

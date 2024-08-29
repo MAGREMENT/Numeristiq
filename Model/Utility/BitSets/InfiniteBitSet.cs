@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Model.Core;
 
 namespace Model.Utility.BitSets;
 
-public class InfiniteBitSet : IEnumerable<int>
+public class InfiniteBitSet : IElementSet<CellPossibility>, IEnumerable<int>
 {
     private const int BitSize = 64;
     
@@ -66,6 +67,18 @@ public class InfiniteBitSet : IEnumerable<int>
         if (i < 0 || i >= _bits.Length * BitSize) return false;
 
         return ((_bits[i / BitSize] >> (i % BitSize)) & 1ul) > 0;
+    }
+
+    public bool ContainsAll(InfiniteBitSet bs)
+    {
+        if (_bits.Length < bs._bits.Length) return false;
+
+        for (int i = 0; i < bs._bits.Length; i++)
+        {
+            if ((_bits[i] | bs._bits[i]) != _bits[i]) return false;
+        }
+
+        return true;
     }
 
     public void Clear()
@@ -221,5 +234,35 @@ public class InfiniteBitSet : IEnumerable<int>
         var buffer = new ulong[arrayLength];
         Array.Copy(_bits, 0, buffer, 0, _bits.Length);
         _bits = buffer;
+    }
+
+    public bool Add(CellPossibility element)
+    {
+        var i = element.Column + element.Row * 9 + element.Possibility * 81;
+        var contains = Contains(i);
+        Add(i);
+        return !contains;
+    }
+
+    public void Remove(CellPossibility element)
+    {
+        var i = element.Column + element.Row * 9 + element.Possibility * 81;
+        Remove(i);
+    }
+
+    public bool Contains(CellPossibility element)
+    {
+        var i = element.Column + element.Row * 9 + element.Possibility * 81;
+        return Contains(i);
+    }
+
+    public CoverResult IsOneCoveredByTheOther(IElementSet<CellPossibility> set)
+    {
+        if (set is not InfiniteBitSet bs) return CoverResult.NoCover; //TODO
+
+        if (Equals(bs)) return CoverResult.Equals;
+        if (ContainsAll(bs)) return CoverResult.FirstCoveredBySecond;
+        if (bs.ContainsAll(this)) return CoverResult.SecondCoveredByFirst;
+        return CoverResult.NoCover;
     }
 }

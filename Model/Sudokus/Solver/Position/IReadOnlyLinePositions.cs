@@ -19,6 +19,7 @@ public interface IReadOnlyLinePositions : IEnumerable<int>
     public LinePositions Copy();
     public string ToString(Unit unit, int unitNumber);
     public Cell[] ToCellArray(Unit unit, int unitNumber);
+    public CellPossibility[] ToCellPossibilityArray(Unit unit, int unitNumber, int digit);
 
     public static LinePositions DefaultOr(IReadOnlyLinePositions one, IReadOnlyLinePositions two)
     {

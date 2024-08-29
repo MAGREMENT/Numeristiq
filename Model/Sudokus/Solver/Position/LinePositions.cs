@@ -224,5 +224,24 @@ public class LinePositions : IReadOnlyLinePositions
 
         return result;
     }
+
+    public CellPossibility[] ToCellPossibilityArray(Unit unit, int unitNumber, int digit)
+    {
+        var result = new CellPossibility[Count];
+        int cursor = 0;
+        foreach (var other in this)
+        {
+            result[cursor] = unit switch
+            {
+                Unit.Row => new CellPossibility(unitNumber, other, digit),
+                Unit.Column => new CellPossibility(other, unitNumber, digit),
+                _ => throw new ArgumentException("Unit has to be row or column")
+            };
+
+            cursor++;
+        }
+
+        return result;
+    }
 }
 

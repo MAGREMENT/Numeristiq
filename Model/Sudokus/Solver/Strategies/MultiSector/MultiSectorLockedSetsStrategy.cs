@@ -222,6 +222,6 @@ public class CoveringUnits
     public override string ToString()
     {
         return _dictionary.ToStringSequence(", ", entry 
-            => entry.Value.EnumeratePossibilities().ToStringSequence(""));
+            =>  entry.Value.EnumeratePossibilities().ToStringSequence("") + entry.Key);
     }
 }

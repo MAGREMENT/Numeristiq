@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using Model.Utility;
 using Model.Utility.Collections;
 
@@ -241,6 +240,19 @@ public class BoxPositions : IReadOnlyBoxPositions
         foreach (var cell in this)
         {
             result[cursor] = cell;
+            cursor++;
+        }
+
+        return result;
+    }
+
+    public CellPossibility[] ToCellPossibilityArray(int digit)
+    {
+        var result = new CellPossibility[Count];
+        var cursor = 0;
+        foreach (var cell in this)
+        {
+            result[cursor] = new CellPossibility(cell, digit);
             cursor++;
         }
 

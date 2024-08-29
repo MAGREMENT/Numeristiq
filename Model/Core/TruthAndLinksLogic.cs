@@ -261,10 +261,10 @@ public enum CoverResult
     NoCover, FirstCoveredBySecond, SecondCoveredByFirst, Equals
 }
 
-public class DefaultTruthAndLinkBank<TElement, TLink> : ITruthAndLinkBank<TElement, TLink> where TElement : notnull
+public class MergedTruthAndLinkBank<TElement, TLink> : ITruthAndLinkBank<TElement, TLink> where TElement : notnull
     where TLink : ITruthOrLink<TElement>
 {
-    private readonly Dictionary<TElement, List<TLink>> _links = new();
+    private readonly Dictionary<TElement, List<TLink>> _truthsOrLinks = new();
     private readonly Dictionary<TLink, int> _indexes = new();
     private int _current;
 
@@ -276,10 +276,10 @@ public class DefaultTruthAndLinkBank<TElement, TLink> : ITruthAndLinkBank<TEleme
         _current++;
         foreach (var element in link)
         {
-            if (!_links.TryGetValue(element, out var list))
+            if (!_truthsOrLinks.TryGetValue(element, out var list))
             {
                 list = new List<TLink>();
-                _links.Add(element, list);
+                _truthsOrLinks.Add(element, list);
             }
 
             list.Add(link);
@@ -288,12 +288,60 @@ public class DefaultTruthAndLinkBank<TElement, TLink> : ITruthAndLinkBank<TEleme
 
     public IEnumerable<TLink> GetTruths(TElement element)
     {
-        return _links.TryGetValue(element, out var list) ? list : Enumerable.Empty<TLink>();
+        return _truthsOrLinks.TryGetValue(element, out var list) ? list : Enumerable.Empty<TLink>();
     }
 
     public IEnumerable<TLink> GetLinks(TElement element)
     {
         return GetTruths(element);
+    }
+
+    public IEnumerable<TLink> EnumerateLinks()
+    {
+        return _indexes.Keys;
+    }
+
+    public int GetIndex(TLink link)
+    {
+        return _indexes[link];
+    }
+}
+
+public class SeparatedTruthAndLinkBank<TElement, TLink> : ITruthAndLinkBank<TElement, TLink> where TElement : notnull
+    where TLink : ITruthOrLink<TElement>
+{
+    private readonly Dictionary<TElement, List<TLink>> _truths = new();
+    private readonly Dictionary<TElement, List<TLink>> _links = new();
+    private readonly Dictionary<TLink, int> _indexes = new();
+    private int _current;
+
+
+    public void Add(TLink link, bool isTruth)
+    {
+        if (!_indexes.TryAdd(link, _current)) return;
+
+        _current++;
+        var dic = isTruth ? _truths : _links;
+        foreach (var element in link)
+        {
+            if (!dic.TryGetValue(element, out var list))
+            {
+                list = new List<TLink>();
+                dic.Add(element, list);
+            }
+
+            list.Add(link);
+        }
+    }
+
+    public IEnumerable<TLink> GetTruths(TElement element)
+    {
+        return _truths.TryGetValue(element, out var list) ? list : Enumerable.Empty<TLink>();
+    }
+
+    public IEnumerable<TLink> GetLinks(TElement element)
+    {
+        return _links.TryGetValue(element, out var list) ? list : Enumerable.Empty<TLink>();
     }
 
     public IEnumerable<TLink> EnumerateLinks()

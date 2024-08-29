@@ -27,6 +27,7 @@ public interface IReadOnlyBoxPositions : IEnumerable<Cell>
     public BoxPositions Copy();
 
     public Cell[] ToCellArray();
+    public CellPossibility[] ToCellPossibilityArray(int digit);
 
     public int GetNumber();
     
