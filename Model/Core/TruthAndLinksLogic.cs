@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Model.Utility.BitSets;
 
@@ -7,7 +8,7 @@ namespace Model.Core;
 public static class TruthAndLinksLogic
 {
     public static IEnumerable<(TLink[], TLink[])> FindRank0<TElement, TLink>(ITruthAndLinkBank<TElement, TLink> bank,
-        int maxSize, bool ignoreEqual, Construct<TElement> construct)
+        int maxSize, bool ignoreEqual)
         where TLink : ITruthOrLink<TElement> where TElement : notnull
     {
         HashSet<Done> explored = new();
@@ -15,7 +16,7 @@ public static class TruthAndLinksLogic
 
         foreach (var start in bank.EnumerateLinks())
         {
-            var current = new Current<TElement, TLink>(construct);
+            var current = new Current<TElement, TLink>();
             current.AddTruth(start, bank.GetIndex(start));
             SearchRank0(bank, maxSize, ignoreEqual, current, explored, result);
         }
@@ -29,11 +30,8 @@ public static class TruthAndLinksLogic
     {
         if (current.TruthSet.Count > current.LinkSet.Count)
         {
-            var last = current.TruthSet[^1];
-            foreach (var element in last)
+            foreach (var element in current.TruthsToCover.ToArray())
             {
-                if(current.LinkElementSet.Contains(element)) continue;
-                
                 foreach (var link in bank.GetLinks(element))
                 {
                     if(current.DoesOverlapWithLinksSet(link) || current.TruthSet.Contains(link)) continue;
@@ -48,18 +46,17 @@ public static class TruthAndLinksLogic
                     
                     var a = current.AddLink(link, index);
                     explored.Add(current.Done.Copy());
-                    switch (current.TruthElementSet.IsOneCoveredByTheOther(current.LinkElementSet))
+                    
+                    if (current.TruthsToCover.Count == 0)
                     {
-                        case CoverResult.FirstCoveredBySecond :
-                            result.Add((current.TruthSet.ToArray(), current.LinkSet.ToArray()));
-                            break;
-                        case CoverResult.SecondCoveredByFirst :
-                            result.Add((current.LinkSet.ToArray(), current.TruthSet.ToArray()));
-                            break;
-                        case CoverResult.Equals :
+                        if (current.LinksToCover.Count == 0)
+                        {
                             if(!ignoreEqual) result.Add((current.TruthSet.ToArray(), current.LinkSet.ToArray()));
-                            break;
+                        }
+                        else result.Add((current.TruthSet.ToArray(), current.LinkSet.ToArray()));
                     }
+                    else if (current.LinksToCover.Count == 0) 
+                        result.Add((current.LinkSet.ToArray(), current.TruthSet.ToArray()));
                     
                     SearchRank0(bank, maxSize, ignoreEqual, current, explored, result);
                     current.RemoveLastLink(a);
@@ -70,11 +67,8 @@ public static class TruthAndLinksLogic
         {
             if (current.TruthSet.Count == maxSize) return;
             
-            var last = current.LinkSet[^1];
-            foreach (var element in last)
+            foreach (var element in current.LinksToCover.ToArray())
             {
-                if(current.TruthElementSet.Contains(element)) continue;
-                
                 foreach (var truth in bank.GetTruths(element))
                 {
                     if(current.DoesOverlapWithTruthSet(truth) || current.LinkSet.Contains(truth)) continue;
@@ -89,8 +83,8 @@ public static class TruthAndLinksLogic
 
                     var a = current.AddTruth(truth, index);
                     explored.Add(current.Done.Copy());
+                    
                     SearchRank0(bank, maxSize, ignoreEqual, current, explored, result);
-
                     current.RemoveLastTruth(a);
                 }
             }
@@ -111,15 +105,9 @@ public static class TruthAndLinksLogic
     {
         public List<TLink> TruthSet { get; } = new();
         public List<TLink> LinkSet { get; } = new();
-        public IElementSet<TElement> TruthElementSet { get; }
-        public IElementSet<TElement> LinkElementSet { get; }
+        public List<TElement> TruthsToCover { get; } = new();
+        public List<TElement> LinksToCover { get; } = new();
         public Done Done { get; } = new();
-
-        public Current(Construct<TElement> construct)
-        {
-            TruthElementSet = construct();
-            LinkElementSet = construct();
-        }
 
         public bool DoesOverlapWithTruthSet(TLink link)
         {
@@ -139,7 +127,18 @@ public static class TruthAndLinksLogic
             var result = new AdditionResult<TElement>(index);
             foreach (var e in link)
             {
-                if (TruthElementSet.Add(e)) result.Elements.Add(e);
+                var i = LinksToCover.IndexOf(e);
+
+                if (i == -1)
+                {
+                    TruthsToCover.Add(e);
+                    result.ElementsAdded.Add(e);
+                }
+                else
+                {
+                    LinksToCover.RemoveAt(i);
+                    result.ElementsRemoved.Add(e);
+                }
             }
             return result;
         }
@@ -148,9 +147,14 @@ public static class TruthAndLinksLogic
         {
             TruthSet.RemoveAt(TruthSet.Count - 1);
             Done.TruthBitSet.Remove(result.Index);
-            foreach (var e in result.Elements)
+            foreach (var e in result.ElementsAdded)
             {
-                TruthElementSet.Remove(e);
+                TruthsToCover.Remove(e);
+            }
+
+            foreach (var e in result.ElementsRemoved)
+            {
+                LinksToCover.Add(e);
             }
         }
         
@@ -172,7 +176,18 @@ public static class TruthAndLinksLogic
             var result = new AdditionResult<TElement>(index);
             foreach (var e in link)
             {
-                if (LinkElementSet.Add(e)) result.Elements.Add(e);
+                var i = TruthsToCover.IndexOf(e);
+
+                if (i == -1)
+                {
+                    LinksToCover.Add(e);
+                    result.ElementsAdded.Add(e);
+                }
+                else
+                {
+                    TruthsToCover.RemoveAt(i);
+                    result.ElementsRemoved.Add(e);
+                }
             }
             return result;
         }
@@ -181,17 +196,52 @@ public static class TruthAndLinksLogic
         {
             LinkSet.RemoveAt(LinkSet.Count - 1);
             Done.LinkBitSet.Remove(result.Index);
-            foreach (var e in result.Elements)
+            foreach (var e in result.ElementsAdded)
             {
-                LinkElementSet.Remove(e);
+                LinksToCover.Remove(e);
             }
+
+            foreach (var e in result.ElementsRemoved)
+            {
+                TruthsToCover.Add(e);
+            }
+        }
+    }
+
+    private class TruthOrLinkList<T>
+    {
+        public const int StartLength = 5;
+        private T[] _array = Array.Empty<T>();
+        
+        public int Count { get; private set; }
+
+        public void Add(T element)
+        {
+            GrowIfNeeded();
+            _array[Count++] = element;
+        }
+        
+        private void GrowIfNeeded()
+        {
+            if (Count < _array.Length) return;
+
+            if (_array.Length == 0)
+            {
+                _array = new T[StartLength];
+                return;
+            }
+
+            var buffer = new T[_array.Length * 2];
+            Array.Copy(_array, 0, buffer, 0, _array.Length);
+            _array = buffer;
         }
     }
 
     private class AdditionResult<TElement>
     {
         public int Index { get; }
-        public List<TElement> Elements { get; } = new();
+        public List<TElement> ElementsAdded { get; } = new();
+        public List<TElement> ElementsRemoved { get; } = new();
 
         public AdditionResult(int index)
         {
@@ -244,16 +294,6 @@ public interface ITruthAndLinkBank<in TElement, TLink> where TElement : notnull 
     public IEnumerable<TLink> GetLinks(TElement element);
     public IEnumerable<TLink> EnumerateLinks();
     public int GetIndex(TLink link);
-}
-
-public delegate IElementSet<TElement> Construct<TElement>();
-
-public interface IElementSet<TElement>
-{
-    bool Add(TElement element);
-    void Remove(TElement element);
-    bool Contains(TElement element);
-    CoverResult IsOneCoveredByTheOther(IElementSet<TElement> set);
 }
 
 public enum CoverResult

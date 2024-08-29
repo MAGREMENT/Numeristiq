@@ -9,7 +9,7 @@ namespace Model.Sudokus.Solver.Utility;
 
 public static class SudokuTruthAndLinksLogic
 {
-    public static void SetUpForMSLS(ISudokuSolverData data, ITruthAndLinkBank<CellPossibility,
+    public static void SetUpForSudoku(ISudokuSolverData data, ITruthAndLinkBank<CellPossibility,
         ITruthOrLink<CellPossibility>> bank)
     {
         AddCellTruthAndLinks(data, bank, true);
@@ -173,12 +173,13 @@ public class HouseCellPossibilitySudokuTruthOrLink : ITruthOrLink<CellPossibilit
 
     public override int GetHashCode()
     {
-        return House.GetHashCode();
+        return HashCode.Combine(House.GetHashCode(), _cells[0].Possibility);
     }
 
     public override bool Equals(object? obj)
     {
-        return obj is HouseCellPossibilitySudokuTruthOrLink h && h.House == House;
+        return obj is HouseCellPossibilitySudokuTruthOrLink h && h.House == House 
+            && h._cells[0].Possibility == _cells[0].Possibility;
     }
     
     public override string ToString()

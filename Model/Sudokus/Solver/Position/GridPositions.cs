@@ -7,7 +7,7 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Position;
 
-public class GridPositions : IReadOnlyGridPositions, IElementSet<Cell>
+public class GridPositions : IReadOnlyGridPositions
 {
     private const int FirstLimit = 53;
     private const ulong LongRowMask = 0x1FF;
@@ -82,16 +82,6 @@ public class GridPositions : IReadOnlyGridPositions, IElementSet<Cell>
         return Contains(coord.Row, coord.Column);
     }
 
-    public CoverResult IsOneCoveredByTheOther(IElementSet<Cell> set)
-    {
-        if (set is not GridPositions gp) return CoverResult.NoCover; //TODO
-
-        if (Equals(gp)) return CoverResult.Equals;
-        if (ContainsEvery(gp)) return CoverResult.FirstCoveredBySecond;
-        if (gp.ContainsEvery(this)) return CoverResult.SecondCoveredByFirst;
-        return CoverResult.NoCover;
-    }
-
     public bool ContainsAny(GridPositions gp)
     {
         return (gp._first & _first) != 0ul || (gp._second & _second) != 0ul;
@@ -107,13 +97,6 @@ public class GridPositions : IReadOnlyGridPositions, IElementSet<Cell>
         int n = row * 9 + col;
         if (n > FirstLimit) _second &= ~(1u << (n - FirstLimit - 1));
         else _first &= ~(1ul << n);
-    }
-
-    bool IElementSet<Cell>.Add(Cell element)
-    {
-        var contains = Contains(element);
-        Add(element);
-        return !contains;
     }
 
     public void Remove(Cell cell)

@@ -2,11 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Model.Core;
 
 namespace Model.Utility.BitSets;
 
-public class InfiniteBitSet : IElementSet<CellPossibility>, IEnumerable<int>
+public class InfiniteBitSet : IEnumerable<int>
 {
     private const int BitSize = 64;
     
@@ -234,35 +233,5 @@ public class InfiniteBitSet : IElementSet<CellPossibility>, IEnumerable<int>
         var buffer = new ulong[arrayLength];
         Array.Copy(_bits, 0, buffer, 0, _bits.Length);
         _bits = buffer;
-    }
-
-    public bool Add(CellPossibility element)
-    {
-        var i = element.Column + element.Row * 9 + element.Possibility * 81;
-        var contains = Contains(i);
-        Add(i);
-        return !contains;
-    }
-
-    public void Remove(CellPossibility element)
-    {
-        var i = element.Column + element.Row * 9 + element.Possibility * 81;
-        Remove(i);
-    }
-
-    public bool Contains(CellPossibility element)
-    {
-        var i = element.Column + element.Row * 9 + element.Possibility * 81;
-        return Contains(i);
-    }
-
-    public CoverResult IsOneCoveredByTheOther(IElementSet<CellPossibility> set)
-    {
-        if (set is not InfiniteBitSet bs) return CoverResult.NoCover; //TODO
-
-        if (Equals(bs)) return CoverResult.Equals;
-        if (ContainsAll(bs)) return CoverResult.FirstCoveredBySecond;
-        if (bs.ContainsAll(this)) return CoverResult.SecondCoveredByFirst;
-        return CoverResult.NoCover;
     }
 }
