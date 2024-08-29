@@ -77,6 +77,13 @@
     "Settings": {}
   },
   {
+    "Name": "Anti Gurth\u0027s Theorem",
+    "Enabled": true,
+    "Locked": false,
+    "InstanceHandling": 1,
+    "Settings": {}
+  },
+  {
     "Name": "Uniqueness Clue Cover",
     "Enabled": false,
     "Locked": false,
