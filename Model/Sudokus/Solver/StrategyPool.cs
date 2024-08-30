@@ -13,6 +13,7 @@ using Model.Sudokus.Solver.Strategies.ForcingNets;
 using Model.Sudokus.Solver.Strategies.MultiSector;
 using Model.Sudokus.Solver.Strategies.MultiSector.Searchers;
 using Model.Sudokus.Solver.Strategies.NRCZTChains;
+using Model.Sudokus.Solver.Strategies.Symmetry;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
 using Model.Sudokus.Solver.Utility.Graphs;
@@ -64,7 +65,8 @@ public static class StrategyPool
         {PatternOverlayStrategy.OfficialName, () => new PatternOverlayStrategy(1, 1000)},
         {BruteForceStrategy.OfficialName, () => new BruteForceStrategy()},
         {SKLoopsStrategy.OfficialName, () => new SKLoopsStrategy()},
-        {GurthTheorem.OfficialName, () => new GurthTheorem()},
+        {GurthTheorem.OfficialName, () => new GurthTheorem(SudokuSymmetry.All())},
+        {AntiGurthTheorem.OfficialName, () => new AntiGurthTheorem(SudokuSymmetry.All())},
         {SetEquivalenceStrategy.OfficialName, () => new SetEquivalenceStrategy(new RowsAndColumnsSearcher(2,
             5, 2), new PhistomefelRingLikeSearcher())},
         {DeathBlossomStrategy.OfficialName, () => new DeathBlossomStrategy()},

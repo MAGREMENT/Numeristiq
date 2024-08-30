@@ -10,6 +10,7 @@ using Model.Sudokus.Solver.Strategies.BlossomLoops.LoopFinders;
 using Model.Sudokus.Solver.Strategies.BlossomLoops.Types;
 using Model.Sudokus.Solver.Strategies.MultiSector;
 using Model.Sudokus.Solver.Strategies.MultiSector.Searchers;
+using Model.Sudokus.Solver.Strategies.Symmetry;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
 using Model.Utility;
@@ -202,6 +203,34 @@ public class SudokuStrategiesTests
         TestSudokuStrategyInstance(new JuniorExocetStrategy(),
             "0s4s81ku11kiksikm803215sksscsglspkt81sg15s21cccg039kd82s0ug1116a6i812662419m3kgiq2qih409j2b89a38kaua05l0j20hrk9k3kg6i609hg4182hs5s0381k4l021hgh8r8d878k20hn2h88205",
             "- 924 927 527 212");
+    }
+
+    #endregion
+
+    [Test]
+    public void GurthTheoremTest()
+    {
+        TestSudokuStrategyInstance(new GurthTheorem(SudokuSymmetry.All()), 
+            "egu0ogloko03j8p805e2u609l4k4d4j20hr08i11omgs218k41oao83q2e1m81gm2kjo41jo3i2641gmgm0981h4jgg1ac8k4k116k2o0c035aka215q815g05haho9a0hp2210e14hapa4105ca925q4qg11q219o",
+            "- 611 711 122 622 722 922 133 933 155 955 666 766 188 388 588 988 399 599");
+    }
+
+    #region AntiGurthTheorem
+
+    [Test]
+    public void AntiGurthTheoremTest1()
+    {
+        TestSudokuStrategyInstance(new AntiGurthTheorem(SudokuSymmetry.All()),
+            "8109gg0641g60i112103n0n03c0hjcc8s4scign0053aga814qkgk82c6468fc8c7cg1030hism4mofuoenuf8e4dc1103816sgcms68644c28b03ag18a4q05egd0icq4i8cs114segug03410hh28621069009p0",
+            "- 999");
+    }
+    
+    [Test]
+    public void AntiGurthTheoremTest2()
+    {
+        TestSudokuStrategyInstance(new AntiGurthTheorem(SudokuSymmetry.All()),
+            "811g030509702gg17g0s41hkj2i2j22u1u8121h8h4l2810h0e5e50g18qegea626e11ci6g1105e00h6262g1c2090q8qegua11maaici050kpg09n0m0n08k9k0341pipgha05ha8o21hg0621h4ha0h81411ch0",
+            "- 999");
     }
 
     #endregion
@@ -493,7 +522,7 @@ public class SudokuStrategiesTests
         result.ToConsole(nanosPerTick, count);
     }
 
-    public const string MSLSBank =
+    private const string MSLSBank =
         ".....67...5.1...3...9.2...42..........8.4...29.46..........7.6....3..1..8.......5\n" +
         "........9...78..2...81.2....3.5..6..5....7..4..7.2......1.7..9.6.......5.4....3..\n" +
         "98.7..6....5.4.........9.3.6......9..3....8....2.7...5.5.........1.27......4.1..7\n" +
