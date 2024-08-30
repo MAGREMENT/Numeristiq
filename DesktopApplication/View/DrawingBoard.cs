@@ -23,22 +23,9 @@ namespace DesktopApplication.View;
 
 public abstract class DrawingBoard : FrameworkElement
 {
-    private readonly List<IDrawableComponent>[] _layers;
-
-    protected IReadOnlyList<List<IDrawableComponent>> Layers => _layers;
     public bool RefreshAllowed { get; set; } = true;
-
-    protected DrawingBoard(int layerCount)
-    {
-        _layers = new List<IDrawableComponent>[layerCount];
-        for (int i = 0; i < _layers.Length; i++)
-        {
-            _layers[i] = new List<IDrawableComponent>();
-        }
-    }
-
-    #region DrawingNecessities
-
+    
+    
     // Provide a required override for the VisualChildrenCount property.
     protected override int VisualChildrenCount => 0;
 
@@ -50,19 +37,8 @@ public abstract class DrawingBoard : FrameworkElement
     
     protected override void OnRender(DrawingContext context)
     {
-        if (!RefreshAllowed) return;
-
-        foreach (var list in _layers)
-        {
-            //ToArray() is for thread-safety
-            foreach (var component in list.ToArray())
-            {
-                component.Draw(context, this);
-            }
-        }
+        if (RefreshAllowed) Draw(context);
     }
-
-    #endregion
     
     public void Refresh()
     {
@@ -75,58 +51,88 @@ public abstract class DrawingBoard : FrameworkElement
         rtb.Render(this);
         return BitmapFrame.Create(rtb);
     }
+
+    protected abstract void Draw(DrawingContext context);
     
     #region DependencyProperties
-    
-    public static readonly DependencyProperty LinkBrushProperty =
-        DependencyProperty.Register("LinkBrush", typeof(Brush), typeof(DrawingBoard),
-            new PropertyMetadata((obj, _) =>
-    {
-        if (obj is not DrawingBoard board) return;
-        board.Refresh();
-    }));
-    
-    public static readonly DependencyProperty DefaultNumberBrushProperty =
-        DependencyProperty.Register("DefaultNumberBrush", typeof(Brush), typeof(DrawingBoard),
-            new PropertyMetadata((obj, _) =>
-    {
-        if (obj is not DrawingBoard board) return;
-        board.Refresh();
-    }));
-
-    public static readonly DependencyProperty ClueNumberBrushProperty =
-        DependencyProperty.Register("ClueNumberBrush", typeof(Brush), typeof(DrawingBoard),
-            new PropertyMetadata((obj, _) =>
-    {
-        if (obj is not DrawingBoard board) return;
-        board.Refresh();
-    }));
     
     public static readonly DependencyProperty BackgroundBrushProperty =
         DependencyProperty.Register("BackgroundBrush", typeof(Brush), typeof(DrawingBoard),
             new PropertyMetadata((obj, _) =>
-    {
-        if (obj is not DrawingBoard board) return;
-        board.Refresh();
-    }));
-
+            {
+                if (obj is not DrawingBoard board) return;
+                board.Refresh();
+            }));
+    
     public static readonly DependencyProperty LineBrushProperty =
         DependencyProperty.Register("LineBrush", typeof(Brush), typeof(DrawingBoard),
             new PropertyMetadata((obj, _) =>
-    {
-        if (obj is not DrawingBoard board) return;
-        board.Refresh();
-    }));
+            {
+                if (obj is not DrawingBoard board) return;
+                board.Refresh();
+            }));
+    
+    public static readonly DependencyProperty LinkBrushProperty =
+        DependencyProperty.Register("LinkBrush", typeof(Brush), typeof(DrawingBoard),
+            new PropertyMetadata((obj, _) =>
+            {
+                if (obj is not DrawingBoard board) return;
+                board.Refresh();
+            }));
+    
+    public static readonly DependencyProperty DefaultNumberBrushProperty =
+        DependencyProperty.Register("DefaultNumberBrush", typeof(Brush), typeof(DrawingBoard),
+            new PropertyMetadata((obj, _) =>
+            {
+                if (obj is not DrawingBoard board) return;
+                board.Refresh();
+            }));
+
+    public static readonly DependencyProperty ClueNumberBrushProperty =
+        DependencyProperty.Register("ClueNumberBrush", typeof(Brush), typeof(DrawingBoard),
+            new PropertyMetadata((obj, _) =>
+            {
+                if (obj is not DrawingBoard board) return;
+                board.Refresh();
+            }));
     
     public static readonly DependencyProperty CursorBrushProperty =
         DependencyProperty.Register("CursorBrush", typeof(Brush), typeof(DrawingBoard),
             new PropertyMetadata((obj, _) =>
-    {
-        if (obj is not DrawingBoard board) return;
-        board.Refresh();
-    }));
+            {
+                if (obj is not DrawingBoard board) return;
+                board.Refresh();
+            }));
     
     #endregion
+}
+
+public abstract class LayeredDrawingBoard : DrawingBoard
+{
+    private readonly List<IDrawableComponent>[] _layers;
+
+    protected IReadOnlyList<List<IDrawableComponent>> Layers => _layers;
+
+    protected LayeredDrawingBoard(int layerCount)
+    {
+        _layers = new List<IDrawableComponent>[layerCount];
+        for (int i = 0; i < _layers.Length; i++)
+        {
+            _layers[i] = new List<IDrawableComponent>();
+        }
+    }
+
+    protected override void Draw(DrawingContext context)
+    {
+        foreach (var list in _layers)
+        {
+            //ToArray() is for thread-safety
+            foreach (var component in list.ToArray())
+            {
+                component.Draw(context, this);
+            }
+        }
+    }
 }
 
 public interface IDrawableComponent

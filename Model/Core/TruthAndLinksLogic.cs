@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Model.Utility.BitSets;
 
@@ -147,15 +146,9 @@ public static class TruthAndLinksLogic
         {
             TruthSet.RemoveAt(TruthSet.Count - 1);
             Done.TruthBitSet.Remove(result.Index);
-            foreach (var e in result.ElementsAdded)
-            {
-                TruthsToCover.Remove(e);
-            }
-
-            foreach (var e in result.ElementsRemoved)
-            {
-                LinksToCover.Add(e);
-            }
+            
+            TruthsToCover.RemoveAll(e => result.ElementsAdded.Contains(e));
+            LinksToCover.AddRange(result.ElementsRemoved);
         }
         
         public bool DoesOverlapWithLinksSet(TLink link)
@@ -196,44 +189,9 @@ public static class TruthAndLinksLogic
         {
             LinkSet.RemoveAt(LinkSet.Count - 1);
             Done.LinkBitSet.Remove(result.Index);
-            foreach (var e in result.ElementsAdded)
-            {
-                LinksToCover.Remove(e);
-            }
-
-            foreach (var e in result.ElementsRemoved)
-            {
-                TruthsToCover.Add(e);
-            }
-        }
-    }
-
-    private class TruthOrLinkList<T>
-    {
-        public const int StartLength = 5;
-        private T[] _array = Array.Empty<T>();
-        
-        public int Count { get; private set; }
-
-        public void Add(T element)
-        {
-            GrowIfNeeded();
-            _array[Count++] = element;
-        }
-        
-        private void GrowIfNeeded()
-        {
-            if (Count < _array.Length) return;
-
-            if (_array.Length == 0)
-            {
-                _array = new T[StartLength];
-                return;
-            }
-
-            var buffer = new T[_array.Length * 2];
-            Array.Copy(_array, 0, buffer, 0, _array.Length);
-            _array = buffer;
+            
+            LinksToCover.RemoveAll(e => result.ElementsAdded.Contains(e));
+            TruthsToCover.AddRange(result.ElementsRemoved);
         }
     }
 

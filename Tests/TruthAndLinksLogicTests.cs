@@ -49,10 +49,10 @@ public class TruthAndLinksLogicTests
 
     /*
      #1 MergedTruthAndLinkBank`2
-       Total: 30,9444433 s
-       Average: 10,314814433333334 s
-       Minimum: 9,8479704 s on try #3
-       Maximum: 10,752087 s on try #2
+       Total: 26,4382658 s
+       Average: 8,812755266666667 s
+       Minimum: 8,7215349 s on try #4
+       Maximum: 8,9525571 s on try #3
        Ignored: 1
      */
     [Test]

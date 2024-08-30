@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:DesktopApplication.View.Settings"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Background="{DynamicResource Background2}">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>

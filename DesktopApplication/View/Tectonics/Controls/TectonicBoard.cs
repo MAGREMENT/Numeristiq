@@ -15,7 +15,7 @@ using Model.Utility.Collections;
 
 namespace DesktopApplication.View.Tectonics.Controls;
 
-public class TectonicBoard : DrawingBoard, ITectonicDrawingData, ITectonicDrawer, ISizeOptimizable
+public class TectonicBoard : LayeredDrawingBoard, ITectonicDrawingData, ITectonicDrawer, ISizeOptimizable
 {
     private const int BackgroundIndex = 0;
     private const int CellHighlightIndex = 1;

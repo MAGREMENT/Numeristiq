@@ -14,4 +14,5 @@ public interface IThemeView
     void ShowNameError(string error);
     void ShowNameIsCorrect();
     void SetContinuousUpdate(bool yes);
+    void RedrawExampleGrid();
 }

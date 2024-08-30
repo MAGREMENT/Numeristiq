@@ -747,7 +747,7 @@
 				    </Trigger>
 				    
 				    <Trigger Property="IsEnabled" Value="False">
-					    <Setter Property="Background" Value="{DynamicResource Disabled}"/>
+					    <Setter Property="Foreground" Value="{DynamicResource Disabled}"/>
 				    </Trigger>
 			    </ControlTemplate.Triggers>
 		    </ControlTemplate>

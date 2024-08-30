@@ -100,6 +100,11 @@ public partial class ThemeWindow : IThemeView
         CurrentColorValue.ContinuousUpdate = yes;
     }
 
+    public void RedrawExampleGrid()
+    {
+        (Embedded.OptimizableContent as DrawingBoard)?.Refresh();
+    }
+
     private void EvaluateName(object sender, TextChangedEventArgs e)
     {
         if (sender is not TextBox box) return;

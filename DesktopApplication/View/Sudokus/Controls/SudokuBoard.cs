@@ -19,7 +19,7 @@ using Model.Utility.Collections;
 
 namespace DesktopApplication.View.Sudokus.Controls;
 
-public class SudokuBoard : DrawingBoard, ISudokuDrawingData, ISudokuSolverDrawer, IExplanationHighlighter,
+public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolverDrawer, IExplanationHighlighter,
     ISudokuPlayerDrawer, ISizeOptimizable
 {
     private const int BackgroundIndex = 0;

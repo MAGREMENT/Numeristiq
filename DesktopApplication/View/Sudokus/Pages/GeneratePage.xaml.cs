@@ -26,8 +26,7 @@ public partial class GeneratePage : ISudokuGenerateView
         InitializeComponent();
         _presenter = PresenterFactory.Instance.Initialize(this);
 
-        //RenderOptions.SetBitmapScalingMode(Bin, BitmapScalingMode.Fant);
-
+        RenderOptions.SetBitmapScalingMode(Bin, BitmapScalingMode.Fant);
         _initialized = true;
     }
 
@@ -77,7 +76,7 @@ public partial class GeneratePage : ISudokuGenerateView
             TransitionPlace.ToEvaluator => ToEvaluator,
             TransitionPlace.ToFinalList => ToFinalList,
             TransitionPlace.ToRDR => ToRDR,
-            //TransitionPlace.ToBin => ToBin,
+            TransitionPlace.ToBin => ToBin,
             _ => throw new ArgumentOutOfRangeException()
         };
         
@@ -184,32 +183,41 @@ public partial class GeneratePage : ISudokuGenerateView
                 
                 var p1 = new Path
                 {
-                    Data = Geometry.Parse("M 7,35 V 10 H 27 V 35 H 7 M 15,10 V 5 H 35 V 30 H 27"),
-                    Width = 40,
-                    Height = 40
+                    Data = Geometry.Parse("M 5,25 V 8 H 20 V 25 H 5 M 10,8 V 4 H 25 V 21 H 20"),
+                    Width = 30,
+                    Height = 30,
+                    StrokeThickness = 2
                 };
                 p1.SetResourceReference(Shape.StrokeProperty, "Text");
                 var b1 = new Button
                 {
-                    Style = (Style)FindResource("PrimaryLightUpButtonStyle"),
+                    Template = (ControlTemplate)FindResource("RoundedButton"),
                     Content = p1,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Margin = new Thickness(0, 0, 10, 0)
                 };
+                b1.SetResourceReference(BackgroundProperty, "Primary1");
                 b1.Click += (_, _) => Clipboard.SetText(sudoku.AsString());
                 Grid.SetColumn(b1, 0);
                 grid.Children.Add(b1);
                 
                 var p2 = new Path
                 {
-                    Data = Geometry.Parse("M 3,20 C 15,8 25,8 37,20 C 25,32 15,32 3,20 M 20,20 M 16,20 A 4,4 0 1 1 24,20 A 4,4 0 1 1 16,20"),
-                    Width = 40,
-                    Height = 40
+                    Data = Geometry.Parse("M 5,15 C 12,7 18,7 25,15 C 18,23 12,23 5,15 M 13,15 A 2,2 0 1 1 17,15 A 2,2 0 1 1 13,15"),
+                    Width = 30,
+                    Height = 30,
+                    StrokeThickness = 2
                 };
                 p2.SetResourceReference(Shape.StrokeProperty, "Text");
                 var b2 = new Button
                 {
-                    Style = (Style)FindResource("SecondaryLightUpButtonStyle"),
+                    Template = (ControlTemplate)FindResource("RoundedButton"),
                     Content = p2,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center,
                 };
+                b2.SetResourceReference(BackgroundProperty, "Secondary1");
                 b2.Click += (_, _) =>
                 {
                     var dialog = new ShowSudokuDialog(sudoku.Puzzle);
@@ -225,16 +233,6 @@ public partial class GeneratePage : ISudokuGenerateView
                 r++;
             }
         });
-    }
-
-    public void AllowGeneration(bool allowed)
-    {
-        GenerateButton.IsEnabled = allowed;
-    }
-
-    public void AllowCancel(bool allowed)
-    {
-        StopButton.Dispatcher.Invoke(() => StopButton.IsEnabled = allowed);
     }
 
     public void SetCriteriaList(IReadOnlyList<EvaluationCriteria> criteriaList)
@@ -253,9 +251,30 @@ public partial class GeneratePage : ISudokuGenerateView
         Clipboard.SetText(s);
     }
 
+    public void OnGenerationStart()
+    {
+        GenerateButton.Content = "Stop";
+        GenerateButton.Click -= Generate;
+        GenerateButton.Click += Stop;
+    }
+
+    public void OnGenerationStop()
+    {
+        GenerateButton.Content = "Generate";
+        GenerateButton.Click += Generate;
+        GenerateButton.Click -= Stop;
+        GenerateButton.IsEnabled = true;
+    }
+
     private void Generate(object sender, RoutedEventArgs e)
     {
         _presenter.Generate();
+    }
+    
+    private void Stop(object sender, RoutedEventArgs e)
+    {
+        _presenter.Stop();
+        GenerateButton.IsEnabled = false;
     }
 
     private void OnValueChange(int value)
@@ -278,11 +297,6 @@ public partial class GeneratePage : ISudokuGenerateView
         var window = new ManageCriteriaWindow(_presenter.ManageCriteria());
         window.Closed += (_, _) => _presenter.UpdateCriterias();
         window.Show();
-    }
-
-    private void Stop(object sender, RoutedEventArgs e)
-    {
-        _presenter.Stop();
     }
 
     private void OnRandomSelection()

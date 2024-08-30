@@ -22,6 +22,8 @@ public class ThemePresenter
 
         _view.SetContinuousUpdate(setting.ThemeContinuousUpdate.Get().ToBool());
         setting.ThemeContinuousUpdate.ValueChanged += v => _view.SetContinuousUpdate(v.ToBool());
+
+        App.Current.ThemeInformation.ThemeChanged += _view.RedrawExampleGrid;
     }
 
     public void SelectColor(string name)

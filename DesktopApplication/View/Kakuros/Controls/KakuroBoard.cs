@@ -11,7 +11,7 @@ using Orientation = Model.Utility.Orientation;
 
 namespace DesktopApplication.View.Kakuros.Controls;
 
-public class KakuroBoard : DrawingBoard, IKakuroDrawingData, ISizeOptimizable, IKakuroSolverDrawer //TODO fix amount cell selection
+public class KakuroBoard : LayeredDrawingBoard, IKakuroDrawingData, ISizeOptimizable, IKakuroSolverDrawer //TODO fix amount cell selection
 {
     private const int BackgroundIndex = 0;
     private const int HighlightIndex = 1;

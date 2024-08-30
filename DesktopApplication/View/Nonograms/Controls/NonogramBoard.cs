@@ -13,7 +13,7 @@ using Model.Utility.Collections;
 
 namespace DesktopApplication.View.Nonograms.Controls;
 
-public class NonogramBoard : DrawingBoard, INonogramDrawingData, ISizeOptimizable, INonogramDrawer
+public class NonogramBoard : LayeredDrawingBoard, INonogramDrawingData, ISizeOptimizable, INonogramDrawer
 {
     private const int BackgroundIndex = 0;
     private const int LineIndex = 1;

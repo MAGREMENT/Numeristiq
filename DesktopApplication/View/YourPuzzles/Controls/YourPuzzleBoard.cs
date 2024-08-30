@@ -13,7 +13,7 @@ using Model.Utility.Collections;
 
 namespace DesktopApplication.View.YourPuzzles.Controls;
 
-public class YourPuzzleBoard : DrawingBoard, IVaryingBordersCellGameDrawingData, ISizeOptimizable, IYourPuzzleDrawer
+public class YourPuzzleBoard : LayeredDrawingBoard, IVaryingBordersCellGameDrawingData, ISizeOptimizable, IYourPuzzleDrawer
 {
     private const int BackgroundIndex = 0;
     private const int CursorIndex = 1;

@@ -11,7 +11,7 @@ using Model.Utility.Collections;
 
 namespace DesktopApplication.View.Binairos.Controls;
 
-public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable, IBinairoDrawer
+public class BinairoBoard : LayeredDrawingBoard, IBinairoDrawingData, ISizeOptimizable, IBinairoDrawer
 {
     private const int BackgroundIndex = 0;
     private const int HighlightIndex = 1;
@@ -52,18 +52,18 @@ public class BinairoBoard : DrawingBoard, IBinairoDrawingData, ISizeOptimizable,
     }
     
     public static readonly DependencyProperty CircleFirstColorProperty =
-        DependencyProperty.Register(nameof(CircleFirstColor), typeof(Brush), typeof(DrawingBoard),
+        DependencyProperty.Register(nameof(CircleFirstColor), typeof(Brush), typeof(LayeredDrawingBoard),
             new PropertyMetadata((obj, _) =>
     {
-        if (obj is not DrawingBoard board) return;
+        if (obj is not LayeredDrawingBoard board) return;
         board.Refresh();
     }));
     
     public static readonly DependencyProperty CircleSecondColorProperty =
-        DependencyProperty.Register(nameof(CircleSecondColor), typeof(Brush), typeof(DrawingBoard),
+        DependencyProperty.Register(nameof(CircleSecondColor), typeof(Brush), typeof(LayeredDrawingBoard),
             new PropertyMetadata((obj, _) =>
     {
-        if (obj is not DrawingBoard board) return;
+        if (obj is not LayeredDrawingBoard board) return;
         board.Refresh();
     }));
 

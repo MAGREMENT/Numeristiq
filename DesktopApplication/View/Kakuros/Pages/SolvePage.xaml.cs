@@ -138,7 +138,7 @@ public partial class SolvePage : IKakuroSolveView
             CellSize = 20
         };
 
-        board.SetResourceReference(DrawingBoard.DefaultNumberBrushProperty, "Text");
+        board.SetResourceReference(LayeredDrawingBoard.DefaultNumberBrushProperty, "Text");
         board.SetResourceReference(KakuroBoard.AmountLineBrushProperty, "Accent");
 
         return board;

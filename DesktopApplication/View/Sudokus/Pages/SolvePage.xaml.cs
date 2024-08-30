@@ -130,11 +130,11 @@ public partial class SolvePage : ISudokuSolveView
             BackgroundBrush = Brushes.Transparent
         };
 
-        board.SetResourceReference(DrawingBoard.DefaultNumberBrushProperty, "Text");
-        board.SetResourceReference(DrawingBoard.LineBrushProperty, "Text");
-        board.SetResourceReference(DrawingBoard.CursorBrushProperty, "Secondary1");
-        board.SetResourceReference(DrawingBoard.ClueNumberBrushProperty, "Primary1");
-        board.SetResourceReference(DrawingBoard.LinkBrushProperty, "Accent");
+        board.SetResourceReference(LayeredDrawingBoard.DefaultNumberBrushProperty, "Text");
+        board.SetResourceReference(LayeredDrawingBoard.LineBrushProperty, "Text");
+        board.SetResourceReference(LayeredDrawingBoard.CursorBrushProperty, "Secondary1");
+        board.SetResourceReference(LayeredDrawingBoard.ClueNumberBrushProperty, "Primary1");
+        board.SetResourceReference(LayeredDrawingBoard.LinkBrushProperty, "Accent");
 
         return board;
     }

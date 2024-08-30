@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Model.Core.Generators;
 using Model.Sudokus;
@@ -40,15 +39,14 @@ public class SudokuGeneratePresenter
     {
         Reset();
 
-        _view.AllowGeneration(false);
+        _view.OnGenerationStart();
         await Task.Run(GeneratePuzzles);
-        _view.AllowGeneration(true);
+        _view.OnGenerationStop();
     }
 
     public void Stop()
     {
         _running = false;
-        _view.AllowCancel(false);
     }
 
     public void SetGenerationCount(int value) => _generationCount = value;
@@ -90,7 +88,6 @@ public class SudokuGeneratePresenter
     private void GeneratePuzzles()
     {
         _running = true;
-        _view.AllowCancel(true);
 
         while (_running && _evaluatedList.Count < _generationCount)
         {
@@ -117,7 +114,6 @@ public class SudokuGeneratePresenter
         }
 
         _running = false;
-        _view.AllowCancel(false);
     }
 
     private void OnFilledSudokuGenerated(StepType type)
