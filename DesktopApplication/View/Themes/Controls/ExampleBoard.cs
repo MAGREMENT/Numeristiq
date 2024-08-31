@@ -55,6 +55,23 @@ public class ExampleBoard : DrawingBoard, ISizeOptimizable
         context.DrawRectangle(App.Current.ThemeInformation.ToBrush(StepColor.Change2), null,
             GetGridRect(0, 2));
 
+        var color = (int)StepColor.Cause1;
+        int row = 1;
+        int col = 0;
+        while (color <= (int)StepColor.Cause10)
+        {
+            context.DrawRectangle(App.Current.ThemeInformation.ToBrush((StepColor) color), null,
+                GetGridRect(row, col));
+            col++;
+            if (col >= ColumnCount)
+            {
+                col = 0;
+                row++;
+            }
+
+            color++;
+        }
+
         var start = 0.0;
         for (int i = 0; i < ColumnCount + 1; i++)
         {

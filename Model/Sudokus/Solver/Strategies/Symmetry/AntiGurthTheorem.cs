@@ -37,7 +37,7 @@ public class AntiGurthTheorem : SudokuStrategy
 
     private static bool WouldSymmetryBeWrong(ISudokuSolverData data, SudokuSymmetry symmetry, AlmostSymmetryResult result)
     {
-        if (result.SelfMapCount > symmetry.MaximumSelfMapCount) return true;
+        if (result.SelfMapCount > symmetry.MaximumSelfMapCount || result.SelfMapCount < symmetry.MinimumSelfMapCount) return true;
 
         var p = SudokuSymmetry.SelfMapped(result.Mapping);
         foreach (var cell in symmetry.CenterCells())

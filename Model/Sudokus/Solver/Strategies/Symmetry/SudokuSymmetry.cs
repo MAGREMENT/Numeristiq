@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Model.Sudokus.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -52,14 +52,11 @@ public abstract class SudokuSymmetry
     public int[]? CheckFullSymmetry(ISudokuSolverData solverData)
     {
         var mapping = new int[9];
-        var centerCells = new GridPositions(CenterCells());
 
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (centerCells.Contains(new Cell(row, col))) continue;
-
                 var solved = solverData.Sudoku[row, col];
                 if (solved == 0) continue;
 
@@ -89,14 +86,11 @@ public abstract class SudokuSymmetry
     {
         var mapping = new int[9];
         Cell? exception = null;
-        var centerCells = new GridPositions(CenterCells());
 
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (centerCells.Contains(new Cell(row, col))) continue;
-
                 var solved = solverData.Sudoku[row, col];
                 if (solved == 0) continue;
 
@@ -124,7 +118,7 @@ public abstract class SudokuSymmetry
             if (symmetry == i + 1) count++;
         }
 
-        return count >= MinimumSelfMapCount && exception is not null 
+        return exception is not null 
             ? new AlmostSymmetryResult(mapping, count, exception.Value)
             : null;
     }
@@ -134,10 +128,11 @@ public abstract class SudokuSymmetry
     public static SudokuSymmetry[] All() => new SudokuSymmetry[]
     {
         new NegativeDiagonalSudokuSymmetry(), new PositiveDiagonalSudokuSymmetry(),
-        new Rotational90SudokuSymmetry(), new Rotational180SudokuSymmetry(), new Rotational270SudokuSymmetry()
+        new Rotational90SudokuSymmetry(), new Rotational180SudokuSymmetry(), new Rotational270SudokuSymmetry(),
+        new ColumnSticksSudokuSymmetry(), new RowSticksSudokuSymmetry()
     };
 
-    protected abstract int MinimumSelfMapCount { get; }
+    public abstract int MinimumSelfMapCount { get; }
     public abstract int MaximumSelfMapCount { get; }
     public abstract IEnumerable<Cell> CenterCells();
     protected abstract Cell GetSymmetricalCell(int row, int col);
@@ -170,7 +165,7 @@ public record AlmostSymmetryResult(int[] Mapping, int SelfMapCount, Cell Excepti
 
 public class NegativeDiagonalSudokuSymmetry : SudokuSymmetry
 {
-    protected override int MinimumSelfMapCount => 3;
+    public override int MinimumSelfMapCount => 3;
     public override int MaximumSelfMapCount => 9;
 
     public override IEnumerable<Cell> CenterCells()
@@ -189,7 +184,7 @@ public class NegativeDiagonalSudokuSymmetry : SudokuSymmetry
 
 public class PositiveDiagonalSudokuSymmetry : SudokuSymmetry
 {
-    protected override int MinimumSelfMapCount => 3;
+    public override int MinimumSelfMapCount => 3;
     public override int MaximumSelfMapCount => 9;
 
     public override IEnumerable<Cell> CenterCells()
@@ -208,7 +203,7 @@ public class PositiveDiagonalSudokuSymmetry : SudokuSymmetry
 
 public class Rotational90SudokuSymmetry : SudokuSymmetry
 { 
-    protected override int MinimumSelfMapCount => 1;
+    public override int MinimumSelfMapCount => 1;
     public override int MaximumSelfMapCount => 1;
     
     public override IEnumerable<Cell> CenterCells()
@@ -224,7 +219,7 @@ public class Rotational90SudokuSymmetry : SudokuSymmetry
 
 public class Rotational180SudokuSymmetry : SudokuSymmetry
 {
-    protected override int MinimumSelfMapCount => 1;
+    public override int MinimumSelfMapCount => 1;
     public override int MaximumSelfMapCount => 1;
     
     public override IEnumerable<Cell> CenterCells()
@@ -240,7 +235,7 @@ public class Rotational180SudokuSymmetry : SudokuSymmetry
 
 public class Rotational270SudokuSymmetry : SudokuSymmetry
 {
-    protected override int MinimumSelfMapCount => 1;
+    public override int MinimumSelfMapCount => 1;
     public override int MaximumSelfMapCount => 1;
     
     public override IEnumerable<Cell> CenterCells()
@@ -251,5 +246,81 @@ public class Rotational270SudokuSymmetry : SudokuSymmetry
     protected override Cell GetSymmetricalCell(int row, int col)
     {
         return new Cell(8 - col, row);
+    }
+}
+
+public class ColumnSticksSudokuSymmetry : SudokuSymmetry
+{
+    public override int MinimumSelfMapCount => 3;
+    public override int MaximumSelfMapCount => 9;
+    public override IEnumerable<Cell> CenterCells()
+    {
+        yield return new Cell(3, 1);
+        yield return new Cell(4, 1);
+        yield return new Cell(5, 1);
+        yield return new Cell(3, 4);
+        yield return new Cell(4, 4);
+        yield return new Cell(5, 4);
+        yield return new Cell(3, 7);
+        yield return new Cell(4, 7);
+        yield return new Cell(5, 7);
+    }
+
+    protected override Cell GetSymmetricalCell(int row, int col)
+    {
+        var r = (row / 3) switch
+        {
+            0 => row + 6,
+            1 => col,
+            2 => col - 6,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        var c = (col % 3) switch
+        {
+            0 => col + 2,
+            1 => col,
+            2 => col - 2,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        return new Cell(r, c);
+    }
+}
+
+public class RowSticksSudokuSymmetry : SudokuSymmetry
+{
+    public override int MinimumSelfMapCount => 3;
+    public override int MaximumSelfMapCount => 9;
+    public override IEnumerable<Cell> CenterCells()
+    {
+        yield return new Cell(1, 3);
+        yield return new Cell(1, 4);
+        yield return new Cell(1, 5);
+        yield return new Cell(4, 3);
+        yield return new Cell(4, 4);
+        yield return new Cell(4, 5);
+        yield return new Cell(7, 3);
+        yield return new Cell(7, 4);
+        yield return new Cell(7, 5);
+    }
+
+    protected override Cell GetSymmetricalCell(int row, int col)
+    {
+        var r = (row % 3) switch
+        {
+            0 => row + 2,
+            1 => col,
+            2 => col - 2,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        var c = (col / 3) switch
+        {
+            0 => col + 6,
+            1 => col,
+            2 => col - 6,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        return new Cell(r, c);
     }
 }
