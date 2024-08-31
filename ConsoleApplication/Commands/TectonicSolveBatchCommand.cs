@@ -30,4 +30,9 @@ public class TectonicSolveBatchCommand : SolveBatchCommand<INumericSolvingState>
         ((TectonicSolver)solver).SetTectonic(tectonic);
         return true;
     }
+
+    protected override string CurrentToString(ISolver solver)
+    {
+        return TectonicTranslator.TranslateRdFormat(((TectonicSolver)solver).Tectonic);
+    }
 }

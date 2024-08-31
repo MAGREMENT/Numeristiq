@@ -10,7 +10,7 @@ using Model.Nonograms.Solver.Strategies;
 namespace DesktopApplication.Presenter.Nonograms.Solve;
 
 public class NonogramSolvePresenter : SolveWithStepsPresenter<INonogramHighlighter,
-    IDichotomousStep<INonogramHighlighter>, IDichotomousSolvingState>
+    IStep<INonogramHighlighter, IDichotomousSolvingState>, IDichotomousSolvingState>
 {
     private readonly INonogramSolveView _view;
     private readonly NonogramSolver _solver;
@@ -75,7 +75,7 @@ public class NonogramSolvePresenter : SolveWithStepsPresenter<INonogramHighlight
         drawer.Refresh();
     }
 
-    protected override IReadOnlyList<IDichotomousStep<INonogramHighlighter>> Steps => _solver.Steps;
+    protected override IReadOnlyList<IStep<INonogramHighlighter, IDichotomousSolvingState>> Steps => _solver.Steps;
     protected override ISolveWithStepsView View => _view;
     public override IStepExplanationPresenterBuilder? RequestExplanation()
     {

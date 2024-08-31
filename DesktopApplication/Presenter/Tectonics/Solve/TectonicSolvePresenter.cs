@@ -10,8 +10,8 @@ using Model.Utility.Collections;
 
 namespace DesktopApplication.Presenter.Tectonics.Solve;
 
-public class TectonicSolvePresenter : SolveWithStepsPresenter<ITectonicHighlighter, INumericStep<ITectonicHighlighter>,
-    INumericSolvingState>
+public class TectonicSolvePresenter : SolveWithStepsPresenter<ITectonicHighlighter, IStep<ITectonicHighlighter,
+    INumericSolvingState>, INumericSolvingState>
 {
     private readonly TectonicSolver _solver;
     private readonly ITectonicSolveView _view;
@@ -200,7 +200,7 @@ public class TectonicSolvePresenter : SolveWithStepsPresenter<ITectonicHighlight
         ClearSteps();
     }
 
-    protected override IReadOnlyList<INumericStep<ITectonicHighlighter>> Steps => _solver.Steps;
+    protected override IReadOnlyList<IStep<ITectonicHighlighter, INumericSolvingState>> Steps => _solver.Steps;
     protected override ISolveWithStepsView View => _view;
 
     public override IStepExplanationPresenterBuilder? RequestExplanation()

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Core.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
@@ -102,18 +102,17 @@ public class BUGStrategyReportBuilder : IChangeReportBuilder<NumericChange, ISud
         return $"BUG prevented by {_additionalCandidates.ToStringSequence(", ")}";
     }
 
-    private ExplanationElement? Explanation()
+    private Explanation<ISudokuHighlighter> Explanation()
     {
-        if (_additionalCandidates.Count == 0) return null;
-        var start = new StringExplanationElement("The possibilities ");
-        var current = start.Append(_additionalCandidates[0]);
+        if (_additionalCandidates.Count == 0) return Explanation<ISudokuHighlighter>.Empty;
+        var result = new Explanation<ISudokuHighlighter>().Append("The possibilities ")
+            .Append(_additionalCandidates[0]);
         for (int i = 1; i < _additionalCandidates.Count; i++)
         {
-            current.Append(", ").Append(_additionalCandidates[i]);
+            result.Append(", ").Append(_additionalCandidates[i]);
         }
 
-        current.Append(" prevents a BUG pattern");
-        return start;
+        return result.Append(" prevents a BUG pattern");
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

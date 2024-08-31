@@ -7,7 +7,7 @@ namespace Model.Core;
 
 public abstract class BinaryStrategySolver<TStrategy, TSolvingState, THighlighter> : 
     StrategySolver<TStrategy, TSolvingState, THighlighter, BinaryChange,
-        BinaryChangeBuffer<TSolvingState, THighlighter>, IBinaryStep<THighlighter>>, IBinaryChangeProducer
+        BinaryChangeBuffer<TSolvingState, THighlighter>, IStep<THighlighter, TSolvingState, BinaryChange>>, IBinaryChangeProducer
     where TSolvingState : IBinarySolvingState where TStrategy : Strategy
 {
     public override BinaryChangeBuffer<TSolvingState, THighlighter> ChangeBuffer { get; }
@@ -42,7 +42,7 @@ public abstract class BinaryStrategySolver<TStrategy, TSolvingState, THighlighte
     protected override void AddStepFromReport(ChangeReport<THighlighter> report, IReadOnlyList<BinaryChange> changes,
         Strategy maker, TSolvingState stateBefore)
     {
-        _steps.Add(new ChangeReportBinaryStep<THighlighter>(_steps.Count + 1, maker, changes, report,
+        _steps.Add(new ChangeReportStep<THighlighter, TSolvingState, BinaryChange>(_steps.Count + 1, maker, changes, report,
             stateBefore, ApplyChangesToState(stateBefore, changes)));
     }
 

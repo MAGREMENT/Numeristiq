@@ -38,5 +38,5 @@ public enum ValueRequirement
 
 public enum ValueType
 {
-    None, Int, String, File
+    None, Int, String, ReadFile, WriteFile
 }

@@ -40,7 +40,7 @@ public abstract class SolveCommand : Command
             Console.WriteLine("\nPath :");
             foreach (var step in solver.Steps)
             {
-                var explanation = step.Explanation is null ? "None" : step.Explanation.FullExplanation();
+                var explanation = step.ExplanationToString();
                 Console.WriteLine($"{step.Id}. {step.Title}\nDescription : {step.Description}\nChanges :" +
                                   $" {step.ChangesToString()}\nExplanation : {explanation}");
             }

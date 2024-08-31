@@ -4,7 +4,7 @@ using Model.Core.Trackers;
 
 namespace ConsoleApplication.Commands.Abstracts;
 
-public abstract class SolveBatchCommand<TState> : Command where TState : class //TODO output
+public abstract class SolveBatchCommand<TState> : Command where TState : class
 {
     private const int FileIndex = 0;
     private const int FeedbackIndex = 0;
@@ -12,6 +12,7 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class /
     private const int InstancesIndex = 2;
     private const int AbsencesIndex = 3;
     private const int LimitIndex = 4;
+    private const int OutputIndex = 5;
     
     public override string Description { get; }
 
@@ -21,7 +22,7 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class /
     protected SolveBatchCommand(string name) : base("SolveBatch",
         new[]
         {
-            new Argument($"Text file containing the {name}'s", ValueType.File)
+            new Argument($"Text file containing the {name}'s", ValueType.ReadFile)
         },
         new[]
         {
@@ -32,7 +33,9 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class /
             new Option("--list-absences", $"Lists all {name}'s that did not present the strategy in their solution path",
                 ValueRequirement.Mandatory, ValueType.String),
             new Option("--limit", $"Limits the number of {name} solved", ValueRequirement.Mandatory,
-                ValueType.Int)
+                ValueType.Int),
+            new Option("--output", "File to write the output to", 
+                ValueRequirement.Mandatory, ValueType.WriteFile)
         })
     {
         Description = $"Solves all the {name}'s in a text file";
@@ -41,6 +44,8 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class /
     protected abstract ITrackerAttachableSolver<TState> GetSolver(Instantiator instantiator);
  
     protected abstract bool Set(ISolver solver, string asString);
+
+    protected abstract string CurrentToString(ISolver solver);
     
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
@@ -55,6 +60,7 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class /
         List<string> fails = new();
         List<string> instances = new();
         List<string> absences = new();
+        var writer = report.IsOptionUsed(OutputIndex) ? (StreamWriter)report.GetOptionValue(OutputIndex)! : null;
         UsedStrategiesTracker? usedTracker = null;
 
         if (report.IsOptionUsed(InstancesIndex) || report.IsOptionUsed(AbsencesIndex))
@@ -63,7 +69,7 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class /
             usedTracker.AttachTo(solver);
         }
         
-        using TextReader reader = new StreamReader((string)report.GetArgumentValue(FileIndex), Encoding.UTF8);
+        var reader = (StreamReader)report.GetArgumentValue(FileIndex);
 
         int count = 0;
         while ((_line = reader.ReadLine()) is not null)
@@ -88,6 +94,8 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class /
                 if(usedTracker.WasUsed((string)report.GetOptionValue(InstancesIndex)!)) instances.Add(s);
                 if(!usedTracker.WasUsed((string)report.GetOptionValue(AbsencesIndex)!)) absences.Add(s);
             }
+
+            writer?.WriteLine(CurrentToString(solver));
 
             if (++count >= limit) break;
         }

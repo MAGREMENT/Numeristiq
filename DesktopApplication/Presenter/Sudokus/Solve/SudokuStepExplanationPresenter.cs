@@ -6,10 +6,10 @@ using Model.Utility.BitSets;
 namespace DesktopApplication.Presenter.Sudokus.Solve;
 
 public class SudokuStepExplanationPresenter : AbstractStepExplanationPresenter<ISudokuHighlighter, 
-    INumericStep<ISudokuHighlighter>, INumericSolvingState>
+    IStep<ISudokuHighlighter, INumericSolvingState>, INumericSolvingState>
 { 
     public SudokuStepExplanationPresenter(IStepExplanationView view,
-        INumericStep<ISudokuHighlighter> numericStep, Settings settings) : base(view, numericStep,
+        IStep<ISudokuHighlighter, INumericSolvingState> numericStep, Settings settings) : base(view, numericStep,
         new SudokuHighlighterTranslator(view.GetDrawer<ISudokuSolverDrawer>(), settings))
     {
     }
@@ -36,10 +36,10 @@ public class SudokuStepExplanationPresenter : AbstractStepExplanationPresenter<I
 
 public class SudokuStepExplanationPresenterBuilder : IStepExplanationPresenterBuilder
 {
-    private readonly INumericStep<ISudokuHighlighter> _numericStep;
+    private readonly IStep<ISudokuHighlighter, INumericSolvingState> _numericStep;
     private readonly Settings _settings;
 
-    public SudokuStepExplanationPresenterBuilder(INumericStep<ISudokuHighlighter> numericStep, Settings settings)
+    public SudokuStepExplanationPresenterBuilder(IStep<ISudokuHighlighter, INumericSolvingState> numericStep, Settings settings)
     {
         _numericStep = numericStep;
         _settings = settings;

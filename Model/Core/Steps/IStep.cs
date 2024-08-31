@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Core.Highlighting;
 using Model.Utility.Collections;
 
@@ -12,46 +12,33 @@ public interface IStep
     string Title { get; }
     Difficulty Difficulty { get; }
     string Description { get; }
-    ExplanationElement? Explanation { get; }
     int HighlightCount();
     string ChangesToString();
+    string ExplanationToString();
 }
 
-public interface IStep<THighlighter, out TState> : IStep //TODO generalize more
+public interface IStep<THighlighter, out TState> : IStep
 {
     TState From { get; }
     TState To { get; }
     HighlightManager<THighlighter> HighlightManager { get; }
+    Explanation<THighlighter> Explanation { get; }
     
     int IStep.HighlightCount()
     {
         return HighlightManager.Count;
     }
-}
 
-public interface IDichotomousStep<THighlighter> : IStep<THighlighter, IDichotomousSolvingState>
-{
-    IReadOnlyList<DichotomousChange> Changes { get; }
-
-    string IStep.ChangesToString()
+    string IStep.ExplanationToString()
     {
-        return Changes.ToStringSequence(", ");
+        return Explanation.Count == 0 ? "None" : Explanation.FullExplanation();
     }
 }
 
-public interface INumericStep<THighlighter> : IStep<THighlighter, INumericSolvingState>
+public interface IStep<THighlighter, out TState, out TChange> : IStep<THighlighter, TState> where TChange : notnull
 {
-    IReadOnlyList<NumericChange> Changes { get; }
-
-    string IStep.ChangesToString()
-    {
-        return Changes.ToStringSequence(", ");
-    }
-}
-
-public interface IBinaryStep<THighlighter> : IStep<THighlighter, IBinarySolvingState>
-{
-    IReadOnlyList<BinaryChange> Changes { get; }
+    
+    IReadOnlyList<TChange> Changes { get; }
 
     string IStep.ChangesToString()
     {

@@ -1,4 +1,4 @@
-﻿using Model.Core.Explanation;
+﻿using Model.Core.Explanations;
 using Model.Core.Highlighting;
 
 namespace Model.Core.Changes;
@@ -6,17 +6,17 @@ namespace Model.Core.Changes;
 public class ChangeReport<THighlighter>
 {
     public string Description { get; }
-    public ExplanationElement? Explanation { get; }
+    public Explanation<THighlighter> Explanation { get; }
     public HighlightManager<THighlighter> HighlightManager { get; }
     
     public ChangeReport(string description, Highlight<THighlighter> highlighter)
     {
         Description = description;
         HighlightManager = new HighlightManager<THighlighter>(HighlightCompiler.For<THighlighter>().Compile(highlighter));
-        Explanation = null;
+        Explanation = new Explanation<THighlighter>();
     }
     
-    public ChangeReport(string description, Highlight<THighlighter> highlighter, ExplanationElement? explanation)
+    public ChangeReport(string description, Highlight<THighlighter> highlighter,  Explanation<THighlighter> explanation)
     {
         Description = description;
         HighlightManager = new HighlightManager<THighlighter>(HighlightCompiler.For<THighlighter>().Compile(highlighter));
@@ -35,7 +35,7 @@ public class ChangeReport<THighlighter>
         }
         
         HighlightManager = new HighlightManager<THighlighter>(compiled);
-        Explanation = null;
+        Explanation = new Explanation<THighlighter>();
     }
     
     public ChangeReport(string description, Highlight<THighlighter> first, params Highlight<THighlighter>[] highlighters)
@@ -51,6 +51,6 @@ public class ChangeReport<THighlighter>
         }
         
         HighlightManager = new HighlightManager<THighlighter>(compiled);
-        Explanation = null;
+        Explanation = new Explanation<THighlighter>();
     }
 }

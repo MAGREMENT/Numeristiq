@@ -20,4 +20,9 @@ public class BinairoSolveBatchCommand : SolveBatchCommand<IBinarySolvingState>
         ((BinairoSolver)solver).SetBinairo(BinairoTranslator.TranslateLineFormat(asString));
         return true;
     }
+
+    protected override string CurrentToString(ISolver solver)
+    {
+        return BinairoTranslator.TranslateLineFormat(((BinairoSolver)solver).Binairo);
+    }
 }

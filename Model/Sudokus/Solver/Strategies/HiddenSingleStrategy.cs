@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
@@ -86,17 +87,15 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder<NumericChange, ISu
         return $"Hidden Single in r{changes[0].Row + 1}c{changes[0].Column + 1}";
     }
 
-    private ExplanationElement? Explanation(IReadOnlyList<NumericChange> changes)
+    private Explanation<ISudokuHighlighter> Explanation(IReadOnlyList<NumericChange> changes)
     {
-        if (changes.Count != 1) return null;
+        if (changes.Count != 1) return Explanation<ISudokuHighlighter>.Empty;
 
         var cell = new Cell(changes[0].Row, changes[0].Column);
         var ch = UnitMethods.Get(_unit).ToCoverHouse(cell);
         
-        var start = new StringExplanationElement(changes[0].Number + " is only present in ");
-        _ = start + cell + " in " + ch + ". It is therefore the solution for this cell.";
-
-        return start;
+        return new Explanation<ISudokuHighlighter>().Append(changes[0].Number + " is only present in ")
+            .Append(cell).Append(" in ").Append(ch).Append(". It is therefore the solution for this cell.");
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

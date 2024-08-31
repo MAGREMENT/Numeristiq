@@ -21,4 +21,9 @@ public class NonogramSolveBatchCommand : SolveBatchCommand<INonogramSolvingState
         ((NonogramSolver)solver).SetNonogram(NonogramTranslator.TranslateLineFormat(asString));
         return true;
     }
+
+    protected override string CurrentToString(ISolver solver)
+    {
+        return NonogramTranslator.TranslateLineFormat(((NonogramSolver)solver).Nonogram);
+    }
 }

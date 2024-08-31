@@ -2,7 +2,7 @@
 using System.Text;
 using Model.Core;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
@@ -148,11 +148,12 @@ public class XWingReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSol
         return builder.ToString();
     }
 
-    private ExplanationElement Explanation()
+    private Explanation<ISudokuHighlighter> Explanation()
     {
-        var start = new StringExplanationElement("In ");
-        var c = start + new House(_unit, _unit1) + " and " + new House(_unit, _unit2) +
-                $", {_number} is only present in ";
+        var result = new Explanation<ISudokuHighlighter>().Append("In ")
+            .Append(new House(_unit, _unit1)).Append(" and ").Append(new House(_unit, _unit2))
+            .Append($", {_number} is only present in ");
+        
         var u = _unit == Unit.Row ? Unit.Column : Unit.Row;
         var i = -1;
         _linePos.Next(ref i);
@@ -163,12 +164,12 @@ public class XWingReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSol
         var ch1 = new House(u, u1);
         var ch2 = new House(u, u2);
 
-        _ = c + ch1 + " and " + ch2 + ". This means that if " + new Cell(_unit1, u1) + $" hold {_number}, "
-            + new Cell(_unit2, u2) + $" must also hold {_number}. The same can be said for " +
-            new Cell(_unit1, u2) + " and " + new Cell(_unit2, u1) + $". We can then remove every {_number} in "
-            + ch1 + " and " + ch2 + " that is not part of the X-Wing.";
-
-        return start;
+        return result.Append(ch1).Append(" and ").Append(ch2).Append(". This means that if ")
+            .Append(new Cell(_unit1, u1)).Append($" hold {_number}, ")
+            .Append(new Cell(_unit2, u2)).Append($" must also hold {_number}. The same can be said for ")
+            .Append(new Cell(_unit1, u2)).Append(" and ").Append(new Cell(_unit2, u1))
+            .Append($". We can then remove every {_number} in ").Append(ch1)
+            .Append(" and ").Append(ch2).Append(" that is not part of the X-Wing.");
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

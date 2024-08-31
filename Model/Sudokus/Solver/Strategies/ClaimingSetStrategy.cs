@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
@@ -102,18 +102,17 @@ public class ClaimingSetReportBuilder : IChangeReportBuilder<NumericChange, ISud
     {
         var causes = _linePos.ToCellArray(_unit, _unitNumber);
 
-        var start = new StringExplanationElement($"All the possibilities for {_number} in ");
-        var buffer = start.Append(new House(_unit, _unitNumber)).Append(" are in ")
+        var result = new Explanation<ISudokuHighlighter>()
+            .Append($"All the possibilities for {_number} in ").Append(new House(_unit, _unitNumber)).Append(" are in ")
             .Append(new House(Unit.Box, GetBoxNumber())).Append(". Which means that whatever possibility between ")
             .Append(causes[0]);
 
         for (int i = 1; i < causes.Length; i++)
         {
-            buffer = buffer.Append(", ");
-            buffer = buffer.Append(causes[i]);
+            result.Append(", ").Append(causes[i]);
         }
 
-        buffer.Append(" is the solution for ").Append(new House(_unit, _unitNumber))
+        result.Append(" is the solution for ").Append(new House(_unit, _unitNumber))
             .Append($", it will remove the other {_number}'s from ").Append(new House(Unit.Box, GetBoxNumber()));
 
         return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
@@ -124,7 +123,7 @@ public class ClaimingSetReportBuilder : IChangeReportBuilder<NumericChange, ISud
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
-        }, start);
+        }, result);
     }
 
     private string Description()

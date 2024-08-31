@@ -9,7 +9,6 @@ using DesktopApplication.Presenter.Sudokus.Play;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.View.Controls;
 using Model.Core.Changes;
-using Model.Core.Explanation;
 using Model.Core.Graphs;
 using Model.Sudokus.Player;
 using Model.Sudokus.Solver.Utility;
@@ -19,7 +18,7 @@ using Model.Utility.Collections;
 
 namespace DesktopApplication.View.Sudokus.Controls;
 
-public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolverDrawer, IExplanationHighlighter,
+public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolverDrawer,
     ISudokuPlayerDrawer, ISizeOptimizable
 {
     private const int BackgroundIndex = 0;
@@ -347,29 +346,6 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
         
         Layers[CursorIndex].Add(new InwardMultiCellDrawableComponent(cells, InwardBrushType.Cursor));
     }
-    #endregion
-    
-    #region IExplanationHighlighter
-
-    public void ShowCell(Cell c, ExplanationColor color)
-    {
-        Layers[CellsHighlightIndex].Add(new CellFillDrawableComponent(c.Row, c.Column, (int)color,
-            FillColorType.Explanation));
-    }
-
-    public void ShowCellPossibility(CellPossibility cp, ExplanationColor color)
-    {
-        Layers[PossibilitiesHighlightIndex].Add(new PossibilityFillDrawableComponent(cp.Possibility,
-            cp.Row, cp.Column, (int)color, FillColorType.Explanation));
-    }
-
-    public void ShowCoverHouse(House ch, ExplanationColor color)
-    {
-        var (c1, c2) = ch.GetExtremities();
-        Layers[EncirclesIndex].Add(new CellRectangleDrawableComponent(c1.Row, c1.Column,
-            c2.Row, c2.Column, (int)color, FillColorType.Explanation));
-    }
-
     #endregion
 
     #region Private

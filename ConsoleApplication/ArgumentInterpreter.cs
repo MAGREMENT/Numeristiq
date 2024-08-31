@@ -43,7 +43,7 @@ public class ArgumentInterpreter
             return;
         }
 
-        var report = new CallReport(d, c);
+        using var report = new CallReport(d, c);
 
         var argumentCursor = 0;
         for (; cursor < args.Count; cursor++)
@@ -124,18 +124,41 @@ public class ArgumentInterpreter
                     : value;
                 return true;
             case ValueType.Int :
+                var r = int.TryParse(value, out var n);
+                objectValue = n;
+                return r;
+            case ValueType.ReadFile :
                 try
                 {
-                    objectValue = int.Parse(value);
+                    objectValue = new StreamReader(value, new FileStreamOptions
+                    {
+                        Share = FileShare.Read,
+                        Access = FileAccess.Read,
+                        Mode = FileMode.Open
+                    });
+                    
                     return true;
                 }
-                catch (Exception)
+                catch
                 {
                     return false;
                 }
-            case ValueType.File :
-                objectValue = value;
-                return File.Exists(value);
+            case ValueType.WriteFile :
+                try
+                {
+                    objectValue = new StreamWriter(value, new FileStreamOptions
+                    {
+                        Share = FileShare.Write,
+                        Access = FileAccess.Write,
+                        Mode = FileMode.OpenOrCreate
+                    });
+
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                } 
         }
 
         return false;

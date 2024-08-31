@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
@@ -167,17 +168,17 @@ public class EmptyRectangleReportBuilder : IChangeReportBuilder<NumericChange, I
         }, Explanation(cps));
     }
 
-    private ExplanationElement Explanation(IReadOnlyList<CellPossibility> cps)
+    private Explanation<ISudokuHighlighter> Explanation(IReadOnlyList<CellPossibility> cps)
     {
         var order = _isOneLinkStrong ? new[] { cps[2], cps[1] } : new[] { cps[1], cps[2] };
-        var start = new StringExplanationElement("If ");
-        var current = start.Append(order[0]).Append(" is a solution, then ").Append(cps[0])
+        var result = new Explanation<ISudokuHighlighter>().Append("If ")
+            .Append(order[0]).Append(" is a solution, then ").Append(cps[0])
             .Append(" will be removed. Which means that ")
             .Append(order[1]).Append($" will also be a solution, removing every {_possibility} from ")
             .Append(new House(Unit.Box, _miniRow * 3 + _miniCol)).Append(" and putting the Sudoku in a wrong state.");
-        if (_isOneLinkStrong && _isTwoLinkStrong) current.Append("This also applies to ").Append(order[1]).Append(".");
-
-        return start;
+        
+        if (_isOneLinkStrong && _isTwoLinkStrong) result.Append("This also applies to ").Append(order[1]).Append(".");
+        return result;
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

@@ -2,9 +2,8 @@
 using System.Windows.Controls;
 using System.Windows.Documents;
 using DesktopApplication.Presenter;
-using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.View.Controls;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 
 namespace DesktopApplication.View.HelperWindows;
 
@@ -41,9 +40,7 @@ public partial class StepExplanationWindow : IStepExplanationView
         return (T)Embedded.OptimizableContent!;
     }
 
-    public IExplanationHighlighter ExplanationHighlighter => (IExplanationHighlighter)Embedded.OptimizableContent!;
-
-    public void ShowExplanation(ExplanationElement? start)
+   public void ShowExplanation<T>(Explanation<T> e)
     {
         var tb = new TextBlock
         {
@@ -54,31 +51,29 @@ public partial class StepExplanationWindow : IStepExplanationView
         
         tb.SetResourceReference(ForegroundProperty, "Text");
 
-        if (start is null) tb.Text = "No explanation available for this step";
+        if (e.Count == 0) tb.Text = "No explanation available for this step";
         else
         {
-            do
+            foreach (var element in e)
             {
                 var run = new Run
                 {
-                    Text = start.ToString()
+                    Text = e.ToString()
                 };
                 
-                run.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(start.Color));
+                run.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(element.Color));
                 
-                if (start.ShouldBeBold) run.FontWeight = FontWeights.Bold;
+                if (element.ShouldBeBold) run.FontWeight = FontWeights.Bold;
 
-                if (start.DoesShowSomething)
+                if (element.DoesShowSomething)
                 {
-                    var currentForEvent = start;
+                    var currentForEvent = e;
                     run.MouseEnter += (_, _) => _presenter.ShowExplanationElement(currentForEvent);
                     run.MouseLeave += (_, _) => _presenter.StopShowingExplanationElement();
                 }
 
                 tb.Inlines.Add(run);
-                
-                start = start.Next;
-            } while (start is not null);
+            }
         }
 
         Viewer.Content = tb;

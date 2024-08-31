@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Binairos.Solve;
+using DesktopApplication.View.Binairos.Controls;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.HelperWindows;
 
@@ -58,7 +59,18 @@ public partial class SolvePage : IBinairoSolveView
 
     protected override ISizeOptimizable GetExplanationDrawer()
     {
-        throw new System.NotImplementedException();
+        var board = new BinairoBoard
+        {
+            BigLineWidth = 3
+        };
+        board.SetResourceReference(DrawingBoard.LineBrushProperty, "Text");
+        board.SetResourceReference(DrawingBoard.DefaultNumberBrushProperty, "Text");
+        board.SetResourceReference(DrawingBoard.ClueNumberBrushProperty, "Primary1");
+        board.SetResourceReference(BinairoBoard.CircleFirstColorProperty, "Text");
+        board.SetResourceReference(BinairoBoard.CircleSecondColorProperty, "Secondary1");
+        board.SetResourceReference(DrawingBoard.LinkBrushProperty, "Accent");
+
+        return board;
     }
 
     public void SetBinairoAsString(string s)

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Core.Highlighting;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -47,15 +47,13 @@ public class NakedSingleReportBuilder : IChangeReportBuilder<NumericChange, ISud
         return changes.Count != 1 ? "" : $"Naked Single in r{changes[0].Row + 1}c{changes[0].Column + 1}";
     }
 
-    private static ExplanationElement? Explanation(IReadOnlyList<NumericChange> changes)
+    private static Explanation<ISudokuHighlighter> Explanation(IReadOnlyList<NumericChange> changes)
     {
-        if (changes.Count != 1) return null;
+        if (changes.Count != 1) return Explanation<ISudokuHighlighter>.Empty;
 
         var change = changes[0];
-        var start = new StringExplanationElement($"{change.Number} is the only possibility for ");
-        _ = start + new Cell(change.Row, change.Column) + ". It is therefore the solution for that cell.";
-
-        return start;
+        return new Explanation<ISudokuHighlighter>().Append($"{change.Number} is the only possibility for ")
+            .Append(new Cell(change.Row, change.Column)).Append(". It is therefore the solution for that cell.");
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

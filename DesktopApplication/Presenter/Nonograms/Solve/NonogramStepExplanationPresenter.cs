@@ -5,9 +5,9 @@ using Model.Core.Steps;
 namespace DesktopApplication.Presenter.Nonograms.Solve;
 
 public class NonogramStepExplanationPresenter : AbstractStepExplanationPresenter<INonogramHighlighter,
-    IDichotomousStep<INonogramHighlighter>, IDichotomousSolvingState>
+    IStep<INonogramHighlighter, IDichotomousSolvingState>, IDichotomousSolvingState>
 {
-    public NonogramStepExplanationPresenter(IStepExplanationView view, IDichotomousStep<INonogramHighlighter> step) 
+    public NonogramStepExplanationPresenter(IStepExplanationView view, IStep<INonogramHighlighter, IDichotomousSolvingState> step) 
         : base(view, step, new NonogramHighlightTranslator(view.GetDrawer<INonogramDrawer>()))
     {
     }
@@ -33,9 +33,9 @@ public class NonogramStepExplanationPresenter : AbstractStepExplanationPresenter
 
 public class NonogramStepExplanationPresenterBuilder : IStepExplanationPresenterBuilder
 {
-    private readonly IDichotomousStep<INonogramHighlighter> _step;
+    private readonly IStep<INonogramHighlighter, IDichotomousSolvingState> _step;
 
-    public NonogramStepExplanationPresenterBuilder(IDichotomousStep<INonogramHighlighter> step)
+    public NonogramStepExplanationPresenterBuilder(IStep<INonogramHighlighter, IDichotomousSolvingState> step)
     {
         _step = step;
     }

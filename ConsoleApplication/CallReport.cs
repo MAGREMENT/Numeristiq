@@ -1,6 +1,6 @@
 ﻿namespace ConsoleApplication;
 
-public class CallReport : IReadOnlyCallReport
+public class CallReport : IReadOnlyCallReport, IDisposable
 {
     private readonly OptionValue[] _options;
     private readonly object[] _arguments;
@@ -44,6 +44,21 @@ public class CallReport : IReadOnlyCallReport
     }
 
     public object GetArgumentValue(int index) => _arguments[index];
+
+    public void Dispose()
+    {
+        foreach (var obj in _arguments)
+        {
+            (obj as IDisposable)?.Dispose();
+        }
+
+        foreach (var value in _options)
+        {
+            if(value.IsUsed) (value.Value as IDisposable)?.Dispose();
+        }
+        
+        GC.SuppressFinalize(this);
+    }
 }
 
 public interface IReadOnlyCallReport

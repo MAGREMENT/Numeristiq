@@ -1,5 +1,4 @@
 ﻿using Model.Core;
-using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Core.Steps;
 using Model.Tectonics;
@@ -7,12 +6,12 @@ using Model.Tectonics;
 namespace DesktopApplication.Presenter.Tectonics.Solve;
 
 public class TectonicStepExplanationPresenter : AbstractStepExplanationPresenter<ITectonicHighlighter, 
-    INumericStep<ITectonicHighlighter>, INumericSolvingState>
+    IStep<ITectonicHighlighter, INumericSolvingState>, INumericSolvingState>
 {
     private readonly IReadOnlyTectonic _tectonic;
     
     public TectonicStepExplanationPresenter(IStepExplanationView view,
-        INumericStep<ITectonicHighlighter> numericStep, IReadOnlyTectonic tectonic) : base(view, numericStep,
+        IStep<ITectonicHighlighter, INumericSolvingState> numericStep, IReadOnlyTectonic tectonic) : base(view, numericStep,
         new TectonicHighlightTranslator(view.GetDrawer<ITectonicDrawer>()))
     {
         _tectonic = tectonic;
@@ -68,10 +67,11 @@ public class TectonicStepExplanationPresenter : AbstractStepExplanationPresenter
 
 public class TectonicStepExplanationPresenterBuilder : IStepExplanationPresenterBuilder
 {
-    private readonly INumericStep<ITectonicHighlighter> _numericStep;
+    private readonly IStep<ITectonicHighlighter, INumericSolvingState> _numericStep;
     private readonly IReadOnlyTectonic _tectonic;
 
-    public TectonicStepExplanationPresenterBuilder(INumericStep<ITectonicHighlighter> numericStep, IReadOnlyTectonic tectonic)
+    public TectonicStepExplanationPresenterBuilder(IStep<ITectonicHighlighter, INumericSolvingState> numericStep,
+        IReadOnlyTectonic tectonic)
     {
         _numericStep = numericStep;
         _tectonic = tectonic;

@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Core.Highlighting;
 
 namespace Model.Core.Steps;
 
-public class ByHandNumericStep<THighlighter> : INumericStep<THighlighter> where THighlighter : INumericSolvingStateHighlighter
+public class ByHandNumericStep<THighlighter, TSolvingState> : IStep<THighlighter, TSolvingState, NumericChange>
+    where THighlighter : INumericSolvingStateHighlighter
 {
     public int Id { get; }
     public string Title { get; }
     public Difficulty Difficulty => Difficulty.None;
     public IReadOnlyList<NumericChange> Changes => new[] { _progress };
     public string Description { get; }
-    public ExplanationElement? Explanation => null;
-    public INumericSolvingState From { get; }
-    public INumericSolvingState To { get; }
+    public Explanation<THighlighter> Explanation => Explanation<THighlighter>.Empty;
+    public TSolvingState From { get; }
+    public TSolvingState To { get; }
     public HighlightManager<THighlighter> HighlightManager => new(new DelegateHighlightable<THighlighter>(HighLight));
 
     private readonly NumericChange _progress;
 
-    public ByHandNumericStep(int id, int possibility, int row, int col, ChangeType changeType, INumericSolvingState stateBefore,
-        INumericSolvingState stateAfter)
+    public ByHandNumericStep(int id, int possibility, int row, int col, ChangeType changeType, TSolvingState stateBefore,
+        TSolvingState stateAfter)
     {
         Id = id;
         From = stateBefore;

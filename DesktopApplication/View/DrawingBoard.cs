@@ -11,7 +11,7 @@ using DesktopApplication.Presenter.Tectonics.Solve;
 using DesktopApplication.View.Kakuros.Controls;
 using DesktopApplication.View.Utility;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Core.Graphs;
 using Model.Sudokus.Player;
 using Model.Utility;

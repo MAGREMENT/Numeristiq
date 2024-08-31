@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Core.Highlighting;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -242,20 +242,17 @@ public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<Numeric
         return $"Uniqueness Clue Cover pattern match cells {cells.ToStringSequence(", ")}";
     }
 
-    private ExplanationElement? Explanation(List<Cell> cells)
+    private static Explanation<ISudokuHighlighter> Explanation(List<Cell> cells)
     {
-        if (cells.Count == 0) return null;
+        if (cells.Count == 0) return Explanation<ISudokuHighlighter>.Empty;
 
-        ExplanationElement start = new CellExplanationElement(cells[0]);
-        var current = start;
-
+        var result = new Explanation<ISudokuHighlighter>().Append(cells[0]);
         for (int i = 1; i < cells.Count; i++)
         {
-            current = current.Append(", ").Append(cells[i]);
+            result.Append(", ").Append(cells[i]);
         }
 
-        current.Append(" matches a UCC pattern, leading to the eliminations made by that specific pattern");
-        return start;
+        return result.Append(" matches a UCC pattern, leading to the eliminations made by that specific pattern");
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

@@ -1,24 +1,25 @@
 ﻿using System.Collections.Generic;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Core.Highlighting;
 
 namespace Model.Core.Steps;
 
-public class ChangeReportBinaryStep<THighlighter> : IBinaryStep<THighlighter>
+public class ChangeReportStep<THighlighter, TSolvingState, TChange> : IStep<THighlighter, TSolvingState, TChange>
+    where TChange : notnull
 {
     public int Id { get; }
     public string Title { get; }
     public Difficulty Difficulty { get; }
     public string Description { get; }
-    public ExplanationElement? Explanation { get; }
-    public IReadOnlyList<BinaryChange> Changes { get; }
-    public IBinarySolvingState From { get; }
-    public IBinarySolvingState To { get; }
+    public Explanation<THighlighter>? Explanation { get; }
+    public IReadOnlyList<TChange> Changes { get; }
+    public TSolvingState From { get; }
+    public TSolvingState To { get; }
     public HighlightManager<THighlighter> HighlightManager { get; }
 
-    public ChangeReportBinaryStep(int id, Strategy maker, IReadOnlyList<BinaryChange> changes,
-        ChangeReport<THighlighter> report, IBinarySolvingState stateBefore, IBinarySolvingState stateAfter)
+    public ChangeReportStep(int id, Strategy maker, IReadOnlyList<TChange> changes,
+        ChangeReport<THighlighter> report, TSolvingState stateBefore, TSolvingState stateAfter)
     {
         Id = id;
         Title = maker.Name;

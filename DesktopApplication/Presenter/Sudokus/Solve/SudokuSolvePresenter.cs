@@ -16,7 +16,7 @@ using Model.Utility.BitSets;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve;
 
-public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, INumericStep<ISudokuHighlighter>,
+public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, IStep<ISudokuHighlighter, INumericSolvingState>,
     INumericSolvingState>, ICommitApplier
 {
     private readonly ISudokuSolveView _view;
@@ -30,7 +30,7 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
     private UIUpdaterTracker? _solveTracker;
     
     public SettingsPresenter SettingsPresenter { get; }
-    protected override IReadOnlyList<INumericStep<ISudokuHighlighter>> Steps => _solver.Steps;
+    protected override IReadOnlyList<IStep<ISudokuHighlighter, INumericSolvingState>> Steps => _solver.Steps;
     protected override ISolveWithStepsView View => _view;
 
     public SudokuSolvePresenter(ISudokuSolveView view, SudokuSolver solver, Settings settings,

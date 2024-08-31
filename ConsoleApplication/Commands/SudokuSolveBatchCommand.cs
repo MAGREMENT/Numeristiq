@@ -21,4 +21,10 @@ public class SudokuSolveBatchCommand : SolveBatchCommand<ISudokuSolvingState>
         ((SudokuSolver)solver).SetSudoku(SudokuTranslator.TranslateLineFormat(asString));
         return true;
     }
+
+    protected override string CurrentToString(ISolver solver)
+    {
+        return SudokuTranslator.TranslateLineFormat(((SudokuSolver)solver).Sudoku, 
+            SudokuLineFormatEmptyCellRepresentation.Points);
+    }
 }

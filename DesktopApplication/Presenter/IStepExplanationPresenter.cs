@@ -1,4 +1,4 @@
-﻿using Model.Core.Explanation;
+﻿using Model.Core.Explanations;
 using Model.Core.Steps;
 
 namespace DesktopApplication.Presenter;
@@ -6,7 +6,7 @@ namespace DesktopApplication.Presenter;
 public interface IStepExplanationPresenter
 {
     public void LoadStep();
-    public void ShowExplanationElement(ExplanationElement element);
+    public void ShowExplanationElement(object element);
     public void StopShowingExplanationElement();
     public void TurnOffHighlight();
     public void TurnOnHighlight();
@@ -20,7 +20,7 @@ public abstract class AbstractStepExplanationPresenter<THighlight, TStep, TState
     protected readonly IHighlighterTranslator<THighlight> _translator;
 
     private bool _showHighlight = true;
-    private ExplanationElement? _currentlyShown;
+    private IExplanationElement<THighlight>? _currentlyShown;
 
     protected AbstractStepExplanationPresenter(IStepExplanationView view, TStep numericStep,
         IHighlighterTranslator<THighlight> translator)
@@ -32,13 +32,15 @@ public abstract class AbstractStepExplanationPresenter<THighlight, TStep, TState
 
     public abstract void LoadStep();
 
-    public void ShowExplanationElement(ExplanationElement element)
+    public void ShowExplanationElement(object element)
     {
+        if (element is not IExplanationElement<THighlight> e) return;
+        
         var drawer = _view.GetDrawer<IDrawer>();
-        _currentlyShown = element;
+        _currentlyShown = e;
         
         drawer.ClearHighlights();
-        _currentlyShown.Show(_view.ExplanationHighlighter);
+        _translator.Translate(_currentlyShown, false);
         if(_showHighlight) _translator.Translate(_numericStep.HighlightManager, false);
         else drawer.Refresh();
     }
@@ -55,19 +57,15 @@ public abstract class AbstractStepExplanationPresenter<THighlight, TStep, TState
 
     public void TurnOffHighlight()
     {
-        var drawer = _view.GetDrawer<IDrawer>();
         _showHighlight = false;
-        
-        drawer.ClearHighlights();
-        _currentlyShown?.Show(_view.ExplanationHighlighter);
-        drawer.Refresh();
+        if(_currentlyShown is not null) _translator.Translate(_currentlyShown, true);
     }
 
     public void TurnOnHighlight()
     {
         _showHighlight = true;
         
-        _currentlyShown?.Show(_view.ExplanationHighlighter);
+        if(_currentlyShown is not null) _translator.Translate(_currentlyShown, true);
         _translator.Translate(_numericStep.HighlightManager, false);
     }
 }
@@ -75,8 +73,7 @@ public abstract class AbstractStepExplanationPresenter<THighlight, TStep, TState
 public interface IStepExplanationView
 {
     T GetDrawer<T>() where T : IDrawer;
-    public IExplanationHighlighter ExplanationHighlighter { get; }
-    public void ShowExplanation(ExplanationElement? start);
+    public void ShowExplanation<T>(Explanation<T> e);
 }
 
 public interface IDrawer

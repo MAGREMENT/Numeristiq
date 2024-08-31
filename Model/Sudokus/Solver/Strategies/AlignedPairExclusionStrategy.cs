@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Core.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
@@ -205,16 +205,17 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
         }, Explanation(changes, snapshot));
     }
 
-    private ExplanationElement Explanation(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
+    private Explanation<ISudokuHighlighter> Explanation(IReadOnlyList<NumericChange> changes,
+        ISudokuSolvingState snapshot)
     {
-        ExplanationElement start = new CellExplanationElement(new Cell(_row1, _col1));
-        var current = start.Append(" and ").Append(new Cell(_row2, _col2))
+        var result = new Explanation<ISudokuHighlighter>().Append(new Cell(_row1, _col1))
+            .Append(" and ").Append(new Cell(_row2, _col2))
             .Append(" both see almost locked sets that prevents ").Append(SudokuUtility.Cast(changes))
             .Append(" from being possible.\nThe almost locked sets are the following :");
 
         foreach (var als in _als)
         {
-            current = current.Append("\n - ").Append(als).Append(" prevents ");
+            result.Append("\n - ").Append(als).Append(" prevents ");
 
             bool firstDone = false;
             int i = 0;
@@ -226,9 +227,10 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
                     if (snapshot.PossibilitiesAt(_row1, _col1).Contains(i)
                         && snapshot.PossibilitiesAt(_row2, _col2).Contains(j))
                     {
-                        if (firstDone) current = current.Append(" and ");
+                        if (firstDone) result.Append(" and ");
                         else firstDone = true;
-                        current = current.Append(new CellPossibility(_row1, _col1, i),
+                        
+                        result.Append(new CellPossibility(_row1, _col1, i),
                             new CellPossibility(_row2, _col2, j));
                     }
 
@@ -236,16 +238,17 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
                     if (snapshot.PossibilitiesAt(_row2, _col2).Contains(i)
                         && snapshot.PossibilitiesAt(_row1, _col1).Contains(j))
                     {
-                        if (firstDone) current = current.Append(" and ");
+                        if (firstDone) result.Append(" and ");
                         else firstDone = true;
-                        current = current.Append(new CellPossibility(_row2, _col2, i),
+                        
+                        result.Append(new CellPossibility(_row2, _col2, i),
                             new CellPossibility(_row1, _col1, j));
                     }
                 }
             }
         }
         
-        return start;
+        return result;
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

@@ -3,7 +3,7 @@ using System.Windows.Media;
 using DesktopApplication.Presenter;
 using Model.Core;
 using Model.Core.Changes;
-using Model.Core.Explanation;
+using Model.Core.Explanations;
 using Model.Repositories;
 using Model.Sudokus.Player;
 using Model.Utility;
