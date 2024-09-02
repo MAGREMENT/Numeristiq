@@ -53,14 +53,15 @@ public class ChooseStepPresenter
 
     public void ChangePage(int newPage)
     {
-        if (newPage <= 0 || newPage * PageCount > _commits.Count) return;
+        var p = newPage - 1;
+        if (p < 0 || p * PageCount > _commits.Count) return;
 
-        _currentPage = newPage - 1;
+        _currentPage = p;
         _view.ClearCommits();
         SetSteps();
     }
 
-    public void ShowStep(int index)
+    public void ShowStep(int index) //TODO improve (with StepControl)
     {
         var drawer = _view.Drawer;
         drawer.ClearHighlights();
