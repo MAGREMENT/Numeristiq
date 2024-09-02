@@ -8,10 +8,10 @@
     <Border Width="40" Height="40" HorizontalAlignment="Left">
         <Border.Style>
             <Style TargetType="Border">
-                <Setter Property="Background" Value="{DynamicResource Background2}"/>
+                <Setter Property="Background" Value="{DynamicResource Background1}"/>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource Background3}"/>
+                        <Setter Property="Background" Value="{DynamicResource BackgroundHighlighted}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>

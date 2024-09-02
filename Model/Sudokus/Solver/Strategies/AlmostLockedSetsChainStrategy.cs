@@ -195,25 +195,7 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<NumericCh
             lighter.HighlightPossibility(link, cell.Row, cell.Column, StepColor.Neutral);
         }
 
-        var minDistance = double.MaxValue;
-        var minCells = new CellPossibility[2];
-                
-        foreach (var cell1 in elementBefore.EnumerateCells(link))
-        {
-            foreach (var cell2 in elementAfter.EnumerateCells(link))
-            {
-                var dist = CellUtility.Distance(cell1, link, cell2, link);
-
-                if (dist < minDistance)
-                {
-                    minDistance = dist;
-                    minCells[0] = new CellPossibility(cell1, link);
-                    minCells[1] = new CellPossibility(cell2, link);
-                }
-            }
-        }
-                
-        lighter.CreateLink(minCells[0], minCells[1], LinkStrength.Strong);
+        lighter.CreateLink(elementBefore, elementAfter, link);
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

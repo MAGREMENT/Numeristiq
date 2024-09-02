@@ -1,6 +1,8 @@
-﻿using Model.Core.Changes;
+﻿using System;
+using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Sudokus.Solver.Utility.Graphs;
@@ -158,7 +160,7 @@ public class SudokuHighlighterTranslator : IHighlighterTranslator<ISudokuHighlig
                     {
                         if (possibilitySearch != -1 && possT != possibilitySearch) continue;
 
-                        var dist = CellUtility.Distance(cellF.Cell, possF, cellT.Cell, possT);
+                        var dist = Distance(cellF.Cell, possF, cellT.Cell, possT);
                         if (dist < minDist)
                         {
                             minDist = dist;
@@ -171,5 +173,42 @@ public class SudokuHighlighterTranslator : IHighlighterTranslator<ISudokuHighlig
         }
 
         CreateLink(minCells[0], minCells[1], linkStrength);
+    }
+
+    public void CreateLink(IPossibilitySet from, IPossibilitySet to, int link)
+    {
+        var minDistance = double.MaxValue;
+        var minCells = new CellPossibility[2];
+                
+        foreach (var cell1 in from.EnumerateCells(link))
+        {
+            foreach (var cell2 in to.EnumerateCells(link))
+            {
+                var dist = Distance(cell1, link, cell2, link);
+
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    minCells[0] = new CellPossibility(cell1, link);
+                    minCells[1] = new CellPossibility(cell2, link);
+                }
+            }
+        }
+                
+        CreateLink(minCells[0], minCells[1], LinkStrength.Strong);
+    }
+    
+    private static double Distance(Cell oneCell, int onePoss, Cell twoCell, int twoPoss)
+    {
+        var oneX = oneCell.Column * 3 + onePoss % 3;
+        var oneY = oneCell.Row * 3 + onePoss / 3;
+
+        var twoX = twoCell.Column * 3 + twoPoss % 3;
+        var twoY = twoCell.Row * 3 + twoPoss / 3;
+
+        var dx = twoX - oneX;
+        var dy = twoY - oneY;
+
+        return Math.Sqrt(dx * dx + dy * dy);
     }
 }

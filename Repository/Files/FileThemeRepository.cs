@@ -32,7 +32,7 @@ public class FileThemeRepository : FileRepository<List<ThemeDAO>>, IThemeReposit
         Upload(_buffer);
     }
 
-    public void ChangeTheme(int index, Theme newTheme)
+    public void ChangeTheme(int index, Theme newTheme) //TODO FIX !!!!!!
     {
         _buffer ??= Download();
         if (_buffer is null || index < 0 || index >= _buffer.Count) return;

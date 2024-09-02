@@ -1,4 +1,5 @@
-﻿using Model.Core.Changes;
+﻿using System;
+using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Tectonics.Solver.Utility;
@@ -58,13 +59,11 @@ public class TectonicHighlightTranslator : ITectonicHighlighter, IHighlighterTra
         else if (from is ZoneGroup zg && to is CellPossibility cpT)
         {
             var min = zg.Cells[0];
-            var minDist = CellUtility.Distance(
-                min, zg.Possibility, cpT.ToCell(), cpT.Possibility);
+            var minDist = Distance(min, cpT.ToCell());
 
             for (int i = 1; i < zg.Cells.Count; i++)
             {
-                var dist = CellUtility.Distance(
-                    zg.Cells[i], zg.Possibility, cpT.ToCell(), cpT.Possibility);
+                var dist = Distance(zg.Cells[i], cpT.ToCell());
                 if (dist < minDist)
                 {
                     minDist = dist;
@@ -74,5 +73,19 @@ public class TectonicHighlightTranslator : ITectonicHighlighter, IHighlighterTra
             
             CreateLink(new CellPossibility(min, zg.Possibility), cpT, linkStrength);
         }
+    }
+    
+    private static double Distance(Cell oneCell, Cell twoCell)
+    {
+        var oneX = oneCell.Column * 3;
+        var oneY = oneCell.Row * 3;
+
+        var twoX = twoCell.Column * 3;
+        var twoY = twoCell.Row * 3;
+
+        var dx = twoX - oneX;
+        var dy = twoY - oneY;
+
+        return Math.Sqrt(dx * dx + dy * dy);
     }
 }

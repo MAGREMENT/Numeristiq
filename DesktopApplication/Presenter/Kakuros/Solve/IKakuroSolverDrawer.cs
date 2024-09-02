@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using Model.Core.Highlighting;
 using Model.Utility;
 
 namespace DesktopApplication.Presenter.Kakuros.Solve;
 
-public interface IKakuroSolverDrawer : IDrawer
+public interface IKakuroSolverDrawer : IDrawer, INumericSolvingStateHighlighter
 {
     int RowCount { set; }
     int ColumnCount { set; }

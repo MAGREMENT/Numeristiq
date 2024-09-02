@@ -8,7 +8,7 @@
       xmlns:controls="clr-namespace:DesktopApplication.View.Tectonics.Controls"
       mc:Ignorable="d"
       Title="SolvePage" d:DesignHeight="660" d:DesignWidth="1210">
-    <Grid Background="{DynamicResource Background1}">
+    <Grid Background="{DynamicResource BackgroundDeep}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
@@ -21,11 +21,11 @@
                     BackgroundBrush="Transparent" LineBrush="{DynamicResource Text}"
                     DefaultNumberBrush="{DynamicResource Text}"
                     BigLineRange="3, 5, 50, 100" SmallLineWidth="1" CellSize="50" LinkBrush="{DynamicResource Accent}"
-                    CursorBrush="{DynamicResource Secondary1}" CellSelected="OnCellSelection"
+                    CursorBrush="{DynamicResource Secondary}" CellSelected="OnCellSelection"
                     RowCountChanged="OnRowCountChange" ColumnCountChanged="OnColumnCountChange"
                     CellAddedToSelection="OnCellAddedToSelection" SelectionEnded="OnSelectionEnd"
                     KeyDown="DoBoardInput"
-                    ClueNumberBrush="{DynamicResource Primary1}"/>
+                    ClueNumberBrush="{DynamicResource Primary}"/>
             </global:SizeOptimizedContentControl.OptimizableContent>
             
             <global:SizeOptimizedContentControl.SideControls>
@@ -33,7 +33,7 @@
                                            HorizontalAlignment="Center"/>
                 <global:DimensionChooser TitleText="Cols" DimensionChangeAsked="OnColumnDimensionChangeAsked"
                                            HorizontalAlignment="Center" Margin="0 10 0 0"/>
-                <Border Padding="5" CornerRadius="5" Background="{DynamicResource Background3}"
+                <Border Padding="5" CornerRadius="5" Background="{DynamicResource Background2}"
                         HorizontalAlignment="Center" Margin="0 10 0 0">
                     <StackPanel Orientation="Vertical">
                         <RadioButton Checked="ModeToDefault" Style="{StaticResource SideControlRadioButton}"
@@ -67,7 +67,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
-            <Border Grid.Row="0" Background="{DynamicResource Background2}" CornerRadius="5"
+            <Border Grid.Row="0" Background="{DynamicResource Background1}" CornerRadius="5"
                     Padding="5">
                 <Grid>
                     <Grid.RowDefinitions>

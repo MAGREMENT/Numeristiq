@@ -162,7 +162,7 @@ public class ArrayTectonic : ITectonic
             RemoveZone(zone);
             if(notIn.Count == 0) continue;
             
-            foreach (var otherZone in TectonicUtility.DivideInAdjacentCells(notIn))
+            foreach (var otherZone in CellUtility.DivideInAdjacentCells(notIn))
             {
                 AddZoneUnchecked(otherZone);
                 CheckZoneIntegrity(_zones.Count - 1);

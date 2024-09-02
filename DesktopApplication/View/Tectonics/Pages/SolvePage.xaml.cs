@@ -211,7 +211,7 @@ public partial class SolvePage : ITectonicSolveView
 
         board.SetResourceReference(TectonicBoard.LineBrushProperty, "Text");
         board.SetResourceReference(TectonicBoard.DefaultNumberBrushProperty, "Text");
-        board.SetResourceReference(TectonicBoard.ClueNumberBrushProperty, "Primary1");
+        board.SetResourceReference(TectonicBoard.ClueNumberBrushProperty, "Primary");
         board.SetResourceReference(TectonicBoard.LinkBrushProperty, "Accent");
 
         return board;

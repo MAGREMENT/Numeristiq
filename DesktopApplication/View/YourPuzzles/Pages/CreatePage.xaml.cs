@@ -52,7 +52,7 @@ public partial class CreatePage : IYourPuzzleView
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Left 
         };
-        ellipse.SetResourceReference(Shape.FillProperty, "Primary1");
+        ellipse.SetResourceReference(Shape.FillProperty, "Primary");
         Grid.SetColumn(ellipse, 0);
         grid.Children.Add(ellipse);
 
@@ -81,12 +81,11 @@ public partial class CreatePage : IYourPuzzleView
             
             var add = new Button
             {
-                Template = (ControlTemplate)FindResource("RoundedButton"),
+                Style = (Style)FindResource("PrimaryRoundedButton"),
                 Margin = new Thickness(5, 0, 5, 0),
                 VerticalAlignment = VerticalAlignment.Center,
                 Content = path
             };
-            add.SetResourceReference(BackgroundProperty, "Primary1");
             add.Click += (_, _) => _presenter.AddRule(result.Index, result.IsGlobal);
 
             Grid.SetColumn(add, 2);
@@ -134,7 +133,7 @@ public partial class CreatePage : IYourPuzzleView
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Left 
         };
-        ellipse.SetResourceReference(Shape.FillProperty, "Primary1");
+        ellipse.SetResourceReference(Shape.FillProperty, "Primary");
         Grid.SetColumn(ellipse, 0);
         grid.Children.Add(ellipse);
 
@@ -161,12 +160,11 @@ public partial class CreatePage : IYourPuzzleView
             
         var remove = new Button
         {
-            Template = (ControlTemplate)FindResource("RoundedButton"),
+            Style = (Style)FindResource("PrimaryRoundedButton"),
             Margin = new Thickness(5, 0, 5, 0),
             VerticalAlignment = VerticalAlignment.Center,
             Content = path
         };
-        remove.SetResourceReference(BackgroundProperty, "Primary1");
         remove.Click += (_, _) => _presenter.RemoveRule(index, isGlobal);
 
         Grid.SetColumn(remove, 2);

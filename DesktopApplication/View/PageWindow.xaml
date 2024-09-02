@@ -15,7 +15,7 @@
         <WindowChrome CaptionHeight="40"/>
     </WindowChrome.WindowChrome>
     
-    <Grid Background="{DynamicResource Background2}" x:Name="MainGrid">
+    <Grid Background="{DynamicResource Background1}" x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
@@ -27,6 +27,6 @@
                                   AllowResize="True" AppIcon="Images/appicon.png" AppTitle="Numeristiq"/>
         
         <Frame NavigationUIVisibility="Hidden" Grid.Row="1" Grid.Column="0"
-               x:Name="Frame" Navigating="CancelNavigation" Background="{DynamicResource Background1}"/>
+               x:Name="Frame" Navigating="CancelNavigation" Background="{DynamicResource BackgroundDeep}"/>
     </Grid>
 </Window>

@@ -80,7 +80,7 @@ public partial class GeneratePage : ISudokuGenerateView
             _ => throw new ArgumentOutOfRangeException()
         };
         
-        path.Dispatcher.Invoke(() => path.SetResourceReference(Shape.StrokeProperty, "Primary1"));
+        path.Dispatcher.Invoke(() => path.SetResourceReference(Shape.StrokeProperty, "Primary"));
         await Task.Delay(TimeSpan.FromMilliseconds(250));
         path.Dispatcher.Invoke(() => path.SetResourceReference(Shape.StrokeProperty, "Text"));
     }
@@ -119,7 +119,7 @@ public partial class GeneratePage : ISudokuGenerateView
                     Child = tb,
                     Margin = new Thickness(5)
                 };
-                border.SetResourceReference(BackgroundProperty, "Background3");
+                border.SetResourceReference(BackgroundProperty, "BackgroundHighlighted");
                 Grid.SetRow(border, r);
                 Grid.SetColumn(border, 0);
                 Evaluated.Children.Add(border);
@@ -191,13 +191,12 @@ public partial class GeneratePage : ISudokuGenerateView
                 p1.SetResourceReference(Shape.StrokeProperty, "Text");
                 var b1 = new Button
                 {
-                    Template = (ControlTemplate)FindResource("RoundedButton"),
+                    Style = (Style)FindResource("PrimaryRoundedButton"),
                     Content = p1,
                     VerticalAlignment = VerticalAlignment.Center,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     Margin = new Thickness(0, 0, 10, 0)
                 };
-                b1.SetResourceReference(BackgroundProperty, "Primary1");
                 b1.Click += (_, _) => Clipboard.SetText(sudoku.AsString());
                 Grid.SetColumn(b1, 0);
                 grid.Children.Add(b1);
@@ -212,12 +211,11 @@ public partial class GeneratePage : ISudokuGenerateView
                 p2.SetResourceReference(Shape.StrokeProperty, "Text");
                 var b2 = new Button
                 {
-                    Template = (ControlTemplate)FindResource("RoundedButton"),
+                    Style = (Style)FindResource("SecondaryRoundedButton"),
                     Content = p2,
                     VerticalAlignment = VerticalAlignment.Center,
                     HorizontalAlignment = HorizontalAlignment.Center,
                 };
-                b2.SetResourceReference(BackgroundProperty, "Secondary1");
                 b2.Click += (_, _) =>
                 {
                     var dialog = new ShowSudokuDialog(sudoku.Puzzle);

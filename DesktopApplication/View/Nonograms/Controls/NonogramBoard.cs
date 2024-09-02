@@ -215,17 +215,17 @@ public class NonogramBoard : LayeredDrawingBoard, INonogramDrawingData, ISizeOpt
         Layers[HighlightIndex].Clear();
     }
 
+    public void HighlightValues(Orientation orientation, int unit, int startIndex, int endIndex, StepColor color)
+    {
+        Layers[HighlightIndex].Add(new ValuesHighlightDrawableComponent(unit, startIndex, endIndex, color, orientation));
+    }
+
     public void EncircleCells(IContainingEnumerable<Cell> cells, StepColor color)
     {
         Layers[HighlightIndex].Add(new MultiCellGeometryDrawableComponent(cells, (int)color, FillColorType.Step));
     }
 
-    public void HighlightValues(int unit, int startIndex, int endIndex, StepColor color, Orientation orientation)
-    {
-        Layers[HighlightIndex].Add(new ValuesHighlightDrawableComponent(unit, startIndex, endIndex, color, orientation));
-    }
-
-    public void EncircleSection(int unit, int startIndex, int endIndex, StepColor color, Orientation orientation)
+    public void EncircleLineSection(Orientation orientation, int unit, int startIndex, int endIndex, StepColor color)
     {
         Layers[HighlightIndex].Add(new CellSectionDrawableComponent(unit, startIndex, endIndex, color, orientation));
     }

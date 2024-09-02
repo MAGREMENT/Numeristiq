@@ -7,7 +7,7 @@
              d:DesignHeight="300" d:DesignWidth="300"
              x:Name="CustomTitleBar">
 	
-	<Grid Height="40" Background="{DynamicResource Background2}">
+	<Grid Height="40" Background="{DynamicResource Background1}">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto" />
 			<ColumnDefinition Width="Auto" />

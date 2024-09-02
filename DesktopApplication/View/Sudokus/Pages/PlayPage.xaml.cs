@@ -5,7 +5,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using DesktopApplication.Presenter;
-using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Sudokus.Play;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.View.Controls;
@@ -89,7 +88,17 @@ public partial class PlayPage : ISudokuPlayView
             if (child is RadioButton rb) rb.IsChecked = false;
         }
     }
-    
+
+    public void SetLoadHandling(LoadHandling handling)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            ReadyPanel.Visibility = handling == LoadHandling.Ready ? Visibility.Visible : Visibility.Hidden;
+            WaitingPanel.Visibility = handling == LoadHandling.Waiting ? Visibility.Visible : Visibility.Hidden;
+            UnavailablePanel.Visibility = handling == LoadHandling.Unavailable ? Visibility.Visible : Visibility.Hidden;
+        });
+    }
+
     public void InitializeHighlightColorBoxes()
     {
         ColorGrid.Children.RemoveRange(1, ColorGrid.Children.Count - 1);
@@ -111,7 +120,7 @@ public partial class PlayPage : ISudokuPlayView
                     Background = App.Current.ThemeInformation.ToBrush(color)
                 };
 
-                border.SetResourceReference(Border.BorderBrushProperty, "Background3");
+                border.SetResourceReference(Border.BorderBrushProperty, "BackgroundHighlighted");
                 Grid.SetRow(border, row);
                 Grid.SetColumn(border, col);
                 
@@ -391,5 +400,10 @@ public partial class PlayPage : ISudokuPlayView
         if (DifficultyComboBox.SelectedIndex == -1) return;
         
         _presenter.LoadFromBank((Difficulty)(DifficultyComboBox.SelectedIndex + 1));
+    }
+
+    private void RetryLoading(object sender, RoutedEventArgs e)
+    {
+        _presenter.RetryLoading();
     }
 }

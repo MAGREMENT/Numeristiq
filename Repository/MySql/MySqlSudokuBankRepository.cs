@@ -44,9 +44,9 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
             var cmdCreate = new MySqlCommand(CreateQuery, conn);
             cmdCreate.ExecuteNonQuery();
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            throw new SudokuBankException("Couldn't initialize the database");
+            throw new MySqlRepositoryException(e);
         }
     }
 
@@ -63,9 +63,9 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
 
             return reader[0] is not string s ? null : SudokuTranslator.TranslateLineFormat(s);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            throw new SudokuBankException("Couldn't find a random sudoku");
+            throw new MySqlRepositoryException(e);
         }
     }
 
@@ -77,9 +77,9 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
             var cmd = new MySqlCommand(DeleteQuery, conn);
             cmd.ExecuteNonQuery();
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            throw new SudokuBankException("Couldn't clear the database");
+            throw new MySqlRepositoryException(e);
         }
     }
 
@@ -94,9 +94,9 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
             cmd.Parameters.AddWithValue("@difficulty", (int)difficulty);
             cmd.ExecuteNonQuery();
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            throw new SudokuBankException("Couldn't add the sudoku");
+            throw new MySqlRepositoryException(e);
         }
     }
 
@@ -118,9 +118,22 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
             var cmd = new MySqlCommand(builder.ToString(), conn);
             return cmd.ExecuteNonQuery();
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            throw new SudokuBankException("Couldn't add the Sudoku's");
+            throw new MySqlRepositoryException(e);
+        }
+    }
+
+    public bool IsAvailable()
+    {
+        try
+        {
+            using var c = Open();
+            return true;
+        }
+        catch
+        {
+            return false;
         }
     }
 
@@ -133,7 +146,26 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
     }
 }
 
-public class SudokuBankException : Exception
+public class MySqlRepositoryException : Exception
 {
-    public SudokuBankException(string description) : base(description){}
+    public MySqlRepositoryException(Exception e) : base(Handle(e)){}
+
+    private static string Handle(Exception e)
+    {
+        if (e is ArgumentException) return "Incorrect connection string";
+
+        if (e is MySqlException)
+        {
+            switch (e.HResult)
+            {
+                //http://dev.mysql.com/doc/refman/5.0/en/error-messages-server.html
+                case 1042: // Unable to connect to any of the specified MySQL hosts (Check Server,Port)
+                    return "Unable to connect to the hose";
+                case 0: // Access denied (Check DB name,username,password)
+                    return "Access denied";
+            }
+        }
+
+        return "An error has occured";
+    }
 }

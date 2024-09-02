@@ -8,7 +8,7 @@
       xmlns:y="clr-namespace:DesktopApplication.View.YourPuzzles.Controls"
       mc:Ignorable="d"
       Title="CreationPage" d:DesignHeight="630" d:DesignWidth="1300">
-    <Grid Background="{DynamicResource Background1}">
+    <Grid Background="{DynamicResource BackgroundDeep}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
@@ -27,13 +27,13 @@
                 <y:YourPuzzleBoard BigLineWidth="3" SmallLineWidth="1"
                                    BackgroundBrush="Transparent"
                                    LineBrush="{DynamicResource Text}"
-                                   CursorBrush="{DynamicResource Secondary1}"
+                                   CursorBrush="{DynamicResource Secondary}"
                                    RowCountChanged="UpdateRowCount" ColumnCountChanged="UpdateColumnCount"
                                    CellSelected="SelectCell" CellAddedToSelection="AddCellToSelection"/>
             </c:SizeOptimizedContentControl.OptimizableContent>
         </c:SizeOptimizedContentControl>
         
-        <Border Grid.Column="1" Width="300" Margin="0 10 10 10" Background="{DynamicResource Background2}"
+        <Border Grid.Column="1" Width="300" Margin="0 10 10 10" Background="{DynamicResource Background1}"
                 CornerRadius="5" Padding="5">
             <Grid>
                 <Grid.RowDefinitions>
@@ -51,7 +51,7 @@
             </Grid>
         </Border>
         
-        <Border Grid.Column="2" Width="300" Margin="0 10 10 10" Background="{DynamicResource Background2}"
+        <Border Grid.Column="2" Width="300" Margin="0 10 10 10" Background="{DynamicResource Background1}"
                 CornerRadius="5" Padding="5">
             <Grid>
                 <Grid.RowDefinitions>
@@ -65,7 +65,7 @@
                 <TextBlock Grid.Row="0" Margin="5 5 0 0" FontSize="18"
                            Foreground="{DynamicResource Text}">Bank</TextBlock>
                 
-                <Border Grid.Row="1" Margin="5" Background="{DynamicResource Background3}"
+                <Border Grid.Row="1" Margin="5" Background="{DynamicResource Background2}"
                         CornerRadius="5" Padding="5">
                     <TextBlock FontSize="18" Foreground="{DynamicResource Text}"
                                HorizontalAlignment="Center">Global</TextBlock>
@@ -75,7 +75,7 @@
                     <StackPanel x:Name="GlobalBank"/>
                 </ScrollViewer>
                 
-                <Border Grid.Row="3" Margin="5" Background="{DynamicResource Background3}"
+                <Border Grid.Row="3" Margin="5" Background="{DynamicResource Background2}"
                         CornerRadius="5" Padding="5">
                     <TextBlock FontSize="18" Foreground="{DynamicResource Text}"
                                HorizontalAlignment="Center">Local</TextBlock>

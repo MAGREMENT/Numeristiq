@@ -281,7 +281,7 @@ public partial class ColorEditorControl
         SLCursor.Margin = new Thickness(left, top, 0, 0);
     }
 
-    private void OnHueMove(object sender, MouseEventArgs e)
+    private void OnHueChange(object sender, MouseEventArgs e)
     {
         if (e.LeftButton != MouseButtonState.Pressed) return;
         
@@ -292,7 +292,7 @@ public partial class ColorEditorControl
         if(ContinuousUpdate) ColorChanged?.Invoke(Color);
     }
     
-    private void OnSLMove(object sender, MouseEventArgs e)
+    private void OnSLChange(object sender, MouseEventArgs e)
     {
         if (e.LeftButton != MouseButtonState.Pressed) return;
         

@@ -8,9 +8,9 @@
         mc:Ignorable="d"
         Title="ShowSudokuDialog" SizeToContent="WidthAndHeight">
     <Border Padding="20" BorderThickness="1" BorderBrush="{DynamicResource Text}"
-            Background="{DynamicResource Background1}">
-        <controls:SudokuBoard PossibilitySize="23" BackgroundBrush="{DynamicResource Background2}"
-                              LineBrush="{DynamicResource Text}" ClueNumberBrush="{DynamicResource Primary1}"
+            Background="{DynamicResource BackgroundDeep}">
+        <controls:SudokuBoard PossibilitySize="23" BackgroundBrush="{DynamicResource Background1}"
+                              LineBrush="{DynamicResource Text}" ClueNumberBrush="{DynamicResource Primary}"
                               DefaultNumberBrush="{DynamicResource Text}" x:Name="Board"
                               BigLineWidth="3" SmallLineWidth="1"/>
     </Border>

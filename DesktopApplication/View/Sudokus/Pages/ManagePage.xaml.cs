@@ -207,7 +207,7 @@ public partial class ManagePage : ISudokuManageView
         if (e.Data.GetData(typeof(StrategyDragDropData)) is not StrategyDragDropData data) return;
 
         if (data.Index != -1) _presenter.RemoveStrategy(data.Index);
-        if(sender is FrameworkElement element) element.SetResourceReference(BackgroundProperty, "Background2");
+        if(sender is FrameworkElement element) element.SetResourceReference(BackgroundProperty, "Background1");
     }
     
     private void ScrollOnDrag(object sender, DragEventArgs e)
@@ -285,7 +285,7 @@ public partial class ManagePage : ISudokuManageView
                     },
                     VerticalAlignment = VerticalAlignment.Center
                 };
-                border.SetResourceReference(Border.BorderBrushProperty, "Background3");
+                border.SetResourceReference(Border.BorderBrushProperty, "BackgroundHighlighted");
                 Grid.SetColumn(border, tidl.Disposition == TextDisposition.Left ? 1 : 0);
                 grid.Children.Add(border);
                 
@@ -310,13 +310,13 @@ public partial class ManagePage : ISudokuManageView
         if (sender is not FrameworkElement element 
             || e.Data.GetData(typeof(StrategyDragDropData)) is not StrategyDragDropData data
             || data.Index == -1) return;
-        element.SetResourceReference(BackgroundProperty, "Background3");
+        element.SetResourceReference(BackgroundProperty, "BackgroundHighlighted");
     }
 
     private void OnDragLeave(object sender, DragEventArgs e)
     {
         if (sender is not FrameworkElement element) return;
-        element.SetResourceReference(BackgroundProperty, "Background2");
+        element.SetResourceReference(BackgroundProperty, "Background1");
     }
 
     private void OnCheckedSettings(object sender, RoutedEventArgs e)

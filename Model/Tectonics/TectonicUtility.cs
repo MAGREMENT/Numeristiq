@@ -24,58 +24,10 @@ public static class TectonicUtility
     {
         foreach (var c1 in z1)
         {
-            if (AreAdjacent(z2, c1)) return true;
+            if (CellUtility.AreAdjacent(z2, c1)) return true;
         }
 
         return false;
-    }
-
-    public static bool AreAdjacent(IZone zone, Cell cell)
-    {
-        foreach (var c in zone)
-        {
-            if (c.IsAdjacentTo(cell)) return true;
-        }
-
-        return false;
-    }
-
-    public static bool AreAdjacent(IReadOnlyList<Cell> cells, Cell cell)
-    {
-        foreach (var c in cells)
-        {
-            if (c.IsAdjacentTo(cell)) return true;
-        }
-
-        return false;
-    }
-
-    public static IEnumerable<Cell[]> DivideInAdjacentCells(List<Cell> cells)
-    {
-        List<Cell> current = new();
-
-        while (cells.Count > 0)
-        {
-            current.Add(cells[^1]);
-            cells.RemoveAt(cells.Count - 1);
-            var added = true;
-            
-            while (added)
-            {
-                added = false;
-                for (int i = cells.Count - 1; i >= 0; i--)
-                {
-                    if (!AreAdjacent(current, cells[i])) continue;
-
-                    current.Add(cells[i]);
-                    cells.RemoveAt(i);
-                    added = true;
-                }
-            }
-
-            yield return current.ToArray();
-            current.Clear();
-        }
     }
 
     public static IEnumerable<Cell> GetNeighbors(Cell cell, int rowCount, int colCount)

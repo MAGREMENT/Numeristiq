@@ -6,6 +6,8 @@ using System.Windows.Media;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Kakuros.Solve;
 using DesktopApplication.View.Controls;
+using Model.Core.Changes;
+using Model.Core.Graphs;
 using Model.Utility;
 using Orientation = Model.Utility.Orientation;
 
@@ -442,6 +444,23 @@ public class KakuroBoard : LayeredDrawingBoard, IKakuroDrawingData, ISizeOptimiz
     public void ClearHighlights()
     {
         Layers[HighlightIndex].Clear();
+    }
+
+    public void HighlightPossibility(int possibility, int row, int col, StepColor color)
+    {
+        Layers[HighlightIndex].Add(new PossibilityFillDrawableComponent(possibility, row, col,
+            (int)color, FillColorType.Step));
+    }
+
+    public void HighlightCell(int row, int col, StepColor color)
+    {
+        Layers[HighlightIndex].Add(new CellFillDrawableComponent(row, col,
+            (int)color, FillColorType.Step));
+    }
+
+    public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength)
+    {
+        
     }
 }
 

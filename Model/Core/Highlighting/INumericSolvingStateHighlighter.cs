@@ -1,5 +1,6 @@
 ﻿using Model.Core.Changes;
 using Model.Core.Graphs;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Tectonics.Solver.Utility;
@@ -52,6 +53,8 @@ public interface ISudokuHighlighter : INumericSolvingStateHighlighter
     public void HighlightElement(ISudokuElement element, StepColor color);
 
     public void CreateLink(ISudokuElement from, ISudokuElement to, LinkStrength linkStrength);
+
+    public void CreateLink(IPossibilitySet from, IPossibilitySet to, int link);
 }
 
 public interface ITectonicHighlighter : INumericSolvingStateHighlighter

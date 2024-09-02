@@ -29,7 +29,7 @@ public partial class FilledSudokuGeneratorControl
     {
         if (_isRandom)
         {
-            Seed.SetResourceReference(BackgroundProperty, "Background3");
+            Seed.SetResourceReference(BackgroundProperty, "BackgroundHighlighted");
         }
     }
 
@@ -42,7 +42,7 @@ public partial class FilledSudokuGeneratorControl
     {
         if (!_isRandom)
         {
-            Random.SetResourceReference(BackgroundProperty, "Background3");
+            Random.SetResourceReference(BackgroundProperty, "BackgroundHighlighted");
         }
     }
 
@@ -56,7 +56,7 @@ public partial class FilledSudokuGeneratorControl
         var window = new OptionChooserDialog("Copy", i =>
         {
             SeedText.SetResourceReference(ForegroundProperty, "Text");
-            Seed.SetResourceReference(BorderBrushProperty, "Primary1");
+            Seed.SetResourceReference(BorderBrushProperty, "Primary");
             SeedView.Visibility = Visibility.Visible;
 
             RandomText.SetResourceReference(ForegroundProperty, "Disabled");
@@ -72,7 +72,7 @@ public partial class FilledSudokuGeneratorControl
     private void OnRandomClick(object sender, MouseButtonEventArgs e)
     {
         RandomText.SetResourceReference(ForegroundProperty, "Text");
-        Random.SetResourceReference(BorderBrushProperty, "Primary1");
+        Random.SetResourceReference(BorderBrushProperty, "Primary");
 
         SeedView.Visibility = Visibility.Collapsed;
         Seed.BorderBrush = Brushes.Transparent;

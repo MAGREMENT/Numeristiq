@@ -13,7 +13,6 @@ using Model.Sudokus.Player.Actions;
 using Model.Sudokus.Solver;
 using Model.Utility;
 using Model.Utility.Collections;
-using Repository;
 using Repository.MySql;
 
 namespace DesktopApplication.Presenter.Sudokus.Play;
@@ -75,6 +74,8 @@ public class SudokuPlayPresenter
             _view.Drawer.Refresh();
             _view.InitializeHighlightColorBoxes();
         };
+
+        RetryLoading();
     }
 
     public bool SelectAllPossibilities(int p)
@@ -240,19 +241,26 @@ public class SudokuPlayPresenter
         _disabler.Disable(2);
         var sudoku = await Task.Run(() =>
         {
-            //TODO add loading
             try
             {
                 return _repository.FindRandom(difficulty);
             }
             catch
             {
+                _view.SetLoadHandling(LoadHandling.Unavailable);
                 return null;
             }
         });
 
         if (sudoku is not null && _player.Execute(new PasteAction(sudoku, _player.MainLocation))) OnCellDataChange();
         _disabler.Enable(2);
+    }
+
+    public async void RetryLoading()
+    {
+        _view.SetLoadHandling(LoadHandling.Waiting);
+        if (await Task.Run(() => _repository.IsAvailable())) _view.SetLoadHandling(LoadHandling.Ready);
+        else _view.SetLoadHandling(LoadHandling.Unavailable);
     }
 
     /// <summary>
@@ -521,5 +529,9 @@ public class AllPossibilitiesCursor : ISudokuPlayerCursor
         p = 0;
         return false;
     }
-        
+}
+
+public enum LoadHandling
+{
+    Waiting, Unavailable, Ready
 }

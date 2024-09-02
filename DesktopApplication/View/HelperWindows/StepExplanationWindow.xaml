@@ -14,7 +14,7 @@
         <WindowChrome CaptionHeight="40"/>
     </WindowChrome.WindowChrome>
     
-    <Grid Background="{DynamicResource Background1}">
+    <Grid Background="{DynamicResource BackgroundDeep}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -36,7 +36,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
-            <Border Grid.Row="0" Background="{DynamicResource Background2}" CornerRadius="5" Padding="5">
+            <Border Grid.Row="0" Background="{DynamicResource Background1}" CornerRadius="5" Padding="5">
                 <ScrollViewer Style="{StaticResource TransparentBarScrollViewer}" x:Name="Viewer"/>
             </Border>
             

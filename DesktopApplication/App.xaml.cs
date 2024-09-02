@@ -29,18 +29,19 @@ public partial class App : IResourceView
     
     public void SetTheme(Theme t)
     {
+        Resources["BackgroundDeep"] = ThemeInformation.ToBrush(t.BackgroundDeep);
         Resources["Background1"] = ThemeInformation.ToBrush(t.Background1);
+        Resources["Background1Color"] = ThemeInformation.ToColor(t.Background1);
         Resources["Background2"] = ThemeInformation.ToBrush(t.Background2);
-        Resources["Background2Color"] = ThemeInformation.ToColor(t.Background2);
-        Resources["Background3"] = ThemeInformation.ToBrush(t.Background3);
-        Resources["Primary1"] = ThemeInformation.ToBrush(t.Primary1);
-        Resources["Primary1Color"] = ThemeInformation.ToColor(t.Primary1);
-        Resources["Primary2"] = ThemeInformation.ToBrush(t.Primary2);
-        Resources["Primary2Color"] = ThemeInformation.ToColor(t.Primary2);
-        Resources["Secondary1"] = ThemeInformation.ToBrush(t.Secondary1);
-        Resources["Secondary1Color"] = ThemeInformation.ToColor(t.Secondary1);
-        Resources["Secondary2"] = ThemeInformation.ToBrush(t.Secondary2);
-        Resources["Secondary2Color"] = ThemeInformation.ToColor(t.Secondary2);
+        Resources["BackgroundHighlighted"] = ThemeInformation.ToBrush(t.BackgroundHighlighted);
+        Resources["Primary"] = ThemeInformation.ToBrush(t.Primary);
+        Resources["PrimaryColor"] = ThemeInformation.ToColor(t.Primary);
+        Resources["PrimaryHighlighted"] = ThemeInformation.ToBrush(t.PrimaryHighlighted);
+        Resources["PrimaryHighlightedColor"] = ThemeInformation.ToColor(t.PrimaryHighlighted);
+        Resources["Secondary"] = ThemeInformation.ToBrush(t.Secondary);
+        Resources["SecondaryColor"] = ThemeInformation.ToColor(t.Secondary);
+        Resources["SecondaryHighlighted"] = ThemeInformation.ToBrush(t.SecondaryHighlighted);
+        Resources["SecondaryHighlightedColor"] = ThemeInformation.ToColor(t.SecondaryHighlighted);
         Resources["Accent"] = ThemeInformation.ToBrush(t.Accent);
         Resources["Text"] = ThemeInformation.ToBrush(t.Text);
         Resources["TextColor"] = ThemeInformation.ToColor(t.Text);
@@ -63,8 +64,8 @@ public partial class App : IResourceView
 
 public class ThemeInformation
 {
-    private Brush Primary1 = Brushes.Orange;
-    private Brush Secondary1 = Brushes.Purple;
+    private Brush Primary = Brushes.Orange;
+    private Brush Secondary = Brushes.Purple;
     private Brush Text = Brushes.Black;
     
     private Brush StepColorNeutral = Brushes.Silver;
@@ -94,8 +95,8 @@ public class ThemeInformation
 
     public void SetTheme(Theme theme)
     {
-        Primary1 = ToBrush(theme.Primary1);
-        Secondary1 = ToBrush(theme.Secondary1);
+        Primary = ToBrush(theme.Primary);
+        Secondary = ToBrush(theme.Secondary);
         Text = ToBrush(theme.Text);
         
         StepColorNeutral = ToBrush(theme.StepColorNeutral);
@@ -165,8 +166,8 @@ public class ThemeInformation
     {
         return color switch
         {
-            ExplanationColor.Primary => Primary1,
-            ExplanationColor.Secondary => Secondary1,
+            ExplanationColor.Primary => Primary,
+            ExplanationColor.Secondary => Secondary,
             _ => Text
         };
     }
@@ -175,8 +176,8 @@ public class ThemeInformation
     {
         return color switch
         {
-            ExplanationColor.Primary => "Primary1",
-            ExplanationColor.Secondary => "Secondary1",
+            ExplanationColor.Primary => "Primary",
+            ExplanationColor.Secondary => "Secondary",
             _ => "Text"
         };
     }

@@ -45,7 +45,7 @@ public partial class EvaluationCriteriaControl
                 Text = setting.Get().ToString()
             };
             
-            r2.SetResourceReference(ForegroundProperty, "Primary1");
+            r2.SetResourceReference(ForegroundProperty, "Primary");
             tb.Inlines.Add(r2);
 
             Grid.SetRow(tb, row++);
@@ -79,7 +79,7 @@ public partial class EvaluationCriteriaControl
                 Text = setting.Get().ToString()
             };
             
-            r2.SetResourceReference(ForegroundProperty, "Primary1");
+            r2.SetResourceReference(ForegroundProperty, "Primary");
             tb.Inlines.Add(r2);
 
             Grid.SetRow(tb, row++);

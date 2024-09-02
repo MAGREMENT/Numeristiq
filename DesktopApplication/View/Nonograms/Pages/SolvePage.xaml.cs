@@ -88,8 +88,8 @@ public partial class SolvePage : INonogramSolveView
         };
 
         board.SetResourceReference(NonogramBoard.LineBrushProperty, "Text");
-        board.SetResourceReference(NonogramBoard.FillingBrushProperty, "Primary1");
-        board.SetResourceReference(NonogramBoard.UnavailableBrushProperty, "Secondary1");
+        board.SetResourceReference(NonogramBoard.FillingBrushProperty, "Primary");
+        board.SetResourceReference(NonogramBoard.UnavailableBrushProperty, "Secondary");
 
         return board;
     }

@@ -123,22 +123,22 @@ public partial class ThemeWindow : IThemeView
     
     private void ToPrimary1(object sender, MouseEventArgs e)
     {
-        if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "Primary1");
+        if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "Primary");
     }
     
     private void ToPrimary2(object sender, MouseEventArgs e)
     {
-        if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "Primary2");
+        if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "PrimaryHighlighted");
     }
     
     private void ToSecondary1(object sender, MouseEventArgs e)
     {
-        if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "Secondary1");
+        if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "Secondary");
     }
 
     private void ToSecondary2(object sender, MouseEventArgs e)
     {
-        if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "Secondary2");
+        if(sender is FrameworkElement fe) fe.SetResourceReference(BackgroundProperty, "SecondaryHighlighted");
     }
 
     private void OpenSettings()

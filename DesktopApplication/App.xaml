@@ -24,14 +24,14 @@
 			
 			<Style TargetType="ToolTip">
 				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
-				<Setter Property="Background" Value="{DynamicResource Background1}"/>
+				<Setter Property="Background" Value="{DynamicResource BackgroundDeep}"/>
 				<Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
 			</Style>
 			
 			<ControlTemplate TargetType="Button" x:Key="RoundedButton">
 				<Border CornerRadius="5" Background="{TemplateBinding Background}"
 				        Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
-				        Padding="5">
+				        Padding="{TemplateBinding Padding}">
 					<ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
 				</Border>
 				
@@ -42,6 +42,22 @@
 					</Trigger>
 				</ControlTemplate.Triggers>
 			</ControlTemplate>
+			
+			<Style TargetType="Button" x:Key="PrimaryRoundedButton">
+				<Setter Property="Template" Value="{StaticResource RoundedButton}"/>
+				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
+				<Setter Property="Padding" Value="5"/>
+				<Setter Property="Background" Value="{DynamicResource Primary}"/>
+				<Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource PrimaryHighlighted}"/>
+			</Style>
+			
+			<Style TargetType="Button" x:Key="SecondaryRoundedButton">
+				<Setter Property="Template" Value="{StaticResource RoundedButton}"/>
+				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
+				<Setter Property="Padding" Value="5"/>
+				<Setter Property="Background" Value="{DynamicResource Secondary}"/>
+				<Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource SecondaryHighlighted}"/>
+			</Style>
 			
 			<Style TargetType="Button" x:Key="ForegroundButton">
 				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
@@ -62,7 +78,7 @@
 										<Condition Property="IsMouseOver" Value="True"/>
 									</MultiTrigger.Conditions>
 									<MultiTrigger.Setters>
-										<Setter Property="Foreground" Value="{DynamicResource Primary1}"/>
+										<Setter Property="Foreground" Value="{DynamicResource Primary}"/>
 									</MultiTrigger.Setters>
 								</MultiTrigger>
 								
@@ -79,7 +95,7 @@
 				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
 				<Setter Property="FontSize" Value="16"/>
 				<Setter Property="FontWeight" Value="SemiBold"/>
-				<Setter Property="Background" Value="{DynamicResource Background3}"/>
+				<Setter Property="Background" Value="{DynamicResource Background2}"/>
 				<Setter Property="HorizontalAlignment" Value="Left"/>
 				<Setter Property="Template">
 					<Setter.Value>
@@ -102,7 +118,7 @@
 							
 							<ControlTemplate.Triggers>
 								<Trigger Property="IsChecked" Value="True">
-									<Setter TargetName="Check" Property="Background" Value="{DynamicResource Primary1}"/>
+									<Setter TargetName="Check" Property="Background" Value="{DynamicResource Primary}"/>
 								</Trigger>
 							</ControlTemplate.Triggers>
 						</ControlTemplate>
@@ -124,7 +140,7 @@
 							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Focusable="False"/>
 						</Grid>
 								    
-						<Grid Grid.Row="1" Background="{DynamicResource Background3}">
+						<Grid Grid.Row="1" Background="{DynamicResource Background2}">
 							<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" 
 							           Text="{TemplateBinding Name}" Margin="5"/>
 						</Grid>
@@ -133,7 +149,7 @@
 						    
 				<ControlTemplate.Triggers>
 					<Trigger Property="IsMouseOver" Value="True">
-						<Setter Property="Foreground" Value="{DynamicResource Primary1}"/>
+						<Setter Property="Foreground" Value="{DynamicResource Primary}"/>
 					</Trigger>
 				</ControlTemplate.Triggers>
 			</ControlTemplate>
@@ -141,7 +157,7 @@
 		    <Style TargetType="Button" x:Key="WelcomeButton">
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 			    <Setter Property="FontSize" Value="20"/>
-			    <Setter Property="Background" Value="{DynamicResource Background2}"/>
+			    <Setter Property="Background" Value="{DynamicResource Background1}"/>
 			    <Setter Property="Template" Value="{StaticResource WelcomeButtonTemplate}"/>
 		    </Style>
 			
@@ -152,9 +168,9 @@
 				        Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
 					<Border.Background>
 						<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-							<GradientStop Color="{DynamicResource Secondary1Color}" Offset="0.0"/>
-							<GradientStop x:Name="Stop" Color="{DynamicResource Primary1Color}" Offset="0.0"/>
-							<GradientStop Color="{DynamicResource Secondary1Color}" Offset="1.0"/>
+							<GradientStop Color="{DynamicResource SecondaryColor}" Offset="0.0"/>
+							<GradientStop x:Name="Stop" Color="{DynamicResource PrimaryColor}" Offset="0.0"/>
+							<GradientStop Color="{DynamicResource SecondaryColor}" Offset="1.0"/>
 						</LinearGradientBrush>
 					</Border.Background>
 					<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Focusable="False"/>
@@ -276,7 +292,7 @@
 		    </Style>
 		    
 		    <Style TargetType="TextBox" x:Key="SettingTextBox">
-			    <Setter Property="Background" Value="{DynamicResource Background3}"/>
+			    <Setter Property="Background" Value="{DynamicResource Background2}"/>
 			    <Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
 			    <Setter Property="CaretBrush" Value="{DynamicResource Text}"/>
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
@@ -300,7 +316,7 @@
 						    
 						    <ControlTemplate.Triggers>
 							    <Trigger Property="IsFocused" Value="True">
-								    <Setter Property="BorderBrush" Value="{DynamicResource Primary1}"/>
+								    <Setter Property="BorderBrush" Value="{DynamicResource Primary}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>
@@ -322,7 +338,7 @@
 							    <Border Grid.Column="0" Margin="0 0 5 0" BorderThickness="1"
 							            BorderBrush="{TemplateBinding BorderBrush}" VerticalAlignment="Center"
 							            HorizontalAlignment="Center" Background="Transparent">
-								    <Path Width="16" Height="16" Stroke="{DynamicResource Primary1}"
+								    <Path Width="16" Height="16" Stroke="{DynamicResource Primary}"
 								          Visibility="Hidden" Data="M 3,10 8,13 13,3" StrokeThickness="2" x:Name="Check"/>
 							    </Border>
 							    
@@ -337,7 +353,7 @@
 								    <Setter TargetName="Check" Property="Visibility" Value="Visible"/>
 							    </Trigger>
 							    <Trigger Property="IsMouseOver" Value="True">
-								    <Setter Property="BorderBrush" Value="{DynamicResource Secondary1}"/>
+								    <Setter Property="BorderBrush" Value="{DynamicResource Secondary}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>
@@ -369,12 +385,12 @@
 								    </MultiTrigger.Conditions>
 								    
 								    <MultiTrigger.Setters>
-									    <Setter Property="Foreground" Value="{DynamicResource Primary1}"/>
+									    <Setter Property="Foreground" Value="{DynamicResource Primary}"/>
 								    </MultiTrigger.Setters>
 							    </MultiTrigger>
 							    
 							    <Trigger Property="IsChecked" Value="True">
-								    <Setter Property="Background" Value="{DynamicResource Primary1}"/>
+								    <Setter Property="Background" Value="{DynamicResource Primary}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>
@@ -403,7 +419,7 @@
 									    <Condition Property="IsEnabled" Value="True"/>
 								    </MultiTrigger.Conditions>
 								    <MultiTrigger.Setters>
-									    <Setter Property="Background" Value="{DynamicResource Background3}"/>
+									    <Setter Property="Background" Value="{DynamicResource BackgroundHighlighted}"/>
 								    </MultiTrigger.Setters>
 							    </MultiTrigger>
 						    </ControlTemplate.Triggers>
@@ -433,7 +449,7 @@
 										<Condition Property="IsEnabled" Value="True"/>
 									</MultiTrigger.Conditions>
 									<MultiTrigger.Setters>
-										<Setter Property="Background" Value="{DynamicResource Background3}"/>
+										<Setter Property="Background" Value="{DynamicResource BackgroundHighlighted}"/>
 									</MultiTrigger.Setters>
 								</MultiTrigger>
 							</ControlTemplate.Triggers>
@@ -443,8 +459,8 @@
 			</Style>
 		    
 		    <Style TargetType="Button" x:Key="OptionSelectorButton">
-			    <Setter Property="Background" Value="{DynamicResource Background2}"/>
-			    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"></Setter>
+			    <Setter Property="Background" Value="{DynamicResource Background1}"/>
+			    <Setter Property="BorderBrush" Value="{DynamicResource Background2}"></Setter>
 			    <Setter Property="Template">
 				    <Setter.Value>
 					    <ControlTemplate TargetType="Button">
@@ -459,7 +475,7 @@
 						    
 						    <ControlTemplate.Triggers>
 							    <Trigger Property="IsMouseOver" Value="True">
-								    <Setter Property="BorderBrush" Value="{DynamicResource Primary1}"/>
+								    <Setter Property="BorderBrush" Value="{DynamicResource Primary}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>
@@ -485,9 +501,9 @@
 								    VerticalAlignment="Center"
 								    Focusable="False"/>
 							    
-							    <Grid Grid.Row="1" Background="{DynamicResource Background2}" Width="80">
+							    <Grid Grid.Row="1" Background="{DynamicResource Background1}" Width="80">
 								    <Border BorderBrush="{DynamicResource Text}" BorderThickness="1"
-								            x:Name="Border" Width="30" Height="30" Background="{DynamicResource Background3}">
+								            x:Name="Border" Width="30" Height="30" Background="{DynamicResource Background2}">
 									    <TextBlock x:Name="Block" Foreground="{DynamicResource Text}"
 									               VerticalAlignment="Center" HorizontalAlignment="Center"/>
 								    </Border>
@@ -506,7 +522,7 @@
 								    <Setter TargetName="Block" Property="Foreground" Value="{DynamicResource Off}"/>
 							    </Trigger>
 							    <Trigger SourceName="Border" Property="IsMouseOver" Value="True">
-								    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Primary1}"/>
+								    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Primary}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>
@@ -519,7 +535,7 @@
 			    <Setter Property="Padding" Value="5"/>
 			    <Style.Triggers>
 				    <Trigger Property="IsMouseOver" Value="True">
-					    <Setter Property="Background" Value="{DynamicResource Background3}"/>
+					    <Setter Property="Background" Value="{DynamicResource BackgroundHighlighted}"/>
 				    </Trigger>
 			    </Style.Triggers>
 		    </Style>
@@ -530,7 +546,7 @@
 			    <Setter Property="Padding" Value="5"/>
 			    <Style.Triggers>
 				    <Trigger Property="IsMouseOver" Value="True">
-					    <Setter Property="Background" Value="{DynamicResource Background3}"/>
+					    <Setter Property="Background" Value="{DynamicResource BackgroundHighlighted}"/>
 				    </Trigger>
 			    </Style.Triggers>
 		    </Style>
@@ -559,7 +575,7 @@
 						    <ControlTemplate.Triggers>
 							    <Trigger Property="IsFocused" Value="True">
 								    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
-								    <Setter Property="BorderBrush" Value="{DynamicResource Primary1}"/>
+								    <Setter Property="BorderBrush" Value="{DynamicResource Primary}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>
@@ -568,16 +584,16 @@
 		    </Style>
 		    
 		    <Style TargetType="Border" x:Key="DimensionChooserButton">
-			    <Setter Property="Background" Value="{DynamicResource Primary2}"/>
+			    <Setter Property="Background" Value="{DynamicResource Primary}"/>
 			    <Style.Triggers>
 				    <Trigger Property="IsMouseOver" Value="True">
-					    <Setter Property="Background" Value="{DynamicResource Primary1}"/>
+					    <Setter Property="Background" Value="{DynamicResource PrimaryHighlighted}"/>
 				    </Trigger>
 			    </Style.Triggers>
 		    </Style>
 		    
 		    <Style TargetType="Button" x:Key="HideableTextBoxButton">
-			    <Setter Property="Background" Value="{DynamicResource Background2}"/>
+			    <Setter Property="Background" Value="{DynamicResource Background1}"/>
 			    <Setter Property="Template">
 				    <Setter.Value>
 					    <ControlTemplate TargetType="Button">
@@ -591,7 +607,7 @@
 						    
 						    <ControlTemplate.Triggers>
 							    <Trigger Property="IsMouseOver" Value="True">
-								    <Setter Property="Background" Value="{DynamicResource Primary1}"/>
+								    <Setter Property="Background" Value="{DynamicResource Primary}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>
@@ -603,7 +619,7 @@
 				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
 				<Setter Property="FontSize" Value="20"/>
 				<Setter Property="FontWeight" Value="Bold"/>
-				<Setter Property="Background" Value="{DynamicResource Background3}"/>
+				<Setter Property="Background" Value="{DynamicResource Background2}"/>
 				<Setter Property="Width" Value="32"/>
 				<Setter Property="Height" Value="32"/>
 				<Setter Property="Template">
@@ -617,7 +633,7 @@
 							
 							<ControlTemplate.Triggers>
 								<Trigger Property="IsChecked" Value="True">
-									<Setter Property="Background" Value="{DynamicResource Primary1}"/>
+									<Setter Property="Background" Value="{DynamicResource Primary}"/>
 								</Trigger>
 								<MultiTrigger>
 									<MultiTrigger.Conditions>
@@ -625,7 +641,7 @@
 										<Condition Property="IsMouseOver" Value="True"/>
 									</MultiTrigger.Conditions>
 									<MultiTrigger.Setters>
-										<Setter Property="Foreground" Value="{DynamicResource Primary1}"/>
+										<Setter Property="Foreground" Value="{DynamicResource Primary}"/>
 									</MultiTrigger.Setters>
 								</MultiTrigger>
 							</ControlTemplate.Triggers>
@@ -650,7 +666,7 @@
 						    
 						    <ControlTemplate.Triggers>
 							    <Trigger Property="IsChecked" Value="True">
-								    <Setter Property="Background" Value="{DynamicResource Background2}"/>
+								    <Setter Property="Background" Value="{DynamicResource Background1}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>
@@ -659,7 +675,7 @@
 		    </Style>
 			
 			<Style x:Key="ManagePageRadioButton" TargetType="RadioButton">
-				<Setter Property="Background" Value="{DynamicResource Background2}"/>
+				<Setter Property="Background" Value="{DynamicResource Background1}"/>
 				<Setter Property="FontWeight" Value="SemiBold"/>
 				<Setter Property="FontSize" Value="18"/>
 				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
@@ -678,10 +694,10 @@
 							
 							<ControlTemplate.Triggers>
 								<Trigger Property="IsChecked" Value="True">
-									<Setter Property="Background" Value="{DynamicResource Background3}"/>
+									<Setter Property="Background" Value="{DynamicResource Background2}"/>
 								</Trigger>
 								<Trigger Property="IsMouseOver" Value="True">
-									<Setter Property="Foreground" Value="{DynamicResource Primary1}"/>
+									<Setter Property="Foreground" Value="{DynamicResource Primary}"/>
 								</Trigger>
 							</ControlTemplate.Triggers>
 						</ControlTemplate>
@@ -716,12 +732,12 @@
 						    
 						    <ControlTemplate.Triggers>
 							    <Trigger Property="IsChecked" Value="True">
-								    <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{DynamicResource Secondary1}"/>
+								    <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{DynamicResource Secondary}"/>
 							    </Trigger>
 							    
 							    <Trigger Property="IsMouseOver" Value="True">
-								    <Setter Property="Background" Value="{DynamicResource Background3}"/>
-								    <Setter Property="Foreground" Value="{DynamicResource Primary1}"/>
+								    <Setter Property="Background" Value="{DynamicResource BackgroundHighlighted}"/>
+								    <Setter Property="Foreground" Value="{DynamicResource Primary}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>
@@ -757,46 +773,46 @@
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 			    <Setter Property="Template" Value="{StaticResource LightUpButtonTemplate}"/>
 			    <Setter Property="BorderBrush" Value="Transparent"/>
-			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource Primary1}"/>
+			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource Primary}"/>
 		    </Style>
 		    
 		    <Style x:Key="LogHighlightButton" TargetType="Button">
-			    <Setter Property="Background" Value="{DynamicResource Background2}"/>
+			    <Setter Property="Background" Value="{DynamicResource Background1}"/>
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 			    <Setter Property="VerticalAlignment" Value="Center"/>
 			    <Setter Property="Template" Value="{StaticResource LightUpButtonTemplate}"/>
-			    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
-			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource Background3}"/>
+			    <Setter Property="BorderBrush" Value="{DynamicResource Background2}"/>
+			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource BackgroundHighlighted}"/>
 		    </Style>
 		    
 		    <Style x:Key="DefaultLightUpButtonStyle" TargetType="Button">
-			    <Setter Property="Background" Value="{DynamicResource Background2}"/>
+			    <Setter Property="Background" Value="{DynamicResource Background1}"/>
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 			    <Setter Property="FontSize" Value="18"/>
 			    <Setter Property="Padding" Value="10"/>
 			    <Setter Property="Template" Value="{StaticResource LightUpButtonTemplate}"/>
-			    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
-			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource Background3}"/>
+			    <Setter Property="BorderBrush" Value="{DynamicResource Background2}"/>
+			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource BackgroundHighlighted}"/>
 		    </Style>
 		    
 		    <Style x:Key="PrimaryLightUpButtonStyle" TargetType="Button">
-			    <Setter Property="Background" Value="{DynamicResource Primary2}"/>
+			    <Setter Property="Background" Value="{DynamicResource Primary}"/>
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 			    <Setter Property="FontSize" Value="18"/>
 			    <Setter Property="Padding" Value="10"/>
 			    <Setter Property="Template" Value="{StaticResource LightUpButtonTemplate}"/>
-			    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
-			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource Primary1}"/>
+			    <Setter Property="BorderBrush" Value="{DynamicResource Background2}"/>
+			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource PrimaryHighlighted}"/>
 		    </Style>
 		    
 		    <Style x:Key="SecondaryLightUpButtonStyle" TargetType="Button">
-			    <Setter Property="Background" Value="{DynamicResource Secondary2}"/>
+			    <Setter Property="Background" Value="{DynamicResource Secondary}"/>
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 			    <Setter Property="FontSize" Value="18"/>
 			    <Setter Property="Padding" Value="10"/>
 			    <Setter Property="Template" Value="{StaticResource LightUpButtonTemplate}"/>
-			    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
-			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource Secondary1}"/>
+			    <Setter Property="BorderBrush" Value="{DynamicResource Background2}"/>
+			    <Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource SecondaryHighlighted}"/>
 		    </Style>
 		    
 		    <Style x:Key="StepRadioButton" TargetType="RadioButton">
@@ -821,7 +837,7 @@
 						    
 						    <ControlTemplate.Triggers>
 							    <Trigger Property="IsMouseOver" Value="True">
-								    <Setter Property="Background" Value="{DynamicResource Background3}"/>
+								    <Setter Property="Background" Value="{DynamicResource BackgroundHighlighted}"/>
 							    </Trigger>
 							    <Trigger Property="IsChecked" Value="True">
 								    <Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
@@ -854,7 +870,7 @@
 		    <Style x:Key="FullPrimaryButton" TargetType="Button">
 			    <Setter Property="Foreground" Value="White"/>
 			    <Setter Property="FontWeight" Value="Bold"/>
-			    <Setter Property="Background" Value="{DynamicResource Primary1}"/>
+			    <Setter Property="Background" Value="{DynamicResource Primary}"/>
 			    <Setter Property="VerticalAlignment" Value="Center"/>
 			    <Setter Property="Template" Value="{StaticResource FullColorButton}"/>
 		    </Style>
@@ -862,7 +878,7 @@
 		    <Style x:Key="FullSecondaryButton" TargetType="Button">
 			    <Setter Property="Foreground" Value="White"/>
 			    <Setter Property="FontWeight" Value="Bold"/>
-			    <Setter Property="Background" Value="{DynamicResource Secondary1}"/>
+			    <Setter Property="Background" Value="{DynamicResource Secondary}"/>
 			    <Setter Property="VerticalAlignment" Value="Center"/>
 			    <Setter Property="Template" Value="{StaticResource FullColorButton}"/>
 		    </Style>
@@ -871,7 +887,7 @@
 			    <Border x:Name="Border"
 			            BorderThickness="1"
 			            BorderBrush="{DynamicResource Text}"
-			            Background="{DynamicResource Background2}">
+			            Background="{DynamicResource Background1}">
 				    <Grid>
 					    <Grid.ColumnDefinitions>
 						    <ColumnDefinition Width="*"/>
@@ -949,7 +965,7 @@
 										<Border x:Name="DropDownBorder"
 										                BorderThickness="1,0,1,1"
 										                BorderBrush="{DynamicResource Text}"
-										                Background="{DynamicResource Background3}"/>
+										                Background="{DynamicResource Background2}"/>
 										<ScrollViewer Margin="4,6" SnapsToDevicePixels="True">
 											<StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
 										</ScrollViewer>
@@ -984,7 +1000,7 @@
 						    
 						    <ControlTemplate.Triggers>
 							    <Trigger Property="IsMouseOver" Value="True">
-								    <Setter Property="Background" Value="{DynamicResource Primary1}"/>
+								    <Setter Property="Background" Value="{DynamicResource Primary}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>
@@ -1005,7 +1021,7 @@
 							        BorderThickness="1"/>
 							<ControlTemplate.Triggers>
 								<Trigger Property="IsMouseOver" Value="True">
-									<Setter Property="BorderBrush" Value="{DynamicResource Secondary1}"/>
+									<Setter Property="BorderBrush" Value="{DynamicResource Secondary}"/>
 								</Trigger>
 							</ControlTemplate.Triggers>
 						</ControlTemplate>
@@ -1045,7 +1061,7 @@
 		    <Style TargetType="CheckBox" x:Key="SliderCheckbox">
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 			    <Setter Property="FontSize" Value="15"/>
-			    <Setter Property="Background" Value="{DynamicResource Background1}"/>
+			    <Setter Property="Background" Value="{DynamicResource BackgroundDeep}"/>
 			    <Setter Property="Template">
 				    <Setter.Value>
 					    <ControlTemplate TargetType="CheckBox">
@@ -1070,7 +1086,7 @@
 						    
 						    <ControlTemplate.Triggers>
 							    <Trigger Property="IsChecked" Value="True">
-								    <Setter Property="Background" Value="{DynamicResource Primary1}"/>
+								    <Setter Property="Background" Value="{DynamicResource Primary}"/>
 								    <Setter TargetName="Circle" Property="Fill" Value="{DynamicResource Text}"/>
 								    <Setter TargetName="Circle" Property="HorizontalAlignment" Value="Right"/>
 							    </Trigger>

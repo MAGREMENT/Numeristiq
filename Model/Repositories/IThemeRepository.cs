@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Core.BackTracking;
 using Model.Utility;
 using Model.Utility.Collections;
@@ -19,13 +20,14 @@ public class Theme : INamed, ICopyable<Theme>
 {
     public string Name { get; }
     
+    public RGB BackgroundDeep {get; set;}
     public RGB Background1 {get; set;}
     public RGB Background2 {get; set;}
-    public RGB Background3 {get; set;}
-    public RGB Primary1 {get; set;}
-    public RGB Primary2 {get; set;}
-    public RGB Secondary1 {get; set;}
-    public RGB Secondary2 {get; set;}
+    public RGB BackgroundHighlighted { get; set; }
+    public RGB Primary {get; set;}
+    public RGB PrimaryHighlighted {get; set;}
+    public RGB Secondary {get; set;}
+    public RGB SecondaryHighlighted {get; set;}
     public RGB Accent {get; set;}
     public RGB Text {get; set;}
     public RGB On {get; set;}
@@ -61,9 +63,9 @@ public class Theme : INamed, ICopyable<Theme>
     public RGB HighlightColor7 {get; set;}
 
     public Theme(string name,
-        RGB background1, RGB background2, RGB background3,
-        RGB primary1, RGB primary2,
-        RGB secondary1, RGB secondary2, 
+        RGB backgroundDeep, RGB background1, RGB background2, RGB backgroundHighlighted,
+        RGB primary, RGB primaryHighlighted,
+        RGB secondary, RGB secondaryHighlighted, 
         RGB accent,
         RGB text,
         RGB on, RGB off,
@@ -72,13 +74,14 @@ public class Theme : INamed, ICopyable<Theme>
         RGB highlightColor1, RGB highlightColor2, RGB highlightColor3, RGB highlightColor4, RGB highlightColor5, RGB highlightColor6, RGB highlightColor7)
     {
         Name = name;
+        BackgroundDeep = backgroundDeep;
         Background1 = background1;
         Background2 = background2;
-        Background3 = background3;
-        Primary1 = primary1;
-        Primary2 = primary2;
-        Secondary1 = secondary1;
-        Secondary2 = secondary2;
+        BackgroundHighlighted = backgroundHighlighted;
+        Primary = primary;
+        PrimaryHighlighted = primaryHighlighted;
+        Secondary = secondary;
+        SecondaryHighlighted = secondaryHighlighted;
         Accent = accent;
         Text = text;
         On = on;
@@ -117,13 +120,14 @@ public class Theme : INamed, ICopyable<Theme>
     //Tried using reflection but the order wouldn't stay the same so we have this stupid shit instead
     public IEnumerable<(string, RGB)> AllColors()
     {
+        yield return (nameof(BackgroundDeep), BackgroundDeep);
         yield return (nameof(Background1), Background1);
         yield return (nameof(Background2), Background2);
-        yield return (nameof(Background3), Background3);
-        yield return (nameof(Primary1), Primary1);
-        yield return (nameof(Primary2), Primary2);
-        yield return (nameof(Secondary1), Secondary1);
-        yield return (nameof(Secondary2), Secondary2);
+        yield return (nameof(BackgroundHighlighted), BackgroundHighlighted);
+        yield return (nameof(Primary), Primary);
+        yield return (nameof(PrimaryHighlighted), PrimaryHighlighted);
+        yield return (nameof(Secondary), Secondary);
+        yield return (nameof(SecondaryHighlighted), SecondaryHighlighted);
         yield return (nameof(Accent), Accent);
         yield return (nameof(Text), Text);
         yield return (nameof(On), On);
@@ -155,8 +159,8 @@ public class Theme : INamed, ICopyable<Theme>
         yield return (nameof(HighlightColor3), HighlightColor3);
         yield return (nameof(HighlightColor4), HighlightColor4);
         yield return (nameof(HighlightColor5), HighlightColor5);
-        yield return (nameof(HighlightColor7), HighlightColor7);
         yield return (nameof(HighlightColor6), HighlightColor6);
+        yield return (nameof(HighlightColor7), HighlightColor7);
     }
 
     public RGB GetColor(string name)
@@ -178,9 +182,9 @@ public class Theme : INamed, ICopyable<Theme>
     
     public Theme Copy(string name)
     {
-        return new Theme(name, Background1, Background2, Background3
-            , Primary1, Primary2
-            , Secondary1, Secondary2
+        return new Theme(name, BackgroundDeep, Background1, Background2, BackgroundHighlighted
+            , Primary, PrimaryHighlighted
+            , Secondary, SecondaryHighlighted
             , Accent
             , Text
             , On, Off
@@ -211,5 +215,16 @@ public class Theme : INamed, ICopyable<Theme>
         }
 
         return true;
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = 0;
+        foreach (var color in AllColors())
+        {
+            hash = HashCode.Combine(color.Item2.GetHashCode());
+        }
+
+        return hash;
     }
 }

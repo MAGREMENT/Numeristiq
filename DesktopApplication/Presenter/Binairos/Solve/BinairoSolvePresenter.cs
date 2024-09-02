@@ -16,7 +16,7 @@ public class BinairoSolvePresenter : SolveWithStepsPresenter<IBinairoHighlighter
     public SettingsPresenter SettingsPresenter { get; }
     
     public BinairoSolvePresenter(IBinairoSolveView view, BinairoSolver solver, Settings settings) : 
-        base(new BinairoHighlightTranslator(view.Drawer))
+        base(new DefaultHighlightTranslator<IBinairoDrawer ,IBinairoHighlighter>(view.Drawer))
     {
         _view = view;
         _solver = solver;

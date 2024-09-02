@@ -15,7 +15,8 @@ public class NonogramSolvePresenter : SolveWithStepsPresenter<INonogramHighlight
     private readonly INonogramSolveView _view;
     private readonly NonogramSolver _solver;
 
-    public NonogramSolvePresenter(INonogramSolveView view, NonogramSolver solver) : base(new NonogramHighlightTranslator(view.Drawer))
+    public NonogramSolvePresenter(INonogramSolveView view, NonogramSolver solver) : base(
+        new DefaultHighlightTranslator<INonogramDrawer ,INonogramHighlighter>(view.Drawer))
     {
         _view = view;
         _solver = solver;

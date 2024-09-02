@@ -5,11 +5,18 @@ namespace Repository;
 public class ThemeMultiRepository : IThemeRepository
 {
     private readonly List<IThemeRepository> _repositories = new();
+    
+    public int WritableStart { get; }
 
     public ThemeMultiRepository(IThemeRepository writable, params IThemeRepository[] others)
     {
-        _repositories.Add(writable);
         _repositories.AddRange(others);
+        _repositories.Add(writable);
+
+        for (int i = 0; i < _repositories.Count - 1; i++)
+        {
+            WritableStart += _repositories[i].Count();
+        }
     }
     
     public IReadOnlyList<Theme> GetThemes()
@@ -22,8 +29,6 @@ public class ThemeMultiRepository : IThemeRepository
 
         return result;
     }
-
-    public int WritableCount() => _repositories[0].Count();
 
     public int Count()
     {
@@ -38,12 +43,12 @@ public class ThemeMultiRepository : IThemeRepository
 
     public void AddTheme(Theme theme)
     {
-        _repositories[0].AddTheme(theme);
+        _repositories[^1].AddTheme(theme);
     }
 
     public void ChangeTheme(int index, Theme newTheme)
     {
-        _repositories[0].ChangeTheme(index, newTheme);
+        _repositories[^1].ChangeTheme(index, newTheme);
     }
 
     public Theme? FindTheme(string name)
@@ -59,6 +64,6 @@ public class ThemeMultiRepository : IThemeRepository
 
     public void ClearThemes()
     {
-        _repositories[0].ClearThemes();
+        _repositories[^1].ClearThemes();
     }
 }

@@ -11,4 +11,5 @@ public interface ISudokuBankRepository
     void Clear();
     void Add(Sudoku sudoku, Difficulty difficulty);
     int Add(IEnumerable<(Sudoku, Difficulty)> entries);
+    bool IsAvailable();
 }

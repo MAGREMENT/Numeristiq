@@ -14,7 +14,7 @@
         <WindowChrome CaptionHeight="40"/>
     </WindowChrome.WindowChrome>
     
-    <Grid Background="{DynamicResource Background1}">
+    <Grid Background="{DynamicResource BackgroundDeep}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -29,7 +29,7 @@
                                   ChangeSize="ChangeSize" Close="Close" AllowResize="False" AppTitle="Manage Criteria's"/>
         
         <Border Grid.Row="1" Grid.Column="0" Margin="10" Padding="10"
-                Background="{DynamicResource Background2}">
+                Background="{DynamicResource Background1}">
             <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderThickness="1"
                     BorderBrush="{DynamicResource Text}">
                 <Grid>
@@ -82,7 +82,7 @@
             </ScrollViewer>
             
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Style="{StaticResource BorderButton}" Background="{DynamicResource Primary1}"
+                <Button Style="{StaticResource BorderButton}" Background="{DynamicResource Primary}"
                         Margin="5" Click="OnSave">Save</Button>
                 <Button Style="{StaticResource BorderButton}" Background="{DynamicResource Off}"
                         Margin="5" Click="OnCancel">Cancel</Button>

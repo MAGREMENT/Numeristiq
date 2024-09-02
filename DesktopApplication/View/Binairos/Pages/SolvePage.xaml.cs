@@ -65,9 +65,9 @@ public partial class SolvePage : IBinairoSolveView
         };
         board.SetResourceReference(DrawingBoard.LineBrushProperty, "Text");
         board.SetResourceReference(DrawingBoard.DefaultNumberBrushProperty, "Text");
-        board.SetResourceReference(DrawingBoard.ClueNumberBrushProperty, "Primary1");
+        board.SetResourceReference(DrawingBoard.ClueNumberBrushProperty, "Primary");
         board.SetResourceReference(BinairoBoard.CircleFirstColorProperty, "Text");
-        board.SetResourceReference(BinairoBoard.CircleSecondColorProperty, "Secondary1");
+        board.SetResourceReference(BinairoBoard.CircleSecondColorProperty, "Secondary");
         board.SetResourceReference(DrawingBoard.LinkBrushProperty, "Accent");
 
         return board;

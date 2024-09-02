@@ -8,7 +8,7 @@
       xmlns:view="clr-namespace:DesktopApplication.View"
       mc:Ignorable="d"
       Title="GeneratePage" d:DesignHeight="660" d:DesignWidth="1400">
-    <Grid Background="{DynamicResource Background1}">
+    <Grid Background="{DynamicResource BackgroundDeep}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -23,7 +23,7 @@
         </Grid.ColumnDefinitions>
         
         <Border Grid.Row="0" Grid.Column="0" Width="450" Height="320" Margin="10" 
-                Background="{DynamicResource Background2}" CornerRadius="5">
+                Background="{DynamicResource Background1}" CornerRadius="5">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -71,7 +71,7 @@
                   x:Name="ToBin"/>
             
             <Border Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" CornerRadius="5"
-                    Background="{DynamicResource Background2}" Padding="10">
+                    Background="{DynamicResource Background1}" Padding="10">
                 <Image Source="../../Images/bin.png" Width="50" Height="50" x:Name="Bin"/>
             </Border>
             
@@ -100,7 +100,7 @@
         </Grid>
         
         <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Margin="10"
-                 Padding="5" CornerRadius="5" Background="{DynamicResource Background2}">
+                 Padding="5" CornerRadius="5" Background="{DynamicResource Background1}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"/>

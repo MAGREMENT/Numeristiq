@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d">
-    <Border CornerRadius="5" Height="40" Background="{DynamicResource Background3}">
+    <Border CornerRadius="5" Height="40" Background="{DynamicResource Background2}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -19,7 +19,7 @@
             <Button Style="{StaticResource ForegroundButton}"
                     Grid.Column="0" Click="PageBefore" x:Name="MinusButton"
                     VerticalAlignment="Center" Margin="0 0 5 0"
-                    Background="{DynamicResource Background3}"
+                    Background="{DynamicResource Background2}"
                     Width="30" Height="30" >
                 <Path Width="30" Height="30" 
                       Stroke="{Binding Path=Foreground,
@@ -37,9 +37,9 @@
                        x:Name="Before" Margin="0 0 5 0" FontWeight="Bold">1</TextBlock>
             
             <Border Grid.Column="3" Width="30" Height="30" VerticalAlignment="Center"
-                    CornerRadius="5" Background="{DynamicResource Primary1}">
+                    CornerRadius="5" Background="{DynamicResource Primary}">
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="CurrentTb" 
-                           Foreground="{DynamicResource Background2}" FontSize="20"
+                           Foreground="{DynamicResource Background1}" FontSize="20"
                            FontWeight="Bold">2</TextBlock>
             </Border>
             
@@ -56,7 +56,7 @@
             <Button Style="{StaticResource ForegroundButton}"
                     Grid.Column="6" Click="PageAfter" x:Name="PlusButton"
                     Margin="5 0 0 0"  VerticalAlignment="Center"
-                    Background="{DynamicResource Background3}">
+                    Background="{DynamicResource Background2}">
                 <Path Width="30" Height="30" 
                       Stroke="{Binding Path=Foreground,
 								 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"

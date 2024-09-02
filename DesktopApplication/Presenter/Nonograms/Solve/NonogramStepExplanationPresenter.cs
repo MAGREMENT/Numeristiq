@@ -7,8 +7,9 @@ namespace DesktopApplication.Presenter.Nonograms.Solve;
 public class NonogramStepExplanationPresenter : AbstractStepExplanationPresenter<INonogramHighlighter,
     IStep<INonogramHighlighter, IDichotomousSolvingState>, IDichotomousSolvingState>
 {
-    public NonogramStepExplanationPresenter(IStepExplanationView view, IStep<INonogramHighlighter, IDichotomousSolvingState> step) 
-        : base(view, step, new NonogramHighlightTranslator(view.GetDrawer<INonogramDrawer>()))
+    public NonogramStepExplanationPresenter(IStepExplanationView view, IStep<INonogramHighlighter,
+        IDichotomousSolvingState> step) : base(view, step,
+        new DefaultHighlightTranslator<INonogramDrawer ,INonogramHighlighter>(view.GetDrawer<INonogramDrawer>()))
     {
     }
 

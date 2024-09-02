@@ -65,7 +65,8 @@ public class UniqueBatchNumericPuzzleRuleCrafter : ILocalNumericPuzzleRuleCrafte
 
     public bool CanCraft(IReadOnlyNumericYourPuzzle puzzle, IReadOnlyList<Cell> cells)
     {
-        if (cells.Count is <= 1 or > 9 || !puzzle.AreAllEnabled(cells)) return false; //TODO check for adjacency
+        if (cells.Count is <= 1 or > 9 || !CellUtility.AreAllAdjacent(cells) 
+                                       || !puzzle.AreAllEnabled(cells)) return false;
 
         foreach (var local in puzzle.LocalRules)
         {

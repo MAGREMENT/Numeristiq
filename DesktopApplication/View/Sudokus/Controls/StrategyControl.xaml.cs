@@ -24,14 +24,14 @@ public partial class StrategyControl
         if (strategy.Locked) LockStrategy();
         else EnableStrategy(strategy.Enabled);
 
-        MouseEnter += (_, _) => SetResourceReference(BackgroundProperty, "Background3");
-        MouseLeave += (_, _) => SetResourceReference(BackgroundProperty, "Background2");
+        MouseEnter += (_, _) => SetResourceReference(BackgroundProperty, "BackgroundHighlighted");
+        MouseLeave += (_, _) => SetResourceReference(BackgroundProperty, "Background1");
         SizeChanged += (_, _) => SetNameToPosition(_state);
     }
 
     public void SetHighlight(bool highlighted)
     {
-        StrategyName.SetResourceReference(ForegroundProperty, highlighted ? "Primary1" : "Text");
+        StrategyName.SetResourceReference(ForegroundProperty, highlighted ? "Primary" : "Text");
     }
 
     public async void EnableStrategy(bool enabled)

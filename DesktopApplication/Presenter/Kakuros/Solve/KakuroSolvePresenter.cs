@@ -22,7 +22,7 @@ public class KakuroSolvePresenter : SolveWithStepsPresenter<INumericSolvingState
     private EditMode _mode = EditMode.Default;
 
     public KakuroSolvePresenter(IKakuroSolveView view, KakuroSolver solver, Settings settings)
-        : base(new KakuroHighlightTranslator(view.Drawer))
+        : base(new DefaultHighlightTranslator<IKakuroSolverDrawer, INumericSolvingStateHighlighter>(view.Drawer))
     {
         _view = view;
         _solver = solver;

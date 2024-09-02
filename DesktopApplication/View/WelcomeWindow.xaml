@@ -14,7 +14,7 @@
         <WindowChrome CaptionHeight="40"/>
     </WindowChrome.WindowChrome>
     
-    <Grid Background="{DynamicResource Background1}">
+    <Grid Background="{DynamicResource BackgroundDeep}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="Auto"/>

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="32" d:DesignWidth="200"
-             Background="{DynamicResource Background2}"
+             Background="{DynamicResource Background1}"
              MouseLeftButtonDown="OnClick">
     <Grid Height="32">
         <Grid.ColumnDefinitions>

@@ -67,9 +67,10 @@ public static class DAOManager
     
     public static ThemeDAO To(Theme theme)
     {
-        return new ThemeDAO(theme.Name, theme.Background1.ToHex(), theme.Background2.ToHex(), theme.Background3.ToHex()
-            , theme.Primary1.ToHex(), theme.Primary2.ToHex()
-            , theme.Secondary1.ToHex(), theme.Secondary2.ToHex()
+        return new ThemeDAO(theme.Name, theme.BackgroundDeep.ToHex(), theme.Background1.ToHex(),
+            theme.Background2.ToHex(), theme.BackgroundHighlighted.ToHex()
+            , theme.Primary.ToHex(), theme.PrimaryHighlighted.ToHex()
+            , theme.Secondary.ToHex(), theme.SecondaryHighlighted.ToHex()
             , theme.Accent.ToHex()
             , theme.Text.ToHex()
             , theme.On.ToHex(), theme.Off.ToHex()
@@ -87,9 +88,10 @@ public static class DAOManager
     
     public static Theme To(ThemeDAO dao)
     {
-        return new Theme(dao.Name, RGB.FromHex(dao.Background1), RGB.FromHex(dao.Background2), RGB.FromHex(dao.Background3)
-            , RGB.FromHex(dao.Primary1), RGB.FromHex(dao.Primary2)
-            , RGB.FromHex(dao.Secondary1), RGB.FromHex(dao.Secondary2)
+        return new Theme(dao.Name, RGB.FromHex(dao.BackgroundDeep), RGB.FromHex(dao.Background1),
+            RGB.FromHex(dao.Background2), RGB.FromHex(dao.BackgroundHighlighted)
+            , RGB.FromHex(dao.Primary), RGB.FromHex(dao.PrimaryHighlighted)
+            , RGB.FromHex(dao.Secondary), RGB.FromHex(dao.SecondaryHighlighted)
             , RGB.FromHex(dao.Accent)
             , RGB.FromHex(dao.Text)
             , RGB.FromHex(dao.On), RGB.FromHex(dao.Off)
@@ -110,9 +112,9 @@ public record StrategyDAO(string Name, bool Enabled, bool Locked, InstanceHandli
     Dictionary<string, string>? Settings);
 
 public record ThemeDAO(string Name,
-    int Background1, int Background2, int Background3,
-    int Primary1, int Primary2,
-    int Secondary1, int Secondary2,
+    int BackgroundDeep, int Background1, int Background2, int BackgroundHighlighted,
+    int Primary, int PrimaryHighlighted,
+    int Secondary, int SecondaryHighlighted,
     int Accent,
     int Text,
     int On, int Off,
@@ -127,32 +129,33 @@ public record ThemeDAO(string Name,
     int HighlightColor1, int HighlightColor2, int HighlightColor3, int HighlightColor4,
     int HighlightColor5, int HighlightColor6, int HighlightColor7)
 {
-    public const int ColorCount = 40;
+    public const int ColorCount = 41;
     
     public ThemeDAO(string name, List<int> colors) : this(name,colors[0],colors[1],
         colors[2],colors[3],colors[4],colors[5],
         colors[6],colors[7],colors[8],colors[9],colors[10],colors[11],
         colors[12],colors[13],colors[14],colors[15],
-        colors[16],colors[17],colors[18],colors[18],
+        colors[16],colors[17],colors[18],colors[19],
         colors[20],colors[21],colors[22],
         colors[23],colors[24],colors[25],colors[26],
         colors[27],colors[28],colors[29],
         colors[30],colors[31],colors[32],
         colors[33],colors[34],colors[35],colors[36],
-        colors[37],colors[38], colors[39])
+        colors[37],colors[38], colors[39], colors[40])
     {
         Name = name;
     }
     
     public IEnumerable<int> AllColors()
     {
+        yield return BackgroundDeep;
         yield return Background1;
         yield return Background2;
-        yield return Background3;
-        yield return Primary1;
-        yield return Primary2;
-        yield return Secondary1;
-        yield return Secondary2;
+        yield return BackgroundHighlighted;
+        yield return Primary;
+        yield return PrimaryHighlighted;
+        yield return Secondary;
+        yield return SecondaryHighlighted;
         yield return Accent;
         yield return Text;
         yield return On;
@@ -184,7 +187,7 @@ public record ThemeDAO(string Name,
         yield return HighlightColor3;
         yield return HighlightColor4;
         yield return HighlightColor5;
-        yield return HighlightColor7;
         yield return HighlightColor6;
+        yield return HighlightColor7;
     }
 }

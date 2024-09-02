@@ -6,7 +6,7 @@
              xmlns:c="clr-namespace:DesktopApplication.View.Controls"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="380">
-    <Border Background="{DynamicResource Background2}" BorderBrush="{DynamicResource Background2}" Padding="5, 0, 0, 0"
+    <Border Background="{DynamicResource Background1}" BorderBrush="{DynamicResource Background1}" Padding="5, 0, 0, 0"
             BorderThickness="2, 0, 0, 0" MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave" MouseLeftButtonDown="OnClick">
         <Grid>
             <Grid.RowDefinitions>
@@ -19,7 +19,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
         
-            <Border Grid.Row="0" Grid.Column="0" Background="{DynamicResource Background3}" Height="40"
+            <Border Grid.Row="0" Grid.Column="0" Background="{DynamicResource Background2}" Height="40"
                     MinWidth="40" Margin="5" CornerRadius="5">
                 <TextBlock FontSize="20" Foreground="{DynamicResource Text}" 
                            FontWeight="Bold" x:Name="Number" VerticalAlignment="Center" HorizontalAlignment="Center">0</TextBlock>

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Border Background="{DynamicResource Background2}" BorderBrush="{DynamicResource Text}"
+    <Border Background="{DynamicResource Background1}" BorderBrush="{DynamicResource Text}"
             BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Center">
         <Grid>
             <Grid.RowDefinitions>
@@ -19,7 +19,7 @@
             </Grid.ColumnDefinitions>
             
             <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" BorderThickness="0, 0, 1, 0"
-                    BorderBrush="{DynamicResource Background3}">
+                    BorderBrush="{DynamicResource Background2}">
                 <TextBlock x:Name="Number" FontSize="22" VerticalAlignment="Center" Text="0"
                            HorizontalAlignment="Center" Foreground="{DynamicResource Text}"/>
             </Border>

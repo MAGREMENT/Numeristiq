@@ -14,7 +14,7 @@
         <WindowChrome CaptionHeight="40"/>
     </WindowChrome.WindowChrome>
     
-    <Grid Background="{StaticResource Background1}">
+    <Grid Background="{StaticResource BackgroundDeep}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
@@ -32,7 +32,7 @@
         <StackPanel Grid.Row="1" Grid.Column="0" x:Name="TitlePanel" VerticalAlignment="Stretch"
                     Width="200" Margin="10,10, 0, 0"/>
         
-        <Border Grid.Row="1" Grid.Column="1" Margin="0,10,10,0" Background="{DynamicResource Background2}"
+        <Border Grid.Row="1" Grid.Column="1" Margin="0,10,10,0" Background="{DynamicResource Background1}"
                 Padding="5" CornerRadius="0, 5, 5, 0">
             <ScrollViewer  Style="{StaticResource TransparentBarScrollViewer}">
                 <StackPanel x:Name="SettingPanel"/>
@@ -47,13 +47,13 @@
             </Grid.ColumnDefinitions>
             
             <Border Grid.Column="0" Margin="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                    CornerRadius="5" Background="{DynamicResource Background2}" Padding="10, 5">
+                    CornerRadius="5" Background="{DynamicResource Background1}" Padding="10, 5">
                 <TextBlock x:Name="Description" HorizontalAlignment="Left" VerticalAlignment="Center"
                            Foreground="{DynamicResource Text}" FontSize="14" TextWrapping="Wrap"/>
             </Border>
             
             <Button Grid.Column="1" Margin="0,0,5,0" Style="{StaticResource BorderButton}"
-                    VerticalAlignment="Center" HorizontalAlignment="Center" Click="Save" Background="{DynamicResource Primary1}">Save</Button>
+                    VerticalAlignment="Center" HorizontalAlignment="Center" Click="Save" Background="{DynamicResource Primary}">Save</Button>
             <Button Grid.Column="2" Margin="0, 0, 10, 0" VerticalAlignment="Center" Style="{StaticResource BorderButton}"
                     HorizontalAlignment="Center" Click="Cancel" Background="{DynamicResource Off}">Cancel</Button>
         </Grid>

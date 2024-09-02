@@ -19,16 +19,15 @@ public class ThemeManager
 
     public IEnumerable<(Theme, bool)> EnumerateThemesAndState(int except)
     {
-        var c = _repository.WritableCount();
         for (int i = 0; i < _themes.Count; i++)
         { 
-            if(i != except) yield return (_themes[i], i < c);
+            if(i != except) yield return (_themes[i], IsEditable(i));
         }
     }
 
     public bool IsEditable(int index)
     {
-        return index < _repository.WritableCount();
+        return index >= _repository.WritableStart;
     }
 
     public int IndexOf(string name)
