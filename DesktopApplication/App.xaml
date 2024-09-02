@@ -527,7 +527,7 @@
 		    <Style TargetType="TextBlock" x:Key="SearchResult">
 			    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 			    <Setter Property="FontSize" Value="16"/>
-			    <Setter Property="Padding" Value="5"/>
+			    <Setter Property="Padding" Value="8"/>
 			    <Style.Triggers>
 				    <Trigger Property="IsMouseOver" Value="True">
 					    <Setter Property="Background" Value="{DynamicResource Background3}"/>

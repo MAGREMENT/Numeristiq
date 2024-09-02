@@ -66,7 +66,6 @@ public partial class ChooseStepWindow : IChooseStepView
     {
         if (index < 0 || index >= StepsPanel.Children.Count || StepsPanel.Children[index] is not TextBlock tb) return;
 
-        tb.FontSize = 25;
         tb.FontWeight = FontWeights.SemiBold;
     }
 
@@ -74,7 +73,6 @@ public partial class ChooseStepWindow : IChooseStepView
     {
         if (index < 0 || index >= StepsPanel.Children.Count || StepsPanel.Children[index] is not TextBlock tb) return;
 
-        tb.FontSize = 16;
         tb.FontWeight = FontWeights.Normal;
     }
 
