@@ -5,6 +5,7 @@ using Model.Core.Generators;
 using Model.Sudokus;
 using Model.Sudokus.Generator;
 using Model.Sudokus.Solver;
+using Model.Utility;
 using Model.Utility.Collections;
 
 namespace DesktopApplication.Presenter.Sudokus.Generate;
@@ -62,7 +63,7 @@ public class SudokuGeneratePresenter
         var sudoku = format switch
         {
             SudokuStringFormat.Base32 => SudokuTranslator.TranslateSolvingState(
-                SudokuTranslator.TranslateBase32Format(s, new AlphabeticalBase32Translator())),
+                SudokuTranslator.TranslateBase32Format(s, DefaultBase32Alphabet.Instance)),
             SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(s),
             SudokuStringFormat.Grid => SudokuTranslator.TranslateSolvingState(
                 SudokuTranslator.TranslateGridFormat(s, _setting.SoloToGiven.Get().ToBool())),

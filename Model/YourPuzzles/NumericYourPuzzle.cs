@@ -47,6 +47,17 @@ public class NumericYourPuzzle : IReadOnlyNumericYourPuzzle
         _global.Add(rule);
     }
     
+    public void AddRuleUnchecked(INumericPuzzleRule rule)
+    {
+        switch (rule)
+        {
+            case ILocalNumericPuzzleRule l : AddRuleUnchecked(l);
+                break;
+            case IGlobalNumericPuzzleRule g : AddRuleUnchecked(g);
+                break;
+        }
+    }
+    
     public void RemoveRule(int index, bool isGlobal)
     {
         if (isGlobal) _global.RemoveAt(index);
@@ -79,6 +90,11 @@ public class NumericYourPuzzle : IReadOnlyNumericYourPuzzle
     {
         var cell = _cells[row, col];
         if (!cell.IsEnabled) cell.Value = 0;
+    }
+
+    public bool IsEnabled(int row, int col)
+    {
+        return _cells[row, col].IsEnabled;
     }
 
     public bool IsCorrect()
@@ -169,9 +185,11 @@ public class NumericCell
 }
 
 public interface INumericPuzzleRule : INamed
-{
+{ 
+    string Abbreviation { get; }
     IEnumerable<ISetting> EnumerateSettings();
     bool IsRespected(IReadOnlyNumericYourPuzzle board);
+    string DataToString();
 }
 
 public interface IGlobalNumericPuzzleRule : INumericPuzzleRule

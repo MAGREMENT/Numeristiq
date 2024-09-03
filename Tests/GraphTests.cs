@@ -4,6 +4,7 @@ using Model.Sudokus;
 using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
+using Model.Utility;
 using Tests.Utility;
 
 namespace Tests;
@@ -16,7 +17,7 @@ public class GraphTests
         var solver = new SudokuSolver();
         var sudoku = SudokuTranslator.TranslateBase32Format(
             "0hj0a6t009t21474n04eh8062146li815cloecj8a4tgc4tg1s7c032e2o0mc811ea0cg1c80e81h0ko42kq215e582a41h005a2qa1o9a9oa02gag03g105411818110309c0e0e0g10h05g10541180h1803a0a0",
-            new AlphabeticalBase32Translator());
+            DefaultBase32Alphabet.Instance);
         solver.SetState(sudoku);
         
         var graphs = new ConstructedGraph<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>[]
@@ -41,7 +42,7 @@ public class GraphTests
         var solver = new SudokuSolver();
         var sudoku = SudokuTranslator.TranslateBase32Format(
             "0hj0a6t009t21474n04eh8062146li815cloecj8a4tgc4tg1s7c032e2o0mc811ea0cg1c80e81h0ko42kq215e582a41h005a2qa1o9a9oa02gag03g105411818110309c0e0e0g10h05g10541180h1803a0a0",
-            new AlphabeticalBase32Translator());
+            DefaultBase32Alphabet.Instance);
         solver.SetState(sudoku);
 
         var graphs = new ConstructedGraph<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>[]

@@ -52,6 +52,11 @@ public abstract class DrawingBoard : FrameworkElement
         return BitmapFrame.Create(rtb);
     }
 
+    public double GetPixelsPerDip()
+    {
+        return VisualTreeHelper.GetDpi(this).PixelsPerDip;
+    }
+
     protected abstract void Draw(DrawingContext context);
     
     #region DependencyProperties
@@ -152,13 +157,13 @@ public interface IDrawableComponent<in T> : IDrawableComponent
 
 public static class DrawableComponentHelper
 {
-    public static void DrawTextInRectangle(DrawingContext context, FormattedText _text, Rect rect,
+    public static void DrawTextInRectangle(DrawingContext context, FormattedText text, Rect rect,
         ComponentHorizontalAlignment ha, ComponentVerticalAlignment va)
     {
-        var deltaX = (rect.Width - _text.Width) / 2;
-        var deltaY = (rect.Height - _text.Height) / 2;
+        var deltaX = (rect.Width - text.Width) / 2;
+        var deltaY = (rect.Height - text.Height) / 2;
             
-        context.DrawText(_text, new Point(rect.X + deltaX * (int)ha, rect.Y + deltaY * (int)va));
+        context.DrawText(text, new Point(rect.X + deltaX * (int)ha, rect.Y + deltaY * (int)va));
     }
 
     public static Brush GetBrush(InwardBrushType type, ICellGameDrawingData data)
@@ -221,6 +226,8 @@ public interface IDefaultDrawingData
     
     Typeface Typeface { get; }
     CultureInfo CultureInfo { get; }
+
+    double GetPixelsPerDip();
 }
 
 public interface ICellGameDrawingData : IDefaultDrawingData
@@ -389,7 +396,7 @@ public class AmountDrawableComponent : IDrawableComponent<IKakuroDrawingData>
     {
         var amount = data.GetAmount(_row, _col, _orientation);
         var text = new FormattedText(amount.ToString(), data.CultureInfo, FlowDirection.LeftToRight,
-            data.Typeface, data.AmountHeight * 3 / 4, data.AmountBrush, 1);
+            data.Typeface, data.AmountHeight * 3 / 4, data.AmountBrush, data.GetPixelsPerDip());
 
         double t, l;
         if (_orientation == Orientation.Vertical)
@@ -557,7 +564,7 @@ public class SolutionDrawableComponent : IDrawableComponent<INumericCellGameDraw
     {
         var brush = data.IsClue(_row, _col) ? data.ClueNumberBrush : data.DefaultNumberBrush;
         var text = new FormattedText(_solution.ToString(), data.CultureInfo, FlowDirection.LeftToRight, data.Typeface,
-            data.CellSize / 4 * 3, brush, 1);
+            data.CellSize / 4 * 3, brush, data.GetPixelsPerDip());
         DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfCell(_col),
             data.GetTopOfCell(_row), data.CellSize, data.CellSize), ComponentHorizontalAlignment.Center,
             ComponentVerticalAlignment.Center);
@@ -608,7 +615,7 @@ public class BinairoSolutionDrawableComponent : IDrawableComponent<IBinairoDrawi
         {
             var brush = data.IsClue(_row, _col) ? data.ClueNumberBrush : data.DefaultNumberBrush;
             var text = new FormattedText((_solution - 1).ToString(), data.CultureInfo, FlowDirection.LeftToRight, data.Typeface,
-                size / 4 * 3, brush, 1);
+                size / 4 * 3, brush, data.GetPixelsPerDip());
             DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfCell(_col),
                     data.GetTopOfCell(_row), data.CellSize, data.CellSize), ComponentHorizontalAlignment.Center,
                 ComponentVerticalAlignment.Center);
@@ -685,7 +692,7 @@ public class NinePossibilitiesDrawableComponent : IDrawableComponent<INinePossib
             }
             
             var text = new FormattedText(builder.ToString(), data.CultureInfo, FlowDirection.LeftToRight, data.Typeface,
-                data.CellSize / 4, data.DefaultNumberBrush, 1);
+                data.CellSize / 4, data.DefaultNumberBrush, data.GetPixelsPerDip());
             DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfCell(_col), 
                 data.GetTopOfCell(_row), data.CellSize, data.CellSize), ComponentHorizontalAlignment.Center,
                 ComponentVerticalAlignment.Center);
@@ -695,7 +702,7 @@ public class NinePossibilitiesDrawableComponent : IDrawableComponent<INinePossib
             foreach (var possibility in _possibilities)
             {
                 var text = new FormattedText(possibility.ToString(), data.CultureInfo, FlowDirection.LeftToRight,
-                    data.Typeface, data.CellSize / 4, data.DefaultNumberBrush, 1);
+                    data.Typeface, data.CellSize / 4, data.DefaultNumberBrush, data.GetPixelsPerDip());
                 var pSize = data.CellSize / 3;
                 DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfPossibility(_col, possibility),
                     data.GetTopOfPossibility(_row, possibility), pSize, pSize), ComponentHorizontalAlignment.Center,
@@ -727,7 +734,7 @@ public class VaryingPossibilitiesDrawableComponent : IDrawableComponent<IVarying
         {
             var brush = data.IsClue(_row, _col) ? data.ClueNumberBrush : data.DefaultNumberBrush;
             var text = new FormattedText(possibility.ToString(), data.CultureInfo, FlowDirection.LeftToRight,
-                data.Typeface, textSize, brush, 1);
+                data.Typeface, textSize, brush, data.GetPixelsPerDip());
             DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfPossibility(_row, _col,
                 possibility), data.GetTopOfPossibility(_row, _col, possibility), posSize, posSize),
                 ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center);
@@ -1561,7 +1568,7 @@ public class NonogramNumbersDrawableComponent : IDrawableComponent<INonogramDraw
             for (int i = current.Count - 1; i >= 0; i--)
             {
                 var text = new FormattedText(current[i].ToString(), data.CultureInfo, FlowDirection.LeftToRight,
-                    data.Typeface, size, data.LineBrush, 1);
+                    data.Typeface, size, data.LineBrush, data.GetPixelsPerDip());
                 DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.GetLeftOfCell(col),
                         data.CellSize / 2 * (depth - 1), data.CellSize, data.CellSize / 2),
                     ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center);
@@ -1577,7 +1584,7 @@ public class NonogramNumbersDrawableComponent : IDrawableComponent<INonogramDraw
             for (int i = current.Count - 1; i >= 0; i--)
             {
                 var text = new FormattedText(current[i].ToString(), data.CultureInfo, FlowDirection.LeftToRight,
-                    data.Typeface, size, data.LineBrush, 1);
+                    data.Typeface, size, data.LineBrush, data.GetPixelsPerDip());
                 DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(data.CellSize / 2 * (width - 1),
                         data.GetTopOfCell(row), data.CellSize / 2, data.CellSize),
                     ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center);
@@ -1642,7 +1649,7 @@ public class LinePossibilitiesDrawableComponent : IDrawableComponent<ISudokuDraw
         }
 
         var text = new FormattedText(builder.ToString(), data.CultureInfo, FlowDirection.LeftToRight,
-            data.Typeface, data.CellSize / 6, data.DefaultNumberBrush, 1);
+            data.Typeface, data.CellSize / 6, data.DefaultNumberBrush, data.GetPixelsPerDip());
         
         foreach (var entry in _colors)
         {

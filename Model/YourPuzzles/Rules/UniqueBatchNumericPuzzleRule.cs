@@ -3,12 +3,14 @@ using System.Linq;
 using Model.Core.Settings;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.YourPuzzles.Rules;
 
 public class UniqueBatchNumericPuzzleRule : ILocalNumericPuzzleRule
 {
     public const string OfficialName = "Unique Batch";
+    public const string OfficialAbbreviation = "ub";
 
     public string Name => OfficialName;
     
@@ -23,6 +25,8 @@ public class UniqueBatchNumericPuzzleRule : ILocalNumericPuzzleRule
     {
         return Cells;
     }
+
+    public string Abbreviation => OfficialAbbreviation;
 
     public IEnumerable<ISetting> EnumerateSettings()
     {
@@ -42,7 +46,12 @@ public class UniqueBatchNumericPuzzleRule : ILocalNumericPuzzleRule
 
         return true;
     }
-    
+
+    public string DataToString()
+    {
+        return Cells.ToStringSequence("");
+    }
+
     public bool IsStillApplicable(int rowCount, int colCount)
     {
         return ILocalNumericPuzzleRule.DefaultIsStillApplicable(this, rowCount, colCount);
@@ -77,4 +86,10 @@ public class UniqueBatchNumericPuzzleRuleCrafter : ILocalNumericPuzzleRuleCrafte
     }
 
     public ILocalNumericPuzzleRule Craft(IReadOnlyList<Cell> cells) => new UniqueBatchNumericPuzzleRule(cells.ToArray());
+    public string Abbreviation => UniqueBatchNumericPuzzleRule.OfficialAbbreviation;
+    public INumericPuzzleRule? Craft(string s)
+    {
+        var c = s.TryReadCells();
+        return c is null ? null : new UniqueBatchNumericPuzzleRule(c.ToArray());
+    }
 }

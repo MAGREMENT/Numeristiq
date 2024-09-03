@@ -288,7 +288,7 @@ public class SudokuPlayPresenter
         {
             SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(s),
             SudokuStringFormat.Grid => SudokuTranslator.TranslateGridFormat(s, _settings.SoloToGiven.Get().ToBool()),
-            SudokuStringFormat.Base32 => SudokuTranslator.TranslateBase32Format(s, new AlphabeticalBase32Translator()),
+            SudokuStringFormat.Base32 => SudokuTranslator.TranslateBase32Format(s, DefaultBase32Alphabet.Instance),
             _ => throw new Exception()
         };
 

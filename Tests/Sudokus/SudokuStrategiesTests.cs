@@ -473,7 +473,7 @@ public class SudokuStrategiesTests
     {
         strategy.InstanceHandling = InstanceHandling.UnorderedAll;
         _solver.StrategyManager.AddStrategy(strategy);
-        _solver.SetState(SudokuTranslator.TranslateBase32Format(stateBefore32, new AlphabeticalBase32Translator()));
+        _solver.SetState(SudokuTranslator.TranslateBase32Format(stateBefore32, DefaultBase32Alphabet.Instance));
         _solver.Solve(true);
 
         List<NumericChange> progresses = new();
@@ -506,7 +506,7 @@ public class SudokuStrategiesTests
         var result = new SpeedTestResult();
         var nanosPerTick = 1000L * 1000L * 1000L / Stopwatch.Frequency;
         var state = SudokuTranslator.TranslateBase32Format(stateBefore32,
-            new AlphabeticalBase32Translator());
+            DefaultBase32Alphabet.Instance);
 
         for (int n = 0; n <= count; n++)
         {

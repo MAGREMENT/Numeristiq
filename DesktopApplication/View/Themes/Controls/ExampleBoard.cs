@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 using DesktopApplication.View.Controls;
@@ -13,6 +14,10 @@ public class ExampleBoard : DrawingBoard, ISizeOptimizable
     
     private double _cellSize;
     private double _lineWidth;
+    
+    public Typeface Typeface { get; } = new(new FontFamily(new Uri("pack://application:,,,/View/Fonts/"), "./#Roboto Mono"),
+        FontStyles.Normal, FontWeights.Regular, FontStretches.Normal);
+    public CultureInfo CultureInfo { get; } =  CultureInfo.CurrentUICulture;
 
     public double CellSize
     {
@@ -60,8 +65,14 @@ public class ExampleBoard : DrawingBoard, ISizeOptimizable
         int col = 0;
         while (color <= (int)StepColor.Cause10)
         {
-            context.DrawRectangle(App.Current.ThemeInformation.ToBrush((StepColor) color), null,
-                GetGridRect(row, col));
+            var rect = GetGridRect(row, col);
+            context.DrawRectangle(App.Current.ThemeInformation.ToBrush((StepColor) color), null, rect);
+            
+            var text = new FormattedText(((color - (int)StepColor.Cause1 + 1) % 10).ToString(), CultureInfo,
+                FlowDirection.LeftToRight, Typeface, CellSize / 4 * 3, LineBrush, GetPixelsPerDip());
+            DrawableComponentHelper.DrawTextInRectangle(context, text, rect, ComponentHorizontalAlignment.Center,
+                ComponentVerticalAlignment.Center);
+            
             col++;
             if (col >= ColumnCount)
             {

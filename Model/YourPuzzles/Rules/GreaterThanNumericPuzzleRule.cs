@@ -8,6 +8,7 @@ namespace Model.YourPuzzles.Rules;
 public class GreaterThanNumericPuzzleRule : ILocalNumericPuzzleRule
 {
     public const string OfficialName = "Greater Than";
+    public const string OfficialAbbreviation = "gt";
 
     public string Name => OfficialName;
     
@@ -26,6 +27,8 @@ public class GreaterThanNumericPuzzleRule : ILocalNumericPuzzleRule
         yield return Smaller;
     }
 
+    public string Abbreviation => OfficialAbbreviation;
+
     public IEnumerable<ISetting> EnumerateSettings()
     {
         return Enumerable.Empty<ISetting>();
@@ -40,6 +43,11 @@ public class GreaterThanNumericPuzzleRule : ILocalNumericPuzzleRule
         if (sc <= 0) return false;
 
         return gc > sc;
+    }
+
+    public string DataToString()
+    {
+        return $"{Greater}>{Smaller}";
     }
 
     public bool IsStillApplicable(int rowCount, int colCount)
@@ -68,4 +76,14 @@ public class GreaterThanNumericPuzzleRuleCrafter : ILocalNumericPuzzleRuleCrafte
 
     public ILocalNumericPuzzleRule Craft(IReadOnlyList<Cell> cells) =>
         new GreaterThanNumericPuzzleRule(cells[0], cells[1]);
+
+    public string Abbreviation => GreaterThanNumericPuzzleRule.OfficialAbbreviation;
+    public INumericPuzzleRule? Craft(string s)
+    {
+        var index = s.IndexOf('>');
+        if (index == -1 || !s.TryReadCell(0, index, out var greater)
+                        || !s.TryReadCell(index + 1, s.Length, out var smaller)) return null;
+
+        return new GreaterThanNumericPuzzleRule(greater, smaller);
+    }
 }

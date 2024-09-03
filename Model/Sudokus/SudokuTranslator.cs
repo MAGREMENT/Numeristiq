@@ -224,7 +224,7 @@ public static class SudokuTranslator
         return result;
     }
 
-    public static INumericSolvingState TranslateBase32Format(string s, IBase32Translator translator)
+    public static INumericSolvingState TranslateBase32Format(string s, IAlphabet translator)
     {
         var result = new DefaultNumericSolvingState(9, 9);
 
@@ -243,7 +243,7 @@ public static class SudokuTranslator
         return result;
     }
 
-    public static string TranslateBase32Format(INumericSolvingState numericSolvingState, IBase32Translator translator)
+    public static string TranslateBase32Format(INumericSolvingState numericSolvingState, IAlphabet translator)
     {
         var builder = new StringBuilder();
 
@@ -282,59 +282,5 @@ public static class SudokuTranslator
         if (s.Contains('\n')) return SudokuStringFormat.Grid;
 
         return s.Length == 162 ? SudokuStringFormat.Base32 : SudokuStringFormat.Line;
-    }
-}
-
-public interface IBase32Translator
-{
-    public int ToInt(char c);
-    public char ToChar(int n);
-}
-
-public class RFC4648Base32Translator : IBase32Translator
-{
-    public int ToInt(char c)
-    {
-        //65-90 == uppercase letters
-        if (c < 91 && c > 64)
-        {
-            return c - 65;
-        }
-        //50-55 == numbers 2-7
-        if (c < 56 && c > 49)
-        {
-            return c - 24;
-        }
-
-        return 0;
-    }
-
-    public char ToChar(int n)
-    {
-        return n switch
-        {
-            < 26 => (char)(n + 'A'),
-            < 32 => (char)(n + 24),
-            _ => 'A'
-        };
-    }
-}
-
-public class AlphabeticalBase32Translator : IBase32Translator
-{
-    public int ToInt(char c)
-    {
-        return c switch
-        {
-            >= '0' and <= '9' => c - '0',
-            >= 'a' and <= 'w' => c - 'a' + 10,
-            _ => '0'
-        };
-    }
-
-    public char ToChar(int n)
-    {
-        if (n < 10) return (char)(n + '0');
-        return (char)(n - 10 + 'a');
     }
 }

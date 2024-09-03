@@ -10,7 +10,6 @@ namespace DesktopApplication.Presenter.YourPuzzles;
 public class YourPuzzlePresenter
 {
     private readonly NumericYourPuzzle _puzzle = new(5, 5);
-    private readonly NumericRuleBank _bank = new();
     private readonly UniqueList<Cell> _selected = new();
     private readonly IYourPuzzleView _view;
 
@@ -60,8 +59,8 @@ public class YourPuzzlePresenter
 
     public void AddRule(int index, bool isGlobal)
     {
-        if (isGlobal) _puzzle.AddRuleUnchecked(_bank.Craft(index));
-        else _puzzle.AddRuleUnchecked(_bank.Craft(index, _selected));
+        if (isGlobal) _puzzle.AddRuleUnchecked(NumericRuleBank.Craft(index));
+        else _puzzle.AddRuleUnchecked(NumericRuleBank.Craft(index, _selected));
         
         FullUpdate();
     }
@@ -127,7 +126,7 @@ public class YourPuzzlePresenter
     private void UpdateBank()
     {
         _view.ClearRulesInBank();
-        foreach (var result in _bank.SearchFor(_puzzle, _selected))
+        foreach (var result in NumericRuleBank.SearchFor(_puzzle, _selected))
         {
             _view.AddRuleInBank(result);
         }

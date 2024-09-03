@@ -16,7 +16,7 @@ public class TruthAndLinksLogicTests
     {
         var state = SudokuTranslator.TranslateBase32Format(
             "t0o803p00h60p02805tgoot0p00560p0280321o00503p009410hp0sgogs088p8032105l00511s0og21gg0903k00321090541h00hp0p0h8052141h88103h00hp0030h21h005p04109p841p01o03hg05p021",
-            new AlphabeticalBase32Translator());
+            DefaultBase32Alphabet.Instance);
         var solver = new SudokuSolver();
         solver.SetState(state);
 
@@ -60,7 +60,7 @@ public class TruthAndLinksLogicTests
     {
         var state = SudokuTranslator.TranslateBase32Format(
             "t0o803p00h60p02805tgoot0p00560p0280321o00503p009410hp0sgogs088p8032105l00511s0og21gg0903k00321090541h00hp0p0h8052141h88103h00hp0030h21h005p04109p841p01o03hg05p021",
-            new AlphabeticalBase32Translator());
+            DefaultBase32Alphabet.Instance);
         var solver = new SudokuSolver();
         solver.SetState(state);
         

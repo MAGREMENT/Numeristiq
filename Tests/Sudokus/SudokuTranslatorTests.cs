@@ -1,10 +1,11 @@
 ﻿using Model.Sudokus;
+using Model.Utility;
 
 namespace Tests.Sudokus;
 
 public class SudokuTranslatorTests
 {
-    private readonly IBase32Translator[] _translators = { new RFC4648Base32Translator(), new AlphabeticalBase32Translator() };
+    private readonly IAlphabet[] _alphabets = { RFC4648Base32Alphabet.Instance, DefaultBase32Alphabet.Instance };
     
     [Test]
     public void Base32Test()
@@ -24,7 +25,7 @@ public class SudokuTranslatorTests
             "|843    9843   <5>   |<6>    94     <1>   |9873   <2>    9843  |\n" +
             "+--------------------+--------------------+--------------------+\n";
 
-        foreach (var translator in _translators)
+        foreach (var translator in _alphabets)
         {
             Console.WriteLine(start);
             var stateBefore = SudokuTranslator.TranslateGridFormat(start, false);

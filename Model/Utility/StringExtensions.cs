@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Model.Utility;
 
@@ -80,5 +82,66 @@ public static class StringExtensions
     {
         var toAdd = desiredLength - s.Length;
         return fill.Repeat(toAdd) + s;
+    }
+
+    public static bool TryReadCell(this string s, out Cell cell) => s.TryReadCell(0, s.Length, out cell);
+    
+    public static bool TryReadCell(this string s, int from, int to, out Cell cell)
+    {
+        var row = -1;
+        var buffer = 0;
+
+        for (int i = from + 1; i < to; i++)
+        {
+            var c = s[i];
+            if (char.IsDigit(c))
+            {
+                buffer *= 10;
+                buffer += c - '0';
+            }
+            else
+            {
+                if (row != -1)
+                {
+                    cell = new Cell();
+                    return false;
+                }
+
+                row = buffer;
+                buffer = 0;
+            }
+        }
+        
+        if (row <= 0 || buffer <= 0)
+        {
+            cell = new Cell();
+            return false;
+        }
+
+        cell = new Cell(row - 1, buffer - 1);
+        return true;
+    }
+
+    public static List<Cell>? TryReadCells(this string s)
+    {
+        List<Cell> cells = new();
+
+        int start = 0;
+        int current = 1;
+        for (; current < s.Length; current++)
+        {
+            if (s[current] == 'r')
+            {
+                if (!s.TryReadCell(start, current, out var cell)) return null;
+
+                cells.Add(cell);
+                start = current;
+            }
+        }
+        
+        if (!s.TryReadCell(start, current, out var last)) return null;
+
+        cells.Add(last);
+        return cells;
     }
 }

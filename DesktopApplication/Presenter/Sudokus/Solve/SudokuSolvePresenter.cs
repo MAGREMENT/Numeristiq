@@ -227,7 +227,7 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
             SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(state, (SudokuLineFormatEmptyCellRepresentation)
                 _settings.EmptyCellRepresentation.Get().ToInt()),
             SudokuStringFormat.Grid => SudokuTranslator.TranslateGridFormat(state),
-            SudokuStringFormat.Base32 => SudokuTranslator.TranslateBase32Format(state, new AlphabeticalBase32Translator()),
+            SudokuStringFormat.Base32 => SudokuTranslator.TranslateBase32Format(state, DefaultBase32Alphabet.Instance),
             _ => throw new Exception()
         });
     }
@@ -243,7 +243,7 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
                 SetNewState(SudokuTranslator.TranslateGridFormat(s, _settings.SoloToGiven.Get().ToBool()));
                 break;
             case SudokuStringFormat.Base32 :
-                SetNewState(SudokuTranslator.TranslateBase32Format(s, new AlphabeticalBase32Translator()));
+                SetNewState(SudokuTranslator.TranslateBase32Format(s, DefaultBase32Alphabet.Instance));
                 break;
         }
     }
