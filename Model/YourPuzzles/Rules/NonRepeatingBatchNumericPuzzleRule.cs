@@ -7,16 +7,16 @@ using Model.Utility.Collections;
 
 namespace Model.YourPuzzles.Rules;
 
-public class UniqueBatchNumericPuzzleRule : ILocalNumericPuzzleRule
+public class NonRepeatingBatchNumericPuzzleRule : ILocalNumericPuzzleRule
 {
-    public const string OfficialName = "Unique Batch";
-    public const string OfficialAbbreviation = "ub";
+    public const string OfficialName = "Non-Repeating Batch";
+    public const string OfficialAbbreviation = "nb";
 
     public string Name => OfficialName;
     
     public Cell[] Cells { get; }
 
-    public UniqueBatchNumericPuzzleRule(Cell[] cells)
+    public NonRepeatingBatchNumericPuzzleRule(Cell[] cells)
     {
         Cells = cells;
     }
@@ -68,28 +68,28 @@ public class UniqueBatchNumericPuzzleRule : ILocalNumericPuzzleRule
     }
 }
 
-public class UniqueBatchNumericPuzzleRuleCrafter : ILocalNumericPuzzleRuleCrafter
+public class NonRepeatingBatchNumericPuzzleRuleCrafter : ILocalNumericPuzzleRuleCrafter
 {
-    public string Name => UniqueBatchNumericPuzzleRule.OfficialName;
+    public string Name => NonRepeatingBatchNumericPuzzleRule.OfficialName;
 
     public bool CanCraft(IReadOnlyNumericYourPuzzle puzzle, IReadOnlyList<Cell> cells)
     {
         if (cells.Count is <= 1 or > 9 || !CellUtility.AreAllAdjacent(cells) 
                                        || !puzzle.AreAllEnabled(cells)) return false;
 
-        foreach (var local in puzzle.LocalRules)
+        foreach (var local in puzzle.LocalRules.ForAll<NonRepeatingBatchNumericPuzzleRule>())
         {
-            if (local is UniqueBatchNumericPuzzleRule u && u.Overlaps(cells)) return false;
+            if (local.Overlaps(cells)) return false;
         }
 
         return true;
     }
 
-    public ILocalNumericPuzzleRule Craft(IReadOnlyList<Cell> cells) => new UniqueBatchNumericPuzzleRule(cells.ToArray());
-    public string Abbreviation => UniqueBatchNumericPuzzleRule.OfficialAbbreviation;
+    public ILocalNumericPuzzleRule Craft(IReadOnlyList<Cell> cells) => new NonRepeatingBatchNumericPuzzleRule(cells.ToArray());
+    public string Abbreviation => NonRepeatingBatchNumericPuzzleRule.OfficialAbbreviation;
     public INumericPuzzleRule? Craft(string s)
     {
         var c = s.TryReadCells();
-        return c is null ? null : new UniqueBatchNumericPuzzleRule(c.ToArray());
+        return c is null ? null : new NonRepeatingBatchNumericPuzzleRule(c.ToArray());
     }
 }

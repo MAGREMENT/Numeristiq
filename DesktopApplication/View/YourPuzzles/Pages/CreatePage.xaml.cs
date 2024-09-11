@@ -180,6 +180,11 @@ public partial class CreatePage : IYourPuzzleView
         CurrentRules.Children.Add(button);
     }
 
+    public void SetYourPuzzleString(string s)
+    {
+        PuzzleString.SetText(s);
+    }
+
     public override string Header => "Create";
     public override void OnShow()
     {
@@ -224,5 +229,15 @@ public partial class CreatePage : IYourPuzzleView
     private void UpdateColumnCount(int number)
     {
         ((DimensionChooser)Embedded.SideControls[1]!).SetDimension(number);
+    }
+
+    private void OnShowed()
+    {
+        _presenter.ShowPuzzleString();
+    }
+
+    private void OnTextChange(string s)
+    {
+        _presenter.OnNewPuzzle(s);
     }
 }

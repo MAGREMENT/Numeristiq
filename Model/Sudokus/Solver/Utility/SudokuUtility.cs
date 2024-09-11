@@ -9,6 +9,11 @@ namespace Model.Sudokus.Solver.Utility;
 
 public static class SudokuUtility
 {
+    public static int GetBox(this Cell cell)
+    {
+        return cell.Row / 3 * 3 + cell.Column / 3;
+    }
+    
     public static CellPossibility[] Cast(IReadOnlyList<NumericChange> changes)
     {
         var result = new CellPossibility[changes.Count];

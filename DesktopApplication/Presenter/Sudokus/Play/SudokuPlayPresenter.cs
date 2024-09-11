@@ -222,7 +222,7 @@ public class SudokuPlayPresenter
         else _view.OpenOptionDialog("Paste", i =>
         {
             Paste(s, (SudokuStringFormat)i);
-        }, EnumConverter.ToStringArray<SudokuStringFormat>(SpaceConverter.Instance));
+        });
     }
 
     public void ComputePossibilities()

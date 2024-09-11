@@ -48,7 +48,7 @@ public class ThemeMultiRepository : IThemeRepository
 
     public void ChangeTheme(int index, Theme newTheme)
     {
-        _repositories[^1].ChangeTheme(index, newTheme);
+        _repositories[^1].ChangeTheme(index - WritableStart, newTheme);
     }
 
     public Theme? FindTheme(string name)

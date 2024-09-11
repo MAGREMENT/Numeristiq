@@ -116,12 +116,25 @@ public class NumericYourPuzzle : IReadOnlyNumericYourPuzzle
     {
         foreach (var cell in cells)
         {
-            if (_cells[cell.Row, cell.Column].Value == -1) return false;
+            if (!_cells[cell.Row, cell.Column].IsEnabled) return false;
         }
 
         return true;
     }
-    
+
+    public bool AreAllEnabled()
+    {
+        for (int row = 0; row < RowCount; row++)
+        {
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                if (!_cells[row, col].IsEnabled) return false;
+            }
+        }
+
+        return true;
+    }
+
     public void ChangeSize(int rowCount, int colCount)
     {
         if (rowCount == RowCount && colCount == ColumnCount) return;
@@ -158,11 +171,17 @@ public class NumericYourPuzzle : IReadOnlyNumericYourPuzzle
 
 public interface IReadOnlyNumericYourPuzzle : ICellsAndDigitsPuzzle
 {
+    public int RowCount { get; }
+    public int ColumnCount { get; }
+    
     public int this[Cell cell] { get; set; }
     public IReadOnlyList<IGlobalNumericPuzzleRule> GlobalRules { get; }
     public IReadOnlyList<ILocalNumericPuzzleRule> LocalRules { get; }
 
     bool AreAllEnabled(IEnumerable<Cell> cells);
+    bool AreAllEnabled();
+    bool IsEnabled(int row, int col);
+    bool IsEnabled(Cell cell) => IsEnabled(cell.Row, cell.Column);
 }
 
 public class NumericCell

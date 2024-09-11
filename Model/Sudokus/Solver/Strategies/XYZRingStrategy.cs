@@ -187,7 +187,7 @@ public class XYZRingReportBuilder : IChangeReportBuilder<NumericChange, ISudokuS
     }
 
     private string Description() =>
-            $"XYZ-Ring in {_hinge}, {_hingeRow} & {_hingeColumn} + {new CellPossibility(_hingeRow, _poss)}" +
+            $"XYZ-Ring in {_hinge}, {_hingeRow} & {_hingeColumn} with {new CellPossibility(_hingeRow, _poss)}" +
             $" - {_rowFriend} = {_columnFriend} - {new CellPossibility(_hingeColumn, _poss)}";
 
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

@@ -7,6 +7,7 @@ using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -284,7 +285,7 @@ public class WXYZWingReportBuilder : IChangeReportBuilder<NumericChange, ISudoku
             });
         }
 
-        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>($"WXYZ-Wing in {cells.ToStringSequence(", ")}", lighter =>
         {
             foreach (var cell in cells)
             {

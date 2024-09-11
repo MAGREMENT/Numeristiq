@@ -195,7 +195,7 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
         else _view.OpenOptionDialog("Copy", i =>
         {
             Copy(_currentlyDisplayedState, (SudokuStringFormat)i);
-        }, EnumConverter.ToStringArray<SudokuStringFormat>(SpaceConverter.Instance));
+        });
     }
 
     public void Paste(string s)
@@ -205,7 +205,7 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
         else _view.OpenOptionDialog("Paste", i =>
         {
             Paste(s, (SudokuStringFormat)i);
-        }, EnumConverter.ToStringArray<SudokuStringFormat>(SpaceConverter.Instance));
+        });
     }
     
     public void Apply(BuiltChangeCommit<NumericChange, ISudokuHighlighter> commit)

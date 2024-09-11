@@ -6,19 +6,21 @@
         xmlns:dialog="clr-namespace:DesktopApplication.View.HelperWindows.Dialog"
         mc:Ignorable="d"
         Title="OptionChooserDialog"
-        SizeToContent="WidthAndHeight">
-    <Grid Background="{DynamicResource BackgroundDeep}" Width="300" MinHeight="100">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        SizeToContent="WidthAndHeight"
+        d:DesignHeight="100">
+    <Border Background="{DynamicResource BackgroundDeep}" BorderBrush="{DynamicResource BackgroundHighlighted}"
+            BorderThickness="1" Width="250">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
         
-        <Border Grid.Row="0" HorizontalAlignment="Stretch" Height="50" Background="{DynamicResource Background1}"
-                BorderBrush="{DynamicResource Background2}" BorderThickness="0, 0, 0, 1">
-            <TextBlock FontSize="30" Foreground="{DynamicResource Text}" VerticalAlignment="Center"
+            <TextBlock Grid.Row="0" FontSize="20" Margin="0 5 0 0" FontWeight="SemiBold"
+                       Foreground="{DynamicResource Text}" VerticalAlignment="Center"
                        HorizontalAlignment="Center" x:Name="OptionName">Name</TextBlock>
-        </Border>
         
-        <StackPanel Grid.Row="1" x:Name="Panel" Margin="20, 0, 0, 0"/>
-    </Grid>
+            <StackPanel Grid.Row="1" x:Name="Panel" Margin="0, 10, 0, 0"/>
+        </Grid>
+    </Border>
 </dialog:DialogWindow>

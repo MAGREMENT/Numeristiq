@@ -2,6 +2,7 @@
 using System.Linq;
 using Model.Core.Settings;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace Model.YourPuzzles.Rules;
 
@@ -65,10 +66,9 @@ public class GreaterThanNumericPuzzleRuleCrafter : ILocalNumericPuzzleRuleCrafte
         if (cells.Count != 2 || !puzzle.AreAllEnabled(cells) 
                              || !cells[0].IsAdjacentTo(cells[1])) return false;
 
-        foreach (var local in puzzle.LocalRules)
+        foreach (var local in puzzle.LocalRules.ForAll<GreaterThanNumericPuzzleRule>())
         {
-            if(local is GreaterThanNumericPuzzleRule g && cells.Contains(g.Smaller)
-               && cells.Contains(g.Greater)) return false;
+            if(cells.Contains(local.Smaller) && cells.Contains(local.Greater)) return false;
         }
 
         return true;

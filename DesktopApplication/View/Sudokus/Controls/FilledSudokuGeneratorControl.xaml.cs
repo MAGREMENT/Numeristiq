@@ -53,7 +53,10 @@ public partial class FilledSudokuGeneratorControl
 
     private void OnSeedClick(object sender, MouseButtonEventArgs e)
     {
-        var window = new OptionChooserDialog("Copy", i =>
+        var window = OptionChooserDialog.TryCreate("Copy", typeof(SudokuStringFormat));
+        if (window is null) return;
+
+        window.OptionChosen += i =>
         {
             SeedText.SetResourceReference(ForegroundProperty, "Text");
             Seed.SetResourceReference(BorderBrushProperty, "Primary");
@@ -64,7 +67,7 @@ public partial class FilledSudokuGeneratorControl
 
             _isRandom = false;
             SeedSelected?.Invoke(Clipboard.GetText(), (SudokuStringFormat)i);
-        }, EnumConverter.ToStringArray<SudokuStringFormat>(new SpaceConverter()));
+        };
         
         window.Show();
     }

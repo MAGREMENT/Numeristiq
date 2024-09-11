@@ -10,4 +10,5 @@ public interface IYourPuzzleView
     void AddRuleInBank(RuleBankSearchResult result);
     void ClearCurrentRules();
     void AddCurrentRule(INumericPuzzleRule rule, int index, bool isGlobal);
+    void SetYourPuzzleString(string s);
 }

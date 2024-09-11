@@ -127,7 +127,7 @@ public class XWingReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSol
 
     private string Description()
     {
-        return $"XWing in {GetLineAsString(_unit, _unit1, _linePos)}, {GetLineAsString(_unit, _unit2, _linePos)} for {_number}";
+        return $"X-Wing in {GetLineAsString(_unit, _unit1, _linePos)}, {GetLineAsString(_unit, _unit2, _linePos)} for {_number}";
     }
 
     private string GetLineAsString(Unit unit, int number, IReadOnlyLinePositions linePos)

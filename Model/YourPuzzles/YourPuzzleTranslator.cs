@@ -26,7 +26,7 @@ public static class YourPuzzleTranslator
                 else
                 {
                     var n = puzzle[row, col];
-                    builder.Append(n == 0 ? '.' : n + '0');
+                    builder.Append(n == 0 ? '.' : (char)(n + '0'));
                 }
             }
         }
@@ -47,7 +47,7 @@ public static class YourPuzzleTranslator
 
     public static NumericYourPuzzle TranslateLineFormat(string s)
     {
-        var split = s.Split();
+        var split = s.Split(':');
         if (split.Length != 3) return new NumericYourPuzzle(0, 0);
 
         var current = split[0];
@@ -61,7 +61,7 @@ public static class YourPuzzleTranslator
 
         foreach (var rString in split[2].Split(';', StringSplitOptions.RemoveEmptyEntries))
         {
-            if(rString.Length <= 2) continue;
+            if(rString.Length < 2) continue;
 
             var rule = NumericRuleBank.Craft(rString[..2], rString[2..]);
             if(rule is not null) puzzle.AddRuleUnchecked(rule);
@@ -73,7 +73,7 @@ public static class YourPuzzleTranslator
         {
             for (c = 0; c < puzzle.ColumnCount && i < current.Length; c++)
             {
-                var ch = s[i];
+                var ch = current[i];
                 switch (ch)
                 {
                     case '-' :

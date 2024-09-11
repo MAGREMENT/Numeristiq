@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace DesktopApplication.View.Controls;
@@ -71,12 +72,12 @@ public partial class HideableTextBox
 
     private void Copy(object sender, RoutedEventArgs e)
     {
-        TextBox.Text = Clipboard.GetText();
+        Clipboard.SetText(TextBox.Text);
     }
     
     private void Paste(object sender, RoutedEventArgs e)
     {
-        Clipboard.SetText(TextBox.Text);
+        TextBox.Text = Clipboard.GetText();
     }
 }
 

@@ -11,6 +11,7 @@ using DesktopApplication.View.Controls;
 using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.HelperWindows.Dialog;
 using Model.Core;
+using Model.Sudokus;
 using Model.Sudokus.Player;
 using Model.Utility;
 
@@ -75,10 +76,13 @@ public partial class PlayPage : ISudokuPlayView
         ClueText.Dispatcher.Invoke(() => ClueText.Text = text);
     }
     
-    public void OpenOptionDialog(string name, OptionChosen callback, params string[] options)
+    public void OpenOptionDialog(string name, OptionChosen callback)
     {
-        var dialog = new OptionChooserDialog(name, callback, options);
-        dialog.Show();
+        var window = OptionChooserDialog.TryCreate(name, typeof(SudokuStringFormat));
+        if (window is null) return;
+
+        window.OptionChosen += i => callback(i);
+        window.Show();
     }
 
     public void UnselectPossibilityCursor()

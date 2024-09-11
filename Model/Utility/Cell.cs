@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Utility.BitSets;
 
 namespace Model.Utility;
 
@@ -92,21 +93,18 @@ public static class CellUtility
 
     public static bool AreAllAdjacent(IReadOnlyList<Cell> cells)
     {
+        InfiniteBitSet set = new();
         for (int i = 0; i < cells.Count - 1; i++)
         {
-            bool notOk = true;
             for (int j = i + 1; j < cells.Count; j++)
             {
-                if (cells[i].IsAdjacentTo(cells[j]))
-                {
-                    notOk = false;
-                    break;
-                }
+                if (!cells[i].IsAdjacentTo(cells[j])) continue;
+                
+                set.Add(i);
+                set.Add(j);
             }
-
-            if (notOk) return false;
         }
 
-        return true;
+        return set.Count == cells.Count;
     }
 }

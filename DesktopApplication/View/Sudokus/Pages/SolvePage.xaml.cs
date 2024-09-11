@@ -12,6 +12,7 @@ using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.HelperWindows.Dialog;
 using DesktopApplication.View.Sudokus.Controls;
 using Microsoft.Win32;
+using Model.Sudokus;
 using Model.Sudokus.Solver;
 
 namespace DesktopApplication.View.Sudokus.Pages;
@@ -106,10 +107,13 @@ public partial class SolvePage : ISudokuSolveView
         sc.LockStrategy();
     }
 
-    public void OpenOptionDialog(string name, OptionChosen callback, params string[] options)
+    public void OpenOptionDialog(string name, OptionChosen callback)
     {
-        var dialog = new OptionChooserDialog(name, callback, options);
-        dialog.Show();
+        var window = OptionChooserDialog.TryCreate(name, typeof(SudokuStringFormat));
+        if (window is null) return;
+
+        window.OptionChosen += i => callback(i);
+        window.Show();
     }
 
     #endregion
@@ -130,11 +134,11 @@ public partial class SolvePage : ISudokuSolveView
             BackgroundBrush = Brushes.Transparent
         };
 
-        board.SetResourceReference(LayeredDrawingBoard.DefaultNumberBrushProperty, "Text");
-        board.SetResourceReference(LayeredDrawingBoard.LineBrushProperty, "Text");
-        board.SetResourceReference(LayeredDrawingBoard.CursorBrushProperty, "Secondary");
-        board.SetResourceReference(LayeredDrawingBoard.ClueNumberBrushProperty, "Primary");
-        board.SetResourceReference(LayeredDrawingBoard.LinkBrushProperty, "Accent");
+        board.SetResourceReference(DrawingBoard.DefaultNumberBrushProperty, "Text");
+        board.SetResourceReference(DrawingBoard.LineBrushProperty, "Text");
+        board.SetResourceReference(DrawingBoard.CursorBrushProperty, "Secondary");
+        board.SetResourceReference(DrawingBoard.ClueNumberBrushProperty, "Primary");
+        board.SetResourceReference(DrawingBoard.LinkBrushProperty, "Accent");
 
         return board;
     }

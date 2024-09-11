@@ -9,7 +9,7 @@ namespace DesktopApplication.Presenter.YourPuzzles;
 
 public class YourPuzzlePresenter
 {
-    private readonly NumericYourPuzzle _puzzle = new(5, 5);
+    private NumericYourPuzzle _puzzle = new(5, 5);
     private readonly UniqueList<Cell> _selected = new();
     private readonly IYourPuzzleView _view;
 
@@ -17,6 +17,17 @@ public class YourPuzzlePresenter
     {
         _view = view;
         FullUpdate();
+    }
+
+    public void OnNewPuzzle(string s)
+    {
+        _puzzle = YourPuzzleTranslator.TranslateLineFormat(s);
+        FullUpdate();
+    }
+
+    public void ShowPuzzleString()
+    {
+        _view.SetYourPuzzleString(YourPuzzleTranslator.TranslateLineFormat(_puzzle));
     }
 
     public void SetRowCount(int diff)
@@ -91,7 +102,7 @@ public class YourPuzzlePresenter
         {
             switch (rule)
             {
-                case UniqueBatchNumericPuzzleRule ub :
+                case NonRepeatingBatchNumericPuzzleRule ub :
                     foreach (var cell in ub.Cells)
                     {
                         if (ub.Cells.Contains(new Cell(cell.Row + 1, cell.Column)))

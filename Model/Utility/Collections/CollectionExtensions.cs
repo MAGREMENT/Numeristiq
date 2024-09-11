@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Model.Utility.Collections;
@@ -61,6 +62,24 @@ public static class CollectionExtensions
         }
 
         return builder.ToString();
+    }
+
+    public static IEnumerable<TNew> ForAll<TNew>(this IEnumerable enumerable)
+    {
+        foreach (var e in enumerable)
+        {
+            if (e is TNew n) yield return n;
+        }
+    }
+    
+    public static bool Has<TNew>(this IEnumerable enumerable)
+    {
+        foreach (var e in enumerable)
+        {
+            if (e is TNew n) return true;
+        }
+
+        return false;
     }
 }
 

@@ -68,28 +68,29 @@ public class TwoStringKiteStrategy : SudokuStrategy
 public class TwoStringKiteReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _possibility;
-    private readonly Cell _inCommon1;
-    private readonly Cell _inCommon2;
-    private readonly Cell _other1;
-    private readonly Cell _other2;
+    private readonly Cell _rCommon;
+    private readonly Cell _cCommon;
+    private readonly Cell _rOther;
+    private readonly Cell _cOther;
 
-    public TwoStringKiteReportBuilder(int possibility, Cell inCommon1, Cell inCommon2, Cell other1, Cell other2)
+    public TwoStringKiteReportBuilder(int possibility, Cell rCommon, Cell cCommon, Cell rOther, Cell cOther)
     {
         _possibility = possibility;
-        _inCommon1 = inCommon1;
-        _inCommon2 = inCommon2;
-        _other1 = other1;
-        _other2 = other2;
+        _rCommon = rCommon;
+        _cCommon = cCommon;
+        _rOther = rOther;
+        _cOther = cOther;
     }
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>($"Two-String Kite for {_possibility} in r{_rCommon.Row + 1}" +
+                                                    $"and c{_cCommon.Column + 1} with the help of b{_rCommon.GetBox() + 1}", lighter =>
         {
-            lighter.HighlightPossibility(_possibility, _inCommon1.Row, _inCommon1.Column, StepColor.Cause1);
-            lighter.HighlightPossibility(_possibility, _inCommon2.Row, _inCommon2.Column, StepColor.Cause1);
-            lighter.HighlightPossibility(_possibility, _other1.Row, _other1.Column, StepColor.Cause1);
-            lighter.HighlightPossibility(_possibility, _other2.Row, _other2.Column, StepColor.Cause1);
+            lighter.HighlightPossibility(_possibility, _rCommon.Row, _rCommon.Column, StepColor.Cause1);
+            lighter.HighlightPossibility(_possibility, _cCommon.Row, _cCommon.Column, StepColor.Cause1);
+            lighter.HighlightPossibility(_possibility, _rOther.Row, _rOther.Column, StepColor.Cause1);
+            lighter.HighlightPossibility(_possibility, _cOther.Row, _cOther.Column, StepColor.Cause1);
             
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });

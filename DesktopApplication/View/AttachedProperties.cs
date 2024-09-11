@@ -3,13 +3,15 @@ using System.Windows.Media;
 
 namespace DesktopApplication.View;
 
-public static class AttachedProperties
+public class AttachedProperties
 {
     public static readonly DependencyProperty HoverBackgroundProperty = DependencyProperty.RegisterAttached(
-        "HoverBackground", typeof(Brush), typeof(AttachedProperties));
+        "HoverBackground", typeof(Brush), typeof(AttachedProperties), 
+        new FrameworkPropertyMetadata());
     
     public static readonly DependencyProperty ButtonCornerRadiusProperty = DependencyProperty.RegisterAttached(
-        "ButtonCornerRadius", typeof(CornerRadius), typeof(AttachedProperties));
+        "ButtonCornerRadius", typeof(CornerRadius), typeof(AttachedProperties), 
+        new FrameworkPropertyMetadata());
     
     public static void SetHoverBackground(DependencyObject element, Brush value)
     {

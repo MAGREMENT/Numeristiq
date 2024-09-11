@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Utility;
 using Model.Utility.Collections;
 using Model.Utility.Collections.Lexicography;
@@ -10,11 +9,14 @@ namespace Model.YourPuzzles;
 
 public static class NumericRuleBank
 {
-    private static readonly IGlobalNumericPuzzleRuleCrafter[] _global = Array.Empty<IGlobalNumericPuzzleRuleCrafter>();
+    private static readonly IGlobalNumericPuzzleRuleCrafter[] _global =
+    {
+        new NonRepeatingLinesNumericPuzzleRuleCrafter()
+    };
 
     private static readonly ILocalNumericPuzzleRuleCrafter[] _local =
     {
-        new UniqueBatchNumericPuzzleRuleCrafter(),
+        new NonRepeatingBatchNumericPuzzleRuleCrafter(),
         new GreaterThanNumericPuzzleRuleCrafter()
     };
 

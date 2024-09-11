@@ -25,7 +25,7 @@
 			<Style TargetType="ToolTip">
 				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
 				<Setter Property="Background" Value="{DynamicResource BackgroundDeep}"/>
-				<Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
+				<Setter Property="BorderBrush" Value="{DynamicResource BackgroundHighlighted}"/>
 			</Style>
 			
 			<ControlTemplate TargetType="Button" x:Key="RoundedButton">
@@ -35,12 +35,12 @@
 					<ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
 				</Border>
 				
-				<ControlTemplate.Triggers>
+				<!-- <ControlTemplate.Triggers>
 					<Trigger Property="IsMouseOver" Value="True">
 						<Setter Property="Background" Value="{Binding Path=(view:AttachedProperties.HoverBackground),
 	                        RelativeSource={RelativeSource TemplatedParent}}"/>
-					</Trigger>
-				</ControlTemplate.Triggers>
+					</Trigger> 
+				</ControlTemplate.Triggers> TODO flickering why ? !-->
 			</ControlTemplate>
 			
 			<Style TargetType="Button" x:Key="PrimaryRoundedButton">
@@ -48,7 +48,8 @@
 				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
 				<Setter Property="Padding" Value="5"/>
 				<Setter Property="Background" Value="{DynamicResource Primary}"/>
-				<Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource PrimaryHighlighted}"/>
+				<Setter Property="view:AttachedProperties.HoverBackground" 
+				        Value="{DynamicResource PrimaryHighlighted}"/>
 			</Style>
 			
 			<Style TargetType="Button" x:Key="SecondaryRoundedButton">
@@ -56,7 +57,8 @@
 				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
 				<Setter Property="Padding" Value="5"/>
 				<Setter Property="Background" Value="{DynamicResource Secondary}"/>
-				<Setter Property="view:AttachedProperties.HoverBackground" Value="{DynamicResource SecondaryHighlighted}"/>
+				<Setter Property="view:AttachedProperties.HoverBackground" 
+				        Value="{DynamicResource Text}"/>
 			</Style>
 			
 			<Style TargetType="Button" x:Key="ForegroundButton">
