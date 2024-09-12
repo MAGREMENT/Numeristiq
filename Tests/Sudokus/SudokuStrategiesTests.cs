@@ -436,6 +436,18 @@ public class SudokuStrategiesTests
 
     #endregion
 
+    [Test]
+    public void AlmostClaimingPairSpeedTest()
+    {
+        const string s =
+            "r0v0u0l00503f00h0909l00hl02181500305b6f6e450090hf0u0v0q4u4u40hg20972m0n0i0m00381110509m00h0h091121g24186o4o0q2q2090541i00h11a2360h24098130g1646241r4q4030hj0a409a0";
+        
+        TestSudokuStrategySpeed(new AlmostClaimingPairStrategy(() => new ListDictionary<Cell, int>()),
+            s, 20000);
+        TestSudokuStrategySpeed(new AlmostClaimingPairStrategy(() => new CandidateListMultiDictionary()),
+            s, 20000);
+    }
+
     private void TestSudokuStrategyInstance(SudokuStrategy strategy, string stateBefore32, string expectedAsString)
     {
         List<NumericChange> progresses = new();

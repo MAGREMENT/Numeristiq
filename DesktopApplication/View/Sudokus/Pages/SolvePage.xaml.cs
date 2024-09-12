@@ -109,7 +109,7 @@ public partial class SolvePage : ISudokuSolveView
 
     public void OpenOptionDialog(string name, OptionChosen callback)
     {
-        var window = OptionChooserDialog.TryCreate(name, typeof(SudokuStringFormat));
+        var window = OptionChooserDialog.TryCreate(name, OptionCollection.SudokuStringFormat);
         if (window is null) return;
 
         window.OptionChosen += i => callback(i);

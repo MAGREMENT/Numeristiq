@@ -23,13 +23,13 @@ public class ThemeCommand : Command
             return;
         }
 
-        var builder = new StringBuilder($"new Theme({theme.Name}");
+        var builder = new StringBuilder($"new Theme(\"{theme.Name}\"");
         int n = 0;
         foreach (var color in theme.AllColors())
         {
             builder.Append(',');
             builder.Append(n == 0 ? '\n' : ' ');
-            builder.Append(color.Item2.ToHex());
+            builder.Append($"RGB.FromHex({color.Item2.ToHex()})");
 
             n = (n + 1) % 4;
         }

@@ -35,12 +35,12 @@
 					<ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
 				</Border>
 				
-				<!-- <ControlTemplate.Triggers>
+				<ControlTemplate.Triggers>
 					<Trigger Property="IsMouseOver" Value="True">
 						<Setter Property="Background" Value="{Binding Path=(view:AttachedProperties.HoverBackground),
-	                        RelativeSource={RelativeSource TemplatedParent}}"/>
-					</Trigger> 
-				</ControlTemplate.Triggers> TODO flickering why ? !-->
+	                        RelativeSource={RelativeSource Self}}"/>
+					</Trigger>
+				</ControlTemplate.Triggers>
 			</ControlTemplate>
 			
 			<Style TargetType="Button" x:Key="PrimaryRoundedButton">
@@ -58,7 +58,7 @@
 				<Setter Property="Padding" Value="5"/>
 				<Setter Property="Background" Value="{DynamicResource Secondary}"/>
 				<Setter Property="view:AttachedProperties.HoverBackground" 
-				        Value="{DynamicResource Text}"/>
+				        Value="{DynamicResource SecondaryHighlighted}"/>
 			</Style>
 			
 			<Style TargetType="Button" x:Key="ForegroundButton">

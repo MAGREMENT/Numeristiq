@@ -102,7 +102,7 @@ public static class StrategyPool
         {MultiSectorLockedSetsStrategy.OfficialName, () => new MultiSectorLockedSetsStrategy(new RowsAndColumnsSearcher(
             3, 5, 1))},
         {DistributedDisjointSubsetStrategy.OfficialName, () => new DistributedDisjointSubsetStrategy(8)},
-        {AlmostClaimingSetStrategy.OfficialNameForType2, () => new AlmostClaimingPairStrategy()},
+        {AlmostClaimingSetStrategy.OfficialNameForType2, () => new AlmostClaimingPairStrategy(() => new CandidateListMultiDictionary())},
         {AlmostClaimingSetStrategy.OfficialNameForType3, () => new AlmostClaimingSetStrategy(3)},
         {OddagonStrategy.OfficialName, () => new OddagonStrategy()},
         {OddagonForcingNetStrategy.OfficialName, () => new OddagonForcingNetStrategy(3)},

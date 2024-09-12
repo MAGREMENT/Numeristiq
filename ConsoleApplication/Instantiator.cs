@@ -72,7 +72,7 @@ public class Instantiator
     public ThemeMultiRepository InstantiateThemeRepository()
     {
         _themeRepository ??= new ThemeMultiRepository(new FileThemeRepository("themes",
-            !Program.IsForProduction, true, new JsonType<List<ThemeDAO>>()),
+            !Program.IsForProduction, true, new ThemeNativeType()),
             new HardCodedThemeRepository());
         return _themeRepository;
     }

@@ -58,6 +58,7 @@ public static class Program
                 .AddCommand(new SudokuBankClearCommand());
             
             instance.Root.AddDirectory(new Directory("Developer"))
+                .AddCommand(new HelpCommand(), true)
                 .AddCommand(new ThemeCommand());
         }
 

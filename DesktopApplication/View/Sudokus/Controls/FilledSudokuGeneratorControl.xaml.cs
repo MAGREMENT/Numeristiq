@@ -53,7 +53,7 @@ public partial class FilledSudokuGeneratorControl
 
     private void OnSeedClick(object sender, MouseButtonEventArgs e)
     {
-        var window = OptionChooserDialog.TryCreate("Copy", typeof(SudokuStringFormat));
+        var window = OptionChooserDialog.TryCreate("Copy", OptionCollection.SudokuStringFormat);
         if (window is null) return;
 
         window.OptionChosen += i =>

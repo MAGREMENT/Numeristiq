@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
@@ -12,9 +13,12 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
 {
     public const string OfficialName = "Almost Claiming Pair";
     
-    public AlmostClaimingPairStrategy() : base(OfficialName, Difficulty.Medium, InstanceHandling.UnorderedAll)
+    private readonly CreateMultiDictionary<Cell, int> _create;
+    
+    public AlmostClaimingPairStrategy(CreateMultiDictionary<Cell, int> create) : base(OfficialName, 
+        Difficulty.Medium, InstanceHandling.UnorderedAll)
     {
-        
+        _create = create;
     }
 
     public override void Apply(ISudokuSolverData data)
@@ -42,7 +46,7 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
 
         if (poss.Count > 2)
         {
-            List<CellPossibility> opportunities = new();
+            var opportunities = _create();
             foreach (var p in poss.EnumeratePossibilities())
             {
                 var positions = data.MiniGridPositionsAt(startRow / 3, startCol / 3, p).Copy();
@@ -51,10 +55,8 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                 if(positions.Count != 1) continue;
 
                 var cell = positions.First();
-                foreach (var cp in opportunities)
+                foreach (var other in opportunities.EnumerateDefinitions(cell))
                 {
-                    if(cp.Row != cell.Row || cp.Column != cell.Column) continue;
-                    
                     for (int sc = 0; sc < 9; sc += 3)
                     {
                         if (sc == startCol) continue;
@@ -62,24 +64,23 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                         for (int c = 0; c < 3; c++)
                         {
                             var maybeBiValue = data.PossibilitiesAt(row, sc + c);
-                            if(maybeBiValue.Count != 2 || !maybeBiValue.Contains(p) || !maybeBiValue.Contains(cp.Possibility)) 
+                            if(maybeBiValue.Count != 2 || !maybeBiValue.Contains(p) || !maybeBiValue.Contains(other)) 
                                 continue;
 
-                            ProcessRowBiValue(data, p, cp.Possibility, row, startCol, sc + c);
-                            ProcessAhsCell(data, p, cp.Possibility, cell);
+                            ProcessRowBiValue(data, p, other, row, startCol, sc + c);
+                            ProcessAhsCell(data, p, other, cell);
 
                             if (data.ChangeBuffer.NeedCommit())
                             {
                                 data.ChangeBuffer.Commit(new AlmostClaimingPairBuilder(startRow, startCol,
-                                    u, Unit.Row, new Cell(row, sc + c), cell,
-                                    p, cp.Possibility));
+                                    u, Unit.Row, new Cell(row, sc + c), cell, p, other));
                                 if(StopOnFirstCommit) return true;
                             }
                         }
                     }
                 }
 
-                opportunities.Add(new CellPossibility(cell, p));
+                opportunities.AddDefinition(cell, p);
             }
             
             opportunities.Clear();
@@ -91,10 +92,8 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                 if(positions.Count != 1) continue;
 
                 var cell = new Cell(row, positions.First());
-                foreach (var cp in opportunities)
+                foreach (var other in opportunities.EnumerateDefinitions(cell))
                 {
-                    if(cp.Row != cell.Row || cp.Column != cell.Column) continue;
-                    
                     for (int r = startRow; r < startRow + 3; r++)
                     {
                         if(r == row) continue;
@@ -102,25 +101,25 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                         for (int c = 0; c < 3; c++)
                         {
                             var maybeBiValue = data.PossibilitiesAt(r, startCol + c);
-                            if(maybeBiValue.Count != 2 || !maybeBiValue.Contains(p) || !maybeBiValue.Contains(cp.Possibility)) 
+                            if(maybeBiValue.Count != 2 || !maybeBiValue.Contains(p) || !maybeBiValue.Contains(other)) 
                                 continue;
 
-                            ProcessBoxRowBiValue(data, p, cp.Possibility, startRow, startCol, row,
+                            ProcessBoxRowBiValue(data, p, other, startRow, startCol, row,
                                 new Cell(r, startCol + c));
-                            ProcessAhsCell(data, p, cp.Possibility, cell);
+                            ProcessAhsCell(data, p, other, cell);
 
                             if (data.ChangeBuffer.NeedCommit())
                             {
                                 data.ChangeBuffer.Commit(new AlmostClaimingPairBuilder(startRow, startCol,
                                     u, Unit.Row, new Cell(r, startCol + c), cell,
-                                    p, cp.Possibility));
+                                    p, other));
                                 if(StopOnFirstCommit) return true;
                             }
                         }
                     }
                 }
                 
-                opportunities.Add(new CellPossibility(cell, p));
+                opportunities.AddDefinition(cell, p);
             }
         }
         
@@ -133,7 +132,7 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
 
         if (poss.Count > 2)
         {
-            List<CellPossibility> opportunities = new();
+            var opportunities = _create();
             foreach (var p in poss.EnumeratePossibilities())
             {
                 var positions = data.MiniGridPositionsAt(startRow / 3, startCol / 3, p).Copy();
@@ -142,10 +141,8 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                 if(positions.Count != 1) continue;
 
                 var cell = positions.First();
-                foreach (var cp in opportunities)
+                foreach (var other in opportunities.EnumerateDefinitions(cell))
                 {
-                    if(cp.Row != cell.Row || cp.Column != cell.Column) continue;
-                    
                     for (int sr = 0; sr < 9; sr += 3)
                     {
                         if (sr == startRow) continue;
@@ -153,24 +150,24 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                         for (int r = 0; r < 3; r++)
                         {
                             var maybeBiValue = data.PossibilitiesAt(sr + r, col);
-                            if(maybeBiValue.Count != 2 || !maybeBiValue.Contains(p) || !maybeBiValue.Contains(cp.Possibility)) 
+                            if(maybeBiValue.Count != 2 || !maybeBiValue.Contains(p) || !maybeBiValue.Contains(other)) 
                                 continue;
 
-                            ProcessColumnBiValue(data, p, cp.Possibility, col, startRow, sr + r);
-                            ProcessAhsCell(data, p, cp.Possibility, cell);
+                            ProcessColumnBiValue(data, p, other, col, startRow, sr + r);
+                            ProcessAhsCell(data, p, other, cell);
 
                             if (data.ChangeBuffer.NeedCommit())
                             {
                                 data.ChangeBuffer.Commit(new AlmostClaimingPairBuilder(startRow, startCol,
                                     u, Unit.Column, new Cell(sr + r, col), cell,
-                                    p, cp.Possibility));
+                                    p, other));
                                 if(StopOnFirstCommit) return true;
                             }
                         }
                     }
                 }
                 
-                opportunities.Add(new CellPossibility(cell, p));
+                opportunities.AddDefinition(cell, p);
             }
             
             opportunities.Clear();
@@ -182,10 +179,8 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                 if(positions.Count != 1) continue;
 
                 var cell = new Cell(positions.First(), col);
-                foreach (var cp in opportunities)
+                foreach (var other in opportunities.EnumerateDefinitions(cell))
                 {
-                    if(cp.Row != cell.Row || cp.Column != cell.Column) continue;
-                    
                     for (int c = startCol; c < startCol + 3; c++)
                     {
                         if(c == col) continue;
@@ -193,25 +188,25 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                         for (int r = 0; r < 3; r++)
                         {
                             var maybeBiValue = data.PossibilitiesAt(startRow + r, c);
-                            if(maybeBiValue.Count != 2 || !maybeBiValue.Contains(p) || !maybeBiValue.Contains(cp.Possibility)) 
+                            if(maybeBiValue.Count != 2 || !maybeBiValue.Contains(p) || !maybeBiValue.Contains(other)) 
                                 continue;
 
-                            ProcessBoxColumnBiValue(data, p, cp.Possibility, startRow, startCol, col,
+                            ProcessBoxColumnBiValue(data, p, other, startRow, startCol, col,
                                 new Cell(startRow + r, c));
-                            ProcessAhsCell(data, p, cp.Possibility, cell);
+                            ProcessAhsCell(data, p, other, cell);
 
                             if (data.ChangeBuffer.NeedCommit())
                             {
                                 data.ChangeBuffer.Commit(new AlmostClaimingPairBuilder(startRow, startCol,
                                     u, Unit.Column, new Cell(startRow + r, c), cell,
-                                    p, cp.Possibility));
+                                    p, other));
                                 if(StopOnFirstCommit) return true;
                             }
                         }
                     }
                 }
                 
-                opportunities.Add(new CellPossibility(cell, p));
+                opportunities.AddDefinition(cell, p);
             }
         }
         
@@ -294,6 +289,50 @@ public class AlmostClaimingPairStrategy : SudokuStrategy //TODO Look into using 
                 data.ChangeBuffer.ProposePossibilityRemoval(p1, row, c);
                 data.ChangeBuffer.ProposePossibilityRemoval(p2, row, c);
             }
+        }
+    }
+}
+
+public delegate IMultiDictionary<TIn, TOut> CreateMultiDictionary<in TIn, TOut>();
+
+public interface IMultiDictionary<in TIn, TOut>
+{
+    void AddDefinition(TIn word, TOut definition);
+    IEnumerable<TOut> EnumerateDefinitions(TIn word);
+    void Clear();
+}
+
+public class ListDictionary<TIn, TOut> : Dictionary<TIn, List<TOut>>, IMultiDictionary<TIn, TOut> where TIn : notnull
+{
+    public void AddDefinition(TIn word, TOut definition)
+    {
+        if (!TryGetValue(word, out var list))
+        {
+            list = new List<TOut>();
+            this[word] = list;
+        }
+
+        list.Add(definition);
+    }
+
+    public IEnumerable<TOut> EnumerateDefinitions(TIn word)
+    {
+        return TryGetValue(word, out var list) ? list : Enumerable.Empty<TOut>();
+    }
+}
+
+public class CandidateListMultiDictionary : List<CellPossibility>, IMultiDictionary<Cell, int>
+{
+    public void AddDefinition(Cell word, int definition)
+    {
+        Add(new CellPossibility(word, definition));
+    }
+
+    public IEnumerable<int> EnumerateDefinitions(Cell word)
+    {
+        foreach (var cp in this)
+        {
+            if (cp.Row == word.Row && cp.Column == word.Column) yield return cp.Possibility;
         }
     }
 }

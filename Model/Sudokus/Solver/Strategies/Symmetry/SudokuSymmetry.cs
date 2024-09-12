@@ -271,8 +271,8 @@ public class ColumnSticksSudokuSymmetry : SudokuSymmetry
         var r = (row / 3) switch
         {
             0 => row + 6,
-            1 => col,
-            2 => col - 6,
+            1 => row,
+            2 => row - 6,
             _ => throw new ArgumentOutOfRangeException()
         };
         var c = (col % 3) switch
@@ -309,8 +309,8 @@ public class RowSticksSudokuSymmetry : SudokuSymmetry
         var r = (row % 3) switch
         {
             0 => row + 2,
-            1 => col,
-            2 => col - 2,
+            1 => row,
+            2 => row - 2,
             _ => throw new ArgumentOutOfRangeException()
         };
         var c = (col / 3) switch
