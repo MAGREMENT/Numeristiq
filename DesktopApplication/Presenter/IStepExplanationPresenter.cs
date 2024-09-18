@@ -41,7 +41,7 @@ public abstract class AbstractStepExplanationPresenter<THighlight, TStep, TState
         
         drawer.ClearHighlights();
         _translator.Translate(_currentlyShown, false);
-        if(_showHighlight) _translator.Translate(_numericStep.HighlightManager, false);
+        if(_showHighlight) _translator.Translate(_numericStep.HighlightCollection, false);
         else drawer.Refresh();
     }
 
@@ -51,7 +51,7 @@ public abstract class AbstractStepExplanationPresenter<THighlight, TStep, TState
         _currentlyShown = null;
         
         drawer.ClearHighlights();
-        if(_showHighlight) _translator.Translate(_numericStep.HighlightManager, false);
+        if(_showHighlight) _translator.Translate(_numericStep.HighlightCollection, false);
         else drawer.Refresh();
     }
 
@@ -66,7 +66,7 @@ public abstract class AbstractStepExplanationPresenter<THighlight, TStep, TState
         _showHighlight = true;
         
         if(_currentlyShown is not null) _translator.Translate(_currentlyShown, true);
-        _translator.Translate(_numericStep.HighlightManager, false);
+        _translator.Translate(_numericStep.HighlightCollection, false);
     }
 }
 

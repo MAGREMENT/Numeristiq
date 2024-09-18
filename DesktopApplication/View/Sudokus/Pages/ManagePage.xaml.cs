@@ -1,21 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Sudokus.Manage;
+using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.View.Settings;
+using DesktopApplication.View.Sudokus.Controls;
 using DesktopApplication.View.Utility;
 using Microsoft.Win32;
+using Model.Core;
 using Model.Core.Descriptions;
+using Model.Core.Highlighting;
 using Model.Sudokus.Solver;
+using Model.Sudokus.Solver.Descriptions;
 
 namespace DesktopApplication.View.Sudokus.Pages;
 
-public partial class ManagePage : ISudokuManageView
+public partial class ManagePage : ISudokuManageView, SudokuDescriptionDisplayer
 {
     private const int ToleranceForDragScroll = 80;
     private const int DragScrollOffset = 60;
@@ -26,6 +29,7 @@ public partial class ManagePage : ISudokuManageView
     public ManagePage()
     {
         InitializeComponent();
+        
         _presenter = PresenterFactory.Instance.Initialize(this);
         _presenter.Initialize();
 
@@ -123,23 +127,25 @@ public partial class ManagePage : ISudokuManageView
     public void SetNotFoundSettings()
     {
         InfoPanel.Children.Clear();
-        
-        //TODO
+
+        var tb = new TextBlock
+        {
+            FontSize = 15,
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            FontWeight = FontWeights.SemiBold,
+            Text = "Add the strategy to your list to see its settings."
+        };
+        tb.SetResourceReference(ForegroundProperty, "Text");
+
+        InfoPanel.Children.Add(tb);
     }
 
-    public void SetStrategyDescription(IDescription description)
+    public void SetStrategyDescription(IDescription<SudokuDescriptionDisplayer> description)
     {
         InfoPanel.Children.Clear();
 
-        foreach (var line in description.EnumerateLines())
-        {
-            var element = TranslateDescriptionLine(line);
-            if (element is not null)
-            {
-                element.Margin = new Thickness(10, 10, 10, 0);
-                InfoPanel.Children.Add(element);
-            }
-        }
+        description.Display(this);
     }
 
     public void ClearSelectedStrategy()
@@ -233,68 +239,6 @@ public partial class ManagePage : ISudokuManageView
         args.Handled = true;
     }
 
-    private static FrameworkElement? TranslateDescriptionLine(IDescriptionLine line)
-    {
-        TextBlock tb;
-        switch (line)
-        {
-            case TextDescriptionLine tdl:
-                tb = new TextBlock
-                {
-                    FontSize = 14,
-                    Text = tdl.Text,
-                    TextWrapping = TextWrapping.Wrap,
-                    TextAlignment = TextAlignment.Center,
-                };
-                
-                tb.SetResourceReference(ForegroundProperty, "Text");
-                return tb;
-            
-            case TextImageDescriptionLine tidl :
-                var grid = new Grid();
-                grid.ColumnDefinitions.Add(new ColumnDefinition
-                {
-                    Width = new GridLength(1, GridUnitType.Star)
-                });
-                grid.ColumnDefinitions.Add(new ColumnDefinition
-                {
-                    Width = new GridLength(1, GridUnitType.Star)
-                });
-                
-                tb = new TextBlock
-                {
-                    FontSize = 14,
-                    Text = tidl.Text,
-                    TextWrapping = TextWrapping.Wrap,
-                    TextAlignment = TextAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center
-                };
-                
-                tb.SetResourceReference(ForegroundProperty, "Text");
-                Grid.SetColumn(tb, tidl.Disposition == TextDisposition.Left ? 0 : 1);
-                grid.Children.Add(tb);
-                
-                var border = new Border
-                {
-                    BorderThickness = new Thickness(3),
-                    Child = new Image
-                    {
-                        Source = new BitmapImage(new Uri($"pack://application:,,,/View/Images/Descriptions/{tidl.ImagePath}")),
-                        VerticalAlignment = VerticalAlignment.Stretch,
-                        HorizontalAlignment = HorizontalAlignment.Stretch
-                    },
-                    VerticalAlignment = VerticalAlignment.Center
-                };
-                border.SetResourceReference(Border.BorderBrushProperty, "BackgroundHighlighted");
-                Grid.SetColumn(border, tidl.Disposition == TextDisposition.Left ? 1 : 0);
-                grid.Children.Add(border);
-                
-                return grid;
-            
-            default: return null;
-        }
-    }
-
     private void Upload(object sender, RoutedEventArgs e)
     {
         _presenter.UploadPreset();
@@ -328,7 +272,75 @@ public partial class ManagePage : ISudokuManageView
     {
         if (_initialized) _presenter.ChangeDisplay(ShownInfo.Documentation);
     }
-}
 
+    public void AddParagraph(string s)
+    {
+        var tb = new TextBlock
+        {
+            FontSize = 14,
+            Text = s,
+            TextWrapping = TextWrapping.Wrap,
+            TextAlignment = TextAlignment.Center,
+        };
+                
+        tb.SetResourceReference(ForegroundProperty, "Text");
+        InfoPanel.Children.Add(tb);
+    }
+
+    public void AddParagraph(string text, INumericSolvingState state, SudokuCropping cropping,
+        IHighlightable<ISudokuHighlighter> highlight, TextDisposition disposition)
+    {
+        var grid = new Grid();
+        grid.ColumnDefinitions.Add(new ColumnDefinition
+        {
+            Width = new GridLength(1, GridUnitType.Star)
+        });
+        grid.ColumnDefinitions.Add(new ColumnDefinition
+        {
+            Width = new GridLength(1, GridUnitType.Star)
+        });
+                
+        var tb = new TextBlock
+        {
+            FontSize = 14,
+            Text = text,
+            TextWrapping = TextWrapping.Wrap,
+            TextAlignment = TextAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+                
+        tb.SetResourceReference(ForegroundProperty, "Text");
+        Grid.SetColumn(tb, disposition == TextDisposition.Left ? 0 : 1);
+        grid.Children.Add(tb);
+
+        var board = CreateBoard(state, highlight, cropping);
+        Grid.SetColumn(board, disposition == TextDisposition.Left ? 1 : 0);
+        grid.Children.Add(board);
+
+        InfoPanel.Children.Add(grid);
+    }
+
+    private SudokuBoard CreateBoard(INumericSolvingState state,
+        IHighlightable<ISudokuHighlighter> highlight, SudokuCropping cropping) //TODO CroppedBoard
+    {
+        var board = new SudokuBoard
+        {
+            PossibilitySize = 10,
+            BigLineWidth = 3,
+            SmallLineWidth = 1,
+        };
+
+        board.SetResourceReference(DrawingBoard.BackgroundBrushProperty, "Background1");
+        board.SetResourceReference(DrawingBoard.ClueNumberBrushProperty, "Primary");
+        board.SetResourceReference(DrawingBoard.DefaultNumberBrushProperty, "Text");
+        board.SetResourceReference(DrawingBoard.LineBrushProperty, "Text");
+        board.SetResourceReference(DrawingBoard.LinkBrushProperty, "Accent");
+
+        SudokuSolvePresenter.SetShownState(board, state, cropping, false, true);
+        _presenter.Highlight(board, highlight);
+        
+        return board;
+    }
+}
 
 public record StrategyDragDropData(string Name, int Index);

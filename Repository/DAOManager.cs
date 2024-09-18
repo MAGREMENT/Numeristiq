@@ -22,7 +22,7 @@ public static class DAOManager
 
     public static SudokuStrategy? To(StrategyDAO dao)
     {
-        var result = StrategyPool.CreateFrom(dao.Name, dao.Enabled, dao.Locked, dao.InstanceHandling);
+        var result = SudokuStrategyPool.CreateFrom(dao.Name, dao.Enabled, dao.Locked, dao.InstanceHandling);
         if (result is null) return null;
 
         if (dao.Settings is null) return result;

@@ -9,7 +9,7 @@
         SizeToContent="WidthAndHeight"
         d:DesignHeight="100">
     <Border Background="{DynamicResource BackgroundDeep}" BorderBrush="{DynamicResource BackgroundHighlighted}"
-            BorderThickness="1" Width="250">
+            BorderThickness="1" Width="250" Padding="10 5">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

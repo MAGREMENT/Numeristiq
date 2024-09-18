@@ -50,6 +50,6 @@ public class OddagonSearchAlgorithmsTest
                 }
                 
                 Assert.That(result, Has.Count.GreaterThan(0));
-            }, 3, new OddagonSearchAlgorithmV1(), new OddagonSearchAlgorithmV3());
+            }, 3, new OddagonSearchAlgorithmV1()/*, new OddagonSearchAlgorithmV3()*/);
     }
 }

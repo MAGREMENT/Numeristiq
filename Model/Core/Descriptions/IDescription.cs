@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿namespace Model.Core.Descriptions;
 
-namespace Model.Core.Descriptions;
-
-public interface IDescription
+public interface IDescription<in TDisplayer> where TDisplayer : IDescriptionDisplayer
 {
-    public IEnumerable<IDescriptionLine> EnumerateLines();
+    void Display(TDisplayer displayer);
+}
+
+public interface IDescriptionDisplayer
+{
+    void AddParagraph(string s);
 }

@@ -26,6 +26,16 @@ public class Chain<TElement, TLink> : IEnumerable<TElement> where TElement : not
         Links = Array.Empty<TLink>();
     }
 
+    public int IndexOf(TElement element)
+    {
+        for (int i = 0; i < Elements.Length; i++)
+        {
+            if (element.Equals(Elements[i])) return i;
+        }
+
+        return -1;
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not Chain<TElement, TLink> chain || chain.Count != Count) return false;

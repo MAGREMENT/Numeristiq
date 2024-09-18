@@ -44,6 +44,23 @@ public class RFC4648Base32Alphabet : IAlphabet
     }
 }
 
+public class DefaultBase16Alphabet : IAlphabet
+{
+    public static DefaultBase16Alphabet Instance { get; } = new();
+    
+    private DefaultBase16Alphabet(){}
+    public int Count => 16;
+    public int ToInt(char c)
+    {
+        return c - 'a';
+    }
+
+    public char ToChar(int n)
+    {
+        return (char)('a' + n);
+    }
+}
+
 public class DefaultBase32Alphabet : IAlphabet
 {
     public static DefaultBase32Alphabet Instance { get; } = new();

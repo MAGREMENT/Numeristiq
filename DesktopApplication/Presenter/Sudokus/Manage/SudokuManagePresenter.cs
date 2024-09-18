@@ -1,4 +1,6 @@
-﻿using Model.Repositories;
+﻿using DesktopApplication.Presenter.Sudokus.Solve;
+using Model.Core.Highlighting;
+using Model.Repositories;
 using Model.Sudokus.Solver;
 using Repository.Files;
 
@@ -9,23 +11,25 @@ public class SudokuManagePresenter
     private readonly ISudokuManageView _view;
     private readonly StrategyManager<SudokuStrategy> _manager;
     private readonly IStrategyRepository<SudokuStrategy> _repo;
+    private readonly Settings _settings;
     
-    private ShownInfo _shownInfo = ShownInfo.Documentation;
+    private ShownInfo _shownInfo = ShownInfo.Settings;
     private string? _currentlyDisplayed;
 
     public SudokuManagePresenter(ISudokuManageView view, StrategyManager<SudokuStrategy> manager, 
-        IStrategyRepository<SudokuStrategy> repo)
+        IStrategyRepository<SudokuStrategy> repo, Settings settings)
     {
         _view = view;
         _manager = manager;
         _repo = repo;
+        _settings = settings;
     }
     
     public void Initialize()
     {
         _view.SetStrategyList(_manager.Strategies);
 
-        foreach (var result in StrategyPool.EnumerateStrategies())
+        foreach (var result in SudokuStrategyPool.EnumerateStrategies())
         {
             _view.AddSearchResult(result);
         }
@@ -35,7 +39,7 @@ public class SudokuManagePresenter
     {
         _view.ClearSearchResults();
 
-        foreach (var result in StrategyPool.EnumerateStrategies(s))
+        foreach (var result in SudokuStrategyPool.EnumerateStrategies(s))
         {
             _view.AddSearchResult(result);
         }
@@ -66,12 +70,12 @@ public class SudokuManagePresenter
         _currentlyDisplayed = s.Name;
         
         if(_shownInfo == ShownInfo.Settings) _view.SetManageableSettings(new StrategySettingsPresenter(s, _repo));
-        else _view.SetStrategyDescription(StrategyPool.GetDescription(s.Name));
+        else _view.SetStrategyDescription(SudokuStrategyPool.GetDescription(s.Name));
     }
 
     public void AddStrategy(string s, int position)
     {
-        var strategy = StrategyPool.CreateFrom(s);
+        var strategy = SudokuStrategyPool.CreateFrom(s);
         if (strategy is null) return;
         
         _manager.AddStrategy(strategy, position);
@@ -130,7 +134,13 @@ public class SudokuManagePresenter
             if(strategy is null) _view.SetNotFoundSettings();
             else _view.SetManageableSettings(new StrategySettingsPresenter(strategy, _repo));
         }
-        else _view.SetStrategyDescription(StrategyPool.GetDescription(s));
+        else _view.SetStrategyDescription(SudokuStrategyPool.GetDescription(s));
+    }
+
+    public void Highlight(ISudokuSolverDrawer drawer, IHighlightable<ISudokuHighlighter> highlight)
+    {
+        var h = new SudokuHighlighterTranslator(drawer, _settings);
+        h.Translate(highlight, true);
     }
 }
 

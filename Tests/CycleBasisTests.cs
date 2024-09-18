@@ -1,7 +1,5 @@
 ﻿using Model.Core.Graphs;
 using Model.Core.Graphs.Implementations;
-using Model.Sudokus.Solver.Utility.Graphs;
-using Model.Sudokus.Solver.Utility.Graphs.Implementations;
 
 namespace Tests;
 
@@ -32,5 +30,18 @@ public class CycleBasisTests
             Console.WriteLine(loop);
         }
         Assert.That(loops, Has.Count.EqualTo(2));
+    }
+
+    [Test]
+    public void CombineLoopsTest() //TODO test more situations + links
+    {
+        var l1 = new Loop<int, LinkStrength>(new[] { 1, 2, 3, 4, 5 }, new LinkStrength[5]);
+        var l2 = new Loop<int, LinkStrength>(new[] { 5, 1, 6 }, new LinkStrength[3]);
+        var expected = new Loop<int, LinkStrength>(new[] { 1, 2, 3, 4, 5, 6 }, new LinkStrength[6]);
+
+        var result = CycleBasis.DefaultCombineLoops(l1, l2);
+        
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.EqualTo(expected));
     }
 }

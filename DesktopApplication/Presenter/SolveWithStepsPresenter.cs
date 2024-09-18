@@ -54,7 +54,7 @@ public abstract class SolveWithStepsPresenter<THighlight, TStep, TState> : ISolv
 
             var log = Steps[index];
             SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
-            _translator.Translate(log.HighlightManager, false); 
+            _translator.Translate(log.HighlightCollection, false); 
         }
     }
 
@@ -66,7 +66,7 @@ public abstract class SolveWithStepsPresenter<THighlight, TStep, TState> : ISolv
         
         var log = Steps[_currentlyOpenedStep];
         SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
-        _translator.Translate(log.HighlightManager, false);
+        _translator.Translate(log.HighlightCollection, false);
     }
 
     public void RequestHighlightChange(int newHighlight)
@@ -74,9 +74,9 @@ public abstract class SolveWithStepsPresenter<THighlight, TStep, TState> : ISolv
         if (_currentlyOpenedStep < 0 || _currentlyOpenedStep >= Steps.Count) return;
         
         var log = Steps[_currentlyOpenedStep];
-        log.HighlightManager.GoTo(newHighlight - 1);
+        log.HighlightCollection.GoTo(newHighlight - 1);
         
-        _translator.Translate(log.HighlightManager, true);
+        _translator.Translate(log.HighlightCollection, true);
     }
 
     public abstract IStepExplanationPresenterBuilder? RequestExplanation();

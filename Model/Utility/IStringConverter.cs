@@ -7,11 +7,11 @@ public interface IStringConverter
     public string Convert(string s);
 }
 
-public class SpaceConverter : IStringConverter
+public class CamelCaseToSpacedConverter : IStringConverter
 {
     private readonly StringBuilder _builder = new();
 
-    public static SpaceConverter Instance { get; } = new();
+    public static CamelCaseToSpacedConverter Instance { get; } = new();
     
     public string Convert(string? s)
     {

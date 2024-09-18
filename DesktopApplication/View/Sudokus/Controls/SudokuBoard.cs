@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Sudokus.Play;
 using DesktopApplication.Presenter.Sudokus.Solve;
@@ -71,6 +72,13 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
             var cell = ComputeSelectedCell(args.GetPosition(this));
             if(cell is not null) CellAddedToSelection?.Invoke(cell[0], cell[1]);
         };
+    }
+
+    public BitmapSource AsImage(int fromRow, int fromColumn, int toRow, int toColumn)
+    {
+        return new CroppedBitmap(AsImage(), new Int32Rect((int)GetLeftOfCellWithBorder(fromColumn),
+            (int)GetTopOfCellWithBorder(fromRow), (int)GetLeftOfCell(toColumn + 1),
+            (int)GetTopOfCell(toRow + 1)));
     }
 
     #region ISudokuDrawingData

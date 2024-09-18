@@ -25,7 +25,7 @@ public class StrategySettingsPresenter : IEnumerable<(ISetting, int)>, ISettingC
         yield return (new BooleanSetting("Enabled", "Is the strategy enabled", _strategy.Enabled), -1);
         yield return (new EnumSetting<InstanceHandling>("Instance handling", "Defines the way different instances" +
                                                                              "of the same strategy during the same search are handled",
-            SpaceConverter.Instance, _strategy.InstanceHandling), -2);
+            CamelCaseToSpacedConverter.Instance, _strategy.InstanceHandling), -2);
         int i = 0;
         foreach (var setting in _strategy.EnumerateSettings())
         {

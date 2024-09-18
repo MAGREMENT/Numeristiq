@@ -40,7 +40,7 @@
                                      IsChecked="True" Margin="0 0 0 10" ToolTip="Select cell number">
                             <Path Width="30" Height="30" Stroke="{Binding Path=Foreground,
 								 RelativeSource={RelativeSource AncestorType={x:Type RadioButton}}}"
-                                  StrokeThickness="2" Data="M 8,12 18,4 V 26"/>
+                                  StrokeThickness="2" Data="M 10,12 16,5 V 26 M 10,26 H 22"/>
                         </RadioButton>
                         
                         <RadioButton Checked="ModeToMerge" Style="{StaticResource SideControlRadioButton}"

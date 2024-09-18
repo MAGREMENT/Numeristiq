@@ -31,6 +31,7 @@ public class PresenterFactory
     private readonly ThemeManager _themeManager;
     
     private readonly IStrategyRepository<SudokuStrategy> _sudokuRepository;
+    private readonly IPuzzlePresetRepository _presetRepository;
     
     private readonly StrategyManager<SudokuStrategy> _sudokuManager = new();
     private readonly StrategyManager<Strategy<ITectonicSolverData>> _tectonicManager = new();
@@ -43,12 +44,14 @@ public class PresenterFactory
         IStrategyRepository<Strategy<ITectonicSolverData>> tectonicRepository,
         IStrategyRepository<Strategy<IKakuroSolverData>> kakuroRepository,
         IStrategyRepository<Strategy<INonogramSolverData>> nonogramRepository,
-        IStrategyRepository<Strategy<IBinairoSolverData>> binairoRepository)
+        IStrategyRepository<Strategy<IBinairoSolverData>> binairoRepository,
+        IPuzzlePresetRepository presetRepository)
     {
         _themeManager = new ThemeManager(repository);
         _settings = new Settings(_themeManager.Themes, settingsRepository);
         _sudokuRepository = sudokuRepository;
-        
+        _presetRepository = presetRepository;
+
         _sudokuManager.AddStrategies(sudokuRepository.GetStrategies());
         _tectonicManager.AddStrategies(tectonicRepository.GetStrategies());
         _kakuroManager.AddStrategies(kakuroRepository.GetStrategies());
@@ -82,7 +85,8 @@ public class PresenterFactory
         StrategyManager = _sudokuManager
     }, _settings);
 
-    public SudokuManagePresenter Initialize(ISudokuManageView view) => new(view, _sudokuManager, _sudokuRepository);
+    public SudokuManagePresenter Initialize(ISudokuManageView view) => new(view, _sudokuManager, _sudokuRepository,
+        _settings);
 
     public SudokuGeneratePresenter Initialize(ISudokuGenerateView view) => new(view, new SudokuSolver
     {
@@ -133,9 +137,11 @@ public class PresenterFactory
         var kakuroRepository = new HardCodedKakuroStrategyRepository();
         var nonogramRepository = new HardCodedNonogramStrategyRepository();
         var binairoRepository = new HardCodedBinairoStrategyRepository();
+        var presetRepository = new FilePuzzlePresetRepository("puzzle-presets",
+            !IsForProduction, true, new JsonType<Dictionary<string, string>>());
 
         return new PresenterFactory(settingsRepository, themeRepository, sudokuRepository, tectonicRepository,
-            kakuroRepository, nonogramRepository, binairoRepository);
+            kakuroRepository, nonogramRepository, binairoRepository, presetRepository);
     }
 
     #endregion

@@ -92,7 +92,7 @@ public class SudokuBackdoorCheckCommand : Command
             new NakedDoublesStrategy(), new HiddenDoublesStrategy(), new NakedSetStrategy(3),
             new HiddenSetStrategy(3), new NakedSetStrategy(4), new HiddenSetStrategy(4),
             new PointingSetStrategy(), new ClaimingSetStrategy(), new XWingStrategy(), new GridFormationStrategy(3),
-            new GridFormationStrategy(4), new SimpleColoringStrategy(), StrategyPool.CreateFrom(XType.OfficialLoopName)!,
+            new GridFormationStrategy(4), new SimpleColoringStrategy(), SudokuStrategyPool.CreateFrom(XType.OfficialLoopName)!,
             new XYWingStrategy());
     }
 }

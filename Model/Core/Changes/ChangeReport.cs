@@ -7,19 +7,19 @@ public class ChangeReport<THighlighter>
 {
     public string Description { get; }
     public Explanation<THighlighter> Explanation { get; }
-    public HighlightManager<THighlighter> HighlightManager { get; }
+    public HighlightCollection<THighlighter> HighlightCollection { get; }
     
     public ChangeReport(string description, Highlight<THighlighter> highlighter)
     {
         Description = description;
-        HighlightManager = new HighlightManager<THighlighter>(HighlightCompiler.For<THighlighter>().Compile(highlighter));
+        HighlightCollection = new HighlightCollection<THighlighter>(HighlightCompiler.For<THighlighter>().Compile(highlighter));
         Explanation = new Explanation<THighlighter>();
     }
     
     public ChangeReport(string description, Highlight<THighlighter> highlighter,  Explanation<THighlighter> explanation)
     {
         Description = description;
-        HighlightManager = new HighlightManager<THighlighter>(HighlightCompiler.For<THighlighter>().Compile(highlighter));
+        HighlightCollection = new HighlightCollection<THighlighter>(HighlightCompiler.For<THighlighter>().Compile(highlighter));
         Explanation = explanation;
     }
     
@@ -34,7 +34,7 @@ public class ChangeReport<THighlighter>
             compiled[i] = HighlightCompiler.For<THighlighter>().Compile(highlighters[i]);
         }
         
-        HighlightManager = new HighlightManager<THighlighter>(compiled);
+        HighlightCollection = new HighlightCollection<THighlighter>(compiled);
         Explanation = new Explanation<THighlighter>();
     }
     
@@ -50,7 +50,7 @@ public class ChangeReport<THighlighter>
             compiled[i + 1] = HighlightCompiler.For<THighlighter>().Compile(highlighters[i]);
         }
         
-        HighlightManager = new HighlightManager<THighlighter>(compiled);
+        HighlightCollection = new HighlightCollection<THighlighter>(compiled);
         Explanation = new Explanation<THighlighter>();
     }
 }

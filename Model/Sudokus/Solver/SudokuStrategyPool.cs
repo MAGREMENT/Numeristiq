@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Descriptions;
+using Model.Sudokus.Solver.Descriptions;
 using Model.Sudokus.Solver.Strategies;
 using Model.Sudokus.Solver.Strategies.AlternatingInference;
 using Model.Sudokus.Solver.Strategies.AlternatingInference.Algorithms;
@@ -21,7 +22,7 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver;
 
-public static class StrategyPool
+public static class SudokuStrategyPool
 {
     #region Pool
 
@@ -123,45 +124,49 @@ public static class StrategyPool
 
     #region Descriptions
 
-    private static readonly IDescription NoDescription = new FullTextDescription("No Description Found");
+    private static readonly IDescription<SudokuDescriptionDisplayer> NoDescription = 
+        new TextDescription<SudokuDescriptionDisplayer>("No Description Found");
 
-    private static readonly IDescription NakedSingleDescription = new FullTextDescription(
+    private static readonly IDescription<SudokuDescriptionDisplayer> NakedSingleDescription = new TextDescription<SudokuDescriptionDisplayer>(
         "One of the basic strategies for solving Sudoku's. When a cell has only one possibility, then it must be the solution for that cell");
 
-    private static readonly IDescription HiddenSingleDescription = new FullTextDescription(
+    private static readonly IDescription<SudokuDescriptionDisplayer> HiddenSingleDescription = new TextDescription<SudokuDescriptionDisplayer>(
         "One the basic strategies for solving Sudoku's. When a unit (row, column or box) has only one cell holding a possibility, " +
         "then that possibility must be the solution for that cell");
 
-    private static readonly IDescription JuniorExocetDescription = new FullTextDescription("This is a very complex strategy. For a Junior Exocet to exist, there is multiple requirements :\n" +
+    private static readonly IDescription<SudokuDescriptionDisplayer> JuniorExocetDescription = new TextDescription<SudokuDescriptionDisplayer>("This is a very complex strategy. For a Junior Exocet to exist, there is multiple requirements :\n" +
         "1) There exist 2 base cells and 2 target cells in a band (e.g. 3 lines in 3 boxes). The base cells" +
         "need to be in the same mini-line, meaning a line restricted to a box, and have a total of" +
         "candidates between 2 and 4, called base candidates. Each target cell is in a different line and in a different box" +
         "than the base cells and the other target. These targets must each hold at least one base candidate" +
         "2) TODO");
 
-    private static readonly IDescription UniquenessClueCoverDescription = new FullTextDescription("This is a strategy relying on uniqueness." +
+    private static readonly IDescription<SudokuDescriptionDisplayer> UniquenessClueCoverDescription = new TextDescription<SudokuDescriptionDisplayer>("This is a strategy relying on uniqueness." +
         " It consists a catalogue of pattern that will examine every clue and any solution in a designated area of the grid. These patterns" +
         " are generated beforehand by computers, making this strategy a bit controversial.");
 
-    private static readonly IDescription BUGDescription = new FullTextDescription("A Bi-value Universal Grave (BUG) is a pattern in" +
+    private static readonly IDescription<SudokuDescriptionDisplayer> BUGDescription = new TextDescription<SudokuDescriptionDisplayer>("A Bi-value Universal Grave (BUG) is a pattern in" +
         "which every candidates is found either 0 or 2 times in each unit (row, column and box). A Sudoku presenting this pattern" +
         "has more than one solution. In the case of Sudoku with a unique solution, at least one possibility preventing the" +
         "BUG must be true");
 
-    private static readonly IDescription APEDescription = new MultiLineDescription().Add(
-        new TextDescriptionLine("An aligned pair exclusion is the removal of candidate(s) using the following logic :" +
-                                "Any two cells cannot have solutions that are candidates contained in an almost locked set they both see."))
-        .Add(new TextImageDescriptionLine("For example : the cells in pink are the targets for the exclusion", "ape.png", TextDisposition.Left));
+    private static readonly IDescription<SudokuDescriptionDisplayer> APEDescription = new DescriptionCollection<SudokuDescriptionDisplayer>().Add(
+        "An aligned pair exclusion is the removal of candidate(s) using the following logic :" +
+                                "Any two cells cannot have solutions that are candidates contained in an almost locked set they both see.")
+        .Add(new SudokuStepDescription("For example : the cells in pink are the targets for the exclusion",
+            "t0o803p00h60p02805tgoot0p00560p0280321o00503p009410hp0sgogs098p8032105l00511s0og21gg0903k00321090541h00hp0p0h8052141h88103h00hp0030h21h005p04109p841p01o03hg05p021",
+            0, 5, 3, 5, 
+            "bbaddaaabbaedaaaebaefaaaebaffaaafbaadaaafbabdaaadafddaaa", TextDisposition.Left));
 
-    private static readonly IDescription BandUniquenessDescription = new FullTextDescription(
+    private static readonly IDescription<SudokuDescriptionDisplayer> BandUniquenessDescription = new TextDescription<SudokuDescriptionDisplayer>(
         "If a group of all instances of N different digits in a band (aka 3 rows or 3 columns in the same 3 boxes) is spread" +
         " over N+1 or less mini-rows/-columns, then the group will contain at least one unavoidable set.");
 
-    private static readonly IDescription ClaimingSetDescription = new FullTextDescription("When all possibilities in a" +
+    private static readonly IDescription<SudokuDescriptionDisplayer> ClaimingSetDescription = new TextDescription<SudokuDescriptionDisplayer>("When all possibilities in a" +
         " row/column are restrained to a single box, the solution, wherever it is is, will always remove the possibilities" +
         " from the remaining cells of the box.");
 
-    private static readonly Dictionary<string, IDescription> Descriptions = new()
+    private static readonly Dictionary<string, IDescription<SudokuDescriptionDisplayer>> Descriptions = new()
     {
         {NakedSingleStrategy.OfficialName, NakedSingleDescription},
         {HiddenSingleStrategy.OfficialName, HiddenSingleDescription},
@@ -204,7 +209,7 @@ public static class StrategyPool
         return !Pool.TryGetValue(name, out var giver) ? null : giver();
     }
 
-    public static IDescription GetDescription(string name) => Descriptions.TryGetValue(name, out var d) ? d : NoDescription;
+    public static IDescription<SudokuDescriptionDisplayer> GetDescription(string name) => Descriptions.TryGetValue(name, out var d) ? d : NoDescription;
 }
 
 public delegate SudokuStrategy GiveStrategy();

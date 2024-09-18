@@ -11,7 +11,7 @@ public class MaximumHardestDifficultyCriteria : EvaluationCriteria
     
     public MaximumHardestDifficultyCriteria() : base(OfficialName, 
         new EnumSetting<Difficulty>("Difficulty", "The evaluator cannot use a strategy with a higher difficulty",
-            new SpaceConverter(), Difficulty.Extreme))
+            new CamelCaseToSpacedConverter(), Difficulty.Extreme))
     {
     }
 

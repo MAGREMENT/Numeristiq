@@ -13,7 +13,7 @@ public class SudokuStrategyListCommand : Command
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         int count = 1;
-        foreach (var s in StrategyPool.EnumerateStrategies())
+        foreach (var s in SudokuStrategyPool.EnumerateStrategies())
         {
             Console.WriteLine($"#{count++} {s}");
         }

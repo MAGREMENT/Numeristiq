@@ -16,7 +16,7 @@ public class ChangeReportStep<THighlighter, TSolvingState, TChange> : IStep<THig
     public IReadOnlyList<TChange> Changes { get; }
     public TSolvingState From { get; }
     public TSolvingState To { get; }
-    public HighlightManager<THighlighter> HighlightManager { get; }
+    public HighlightCollection<THighlighter> HighlightCollection { get; }
 
     public ChangeReportStep(int id, Strategy maker, IReadOnlyList<TChange> changes,
         ChangeReport<THighlighter> report, TSolvingState stateBefore, TSolvingState stateAfter)
@@ -29,6 +29,6 @@ public class ChangeReportStep<THighlighter, TSolvingState, TChange> : IStep<THig
         Changes = changes;
         From = stateBefore;
         To = stateAfter;
-        HighlightManager = report.HighlightManager;
+        HighlightCollection = report.HighlightCollection;
     }
 }

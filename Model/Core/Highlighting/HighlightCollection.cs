@@ -1,18 +1,18 @@
 namespace Model.Core.Highlighting;
 
-public class HighlightManager<THighlighter> : IHighlightable<THighlighter>
+public class HighlightCollection<THighlighter> : IHighlightable<THighlighter>
 {
     private readonly IHighlightable<THighlighter>[] _highlights;
     private int _cursor;
 
     public int Count => _highlights.Length;
 
-    public HighlightManager(IHighlightable<THighlighter> highlight)
+    public HighlightCollection(IHighlightable<THighlighter> highlight)
     {
         _highlights = new[] { highlight };
     }
 
-    public HighlightManager(params IHighlightable<THighlighter>[] highlights)
+    public HighlightCollection(params IHighlightable<THighlighter>[] highlights)
     {
         _highlights = highlights;
     }
@@ -26,6 +26,11 @@ public class HighlightManager<THighlighter> : IHighlightable<THighlighter>
     public void GoTo(int pos)
     {
         _cursor = pos;
+    }
+
+    public string TryGetInstructionsAsString()
+    {
+        return _highlights[_cursor] is not SudokuHighlightExecutable exe ? string.Empty : exe.InstructionsAsString();
     }
 
     public void ShiftLeft()

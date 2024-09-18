@@ -11,7 +11,8 @@ public static class NumericRuleBank
 {
     private static readonly IGlobalNumericPuzzleRuleCrafter[] _global =
     {
-        new NonRepeatingLinesNumericPuzzleRuleCrafter()
+        new NonRepeatingLinesNumericPuzzleRuleCrafter(),
+        new DifferentNeighborsNumericPuzzleRuleCrafter()
     };
 
     private static readonly ILocalNumericPuzzleRuleCrafter[] _local =

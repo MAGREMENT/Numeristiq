@@ -14,8 +14,12 @@ public interface ISudokuSolveView : ICanBeDisabled, ISolveWithStepsView
     void CopyToClipBoard(string s);
     void EnableStrategy(int index, bool enabled);
     void LockStrategy(int index);
-    void OpenOptionDialog(string name, OptionChosen callback);
+    void OpenOptionDialog(string name, OptionChosen callback, OptionCollection collection);
 }
 
 public delegate void OptionChosen(int n);
+public enum OptionCollection
+{
+    SudokuStringFormat, SudokuSolverCopy
+}
 

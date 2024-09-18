@@ -15,7 +15,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <Grid Grid.Column="0" Margin="10 10 0 10">
+        <Grid Grid.Column="0" Margin="10 10 0 10" VerticalAlignment="Center">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -74,8 +74,8 @@
                         </StackPanel>
                         
                         <Border Grid.Column="2" Background="{DynamicResource Background2}"
-                                Padding="5" CornerRadius="5" VerticalAlignment="Center">
-                            <Grid x:Name="ColorGrid">
+                                Padding="5" CornerRadius="5" VerticalAlignment="Stretch">
+                            <Grid x:Name="ColorGrid" VerticalAlignment="Center">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="52"/>
                                     <RowDefinition Height="52"/>
@@ -192,8 +192,8 @@
                 <Border Grid.Row="1" Background="{DynamicResource Background2}" 
                         CornerRadius="5"
                         BorderThickness="1" Padding="10"
-                        HorizontalAlignment="Center" Margin="0, 10, 0, 0">
-                    <Grid x:Name="TimerGrid">
+                        HorizontalAlignment="Stretch" Margin="0, 10, 0, 0">
+                    <Grid x:Name="TimerGrid" HorizontalAlignment="Center">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -250,7 +250,8 @@
                 </Border>
             
                 <Button Grid.Row="3" Margin="0, 10, 0, 10" HorizontalAlignment="Center" 
-                        Style="{StaticResource DefaultLightUpButtonStyle}"
+                        Style="{StaticResource BackgroundRoundedButton}" FontSize="20"
+                        Padding="10"
                         Click="ComputePossibilities" x:Name="ComputePossibilitiesButton">Compute Possibilities</Button>
             </Grid>
         </Border>

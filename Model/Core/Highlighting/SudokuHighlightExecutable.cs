@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Sudokus;
@@ -22,6 +24,11 @@ public class SudokuHighlightExecutable : IHighlightable<ISudokuHighlighter>
     {
         _instructions = instructions;
         _register = register;
+    }
+
+    public string InstructionsAsString()
+    {
+        return _instructions.ToBase16(DefaultBase16Alphabet.Instance);
     }
 
     public void Highlight(ISudokuHighlighter highlighter)
@@ -60,6 +67,33 @@ public readonly struct HighlightInstruction
     private HighlightInstruction(int bits)
     {
         _bits = bits;
+    }
+
+    public static string ToBase16(HighlightInstruction instruction, IAlphabet alphabet)
+    {
+        return new string(new[]
+        {
+            alphabet.ToChar((instruction._bits >> 28) & 15),
+            alphabet.ToChar((instruction._bits >> 24) & 15),
+            alphabet.ToChar((instruction._bits >> 20) & 15),
+            alphabet.ToChar((instruction._bits >> 16) & 15),
+            alphabet.ToChar((instruction._bits >> 12) & 15),
+            alphabet.ToChar((instruction._bits >> 8) & 15),
+            alphabet.ToChar((instruction._bits >> 4) & 15),
+            alphabet.ToChar(instruction._bits & 15)
+        });
+    }
+
+    public static HighlightInstruction FromBase16(ReadOnlySpan<char> s, IAlphabet alphabet)
+    {
+        return new HighlightInstruction(alphabet.ToInt(s[0]) << 28 | 
+                                             alphabet.ToInt(s[1]) << 24 |
+                                             alphabet.ToInt(s[2]) << 20 |
+                                             alphabet.ToInt(s[3]) << 16 |
+                                             alphabet.ToInt(s[4]) << 12 |
+                                             alphabet.ToInt(s[5]) << 8 |
+                                             alphabet.ToInt(s[6]) << 4 |
+                                             alphabet.ToInt(s[7]));
     }
     
     public static HighlightInstruction HighlightPossibility(int possibility, int row, int col,
@@ -134,6 +168,44 @@ public readonly struct HighlightInstruction
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    }
+
+    public static bool operator ==(HighlightInstruction left, HighlightInstruction right) => left._bits == right._bits;
+    public static bool operator !=(HighlightInstruction left, HighlightInstruction right) => left._bits != right._bits;
+    public override bool Equals(object? obj)
+    {
+        return obj is HighlightInstruction i && i == this;
+    }
+
+    public override int GetHashCode()
+    {
+        return _bits;
+    }
+}
+
+public static class HighlightInstructionExtensions
+{
+    public static string ToBase16(this IEnumerable<HighlightInstruction> instructions, IAlphabet alphabet)
+    {
+        var builder = new StringBuilder();
+        foreach (var instruction in instructions)
+        {
+            builder.Append(HighlightInstruction.ToBase16(instruction, alphabet));
+        }
+
+        return builder.ToString();
+    }
+    
+    public static HighlightInstruction[] FromBase16(this string s, IAlphabet alphabet)
+    {
+        var result = new HighlightInstruction[s.Length / 8];
+        for (int i = 0; i < s.Length; i += 8)
+        {
+            if (s.Length - i < 8) break;
+            result[i / 8] = HighlightInstruction.FromBase16(s.AsSpan(i, 8), alphabet);
+        }
+
+        return result;
     }
 }
 

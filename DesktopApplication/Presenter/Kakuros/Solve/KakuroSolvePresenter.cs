@@ -221,6 +221,7 @@ public class KakuroSolvePresenter : SolveWithStepsPresenter<INumericSolvingState
         var drawer = _view.Drawer;
         
         drawer.ClearNumbers();
+        drawer.ClearHighlights();
         foreach (var cell in _solver.Kakuro.EnumerateCells())
         {
             var n = state[cell.Row, cell.Column];

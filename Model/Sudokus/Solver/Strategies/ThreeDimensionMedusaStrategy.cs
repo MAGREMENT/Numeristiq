@@ -3,8 +3,6 @@ using Model.Core;
 using Model.Core.Graphs.Coloring;
 using Model.Core.Graphs.Coloring.ColoringResults;
 using Model.Sudokus.Solver.Position;
-using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;

@@ -61,6 +61,15 @@
 				        Value="{DynamicResource SecondaryHighlighted}"/>
 			</Style>
 			
+			<Style TargetType="Button" x:Key="BackgroundRoundedButton">
+				<Setter Property="Template" Value="{StaticResource RoundedButton}"/>
+				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
+				<Setter Property="Padding" Value="5"/>
+				<Setter Property="Background" Value="{DynamicResource Background2}"/>
+				<Setter Property="view:AttachedProperties.HoverBackground" 
+				        Value="{DynamicResource BackgroundHighlighted}"/>
+			</Style>
+			
 			<Style TargetType="Button" x:Key="ForegroundButton">
 				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
 				<Setter Property="Template">
@@ -328,6 +337,7 @@
 		    
 		    <Style TargetType="CheckBox" x:Key="SettingCheckbox">
 			    <Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
+			    <Setter Property="Background" Value="Transparent"/>
 			    <Setter Property="Template">
 				    <Setter.Value>
 					    <ControlTemplate TargetType="CheckBox">
@@ -339,9 +349,10 @@
 							    
 							    <Border Grid.Column="0" Margin="0 0 5 0" BorderThickness="1"
 							            BorderBrush="{TemplateBinding BorderBrush}" VerticalAlignment="Center"
-							            HorizontalAlignment="Center" Background="Transparent">
-								    <Path Width="16" Height="16" Stroke="{DynamicResource Primary}"
-								          Visibility="Hidden" Data="M 3,10 8,13 13,3" StrokeThickness="2" x:Name="Check"/>
+							            HorizontalAlignment="Center" Background="{TemplateBinding Background}"
+							            CornerRadius="3">
+								    <Path Width="16" Height="16" Stroke="{DynamicResource Text}"
+								          Visibility="Hidden" Data="M 3,10 8,13 13,3" StrokeThickness="3" x:Name="Check"/>
 							    </Border>
 							    
 							    <ContentPresenter Grid.Column="1"
@@ -353,9 +364,8 @@
 						    <ControlTemplate.Triggers>
 							    <Trigger Property="IsChecked" Value="True">
 								    <Setter TargetName="Check" Property="Visibility" Value="Visible"/>
-							    </Trigger>
-							    <Trigger Property="IsMouseOver" Value="True">
-								    <Setter Property="BorderBrush" Value="{DynamicResource Secondary}"/>
+								    <Setter Property="Background" Value="{DynamicResource Primary}"/>
+								    <Setter Property="BorderBrush" Value="{DynamicResource Primary}"/>
 							    </Trigger>
 						    </ControlTemplate.Triggers>
 					    </ControlTemplate>
@@ -917,8 +927,8 @@
 
 			<ControlTemplate x:Key="ComboBoxTextBox" TargetType="TextBox">
 				<Border x:Name="PART_ContentHost"
-			          Focusable="False"
-			          Background="{TemplateBinding Background}" />
+						Focusable="False"
+						Background="{TemplateBinding Background}" />
 			</ControlTemplate>
 
 			<Style x:Key="SettingComboBox" TargetType="ComboBox">
@@ -937,7 +947,8 @@
 			                        Template="{StaticResource SettingComboToggleButton}"
 			                        Focusable="false"
 			                        ClickMode="Press"
-			                        IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+			                        IsChecked="{Binding IsDropDownOpen, Mode=TwoWay,
+										RelativeSource={RelativeSource TemplatedParent}}"/>
 								<ContentPresenter x:Name="ContentSite"
 			                            IsHitTestVisible="False"
 			                            Content="{TemplateBinding SelectionBoxItem}"

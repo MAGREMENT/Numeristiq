@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.View.HelperWindows.Dialog;
 using Model.Sudokus;
 using Model.Utility;

@@ -11,6 +11,7 @@ using Model.Core.Trackers;
 using Model.Repositories;
 using Model.Sudokus;
 using Model.Sudokus.Solver;
+using Model.Sudokus.Solver.Descriptions;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -64,7 +65,7 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
         {
             if (_currentlyOpenedStep == -1) return;
             
-            _translator.Translate(_solver.Steps[_currentlyOpenedStep].HighlightManager, true);
+            _translator.Translate(_solver.Steps[_currentlyOpenedStep].HighlightCollection, true);
             _view.Drawer.Refresh();
         };
     }
@@ -190,22 +191,18 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
     {
         if (_currentlyDisplayedState is null) return;
         
-        if(!_settings.OpenCopyDialog.Get().ToBool()) Copy(_currentlyDisplayedState, (SudokuStringFormat)
+        if(!_settings.OpenCopyDialog.Get().ToBool()) Copy(_currentlyDisplayedState,
             _settings.DefaultCopyFormat.Get().ToInt());
-        else _view.OpenOptionDialog("Copy", i =>
-        {
-            Copy(_currentlyDisplayedState, (SudokuStringFormat)i);
-        });
+        else _view.OpenOptionDialog("Copy", i => Copy(_currentlyDisplayedState, i),
+                _currentlyOpenedStep == -1 ? OptionCollection.SudokuStringFormat : OptionCollection.SudokuSolverCopy);
     }
 
     public void Paste(string s)
     {
         if(!_settings.OpenPasteDialog.Get().ToBool()) Paste(s, (SudokuStringFormat)
             _settings.DefaultPasteFormat.Get().ToInt());
-        else _view.OpenOptionDialog("Paste", i =>
-        {
-            Paste(s, (SudokuStringFormat)i);
-        });
+        else _view.OpenOptionDialog("Paste", i => Paste(s, (SudokuStringFormat)i), 
+            OptionCollection.SudokuStringFormat);
     }
     
     public void Apply(BuiltChangeCommit<NumericChange, ISudokuHighlighter> commit)
@@ -220,14 +217,15 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
         _view.InitializeStrategies(_solver.StrategyManager.Strategies);
     }
 
-    private void Copy(INumericSolvingState state, SudokuStringFormat format)
+    private void Copy(INumericSolvingState state, int format)
     {
         _view.CopyToClipBoard(format switch
         {
-            SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(state, (SudokuLineFormatEmptyCellRepresentation)
+            (int)SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(state, (SudokuLineFormatEmptyCellRepresentation)
                 _settings.EmptyCellRepresentation.Get().ToInt()),
-            SudokuStringFormat.Grid => SudokuTranslator.TranslateGridFormat(state),
-            SudokuStringFormat.Base32 => SudokuTranslator.TranslateBase32Format(state, DefaultBase32Alphabet.Instance),
+            (int)SudokuStringFormat.Grid => SudokuTranslator.TranslateGridFormat(state),
+            (int)SudokuStringFormat.Base32 => SudokuTranslator.TranslateBase32Format(state, DefaultBase32Alphabet.Instance),
+            3 => _currentlyOpenedStep == -1 ? string.Empty : _solver.Steps[_currentlyOpenedStep].HighlightCollection.TryGetInstructionsAsString(),
             _ => throw new Exception()
         });
     }
@@ -253,19 +251,24 @@ public class SudokuSolvePresenter : SolveWithStepsPresenter<ISudokuHighlighter, 
     protected override void SetShownState(INumericSolvingState numericSolvingState, bool solutionAsClues, bool showPossibilities)
     {
         _currentlyDisplayedState = numericSolvingState;
-        var drawer = _view.Drawer;
-        
+        SetShownState(_view.Drawer, numericSolvingState, SudokuCropping.Default(), solutionAsClues, showPossibilities);
+    }
+
+    public static void SetShownState(ISudokuSolverDrawer drawer, INumericSolvingState state, SudokuCropping cropping,
+        bool solutionAsClues, bool showPossibilities)
+    {
         drawer.ClearNumbers();
         drawer.ClearHighlights();
-        for (int row = 0; row < 9; row++)
+        for (int row = cropping.RowFrom; row <= cropping.RowTo; row++)
         {
-            for (int col = 0; col < 9; col++)
+            for (int col = cropping.ColumnFrom; col <= cropping.ColumnTo; col++)
             {
-                var number = numericSolvingState[row, col];
+                var number = state[row, col];
                 if (number == 0)
                 {
                     if(solutionAsClues) drawer.SetClue(row, col, false);
-                    if(showPossibilities) drawer.ShowPossibilities(row, col, numericSolvingState.PossibilitiesAt(row, col).EnumeratePossibilities());
+                    if(showPossibilities) drawer.ShowPossibilities(row, col, 
+                        state.PossibilitiesAt(row, col).EnumeratePossibilities());
                 }
                 else
                 {

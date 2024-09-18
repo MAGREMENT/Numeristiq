@@ -168,7 +168,7 @@ public partial class PlayPage : ISudokuPlayView
 
             var item = new ComboBoxItem
             {
-                Content = SpaceConverter.Instance.Convert(v.ToString()),
+                Content = CamelCaseToSpacedConverter.Instance.Convert(v.ToString()),
                 VerticalContentAlignment = VerticalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,

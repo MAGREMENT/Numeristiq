@@ -12,7 +12,7 @@ public class MinimumHardestDifficultyCriteria : EvaluationCriteria
     
     public MinimumHardestDifficultyCriteria() : base(OfficialName, 
         new EnumSetting<Difficulty>("Difficulty", "The evaluator must use at least one strategy with a higher difficulty",
-            new SpaceConverter(), Difficulty.Basic))
+            new CamelCaseToSpacedConverter(), Difficulty.Basic))
     {
     }
 

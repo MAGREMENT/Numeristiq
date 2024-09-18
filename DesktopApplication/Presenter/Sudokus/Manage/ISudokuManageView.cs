@@ -2,6 +2,7 @@
 using System.IO;
 using Model.Core.Descriptions;
 using Model.Sudokus.Solver;
+using Model.Sudokus.Solver.Descriptions;
 
 namespace DesktopApplication.Presenter.Sudokus.Manage;
 
@@ -13,7 +14,7 @@ public interface ISudokuManageView
     public void SetSelectedStrategyName(string name);
     public void SetManageableSettings(StrategySettingsPresenter presenter);
     public void SetNotFoundSettings();
-    public void SetStrategyDescription(IDescription description);
+    public void SetStrategyDescription(IDescription<SudokuDescriptionDisplayer> description);
     public void ClearSelectedStrategy();
     Stream? GetUploadPresetStream();
     Stream? GetDownloadPresetStream();

@@ -27,7 +27,7 @@ public class NonogramStepExplanationPresenter : AbstractStepExplanationPresenter
             }
         }
 
-        _translator.Translate(_numericStep.HighlightManager, false);
+        _translator.Translate(_numericStep.HighlightCollection, false);
         _view.ShowExplanation(_numericStep.Explanation);
     }
 }

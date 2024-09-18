@@ -107,9 +107,9 @@ public partial class SolvePage : ISudokuSolveView
         sc.LockStrategy();
     }
 
-    public void OpenOptionDialog(string name, OptionChosen callback)
+    public void OpenOptionDialog(string name, OptionChosen callback, OptionCollection collection)
     {
-        var window = OptionChooserDialog.TryCreate(name, OptionCollection.SudokuStringFormat);
+        var window = OptionChooserDialog.TryCreate(name, collection);
         if (window is null) return;
 
         window.OptionChosen += i => callback(i);
@@ -267,7 +267,8 @@ public partial class SolvePage : ISudokuSolveView
         try
         {
             var png = new PngBitmapEncoder();
-            png.Frames.Add(((SudokuBoard)EmbeddedDrawer.OptimizableContent!).AsImage());
+            var img = ((SudokuBoard)EmbeddedDrawer.OptimizableContent!).AsImage();
+            png.Frames.Add(BitmapFrame.Create(img));
             png.Save(stream);
         }
         catch (Exception)

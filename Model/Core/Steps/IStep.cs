@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Core.Changes;
 using Model.Core.Explanations;
 using Model.Core.Highlighting;
 using Model.Utility.Collections;
@@ -21,12 +20,12 @@ public interface IStep<THighlighter, out TState> : IStep
 {
     TState From { get; }
     TState To { get; }
-    HighlightManager<THighlighter> HighlightManager { get; }
+    HighlightCollection<THighlighter> HighlightCollection { get; }
     Explanation<THighlighter> Explanation { get; }
     
     int IStep.HighlightCount()
     {
-        return HighlightManager.Count;
+        return HighlightCollection.Count;
     }
 
     string IStep.ExplanationToString()

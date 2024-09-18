@@ -45,11 +45,11 @@ public abstract class DrawingBoard : FrameworkElement
         Dispatcher.Invoke(InvalidateVisual);
     }
     
-    public BitmapFrame AsImage()
+    public BitmapSource AsImage()
     {
         var rtb = new RenderTargetBitmap((int)Width, (int)Height, 96, 96, PixelFormats.Pbgra32);
         rtb.Render(this);
-        return BitmapFrame.Create(rtb);
+        return rtb;
     }
 
     public double GetPixelsPerDip()
