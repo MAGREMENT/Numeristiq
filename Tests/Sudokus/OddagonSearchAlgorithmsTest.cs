@@ -1,6 +1,6 @@
-﻿using Model.Sudokus;
+﻿using Model.Core.Graphs;
+using Model.Sudokus;
 using Model.Sudokus.Solver;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Sudokus.Solver.Utility.Oddagons;
 using Model.Sudokus.Solver.Utility.Oddagons.Algorithms;
@@ -11,6 +11,14 @@ namespace Tests.Sudokus;
 
 public class OddagonSearchAlgorithmsTest
 {
+    /*
+     #1 OddagonSearchAlgorithmV1
+        Total: 121,9006 ms
+        Average: 40,63353333333333 ms
+        Minimum: 37,3837 ms on try #3
+        Maximum: 44,6252 ms on try #2
+        Ignored: 1
+    */
     [Test]
     public void Test()
     {
@@ -51,5 +59,30 @@ public class OddagonSearchAlgorithmsTest
                 
                 Assert.That(result, Has.Count.GreaterThan(0));
             }, 3, new OddagonSearchAlgorithmV1()/*, new OddagonSearchAlgorithmV3()*/);
+    }
+
+    [Test]
+    public void EqualsAndHashCodeTest()
+    {
+        var ao1 = new AlmostOddagon(new Loop<CellPossibility, LinkStrength>(new[]
+        {
+            new CellPossibility(0, 0, 1), new CellPossibility(7, 2, 3),
+            new CellPossibility(5, 8, 4)
+        }, new LinkStrength[3]), new[]
+        {
+            new CellPossibility(1, 2, 3), new CellPossibility(5, 7, 2)
+        });
+        
+        var ao2 = new AlmostOddagon(new Loop<CellPossibility, LinkStrength>(new[]
+        {
+            new CellPossibility(5, 8, 4), new CellPossibility(0, 0, 1), 
+            new CellPossibility(7, 2, 3)
+        }, new LinkStrength[3]), new[]
+        {
+            new CellPossibility(5, 7, 2), new CellPossibility(1, 2, 3)
+        });
+
+        Assert.That(ao1.GetHashCode(), Is.EqualTo(ao2.GetHashCode()));
+        Assert.That(ao1, Is.EqualTo(ao2));
     }
 }

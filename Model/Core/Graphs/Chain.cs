@@ -136,7 +136,7 @@ public class Loop<TElement, TLink> : Chain<TElement, TLink> where TElement : not
             if (Elements[^(i + 1)].Equals(element)) return true;
         }
 
-        if (Elements.Length % 2 == 1 && Elements[half + 1].Equals(element)) return true;
+        if (Elements.Length % 2 == 1 && Elements[half].Equals(element)) return true;
         
         return false;
     }
