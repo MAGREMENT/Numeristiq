@@ -2,6 +2,8 @@
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Core.Settings;
+using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
@@ -14,13 +16,22 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
     public const string OfficialName = "Almost Locked Sets";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public AlmostLockedSetsStrategy() : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
+    private readonly IntSetting _maxAlsSize;
+    
+    public AlmostLockedSetsStrategy(int maxAlsSize) : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
     {
+        _maxAlsSize = new IntSetting("Max ALS Size", "The maximum size for the almost locked sets",
+            new SliderInteractionInterface(2, 5, 1), maxAlsSize);
+    }
+
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _maxAlsSize;
     }
 
     public override void Apply(ISudokuSolverData solverData)
     {
-        foreach (var linked in solverData.PreComputer.ConstructAlmostLockedSetGraph())
+        foreach (var linked in solverData.PreComputer.ConstructAlmostLockedSetGraph(_maxAlsSize.Value))
         {
             if (linked.RestrictedCommons.Count > 2) continue;
 

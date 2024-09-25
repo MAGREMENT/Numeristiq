@@ -4,22 +4,21 @@ using Model.Utility;
 
 namespace Model.Sudokus.Recognition;
 
-public class PythonImageSudokuRecognizer : IImagePuzzleRecognizer<Sudoku>
+public class CXXImageSudokuRecognizer : IImagePuzzleRecognizer<Sudoku>
 {
     private readonly string? _executablePath;
-    private readonly string? _scriptPath;
     
-    public PythonImageSudokuRecognizer(bool searchParentDirectories)
+    public CXXImageSudokuRecognizer(bool searchParentDirectories)
     {
-        _executablePath = PathFinder.Find(@"Python\venv\Scripts\python.exe", searchParentDirectories, false);
-        _scriptPath = PathFinder.Find(@"Python\main.py", searchParentDirectories, false);
+        //TODO put correct path
+        _executablePath = PathFinder.Find("", searchParentDirectories, false);
     }
     
     public Sudoku? Recognize(string path)
     {
         if (_executablePath is null) return null;
         
-        var start = new ProcessStartInfo(_executablePath, _scriptPath + " " + path)
+        var start = new ProcessStartInfo(_executablePath, path)
         {
             UseShellExecute = false,
             RedirectStandardOutput = true

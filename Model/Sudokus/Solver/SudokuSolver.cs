@@ -23,8 +23,6 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, ISudokuSolving
     public IReadOnlySudoku Sudoku => _sudoku;
     public bool UniquenessDependantStrategiesAllowed => StrategyManager.UniquenessDependantStrategiesAllowed;
     public SudokuPreComputer PreComputer { get; }
-    public AlmostHiddenSetSearcher AlmostHiddenSetSearcher { get; }
-    public AlmostNakedSetSearcher AlmostNakedSetSearcher { get; }
 
     public SudokuSolver() : this(new Sudoku()) { }
 
@@ -36,8 +34,6 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, ISudokuSolving
         InitPossibilities();
         
         PreComputer = new SudokuPreComputer(this);
-        AlmostHiddenSetSearcher = new AlmostHiddenSetSearcher(this);
-        AlmostNakedSetSearcher = new AlmostNakedSetSearcher(this);
     }
 
     public void SetSudoku(Sudoku s)

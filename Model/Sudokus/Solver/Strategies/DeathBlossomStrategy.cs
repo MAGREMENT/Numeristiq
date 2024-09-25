@@ -3,6 +3,8 @@ using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Core.Settings;
+using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
@@ -16,13 +18,22 @@ public class DeathBlossomStrategy : SudokuStrategy
     public const string OfficialName = "Death Blossom";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public DeathBlossomStrategy() : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
+    private readonly IntSetting _maxAlsSize;
+    
+    public DeathBlossomStrategy(int maxAlsSize) : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
     {
+        _maxAlsSize = new IntSetting("Max ALS Size", "The maximum size for the almost locked sets",
+            new SliderInteractionInterface(2, 5, 1), maxAlsSize);
+    }
+
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _maxAlsSize;
     }
 
     public override void Apply(ISudokuSolverData solverData)
     {
-        var allAls = solverData.PreComputer.AlmostLockedSets();
+        var allAls = solverData.PreComputer.AlmostLockedSets(_maxAlsSize.Value);
         Dictionary<int, List<IPossibilitySet>> concernedAls = new();
 
         for (int row = 0; row < 9; row++)

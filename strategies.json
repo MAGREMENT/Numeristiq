@@ -386,7 +386,9 @@
     "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
-    "Settings": {}
+    "Settings": {
+      "Max ALS Size": "5"
+    }
   },
   {
     "Name": "Almost Hidden Sets Chain",

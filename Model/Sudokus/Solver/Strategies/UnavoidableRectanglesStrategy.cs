@@ -6,6 +6,7 @@ using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -125,7 +126,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         notBiValuePossibilities -= values.One;
         notBiValuePossibilities -= values.Two;
         var ssc = new List<Cell>(SudokuUtility.SharedSeenCells(roof[0], roof[1]));
-        foreach (var als in solverData.AlmostNakedSetSearcher.InCells(ssc, _maxAlsSize.Value, 1))
+        foreach (var als in AlmostNakedSetSearcher.InCells(solverData, _maxAlsSize.Value, 1, ssc))
         {
             if (!als.Possibilities.ContainsAll(notBiValuePossibilities)) continue;
 

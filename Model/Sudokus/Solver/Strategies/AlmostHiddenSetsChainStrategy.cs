@@ -3,6 +3,8 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
+using Model.Core.Settings;
+using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility.Graphs;
@@ -17,17 +19,26 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
     public const string OfficialName = "Almost Hidden Sets Chain";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    private readonly bool _checkLength2;
+    private readonly BooleanSetting _ignoreLength2;
+    private readonly IntSetting _maxAhsSize;
     
-    public AlmostHiddenSetsChainStrategy(bool checkLength2) : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
+    public AlmostHiddenSetsChainStrategy(bool ignoreLength2, int maxAhsSize) : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
     {
-        _checkLength2 = checkLength2;
+        _ignoreLength2 = new BooleanSetting("Ignore length two",
+            "The algorithm will ignore chains with a length equal to 2", ignoreLength2);
+        _maxAhsSize = new IntSetting("Max AHS Size", "The maximum size for the almost hidden sets",
+            new SliderInteractionInterface(2, 5, 1), maxAhsSize);
     }
 
-    
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _ignoreLength2;
+        yield return _maxAhsSize;
+    }
+
     public override void Apply(ISudokuSolverData solverData)
     {
-        var graph = solverData.PreComputer.AlmostHiddenSetGraph();
+        var graph = solverData.PreComputer.AlmostHiddenSetGraph(_maxAhsSize.Value);
         solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructionRule.Instance);
         var linkGraph = solverData.PreComputer.SimpleGraph.Graph;
 
@@ -110,7 +121,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
 
     private bool CheckForChain(ISudokuSolverData solverData, ChainBuilder<IPossibilitySet, Cell> chain, IGraph<CellPossibility, LinkStrength> linkGraph)
     {
-        if (!_checkLength2 && chain.Count == 2) return false;
+        if (_ignoreLength2.Value && chain.Count == 2) return false;
         
         List<Edge<CellPossibility>> links = new();
 

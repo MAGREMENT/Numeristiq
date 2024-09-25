@@ -20,24 +20,28 @@ public class OddagonForcingNetStrategy : SudokuStrategy
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly IntSetting _maxNumberOfGuardians;
+    private readonly IntSetting _maxLength;
     
-    public OddagonForcingNetStrategy(int maxNumberOfGuardians) : base(OfficialName, Difficulty.Inhuman, DefaultInstanceHandling)
+    public OddagonForcingNetStrategy(int maxLength, int maxNumberOfGuardians) : base(OfficialName, Difficulty.Inhuman, DefaultInstanceHandling)
     {
-        _maxNumberOfGuardians = new IntSetting("Maximum number of guardians", "The maximum amount of guardians an oddagon can have",
-            new SliderInteractionInterface(1, 20, 1), maxNumberOfGuardians);
+        _maxLength = new IntSetting("Maximum length",
+            "The maximum length of the oddagon",
+            new SliderInteractionInterface(3, 15, 2), maxLength);
+        _maxNumberOfGuardians = new IntSetting("Maximum number of guardians", 
+            "The maximum amount of guardians an oddagon can have",
+            new SliderInteractionInterface(1, 7, 1), maxNumberOfGuardians);
     }
     
     public override IEnumerable<ISetting> EnumerateSettings()
     {
+        yield return _maxLength;
         yield return _maxNumberOfGuardians;
     }
     
     public override void Apply(ISudokuSolverData solverData)
     {
-        foreach (var oddagon in solverData.PreComputer.AlmostOddagons())
+        foreach (var oddagon in solverData.PreComputer.AlmostOddagons(_maxLength.Value, _maxNumberOfGuardians.Value))
         {
-            if (oddagon.Guardians.Length > _maxNumberOfGuardians.Value) continue;
-
             var colorings = new ColoringDictionary<ISudokuElement>[oddagon.Guardians.Length];
             for (int i = 0; i < oddagon.Guardians.Length; i++)
             {

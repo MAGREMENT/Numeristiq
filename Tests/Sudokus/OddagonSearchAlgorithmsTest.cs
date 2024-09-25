@@ -12,6 +12,7 @@ namespace Tests.Sudokus;
 public class OddagonSearchAlgorithmsTest
 {
     /*
+     TODO : expanding DFS algorithm ? like v1 but when max length -> remove first element from current chain and continue
      #1 OddagonSearchAlgorithmV1
         Total: 121,9006 ms
         Average: 40,63353333333333 ms

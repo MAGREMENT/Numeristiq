@@ -4,6 +4,8 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
+using Model.Core.Settings;
+using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
@@ -16,11 +18,19 @@ public class FireworksStrategy : SudokuStrategy
 {
     public const string OfficialName = "Fireworks";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
+
+    private readonly IntSetting _maxAlsSize;
     
-    public FireworksStrategy() : base(OfficialName, Difficulty.Hard, DefaultInstanceHandling)
+    public FireworksStrategy(int maxAlsSize) : base(OfficialName, Difficulty.Hard, DefaultInstanceHandling)
     {
+        _maxAlsSize = new IntSetting("Max ALS Size", "The maximum size for the almost locked sets",
+            new SliderInteractionInterface(2, 5, 1), maxAlsSize);
     }
 
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _maxAlsSize;
+    }
 
     public override void Apply(ISudokuSolverData solverData)
     {
@@ -234,7 +244,7 @@ public class FireworksStrategy : SudokuStrategy
         }
         
         //W-Wing
-        var allAls = user.PreComputer.AlmostLockedSets();
+        var allAls = user.PreComputer.AlmostLockedSets(_maxAlsSize.Value);
         List<IPossibilitySet> alsListOne = new();
         List<IPossibilitySet> alsListTwo = new();
         foreach (var df in fireworksList)

@@ -19,10 +19,6 @@ public interface ISudokuSolverData : ISudokuSolvingState, IPossibilitiesGiver
     NumericChangeBuffer<ISudokuSolvingState, ISudokuHighlighter> ChangeBuffer { get; }
     
     SudokuPreComputer PreComputer { get; }
-    
-    AlmostHiddenSetSearcher AlmostHiddenSetSearcher { get; }
-    
-    AlmostNakedSetSearcher AlmostNakedSetSearcher { get; }
 
     bool UniquenessDependantStrategiesAllowed { get; }
     

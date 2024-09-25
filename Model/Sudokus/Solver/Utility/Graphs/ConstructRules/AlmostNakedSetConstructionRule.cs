@@ -16,7 +16,7 @@ public class AlmostNakedSetConstructionRule : IConstructionRule<ISudokuSolverDat
 
     public void Apply(IGraph<ISudokuElement, LinkStrength> linkGraph, ISudokuSolverData data)
     {
-        foreach (var als in data.PreComputer.AlmostLockedSets())
+        foreach (var als in data.PreComputer.AlmostLockedSets(5))
         {
             foreach (var p in als.Possibilities.EnumeratePossibilities())
             {

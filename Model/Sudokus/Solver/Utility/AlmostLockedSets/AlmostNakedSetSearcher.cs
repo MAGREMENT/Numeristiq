@@ -5,46 +5,32 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Utility.AlmostLockedSets;
 
-public class AlmostNakedSetSearcher
+public static class AlmostNakedSetSearcher
 {
-    private readonly ISudokuSolverData _solverData;
-    private int _maxSize = 5;
-    private int _difference = 1;
-
-    public AlmostNakedSetSearcher(ISudokuSolverData solverData)
-    {
-        _solverData = solverData;
-    }
-    
-    public List<IPossibilitySet> InCells(IReadOnlyList<Cell> coords, int maxSize, int difference)
+    public static List<IPossibilitySet> InCells(ISudokuSolverData solverData, int maxSize, int difference, IReadOnlyList<Cell> coords)
     {
         List<IPossibilitySet> result = new();
-
-        _maxSize = maxSize;
-        _difference = difference;
-        InCells(coords, new List<Cell>(), new ReadOnlyBitSet16(), 0, result);
+        InCells(solverData, maxSize, difference, coords, new List<Cell>(), new ReadOnlyBitSet16(), 0, result);
         
         return result;
     }
     
-    public List<IPossibilitySet> FullGrid(int maxSize, int difference)
+    public static List<IPossibilitySet> FullGrid(ISudokuSolverData solverData, int maxSize, int difference)
     {
         var result = new List<IPossibilitySet>();
         var possibilities = new ReadOnlyBitSet16();
         var cells = new List<Cell>();
-        _maxSize = maxSize;
-        _difference = difference;
 
         for (int row = 0; row < 9; row++)
         {
-            InRow(row, 0, possibilities, cells, result);
+            InRow(solverData, maxSize, difference, row, 0, possibilities, cells, result);
             possibilities = new ReadOnlyBitSet16();
             cells.Clear();
         }
         
         for (int col = 0; col < 9; col++)
         {
-            InColumn(col, 0, possibilities, cells, result, true);
+            InColumn(solverData, maxSize, difference, col, 0, possibilities, cells, result, true);
             possibilities = new ReadOnlyBitSet16();
             cells.Clear();
         }
@@ -53,7 +39,7 @@ public class AlmostNakedSetSearcher
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                InMiniGrid(miniRow, miniCol, 0, possibilities, cells, result, true);
+                InMiniGrid(solverData, maxSize, difference, miniRow, miniCol, 0, possibilities, cells, result, true);
                 possibilities = new ReadOnlyBitSet16();
                 cells.Clear();
             }
@@ -62,108 +48,99 @@ public class AlmostNakedSetSearcher
         return result;
     }
 
-    public List<IPossibilitySet> InRow(int row, int maxSize, int difference)
+    public static List<IPossibilitySet> InRow(ISudokuSolverData solverData, int maxSize, int difference, int row)
     {
         var result = new List<IPossibilitySet>();
-
-        _maxSize = maxSize;
-        _difference = difference;
-        InRow(row, 0, new ReadOnlyBitSet16(), new List<Cell>(), result);
+        InRow(solverData, maxSize, difference, row, 0, new ReadOnlyBitSet16(), new List<Cell>(), result);
 
         return result;
     }
 
-    public List<IPossibilitySet> InColumn(int col, int maxSize, int difference)
+    public static List<IPossibilitySet> InColumn(ISudokuSolverData solverData, int maxSize, int difference, int col)
     {
         var result = new List<IPossibilitySet>();
-
-        _maxSize = maxSize;
-        _difference = difference;
-        InColumn(col, 0, new ReadOnlyBitSet16(), new List<Cell>(), result, false);
+        InColumn(solverData, maxSize, difference, col, 0, new ReadOnlyBitSet16(), new List<Cell>(), result, false);
 
         return result;
     }
 
-    public List<IPossibilitySet> InMiniGrid(int miniRow, int miniCol, int maxSize, int difference)
+    public static List<IPossibilitySet> InMiniGrid(ISudokuSolverData solverData, int maxSize, int difference, int miniRow, int miniCol)
     {
         var result = new List<IPossibilitySet>();
-
-        _maxSize = maxSize;
-        _difference = difference;
-        InMiniGrid(miniRow, miniCol, 0, new ReadOnlyBitSet16(), new List<Cell>(), result, false);
+        InMiniGrid(solverData, maxSize, difference, miniRow, miniCol, 0, new ReadOnlyBitSet16(), new List<Cell>(), result, false);
 
         return result;
     }
     
-    private void InCells(IReadOnlyList<Cell> coords, List<Cell> visited,
+    private static void InCells(ISudokuSolverData solverData, int maxSize, int difference, IReadOnlyList<Cell> coords, List<Cell> visited,
         ReadOnlyBitSet16 current, int start, List<IPossibilitySet> result)
     {
         for (int i = start; i < coords.Count; i++)
         {
             if (!SudokuUtility.ShareAUnitWithAll(coords[i], visited)) continue;
 
-            var inspected = _solverData.PossibilitiesAt(coords[i].Row, coords[i].Column);
+            var inspected = solverData.PossibilitiesAt(coords[i].Row, coords[i].Column);
             if(inspected.Count == 0 || (current.Count != 0 && !current.ContainsAny(inspected))) continue;
 
             var or = current | inspected;
             visited.Add(coords[i]);
 
-            if (or.Count == visited.Count + _difference)
+            if (or.Count == visited.Count + difference)
             {
-                result.Add(new SnapshotPossibilitySet(visited.ToArray(), or, _solverData.CurrentState));
+                result.Add(new SnapshotPossibilitySet(visited.ToArray(), or, solverData.CurrentState));
             }
 
-            if (_maxSize > visited.Count) InCells(coords, visited, or, i + 1, result);
+            if (maxSize > visited.Count) InCells(solverData, maxSize, difference, coords, visited, or, i + 1, result);
             
             visited.RemoveAt(visited.Count - 1);
         }
     }
     
-    private void InRow(int row, int start, ReadOnlyBitSet16 current,
+    private static void InRow(ISudokuSolverData solverData, int maxSize, int difference, int row, int start, ReadOnlyBitSet16 current,
         List<Cell> visited, List<IPossibilitySet> result)
     {
         for (int col = start; col < 9; col++)
         {
-            var inspected = _solverData.PossibilitiesAt(row, col);
+            var inspected = solverData.PossibilitiesAt(row, col);
             if (inspected.Count == 0 || (current.Count != 0 && !current.ContainsAny(inspected))) continue;
 
             var mashed = current | inspected;
             visited.Add(new Cell(row, col));
 
-            if (mashed.Count == visited.Count + _difference)
+            if (mashed.Count == visited.Count + difference)
             {
-                result.Add(new SnapshotPossibilitySet(visited.ToArray(), mashed, _solverData.CurrentState));
+                result.Add(new SnapshotPossibilitySet(visited.ToArray(), mashed, solverData.CurrentState));
             }
 
-            if(_maxSize > visited.Count) InRow(row, col + 1, mashed, visited, result);
+            if(maxSize > visited.Count) InRow(solverData, maxSize, difference, row, col + 1, mashed, visited, result);
             
             visited.RemoveAt(visited.Count - 1);
         }
     }
     
-    private void InColumn(int col, int start, ReadOnlyBitSet16 current,
+    private static void InColumn(ISudokuSolverData solverData, int maxSize, int difference, int col, int start, ReadOnlyBitSet16 current,
         List<Cell> visited, List<IPossibilitySet> result, bool excludeSingles)
     {
         for (int row = start; row < 9; row++)
         {
-            var inspected = _solverData.PossibilitiesAt(row, col);
+            var inspected = solverData.PossibilitiesAt(row, col);
             if (inspected.Count == 0 || (current.Count != 0 && !current.ContainsAny(inspected))) continue;
 
             var mashed = current | inspected;
             visited.Add(new Cell(row, col));
 
-            if (mashed.Count == visited.Count + _difference && (!excludeSingles || visited.Count > 1))
+            if (mashed.Count == visited.Count + difference && (!excludeSingles || visited.Count > 1))
             {
-                result.Add(new SnapshotPossibilitySet(visited.ToArray(), mashed, _solverData.CurrentState));
+                result.Add(new SnapshotPossibilitySet(visited.ToArray(), mashed, solverData.CurrentState));
             }
 
-            if(_maxSize > visited.Count) InColumn(col, row + 1, mashed, visited, result, excludeSingles);
+            if(maxSize > visited.Count) InColumn(solverData, maxSize, difference, col, row + 1, mashed, visited, result, excludeSingles);
             
             visited.RemoveAt(visited.Count - 1);
         }
     }
 
-    private void InMiniGrid(int miniRow, int miniCol, int start,
+    private static void InMiniGrid(ISudokuSolverData solverData, int maxSize, int difference, int miniRow, int miniCol, int start,
         ReadOnlyBitSet16 current, List<Cell> visited, List<IPossibilitySet> result, bool excludeSameLine)
     {
         for (int n = start; n < 9; n++)
@@ -171,18 +148,18 @@ public class AlmostNakedSetSearcher
             int row = miniRow * 3 + n / 3;
             int col = miniCol * 3 + n % 3;
 
-            var inspected = _solverData.PossibilitiesAt(row, col);
+            var inspected = solverData.PossibilitiesAt(row, col);
             if (inspected.Count == 0 || (current.Count != 0 && !current.ContainsAny(inspected))) continue;
 
             var mashed = current | inspected;
             visited.Add(new Cell(row, col));
 
-            if (mashed.Count == visited.Count + _difference && (!excludeSameLine || NotInSameRowOrColumn(visited)))
+            if (mashed.Count == visited.Count + difference && (!excludeSameLine || NotInSameRowOrColumn(visited)))
             {
-                result.Add(new SnapshotPossibilitySet(visited.ToArray(), mashed, _solverData.CurrentState));
+                result.Add(new SnapshotPossibilitySet(visited.ToArray(), mashed, solverData.CurrentState));
             }
 
-            if(_maxSize > visited.Count) InMiniGrid(miniRow, miniCol, n + 1, mashed, visited, result, excludeSameLine);
+            if(maxSize > visited.Count) InMiniGrid(solverData, maxSize, difference, miniRow, miniCol, n + 1, mashed, visited, result, excludeSameLine);
             
             visited.RemoveAt(visited.Count - 1);
         }

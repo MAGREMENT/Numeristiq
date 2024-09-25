@@ -1,6 +1,7 @@
 ﻿using Model.Sudokus;
 using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.PossibilitySets;
+using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility.BitSets;
 using Tests.Utility;
 
@@ -46,7 +47,7 @@ public class RestrictedPossibilityAlgorithmsTests
         var solver = new SudokuSolver();
         solver.SetSudoku(sudoku);
         
-        var als = solver.AlmostNakedSetSearcher.FullGrid(5, 1);
+        var als = AlmostNakedSetSearcher.FullGrid(solver, 5, 1);
         Console.WriteLine("ALS count : " + als.Count);
 
         var expected = new bool[als.Count - 1, als.Count, 9];

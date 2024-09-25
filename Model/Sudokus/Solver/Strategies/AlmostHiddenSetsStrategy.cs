@@ -4,6 +4,8 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
+using Model.Core.Settings;
+using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
@@ -16,16 +18,25 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
     public const string OfficialName = "Almost Hidden Sets";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public AlmostHiddenSetsStrategy() : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
-    {
-    }
+    private readonly IntSetting _maxAhsSize;
     
+    public AlmostHiddenSetsStrategy(int maxAhsSize) : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
+    {
+        _maxAhsSize = new IntSetting("Max AHS Size", "The maximum size for the almost hidden sets",
+            new SliderInteractionInterface(2, 5, 1), maxAhsSize);
+    }
+
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _maxAhsSize;
+    }
+
     public override void Apply(ISudokuSolverData solverData)
     {
         solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructionRule.Instance);
         var graph = solverData.PreComputer.SimpleGraph.Graph;
 
-        foreach (var linked in solverData.PreComputer.ConstructAlmostHiddenSetGraph())
+        foreach (var linked in solverData.PreComputer.ConstructAlmostHiddenSetGraph(_maxAhsSize.Value))
         {
             if (linked.Cells.Length > 2) continue;
 

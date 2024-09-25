@@ -7,6 +7,7 @@ using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility;
 using Model.Utility.BitSets;
 using Model.Utility.Collections;
@@ -110,7 +111,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
         List<IPossibilitySet> usefulAls = new();
         HashSet<BiValue> forbidden = new();
 
-        foreach (var als in solverData.AlmostNakedSetSearcher.InCells(shared, _maxAlsSize.Value, 1))
+        foreach (var als in AlmostNakedSetSearcher.InCells(solverData, _maxAlsSize.Value, 1, shared))
         {
             int i = 0;
             bool useful = false;

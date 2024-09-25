@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:DesktopApplication.View.Settings"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300" Background="{DynamicResource Background1}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -27,15 +27,18 @@
         <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Foreground="{DynamicResource Text}"
                    Margin="5, 0, 0, 5" FontSize="15">Minimum</TextBlock>
         <Slider Grid.Row="0" Grid.Column="2" Width="100" IsSnapToTickEnabled="True" x:Name="MinSlider" 
-                VerticalAlignment="Center" Margin="0, 0, 0, 5" ValueChanged="MinChanged"/>
+                VerticalAlignment="Center" Margin="0, 0, 0, 5" ValueChanged="MinChanged"
+                Style="{StaticResource SettingSlider}"/>
         <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding ElementName=MinSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
-                 TextAlignment="Right" Width="25" VerticalAlignment="Center" Style="{StaticResource SettingTextBox}" Margin="0, 0, 0, 5"/>
+                 TextAlignment="Right" Width="25" VerticalAlignment="Center" Style="{StaticResource SettingTextBox}" Margin="5, 0, 0, 5"/>
         
         <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Foreground="{DynamicResource Text}"
-                   FontSize="15" Margin="5,0,0,0">Maximum</TextBlock>
+                   FontSize="15" Margin="5,0,5,0">Maximum</TextBlock>
         <Slider Grid.Row="1" Grid.Column="2" Width="100" IsSnapToTickEnabled="True" x:Name="MaxSlider" 
-                VerticalAlignment="Center" ValueChanged="MaxChanged"/>
+                VerticalAlignment="Center" ValueChanged="MaxChanged"
+                Style="{StaticResource SettingSlider}"/>
         <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ElementName=MaxSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
-                 TextAlignment="Right" Width="25" VerticalAlignment="Center" Style="{StaticResource SettingTextBox}"/>
+                 TextAlignment="Right" Width="25" VerticalAlignment="Center" Style="{StaticResource SettingTextBox}"
+                 Margin="5 0 0 0"/>
     </Grid>
 </local:SettingControl>

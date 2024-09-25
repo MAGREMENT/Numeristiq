@@ -3,6 +3,8 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
+using Model.Core.Settings;
+using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
@@ -17,16 +19,26 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
     public const string OfficialName = "Almost Locked Sets Chain";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    private readonly bool _checkLength2;
+    private readonly BooleanSetting _ignoreLength2;
+    private readonly IntSetting _maxAlsSize;
 
-    public AlmostLockedSetsChainStrategy(bool checkLength2) : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
+    public AlmostLockedSetsChainStrategy(bool ignoreLength2, int maxAlsSize) : base(OfficialName, Difficulty.Extreme, DefaultInstanceHandling)
     {
-        _checkLength2 = checkLength2;
+        _ignoreLength2 = new BooleanSetting("Ignore length two",
+            "The algorithm will ignore chains with a length equal to 2", ignoreLength2);
+        _maxAlsSize = new IntSetting("Max ALS Size", "The maximum size for the almost locked sets",
+            new SliderInteractionInterface(2, 5, 1), maxAlsSize);
+    }
+    
+    public override IEnumerable<ISetting> EnumerateSettings()
+    {
+        yield return _ignoreLength2;
+        yield return _maxAlsSize;
     }
     
     public override void Apply(ISudokuSolverData solverData)
     {
-        var graph = solverData.PreComputer.AlmostLockedSetGraph();
+        var graph = solverData.PreComputer.AlmostLockedSetGraph(_maxAlsSize.Value);
 
         foreach (var start in graph)
         {
@@ -108,7 +120,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
 
     private bool CheckForChain(ISudokuSolverData solverData, ChainBuilder<IPossibilitySet, int> chain)
     {
-        if (!_checkLength2 && chain.Count == 2) return false;
+        if (_ignoreLength2.Value && chain.Count == 2) return false;
 
         var first = chain.FirstElement();
         var last = chain.LastElement();

@@ -112,15 +112,19 @@ public partial class ManagePage : ISudokuManageView, SudokuDescriptionDisplayer
     public void SetManageableSettings(StrategySettingsPresenter presenter)
     {
         InfoPanel.Children.Clear();
+        var count = 0;
+        
         foreach (var s in presenter)
         {
             var control = SettingTranslator.Translate(presenter, s.Item1, s.Item2);
             if (control is not null)
             {
                 control.AutoSet = true;
-                control.Margin = new Thickness(10, 10, 0, 0);
+                control.Margin = new Thickness(10, 10, 0, count == 1 ? 10 : 0);
                 InfoPanel.Children.Add(control);
             }
+
+            count++;
         }
     }
 

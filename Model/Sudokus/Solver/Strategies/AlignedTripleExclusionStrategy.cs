@@ -8,6 +8,7 @@ using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility;
 using Model.Utility.BitSets;
 using Model.Utility.Collections;
@@ -221,9 +222,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         HashSet<TriValue> forbiddenTri = new();
         HashSet<BiValue> forbiddenBi = new();
 
-        var searcher = solverData.AlmostNakedSetSearcher;
-
-        foreach (var aals in searcher.InCells(ssc, _maxAalsSize.Value, 2))
+        foreach (var aals in AlmostNakedSetSearcher.InCells(solverData, _maxAalsSize.Value, 2, ssc))
         {
             int i = 0;
             bool useful = false;
@@ -249,7 +248,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
             if (useful) usefulThings.Add(aals);
         }
 
-        foreach (var als in searcher.InCells(ssc, _maxAlsSize.Value, 1))
+        foreach (var als in AlmostNakedSetSearcher.InCells(solverData, _maxAlsSize.Value, 1, ssc))
         {
             int i = 0;
             bool useful = false;
