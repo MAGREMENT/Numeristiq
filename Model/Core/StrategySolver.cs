@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Core.Changes;
+using Model.Core.Highlighting;
 using Model.Core.Steps;
 using Model.Core.Trackers;
 using Model.Sudokus.Solver;
@@ -149,7 +150,9 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
         StartState = GetSolvingState();
         _steps.Clear();
     }
-    
+
+    protected virtual IHighlightCompiler<THighlighter> GetHighlightCompiler() =>
+        new DefaultHighlightCompiler<THighlighter>();
     protected abstract TSolvingState GetSolvingState();
     public abstract bool IsResultCorrect();
     public abstract bool HasSolverFailed();
@@ -216,7 +219,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
             ExecuteChange(change, ref solutionAdded, ref possibilitiesRemoved);
         }
 
-        AddStepFromReport(commit.Builder.BuildReport(commit.Changes, state), commit.Changes, pusher, state);
+        AddStepFromReport(BuildReport(commit, commit.Changes, state), commit.Changes, pusher, state);
     }
     
     private void HandleUnorderedAll(Strategy pusher, List<ChangeCommit<TChange, TSolvingState, THighlighter>> commits,
@@ -235,7 +238,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
 
             if (impactfulChanges.Count == 0) continue;
             
-            AddStepFromReport(commit.Builder.BuildReport(impactfulChanges, state), impactfulChanges, pusher, state);
+            AddStepFromReport(BuildReport(commit, impactfulChanges, state), impactfulChanges, pusher, state);
         }
     }
     
@@ -257,7 +260,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
             ExecuteChange(change, ref solutionAdded, ref possibilitiesRemoved);
         }
 
-        AddStepFromReport(best.Builder.BuildReport(best.Changes, state), best.Changes, pusher, state);
+        AddStepFromReport(BuildReport(best, best.Changes, state), best.Changes, pusher, state);
     }
     
     private void HandleSortedAll(Strategy pusher, List<ChangeCommit<TChange, TSolvingState, THighlighter>> commits,
@@ -278,8 +281,16 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
 
             if (impactfulChanges.Count == 0) continue;
             
-            AddStepFromReport(commit.Builder.BuildReport(impactfulChanges, state), impactfulChanges, pusher, state);
+            AddStepFromReport(BuildReport(commit, impactfulChanges, state), impactfulChanges, pusher, state);
         }
+    }
+
+    private ChangeReport<THighlighter> BuildReport(ChangeCommit<TChange, TSolvingState, THighlighter> commit,
+        IReadOnlyList<TChange> changes, TSolvingState state)
+    {
+        var report = commit.Builder.BuildReport(changes, state);
+        report.HighlightCollection.Compile(GetHighlightCompiler());
+        return report;
     }
 }
 

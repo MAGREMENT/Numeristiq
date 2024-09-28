@@ -75,7 +75,7 @@ public class Clue<T> : IHighlightable<T>
     public Clue(Highlight<T> highlight, string text)
     {
         Text = text;
-        _highlightable = HighlightCompiler.For<T>().Compile(highlight);
+        _highlightable = new DelegateHighlightable<T>(highlight);
     }
 
     public Clue(string text)
@@ -92,7 +92,7 @@ public class Clue<T> : IHighlightable<T>
 
 public enum StepColor
 {
-    None, Neutral, Change1, Change2, Cause1, Cause2, Cause3,
+    Neutral = 1, Change1, Change2, Cause1, Cause2, Cause3,
     Cause4, Cause5, Cause6, Cause7, Cause8, Cause9, Cause10, On
 }
 

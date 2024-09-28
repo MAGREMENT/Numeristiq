@@ -1,3 +1,5 @@
+using Model.Utility;
+
 namespace Model.Core.Highlighting;
 
 public class HighlightCollection<THighlighter> : IHighlightable<THighlighter>
@@ -7,14 +9,26 @@ public class HighlightCollection<THighlighter> : IHighlightable<THighlighter>
 
     public int Count => _highlights.Length;
 
-    public HighlightCollection(IHighlightable<THighlighter> highlight)
+    public HighlightCollection(Highlight<THighlighter> highlight)
     {
-        _highlights = new[] { highlight };
+        _highlights = new IHighlightable<THighlighter>[] { new DelegateHighlightable<THighlighter>(highlight) };
     }
 
-    public HighlightCollection(params IHighlightable<THighlighter>[] highlights)
+    public HighlightCollection(params Highlight<THighlighter>[] highlights)
     {
-        _highlights = highlights;
+        _highlights = new IHighlightable<THighlighter>[highlights.Length];
+        for (int i = 0; i < highlights.Length; i++)
+        {
+            _highlights[i] = new DelegateHighlightable<THighlighter>(highlights[i]);
+        }
+    }
+
+    public void Compile(IHighlightCompiler<THighlighter> compiler)
+    {
+        for (int i = 0; i < _highlights.Length; i++)
+        {
+            _highlights[i] = compiler.Compile(_highlights[i]);
+        }
     }
 
     public void Highlight(THighlighter highlighter)
@@ -30,7 +44,9 @@ public class HighlightCollection<THighlighter> : IHighlightable<THighlighter>
 
     public string TryGetInstructionsAsString()
     {
-        return _highlights[_cursor] is not SudokuHighlightExecutable exe ? string.Empty : exe.InstructionsAsString();
+        return _highlights[_cursor] is not HighlightExecutable exe 
+            ? string.Empty 
+            : exe.ToBase16(DefaultBase16Alphabet.Instance);
     }
 
     public void ShiftLeft()

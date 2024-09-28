@@ -3,7 +3,6 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
-using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -23,6 +22,8 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, ISudokuSolving
     public IReadOnlySudoku Sudoku => _sudoku;
     public bool UniquenessDependantStrategiesAllowed => StrategyManager.UniquenessDependantStrategiesAllowed;
     public SudokuPreComputer PreComputer { get; }
+    public IHighlightCompiler<ISudokuHighlighter> HighlightCompiler { get; set; } =
+        new DefaultHighlightCompiler<ISudokuHighlighter>();
 
     public SudokuSolver() : this(new Sudoku()) { }
 
@@ -90,6 +91,11 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, ISudokuSolving
         }
 
         return result;
+    }
+
+    protected override IHighlightCompiler<ISudokuHighlighter> GetHighlightCompiler()
+    {
+        return HighlightCompiler;
     }
 
     public override bool CanRemovePossibility(CellPossibility cp)

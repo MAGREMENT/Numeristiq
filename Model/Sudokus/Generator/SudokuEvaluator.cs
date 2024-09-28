@@ -20,6 +20,7 @@ public class SudokuEvaluator
     public SudokuEvaluator(SudokuSolver solver)
     {
         _solver = solver;
+        _solver.FastMode = true;
 
         _rTracker.AttachTo(solver);
         _hsTracker.AttachTo(solver);

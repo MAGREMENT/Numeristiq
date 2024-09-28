@@ -21,8 +21,7 @@ public class SudokuStepDescription : IDescription<SudokuDescriptionDisplayer>
         _text = text;
         _cropping = new SudokuCropping(rowFrom, colFrom, rowTo, colTo);
         _disposition = disposition;
-        _highlight = new SudokuHighlightExecutable(highlight.FromBase16(DefaultBase16Alphabet.Instance),
-            Array.Empty<object>());
+        _highlight = HighlightExecutable.FromBase16(highlight, DefaultBase16Alphabet.Instance);
     }
 
     public void Display(SudokuDescriptionDisplayer displayer)

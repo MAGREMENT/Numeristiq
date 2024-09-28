@@ -1,4 +1,5 @@
 ﻿using DesktopApplication.Presenter.Sudokus.Solve;
+using Model.Core;
 using Model.Core.Highlighting;
 using Model.Repositories;
 using Model.Sudokus.Solver;

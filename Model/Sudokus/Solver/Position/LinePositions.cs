@@ -19,6 +19,11 @@ public class LinePositions : IReadOnlyLinePositions
         foreach (var v in values) Add(v);
     }
     
+    public LinePositions(IEnumerable<int> values)
+    {
+        foreach (var v in values) Add(v);
+    }
+    
     private LinePositions(int pos, int count)
     {
         _pos = pos;

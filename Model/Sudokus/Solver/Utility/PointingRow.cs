@@ -26,14 +26,17 @@ public class PointingRow : ISudokuElement
     {
         Possibility = possibility;
         Row = row;
-        _pos = new LinePositions();
-        foreach(var col in cols)
-        {
-            _pos.Add(col);
-        }
+        _pos = new LinePositions(cols);
     }
 
-    public PointingRow(int possibility, List<CellPossibility> coords)
+    public PointingRow(int possibility, int row, IEnumerable<int> cols)
+    {
+        Possibility = possibility;
+        Row = row;
+        _pos = new LinePositions(cols);
+    }
+
+    public PointingRow(int possibility, IReadOnlyList<CellPossibility> coords)
     {
         Possibility = possibility;
         Row = coords[0].Row;
@@ -61,6 +64,19 @@ public class PointingRow : ISudokuElement
         _pos.Add(coords[0].Column);
     }
 
+    public MinMax FindMinMaxColumns()
+    {
+        var minCol = 9;
+        var maxCol = -1;
+        foreach (var cell in EnumerateCell())
+        {
+            if (cell.Column < minCol) minCol = cell.Column;
+            if (cell.Column > maxCol) maxCol = cell.Column;
+        }
+
+        return new MinMax(minCol, maxCol);
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Possibility, Row, _pos.GetHashCode());
@@ -84,6 +100,8 @@ public class PointingRow : ISudokuElement
     }
 
     public int DifficultyRank => 2;
+
+    public IEnumerable<int> EveryColumn() => _pos;
 
     public CellPossibilities[] EveryCellPossibilities()
     {

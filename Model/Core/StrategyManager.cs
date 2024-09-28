@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Model.Core;
 using Model.Utility.Collections;
 
-namespace Model.Sudokus.Solver;
+namespace Model.Core;
 
 public class StrategyManager<TStrategy> where TStrategy : Strategy
 {

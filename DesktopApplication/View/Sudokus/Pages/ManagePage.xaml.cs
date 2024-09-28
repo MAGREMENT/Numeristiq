@@ -281,11 +281,11 @@ public partial class ManagePage : ISudokuManageView, SudokuDescriptionDisplayer
     {
         var tb = new TextBlock
         {
-            FontSize = 14,
+            FontSize = 15,
             Text = s,
             TextWrapping = TextWrapping.Wrap,
-            TextAlignment = TextAlignment.Center,
-            Margin = new Thickness(0, 0, 0, 20)
+            TextAlignment = TextAlignment.Left,
+            Margin = new Thickness(10, 0, 10, 20)
         };
                 
         tb.SetResourceReference(ForegroundProperty, "Text");
@@ -310,11 +310,12 @@ public partial class ManagePage : ISudokuManageView, SudokuDescriptionDisplayer
                 
         var tb = new TextBlock
         {
-            FontSize = 14,
+            FontSize = 15,
             Text = text,
             TextWrapping = TextWrapping.Wrap,
-            TextAlignment = TextAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
+            TextAlignment = TextAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(10, 0, 10, 0)
         };
                 
         tb.SetResourceReference(ForegroundProperty, "Text");

@@ -12,29 +12,21 @@ public class ChangeReport<THighlighter>
     public ChangeReport(string description, Highlight<THighlighter> highlighter)
     {
         Description = description;
-        HighlightCollection = new HighlightCollection<THighlighter>(HighlightCompiler.For<THighlighter>().Compile(highlighter));
+        HighlightCollection = new HighlightCollection<THighlighter>(highlighter);
         Explanation = new Explanation<THighlighter>();
     }
     
-    public ChangeReport(string description, Highlight<THighlighter> highlighter,  Explanation<THighlighter> explanation)
+    public ChangeReport(string description, Highlight<THighlighter> highlighter, Explanation<THighlighter> explanation)
     {
         Description = description;
-        HighlightCollection = new HighlightCollection<THighlighter>(HighlightCompiler.For<THighlighter>().Compile(highlighter));
+        HighlightCollection = new HighlightCollection<THighlighter>(highlighter);
         Explanation = explanation;
     }
     
     public ChangeReport(string description, params Highlight<THighlighter>[] highlighters)
     {
         Description = description;
-
-        var compiled = new IHighlightable<THighlighter>[highlighters.Length];
-
-        for (int i = 0; i < highlighters.Length; i++)
-        {
-            compiled[i] = HighlightCompiler.For<THighlighter>().Compile(highlighters[i]);
-        }
-        
-        HighlightCollection = new HighlightCollection<THighlighter>(compiled);
+        HighlightCollection = new HighlightCollection<THighlighter>(highlighters);
         Explanation = new Explanation<THighlighter>();
     }
     
@@ -42,15 +34,15 @@ public class ChangeReport<THighlighter>
     {
         Description = description;
 
-        var compiled = new IHighlightable<THighlighter>[highlighters.Length + 1];
-        compiled[0] = HighlightCompiler.For<THighlighter>().Compile(first);
+        var all = new Highlight<THighlighter>[highlighters.Length + 1];
+        all[0] = first;
 
         for (int i = 0; i < highlighters.Length; i++)
         {
-            compiled[i + 1] = HighlightCompiler.For<THighlighter>().Compile(highlighters[i]);
+            all[i + 1] = highlighters[i];
         }
         
-        HighlightCollection = new HighlightCollection<THighlighter>(compiled);
+        HighlightCollection = new HighlightCollection<THighlighter>(all);
         Explanation = new Explanation<THighlighter>();
     }
 }

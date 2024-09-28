@@ -22,7 +22,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <Border Grid.Row="0" Grid.Column="0" Width="450" Height="320" Margin="10" 
+        <Border Grid.Row="0" Grid.Column="0" Margin="10" 
                 Background="{DynamicResource Background1}" CornerRadius="5">
             <Grid>
                 <Grid.RowDefinitions>
@@ -36,15 +36,16 @@
                     Generator
                 </TextBlock>
                 
-                <controls1:FilledSudokuGeneratorControl Grid.Row="1" Width="300" Height="100" Margin="0, 20, 0, 0"
+                <controls1:FilledSudokuGeneratorControl Grid.Row="1" Width="350" Height="100" Margin="20, 20, 20, 0"
                                                         HorizontalAlignment="Center" x:Name="FSG" RandomSelected="OnRandomSelection"
                                                         SeedSelected="OnSeedSelection" ShowSeedAsked="ShowSeed"/>
                 
                 <Path Grid.Row="2" HorizontalAlignment="Center" Width="40" Height="40" Margin="10" x:Name="ToRDR"
                       Stroke="{DynamicResource Text}" Data="M 20,5 V 35 M 10,25 20,35 30,25" StrokeThickness="3"/>
                 
-                <controls1:DigitRemoverControl Grid.Row="3" Width="300" Height="100" HorizontalAlignment="Center"
-                                               x:Name="RDR" SymmetryChanged="ChangeSymmetry" UniqueChanged="ChangeUnique"/>
+                <controls1:DigitRemoverControl Grid.Row="3" Width="350" Height="100" HorizontalAlignment="Center"
+                                               x:Name="RDR" SymmetryChanged="ChangeSymmetry" UniqueChanged="ChangeUnique"
+                                               Margin="20 0 20 20"/>
             </Grid>
         </Border>
         

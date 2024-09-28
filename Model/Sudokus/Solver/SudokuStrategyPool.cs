@@ -134,7 +134,7 @@ public static class SudokuStrategyPool
         "One the basic strategies for solving Sudoku's. When a unit (row, column or box) has only one cell holding a possibility, " +
         "then that possibility must be the solution for that cell");
 
-    private static readonly IDescription<SudokuDescriptionDisplayer> JuniorExocetDescription = new TextDescription<SudokuDescriptionDisplayer>("This is a very complex strategy. For a Junior Exocet to exist, there is multiple requirements :\n" +
+    private static readonly IDescription<SudokuDescriptionDisplayer> JuniorExocetDescription = new TextDescription<SudokuDescriptionDisplayer>("This is a very complex strategy. For a Junior Exocet to exist, there are multiple requirements :\n" +
         "1) There exist 2 base cells and 2 target cells in a band (e.g. 3 lines in 3 boxes). The base cells" +
         "need to be in the same mini-line, meaning a line restricted to a box, and have a total of" +
         "candidates between 2 and 4, called base candidates. Each target cell is in a different line and in a different box" +
@@ -153,10 +153,10 @@ public static class SudokuStrategyPool
     private static readonly IDescription<SudokuDescriptionDisplayer> APEDescription = new DescriptionCollection<SudokuDescriptionDisplayer>().Add(
         "An aligned pair exclusion is the removal of candidate(s) using the following logic : " +
                                 "Any two cells cannot have solutions that are candidates contained in an almost locked set they both see.")
-        .Add(new SudokuStepDescription("Let's take these two boxes as an example where r45c1 is the target. There are 3 ways to make 5 fit into r4c1 :\n" +
-                                       "5 4 -> Impossible because of r56c3\n" +
-                                       "5 8 -> Impossible because of r12c1\n" +
-                                       "5 9 -> Impossible because of r12c1\n" +
+        .Add(new SudokuStepDescription("Let's take these two boxes as an example where r45c1 is the target. There are 3 ways to make 5 fit into r4c1 :\n\n" +
+                                       "    5 4 -> Impossible because of r56c3\n" +
+                                       "    5 8 -> Impossible because of r12c1\n" +
+                                       "    5 9 -> Impossible because of r12c1\n\n" +
                                        "We can therefore safely remove 5 from r4c1",
             "t0o803p00h60p02805tgoot0p00560p0280321o00503p009410hp0sgogs098p8032105l00511s0og21gg0903k00321090541h00hp0p0h8052141h88103h00hp0030h21h005p04109p841p01o03hg05p021",
             0, 5, 3, 5, 
@@ -213,7 +213,8 @@ public static class SudokuStrategyPool
         return !Pool.TryGetValue(name, out var giver) ? null : giver();
     }
 
-    public static IDescription<SudokuDescriptionDisplayer> GetDescription(string name) => Descriptions.TryGetValue(name, out var d) ? d : NoDescription;
+    public static IDescription<SudokuDescriptionDisplayer> GetDescription(string name) 
+        => Descriptions.TryGetValue(name, out var d) ? d : NoDescription;
 }
 
 public delegate SudokuStrategy GiveStrategy();

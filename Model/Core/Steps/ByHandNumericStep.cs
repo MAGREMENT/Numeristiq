@@ -17,7 +17,7 @@ public class ByHandNumericStep<THighlighter, TSolvingState> : IStep<THighlighter
     public Explanation<THighlighter> Explanation => Explanation<THighlighter>.Empty;
     public TSolvingState From { get; }
     public TSolvingState To { get; }
-    public HighlightCollection<THighlighter> HighlightCollection => new(new DelegateHighlightable<THighlighter>(HighLight));
+    public HighlightCollection<THighlighter> HighlightCollection => new(DoHighlight);
 
     private readonly NumericChange _progress;
 
@@ -44,7 +44,7 @@ public class ByHandNumericStep<THighlighter, TSolvingState> : IStep<THighlighter
         To = stateAfter;
     }
 
-    private void HighLight<TH>(TH highlighter) where TH : INumericSolvingStateHighlighter
+    private void DoHighlight<TH>(TH highlighter) where TH : INumericSolvingStateHighlighter
     {
         ChangeReportHelper.HighlightChange(highlighter, _progress);
     }

@@ -74,27 +74,15 @@ public class SudokuHighlighterTranslator : IHighlighterTranslator<ISudokuHighlig
                 HighlightPossibility(cp.Possibility, cp.Row, cp.Column, color);
                 break;
             case PointingRow pr :
-                var minCol = 9;
-                var maxCol = -1;
-                foreach (var cell in pr.EnumerateCell())
-                {
-                    if (cell.Column < minCol) minCol = cell.Column;
-                    if (cell.Column > maxCol) maxCol = cell.Column;
-                }
+                var cols = pr.FindMinMaxColumns();
                 
-                _drawer.EncircleRectangle(pr.Row, minCol, pr.Possibility, pr.Row,
-                    maxCol, pr.Possibility, color);
+                _drawer.EncircleRectangle(pr.Row, cols.Min, pr.Possibility, pr.Row,
+                    cols.Max, pr.Possibility, color);
                 break;
             case PointingColumn pc :
-                var minRow = 9;
-                var maxRow = -1;
-                foreach (var cell in pc.EnumerateCell())
-                {
-                    if (cell.Row < minRow) minRow = cell.Row;
-                    if (cell.Row > maxRow) maxRow = cell.Row;
-                }
+                var rows = pc.FindMinMaxRows();
 
-                _drawer.EncircleRectangle(minRow, pc.Column, pc.Possibility, maxRow,
+                _drawer.EncircleRectangle(rows.Min, pc.Column, pc.Possibility, rows.Max,
                     pc.Column, pc.Possibility, color);
                 break;
             case NakedSet ans :
@@ -117,10 +105,25 @@ public class SudokuHighlighterTranslator : IHighlighterTranslator<ISudokuHighlig
             && cp1.ToCell() == cp2.ToCell()) return;
         
         if (linkStrength == LinkStrength.Strong && (from is NakedSet || to is NakedSet)) return;
-        
+
+        var closest = FindClosest(from, to);
+        if (closest is null) return;
+
+        CreateLink(closest.Value.Item1, closest.Value.Item2, linkStrength);
+    }
+
+    public void CreateLink(IPossibilitySet from, IPossibilitySet to, int link)
+    {
+        var (m1, m2) = FindClosest(from, to, link);
+                
+        CreateLink(m1, m2, LinkStrength.Strong);
+    }
+    
+    private static (CellPossibility, CellPossibility)? FindClosest(ISudokuElement from, ISudokuElement to)
+    {
         var possibilitiesFrom = from.EveryPossibilities();
         var possibilitiesTo = to.EveryPossibilities();
-        if (possibilitiesFrom.Count == 0 || possibilitiesTo.Count == 0) return;
+        if (possibilitiesFrom.Count == 0 || possibilitiesTo.Count == 0) return null;
 
         int possibilitySearch;
         int first;
@@ -172,10 +175,10 @@ public class SudokuHighlighterTranslator : IHighlighterTranslator<ISudokuHighlig
             }
         }
 
-        CreateLink(minCells[0], minCells[1], linkStrength);
+        return (minCells[0], minCells[1]);
     }
 
-    public void CreateLink(IPossibilitySet from, IPossibilitySet to, int link)
+    private static (CellPossibility, CellPossibility) FindClosest(IPossibilitySet from, IPossibilitySet to, int link)
     {
         var minDistance = double.MaxValue;
         var minCells = new CellPossibility[2];
@@ -194,8 +197,8 @@ public class SudokuHighlighterTranslator : IHighlighterTranslator<ISudokuHighlig
                 }
             }
         }
-                
-        CreateLink(minCells[0], minCells[1], LinkStrength.Strong);
+        
+        return (minCells[0], minCells[1]);
     }
     
     private static double Distance(Cell oneCell, int onePoss, Cell twoCell, int twoPoss)
