@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Model.Core.BackTracking;
 using Model.Utility;
-using Model.Utility.BitSets;
 
 namespace Model.Nonograms;
 
@@ -33,63 +31,6 @@ public class Nonogram : IReadOnlyNonogram
         _verticalCollection = verticalCollection;
     }
 
-    public bool Add(Orientation orientation, int index, params int[] values)
-    {
-        if (orientation == Orientation.Horizontal)
-        {
-            if (index < RowCount)
-            {
-                _horizontalCollection.SetValues(index, values);
-            }
-            else if (index == RowCount)
-            {
-                _horizontalCollection.AddValues(values);
-                ResizeTo(RowCount + 1, ColumnCount);
-            }
-            else return false;
-        }
-        else
-        {
-            if (index < ColumnCount)
-            {
-                _verticalCollection.SetValues(index, values);
-            }
-            else if (index == ColumnCount)
-            {
-                _verticalCollection.AddValues(values);
-                ResizeTo(RowCount, ColumnCount + 1);
-            }
-            else return false;
-        }
-
-        return true;
-    }
-
-    public bool Add(IEnumerable<NonogramLine> lines)
-    {
-        var hBitSet = new InfiniteBitSet();
-        var vBitSet = new InfiniteBitSet();
-        
-        foreach (var line in lines)
-        {
-            if (line.Orientation == Orientation.Horizontal)
-            {
-                if (line.Index >= RowCount) hBitSet.Add(line.Index - RowCount);
-            }
-            else
-            {
-                if (line.Index >= ColumnCount) vBitSet.Add(line.Index - ColumnCount);
-            }
-        }
-
-        if (hBitSet.Count > 0 && !hBitSet.IsFilledUntilLast()) return false;
-        if (vBitSet.Count > 0 && !vBitSet.IsFilledUntilLast()) return false;
-        
-        //TODO 
-
-        return true;
-    }
-
     public void Add(IEnumerable<IEnumerable<int>> hValues, IEnumerable<IEnumerable<int>> vValues)
     {
         int rAdded = 0, cAdded = 0;
@@ -108,12 +49,29 @@ public class Nonogram : IReadOnlyNonogram
         ResizeTo(RowCount + rAdded, ColumnCount + cAdded);
     }
 
+    public void SetSizeTo(int rowCount, int colCount)
+    {
+        var rDiff = rowCount - RowCount;
+        var cDiff = colCount - ColumnCount;
+        if (rDiff == 0 && cDiff == 0) return;
+        
+        ResizeTo(rowCount, colCount);
+        if (rDiff < 0) _horizontalCollection.RemoveFromEnd(-rDiff);
+        else _horizontalCollection.AddEmpty(rDiff);
+        if (cDiff < 0) _verticalCollection.RemoveFromEnd(-cDiff);
+        else _verticalCollection.AddEmpty(cDiff);
+    }
+    
+    public Nonogram CopyWithoutDichotomy()
+    {
+        return new Nonogram(new bool[RowCount, ColumnCount], _horizontalCollection.Copy(), _verticalCollection.Copy());
+    }
+
     public Nonogram Copy()
     {
-        var buffer = new bool[RowCount, ColumnCount];
-        Array.Copy(_cells, buffer, _cells.Length);
-
-        return new Nonogram(buffer, _horizontalCollection.Copy(), _verticalCollection.Copy());
+        var n = CopyWithoutDichotomy();
+        Array.Copy(_cells, n._cells, _cells.Length);
+        return n;
     }
 
     public bool this[int row, int col]
@@ -124,7 +82,7 @@ public class Nonogram : IReadOnlyNonogram
 
     public bool IsRowCorrect(int index)
     {
-        using var enumerator = _horizontalCollection[index].GetEnumerator();
+        using var enumerator = _horizontalCollection.AsEnumerable(index).GetEnumerator();
 
         var remaining = -1;
         for (int col = 0; col < ColumnCount; col++)
@@ -151,7 +109,7 @@ public class Nonogram : IReadOnlyNonogram
 
     public bool IsColumnCorrect(int index)
     {
-        using var enumerator = _verticalCollection[index].GetEnumerator();
+        using var enumerator = _verticalCollection.AsEnumerable(index).GetEnumerator();
 
         var remaining = -1;
         for (int row = 0; row < RowCount; row++)
@@ -221,7 +179,7 @@ public class Nonogram : IReadOnlyNonogram
         for (int i = 0; i < _verticalCollection.Count; i++)
         {
             int c = 0;
-            foreach (var v in _verticalCollection[i])
+            foreach (var v in _verticalCollection.AsEnumerable(i))
             {
                 maxWidth = Math.Max(maxWidth, v.ToString().Length);
                 c++;
@@ -235,7 +193,7 @@ public class Nonogram : IReadOnlyNonogram
         for (int i = 0; i < _horizontalCollection.Count; i++)
         {
             var c = 0;
-            foreach (var v in _horizontalCollection[i])
+            foreach (var v in _horizontalCollection.AsEnumerable(i))
             {
                 c += v.ToString().Length + 1;
             }
@@ -265,7 +223,7 @@ public class Nonogram : IReadOnlyNonogram
         {
             var secondBuilder = new StringBuilder();
             bool first = true;
-            foreach (var val in _horizontalCollection[row])
+            foreach (var val in _horizontalCollection.AsEnumerable(row))
             {
                 if (first) first = false;
                 else secondBuilder.Append(' ');
@@ -333,28 +291,16 @@ public interface IReadOnlyNonogram : ICopyable<Nonogram>
     bool IsRowCorrect(int index);
     bool IsColumnCorrect(int index);
     bool IsCorrect();
-    public int GetRowSolutionCount(int row);
-    public int GetColumnSolutionCount(int column);
+    int GetRowSolutionCount(int row);
+    int GetColumnSolutionCount(int column);
+    Nonogram CopyWithoutDichotomy();
 }
 
-public readonly struct NonogramLine
-{
-    public NonogramLine(Orientation orientation, int index, int[] values)
-    {
-        Orientation = orientation;
-        Index = index;
-        Values = values;
-    }
-
-    public Orientation Orientation { get; }
-    public int Index { get; }
-    public int[] Values { get; }
-}
-
-public interface IReadOnlyNonogramLineCollection : IEnumerable<IEnumerable<int>>
+public interface IReadOnlyNonogramLineCollection
 {
     int Count { get; }
-    IEnumerable<int> this[int index] { get; }
+    IEnumerable<IEnumerable<int>> Enumerate();
+    IEnumerable<int> AsEnumerable(int index);
     IReadOnlyList<int> AsList(int index);
     int TryGetValue(int lineIndex, int valueIndex);
     int ValueCount(int index);
@@ -372,48 +318,46 @@ public interface INonogramLineCollection : IReadOnlyNonogramLineCollection
 { 
     void SetValues(int index, IEnumerable<int> values);
     void AddValues(IEnumerable<int> values);
+    void AddEmpty(int count);
+    void RemoveFromEnd(int count);
 }
 
-public class ListListNonogramLineCollection : INonogramLineCollection
+public class ListListNonogramLineCollection : List<List<int>>, INonogramLineCollection
 {
-    private readonly List<List<int>> _list;
-
-    public int Count => _list.Count;
-
-    public ListListNonogramLineCollection()
-    {
-        _list = new List<List<int>>();
-    }
-
-    private ListListNonogramLineCollection(List<List<int>> list)
-    {
-        _list = list;
-    }
-    
     public void SetValues(int index, IEnumerable<int> values)
     {
-        var l = _list[index];
+        var l = this[index];
         l.Clear();
         l.AddRange(values);
     }
 
     public void AddValues(IEnumerable<int> values)
     { 
-        _list.Add(new List<int>(values));
+        Add(new List<int>(values));
     }
 
-    public IEnumerable<int> this[int index] => _list[index];
-
-    public IReadOnlyList<int> AsList(int index)
+    public void AddEmpty(int count)
     {
-        return _list[index];
+        for (int i = 0; i < count; i++)
+        {
+            Add(new List<int>());
+        }
     }
+
+    public void RemoveFromEnd(int count)
+    {
+        RemoveRange(Count - count, count);
+    }
+
+    public IEnumerable<int> AsEnumerable(int index) => this[index];
+
+    public IReadOnlyList<int> AsList(int index) => this[index];
 
     public int TryGetValue(int lineIndex, int valueIndex)
     {
-        if (lineIndex < 0 || lineIndex >= _list.Count) return -1;
+        if (lineIndex < 0 || lineIndex >= Count) return -1;
 
-        var l = _list[lineIndex];
+        var l = this[lineIndex];
         if (valueIndex < 0 || valueIndex >= l.Count) return -1;
 
         return l[valueIndex];
@@ -421,12 +365,12 @@ public class ListListNonogramLineCollection : INonogramLineCollection
 
     public int ValueCount(int index)
     {
-        return _list[index].Count;
+        return this[index].Count;
     }
 
     public (int, int) MinValue(int index, int start, int end)
     {
-        var l = _list[index];
+        var l = this[index];
         
         var v = l[start];
         var i = start;
@@ -442,11 +386,11 @@ public class ListListNonogramLineCollection : INonogramLineCollection
         return (i, v);
     }
 
-    public (int, int) MinValue(int index) => MinValue(index, 0, _list[index].Count - 1);
+    public (int, int) MinValue(int index) => MinValue(index, 0, this[index].Count - 1);
     
     public (int, int) MaxValue(int index, int start, int end)
     {
-        var l = _list[index];
+        var l = this[index];
         
         var v = l[start];
         var i = start;
@@ -462,29 +406,29 @@ public class ListListNonogramLineCollection : INonogramLineCollection
         return (i, v);
     }
 
-    public (int, int) MaxValue(int index) => MaxValue(index, 0, _list[index].Count - 1);
+    public (int, int) MaxValue(int index) => MaxValue(index, 0, this[index].Count - 1);
 
     public int TotalExpected(int index)
     {
         var total = 0;
-        foreach (var val in _list[index]) total += val;
+        foreach (var val in this[index]) total += val;
         return total;
     }
 
     public INonogramLineCollection Copy()
     {
-        var buffer = new List<List<int>>();
-        foreach (var l in _list)
+        var buffer = new ListListNonogramLineCollection();
+        foreach (var l in this)
         {
-            buffer.Add(new List<int>(l));
+            buffer.AddValues(l);
         }
 
-        return new ListListNonogramLineCollection(buffer);
+        return buffer;
     }
 
     public int NeededSpace(int index, int start, int end)
     {
-        var l = _list[index];
+        var l = this[index];
         var result = 0;
         for (int i = start; i <= end; i++)
         {
@@ -497,16 +441,11 @@ public class ListListNonogramLineCollection : INonogramLineCollection
 
     public int NeededSpace(int index)
     {
-        return NeededSpace(index, 0, _list[index].Count - 1);
+        return NeededSpace(index, 0, this[index].Count - 1);
     }
 
-    public IEnumerator<IEnumerable<int>> GetEnumerator()
+    public IEnumerable<IEnumerable<int>> Enumerate()
     {
-        return _list.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
+        return this;
     }
 }

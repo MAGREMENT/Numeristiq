@@ -3,7 +3,7 @@ using Model.Sudokus.Solver;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve;
 
-public interface ISudokuSolveView : ICanBeDisabled, ISolveWithStepsView
+public interface ISudokuSolveView : ICanBeDisabled, IStepManagingView
 {
     ISudokuSolverDrawer Drawer { get; }
     

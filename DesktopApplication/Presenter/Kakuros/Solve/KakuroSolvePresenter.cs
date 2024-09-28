@@ -10,7 +10,7 @@ using Orientation = Model.Utility.Orientation;
 
 namespace DesktopApplication.Presenter.Kakuros.Solve;
 
-public class KakuroSolvePresenter : SolveWithStepsPresenter<INumericSolvingStateHighlighter, 
+public class KakuroSolvePresenter : StepManagingPresenter<INumericSolvingStateHighlighter, 
     IStep<INumericSolvingStateHighlighter, INumericSolvingState>, INumericSolvingState>
 {
     private readonly IKakuroSolveView _view;
@@ -210,7 +210,7 @@ public class KakuroSolvePresenter : SolveWithStepsPresenter<INumericSolvingState
     } 
     
     protected override IReadOnlyList<IStep<INumericSolvingStateHighlighter, INumericSolvingState>> Steps => _solver.Steps;
-    protected override ISolveWithStepsView View => _view;
+    protected override IStepManagingView View => _view;
     public override IStepExplanationPresenterBuilder? RequestExplanation()
     {
         return null; //TODO

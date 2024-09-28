@@ -125,7 +125,7 @@ public partial class SolvePage : IKakuroSolveView
 
     protected override ScrollViewer GetStepViewer() => StepViewer;
 
-    protected override ISolveWithStepsPresenter GetStepsPresenter() => _presenter;
+    protected override IStepManagingPresenter GetStepsPresenter() => _presenter;
 
     protected override ISizeOptimizable GetExplanationDrawer()
     {

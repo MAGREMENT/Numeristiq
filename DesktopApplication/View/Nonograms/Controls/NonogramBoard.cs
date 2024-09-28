@@ -26,6 +26,9 @@ public class NonogramBoard : LayeredDrawingBoard, INonogramDrawingData, ISizeOpt
     private readonly List<IReadOnlyList<int>> _columns = new();
     private double _cellSize;
     private double _bigLineWidth;
+
+    public event OnDimensionCountChange? RowCountChanged;
+    public event OnDimensionCountChange? ColumnCountChanged;
     
     public NonogramBoard() : base(6)
     {
@@ -159,7 +162,7 @@ public class NonogramBoard : LayeredDrawingBoard, INonogramDrawingData, ISizeOpt
     public void SetRows(IEnumerable<IEnumerable<int>> rows)
     {
         _rows.Clear();
-        MaxWideness = 0;
+        MaxWideness = 1;
         foreach (var r in rows)
         {
             var asArray = r.ToArray();
@@ -168,12 +171,13 @@ public class NonogramBoard : LayeredDrawingBoard, INonogramDrawingData, ISizeOpt
         }
         
         UpdateSize(true);
+        RowCountChanged?.Invoke(_rows.Count);
     }
 
     public void SetColumns(IEnumerable<IEnumerable<int>> cols)
     {
         _columns.Clear();
-        MaxDepth = 0;
+        MaxDepth = 1;
         foreach (var c in cols)
         {
             var asArray = c.ToArray();
@@ -182,6 +186,7 @@ public class NonogramBoard : LayeredDrawingBoard, INonogramDrawingData, ISizeOpt
         }
         
         UpdateSize(true);
+        ColumnCountChanged?.Invoke(_columns.Count);
     }
 
     public void SetSolution(int row, int col)

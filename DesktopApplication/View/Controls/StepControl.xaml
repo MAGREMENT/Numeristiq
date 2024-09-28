@@ -51,7 +51,8 @@
                 <c:PageSelectorControl Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" x:Name="PageSelector"/>
                 
                 <Button Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource FullPrimaryButton}" Margin="10" 
-                        Padding="7" FontSize="20" HorizontalAlignment="Stretch" Click="OnExplanationAsked">Explanation</Button>
+                        Padding="7" FontSize="20" HorizontalAlignment="Stretch" Click="OnExplanationAsked"
+                        x:Name="ExplanationButton">Explanation</Button>
             </Grid>
         </Grid>
     </Border>

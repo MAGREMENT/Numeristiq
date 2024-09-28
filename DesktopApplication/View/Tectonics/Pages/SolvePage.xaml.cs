@@ -188,7 +188,7 @@ public partial class SolvePage : ITectonicSolveView
         return LogViewer;
     }
 
-    protected override ISolveWithStepsPresenter GetStepsPresenter()
+    protected override IStepManagingPresenter GetStepsPresenter()
     {
         return _presenter;
     }

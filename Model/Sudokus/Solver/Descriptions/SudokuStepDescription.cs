@@ -41,7 +41,7 @@ public readonly struct SudokuCropping
         ColumnTo = columnTo;
     }
 
-    public static SudokuCropping Default() => new(0, 0, 9, 9);
+    public static SudokuCropping Default() => new(0, 0, 8, 8);
 
     public int RowFrom { get; }
     public int ColumnFrom { get; }

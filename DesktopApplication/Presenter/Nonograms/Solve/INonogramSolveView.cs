@@ -1,6 +1,6 @@
 ﻿namespace DesktopApplication.Presenter.Nonograms.Solve;
 
-public interface INonogramSolveView : ISolveWithStepsView
+public interface INonogramSolveView : IStepManagingView
 {
     INonogramDrawer Drawer { get; }
 

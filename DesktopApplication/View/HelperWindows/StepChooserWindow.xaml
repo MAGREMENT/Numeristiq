@@ -6,7 +6,7 @@
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         xmlns:controls1="clr-namespace:DesktopApplication.View.Sudokus.Controls"
         mc:Ignorable="d"
-        Title="ChooseStepWindow" Height="640" Width="1150"
+        Title="ChooseStepWindow" Height="640" Width="1100"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
@@ -39,41 +39,48 @@
         </controls:SizeOptimizedContentControl>
             
         
-        <Border Grid.Row="1" Grid.Column="1" Background="{DynamicResource Background1}"
-                Padding="5" CornerRadius="5" Margin="0 10">
-            <Grid Width="400" Margin="0, 5, 0, 5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-            
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-            
-                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left"
-                           Foreground="{DynamicResource Text}" Margin="5 0 0 0">Steps</TextBlock>
-            
-                <controls:PageSelectorControl Grid.Row="0" Grid.Column="1" x:Name="PageSelector" PageChanged="OnPageChange"/>
-            
-                <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0, 5, 0, 0"
-                              Style="{StaticResource TransparentBarScrollViewer}">
-                    <StackPanel x:Name="StepsPanel"/>
-                </ScrollViewer>
-            </Grid>
-        </Border>
-        
-        <Grid Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Margin="10 0">
+        <Grid Grid.Row="1" Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
-            <Button Grid.Row="0" Style="{StaticResource DefaultLightUpButtonStyle}" Width="160" 
-                    Margin="0, 0, 0, 10" IsEnabled="False" x:Name="SelectButton" Click="OnSelection">Select</Button>
-            <Button Grid.Row="1" Style="{StaticResource DefaultLightUpButtonStyle}" Width="160"
-                    Click="OnCancel">Cancel</Button>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                    Background="{DynamicResource Background1}"
+                    Padding="5" CornerRadius="5" Margin="0 10 10 10">
+                <Grid Width="450" Margin="0, 5, 0, 5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+            
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+            
+                    <TextBlock Grid.Row="0" Grid.Column="0" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Left"
+                               Foreground="{DynamicResource Text}" Margin="5 0 0 0">Steps</TextBlock>
+            
+                    <controls:PageSelectorControl Grid.Row="0" Grid.Column="1" x:Name="PageSelector" PageChanged="OnPageChange"/>
+            
+                    <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0, 5, 0, 0"
+                                  Style="{StaticResource TransparentBarScrollViewer}">
+                        <StackPanel x:Name="StepsPanel"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+            
+            <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource DefaultLightUpButtonStyle}" 
+                    Margin="0, 0, 5, 10" IsEnabled="False" x:Name="SelectButton" Click="OnSelection">Select</Button>
+            <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource DefaultLightUpButtonStyle}"
+                    Margin="5, 0, 10, 10" Click="OnCancel">Cancel</Button>
         </Grid>
+        
     </Grid>
 </Window>

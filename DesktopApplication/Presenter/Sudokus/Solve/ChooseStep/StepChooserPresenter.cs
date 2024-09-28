@@ -6,12 +6,12 @@ using Model.Utility.BitSets;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve.ChooseStep;
 
-public class ChooseStepPresenter
+public class StepChooserPresenter
 {
     private const int PageCount = 20;
     
     private readonly IReadOnlyList<BuiltChangeCommit<NumericChange, ISudokuHighlighter>> _commits;
-    private readonly IChooseStepView _view;
+    private readonly IStepChooserView _view;
     private readonly SudokuHighlighterTranslator _translator;
     private readonly INumericSolvingState _currentState;
     private readonly ICommitApplier _applier;
@@ -19,7 +19,7 @@ public class ChooseStepPresenter
     private int _currentPage;
     private int _shownStep = -1;
     
-    public ChooseStepPresenter(IChooseStepView view, INumericSolvingState currentState,
+    public StepChooserPresenter(IStepChooserView view, INumericSolvingState currentState,
         IReadOnlyList<BuiltChangeCommit<NumericChange, ISudokuHighlighter>> commits, ICommitApplier applier, Settings settings)
     {
         _view = view;
@@ -57,26 +57,31 @@ public class ChooseStepPresenter
         if (p < 0 || p * PageCount > _commits.Count) return;
 
         _currentPage = p;
-        _view.ClearCommits();
+        _view.ClearSteps();
+        _shownStep = -1;
         SetSteps();
     }
 
-    public void ShowStep(int index) //TODO improve (with StepControl)
+    public void ShowStep(int index)
     {
-        var drawer = _view.Drawer;
-        drawer.ClearHighlights();
-        if(_shownStep != -1) _view.UnselectStep(_shownStep % PageCount);
+        if(_shownStep != -1) _view.CloseStep(_shownStep);
 
-        if (_shownStep != index)
+        if (_shownStep == index)
         {
-            _shownStep = index;
-            _translator.Translate(_commits[index].Report.HighlightCollection, false);
-            _view.SelectStep(index % PageCount);
+            _shownStep = -1;
+            _view.SetSelectionAvailability(false);
+            _view.Drawer.ClearHighlights();
+            _view.Drawer.Refresh();
         }
-        else _shownStep = -1;
+        else
+        {
+            var actual = index - _currentPage * PageCount;
+            _view.OpenStep(actual);
+            _shownStep = actual;
 
-        _view.EnableSelection(_shownStep != -1);
-        drawer.Refresh();
+            _view.SetSelectionAvailability(true);
+            _translator.Translate(_commits[index].Report.HighlightCollection, true); 
+        }
     }
 
     public void SelectCurrent()
@@ -90,7 +95,7 @@ public class ChooseStepPresenter
         var start = _currentPage * PageCount;
         for (int i = start; i < start + PageCount && i < _commits.Count; i++)
         {
-            _view.AddCommit(_commits[i].Maker, i);
+            _view.AddStep(i, _commits[i]);
         }
     }
 }

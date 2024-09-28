@@ -285,6 +285,7 @@ public partial class ManagePage : ISudokuManageView, SudokuDescriptionDisplayer
             Text = s,
             TextWrapping = TextWrapping.Wrap,
             TextAlignment = TextAlignment.Center,
+            Margin = new Thickness(0, 0, 0, 20)
         };
                 
         tb.SetResourceReference(ForegroundProperty, "Text");
@@ -294,7 +295,10 @@ public partial class ManagePage : ISudokuManageView, SudokuDescriptionDisplayer
     public void AddParagraph(string text, INumericSolvingState state, SudokuCropping cropping,
         IHighlightable<ISudokuHighlighter> highlight, TextDisposition disposition)
     {
-        var grid = new Grid();
+        var grid = new Grid
+        {
+            Margin = new Thickness(0, 0, 0, 20)
+        };
         grid.ColumnDefinitions.Add(new ColumnDefinition
         {
             Width = new GridLength(1, GridUnitType.Star)
@@ -325,11 +329,11 @@ public partial class ManagePage : ISudokuManageView, SudokuDescriptionDisplayer
     }
 
     private SudokuBoard CreateBoard(INumericSolvingState state,
-        IHighlightable<ISudokuHighlighter> highlight, SudokuCropping cropping) //TODO CroppedBoard
+        IHighlightable<ISudokuHighlighter> highlight, SudokuCropping cropping) //TODO adapt CroppedSudokuBoard to size
     {
-        var board = new SudokuBoard
+        var board = new CroppedSudokuBoard(cropping)
         {
-            PossibilitySize = 10,
+            PossibilitySize = 12,
             BigLineWidth = 3,
             SmallLineWidth = 1,
         };

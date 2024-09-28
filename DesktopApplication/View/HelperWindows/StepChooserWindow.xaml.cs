@@ -2,13 +2,16 @@
 using System.Windows.Controls;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.Presenter.Sudokus.Solve.ChooseStep;
+using DesktopApplication.View.Controls;
 using Model.Core;
+using Model.Core.Changes;
+using Model.Core.Highlighting;
 
 namespace DesktopApplication.View.HelperWindows;
 
-public partial class ChooseStepWindow : IChooseStepView
+public partial class ChooseStepWindow : IStepChooserView
 {
-    private readonly ChooseStepPresenter _presenter;
+    private readonly StepChooserPresenter _presenter;
     
     public ChooseStepWindow(ChooseStepPresenterBuilder builder)
     {
@@ -33,9 +36,16 @@ public partial class ChooseStepWindow : IChooseStepView
 
     public ISudokuSolverDrawer Drawer => (ISudokuSolverDrawer)Embedded.OptimizableContent!;
     
-    public void ClearCommits()
+    public void ClearSteps()
     {
         StepsPanel.Children.Clear();
+    }
+
+    public void AddStep(int index, BuiltChangeCommit<NumericChange, ISudokuHighlighter> commit)
+    {
+        var control = new StepControl(index + 1, commit);
+        control.OpenRequested += i => _presenter.ShowStep(i - 1);
+        StepsPanel.Children.Add(control);
     }
 
     public void AddCommit(Strategy maker, int index)
@@ -62,23 +72,19 @@ public partial class ChooseStepWindow : IChooseStepView
         PageSelector.Current = n;
     }
 
-    public void SelectStep(int index)
+    public void OpenStep(int index)
     {
-        if (index < 0 || index >= StepsPanel.Children.Count || StepsPanel.Children[index] is not TextBlock tb) return;
-
-        tb.FontWeight = FontWeights.SemiBold;
+        ((StepControl)StepsPanel.Children[index]).Open();
     }
 
-    public void UnselectStep(int index)
+    public void CloseStep(int index)
     {
-        if (index < 0 || index >= StepsPanel.Children.Count || StepsPanel.Children[index] is not TextBlock tb) return;
-
-        tb.FontWeight = FontWeights.Normal;
+        ((StepControl)StepsPanel.Children[index]).Close();
     }
 
-    public void EnableSelection(bool isEnabled)
+    public void SetSelectionAvailability(bool yes)
     {
-        SelectButton.IsEnabled = isEnabled;
+        SelectButton.IsEnabled = yes;
     }
 
     private void OnPageChange(int newPage)

@@ -73,7 +73,7 @@ public partial class SolvePage : INonogramSolveView
         return StepViewer;
     }
 
-    protected override ISolveWithStepsPresenter GetStepsPresenter()
+    protected override IStepManagingPresenter GetStepsPresenter()
     {
         return _presenter;
     }
@@ -87,10 +87,30 @@ public partial class SolvePage : INonogramSolveView
             BigLineWidth = 3
         };
 
-        board.SetResourceReference(NonogramBoard.LineBrushProperty, "Text");
+        board.SetResourceReference(DrawingBoard.LineBrushProperty, "Text");
         board.SetResourceReference(NonogramBoard.FillingBrushProperty, "Primary");
         board.SetResourceReference(NonogramBoard.UnavailableBrushProperty, "Secondary");
 
         return board;
+    }
+
+    private void OnRowDimensionChangeAsked(int diff)
+    {
+        _presenter.SetSizeTo(diff, 0);
+    }
+
+    private void OnColumnDimensionChangeAsked(int diff)
+    {
+        _presenter.SetSizeTo(0, diff);
+    }
+
+    private void UpdateRowCount(int number)
+    {
+        ((DimensionChooser)EmbeddedDrawer.SideControls[0]!).SetDimension(number);
+    }
+    
+    private void UpdateColumnCount(int number)
+    {
+        ((DimensionChooser)EmbeddedDrawer.SideControls[1]!).SetDimension(number);
     }
 }

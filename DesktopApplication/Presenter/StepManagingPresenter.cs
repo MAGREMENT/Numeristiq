@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using DesktopApplication.Presenter.Sudokus.Solve;
 using Model.Core.Highlighting;
 using Model.Core.Steps;
 
 namespace DesktopApplication.Presenter;
 
-public abstract class SolveWithStepsPresenter<THighlight, TStep, TState> : ISolveWithStepsPresenter
+public abstract class StepManagingPresenter<THighlight, TStep, TState> : IStepManagingPresenter
     where TStep : IStep<THighlight, TState>
 {
     protected readonly IHighlighterTranslator<THighlight> _translator;
@@ -14,9 +13,9 @@ public abstract class SolveWithStepsPresenter<THighlight, TStep, TState> : ISolv
     private StateShown _stateShown = StateShown.Before;
     
     protected abstract IReadOnlyList<TStep> Steps { get; }
-    protected abstract ISolveWithStepsView View { get; }
+    protected abstract IStepManagingView View { get; }
 
-    protected SolveWithStepsPresenter(IHighlighterTranslator<THighlight> translator)
+    protected StepManagingPresenter(IHighlighterTranslator<THighlight> translator)
     {
         _translator = translator;
     }
@@ -90,7 +89,7 @@ public abstract class SolveWithStepsPresenter<THighlight, TStep, TState> : ISolv
     }
 }
 
-public interface ISolveWithStepsPresenter
+public interface IStepManagingPresenter
 {
     public void RequestStepOpening(int id);
     public void RequestStateShownChange(StateShown ss);
@@ -103,7 +102,7 @@ public interface IHighlighterTranslator<out T>
     void Translate(IHighlightable<T> highlightable, bool clear);
 }
 
-public interface ISolveWithStepsView
+public interface IStepManagingView
 {
     void AddStep(IStep step, StateShown _shown);
     void ClearSteps();

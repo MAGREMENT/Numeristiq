@@ -52,7 +52,7 @@ public partial class SolvePage : IBinairoSolveView
         return StepViewer;
     }
 
-    protected override ISolveWithStepsPresenter GetStepsPresenter()
+    protected override IStepManagingPresenter GetStepsPresenter()
     {
         return _presenter;
     }

@@ -10,7 +10,7 @@ public abstract class SolveWithStepsPage : ManagedPage
 {
     protected abstract StackPanel GetStepPanel();
     protected abstract ScrollViewer GetStepViewer();
-    protected abstract ISolveWithStepsPresenter GetStepsPresenter();
+    protected abstract IStepManagingPresenter GetStepsPresenter();
     
     public void AddStep(IStep step, StateShown stateShown)
     {

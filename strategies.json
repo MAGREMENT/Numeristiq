@@ -485,7 +485,7 @@
   },
   {
     "Name": "Brute Force",
-    "Enabled": true,
+    "Enabled": false,
     "Locked": false,
     "InstanceHandling": 1,
     "Settings": {}

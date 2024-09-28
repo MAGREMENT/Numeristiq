@@ -19,8 +19,16 @@
                 <controls:NonogramBoard CellSize="50" LineBrush="{DynamicResource Text}"
                                         BackgroundBrush="Transparent"
                                         BigLineWidth="3" FillingBrush="{DynamicResource Primary}"
-                                        UnavailableBrush="{DynamicResource Secondary}"/>
+                                        UnavailableBrush="{DynamicResource Secondary}"
+                                        RowCountChanged="UpdateRowCount" ColumnCountChanged="UpdateColumnCount"/>
             </global:SizeOptimizedContentControl.OptimizableContent>
+            
+            <global:SizeOptimizedContentControl.SideControls>
+                <global:DimensionChooser TitleText="Rows" DimensionChangeAsked="OnRowDimensionChangeAsked"
+                                         HorizontalAlignment="Center"/>
+                <global:DimensionChooser TitleText="Cols" DimensionChangeAsked="OnColumnDimensionChangeAsked"
+                                         HorizontalAlignment="Center" Margin="0 10 0 0"/>
+            </global:SizeOptimizedContentControl.SideControls>
         </global:SizeOptimizedContentControl>
         
         <Grid Grid.Column="1" Width="400">

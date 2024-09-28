@@ -7,7 +7,7 @@ using Model.Core.Steps;
 
 namespace DesktopApplication.Presenter.Binairos.Solve;
 
-public class BinairoSolvePresenter : SolveWithStepsPresenter<IBinairoHighlighter, IStep<IBinairoHighlighter, IBinarySolvingState>,
+public class BinairoSolvePresenter : StepManagingPresenter<IBinairoHighlighter, IStep<IBinairoHighlighter, IBinarySolvingState>,
     IBinarySolvingState>
 {
     private readonly IBinairoSolveView _view;
@@ -55,7 +55,7 @@ public class BinairoSolvePresenter : SolveWithStepsPresenter<IBinairoHighlighter
     }
 
     protected override IReadOnlyList<IStep<IBinairoHighlighter, IBinarySolvingState>> Steps => _solver.Steps;
-    protected override ISolveWithStepsView View => _view;
+    protected override IStepManagingView View => _view;
     public override IStepExplanationPresenterBuilder? RequestExplanation()
     {
         return null; //TODO

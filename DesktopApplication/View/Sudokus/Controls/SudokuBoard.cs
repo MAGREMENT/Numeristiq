@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Sudokus.Play;
 using DesktopApplication.Presenter.Sudokus.Solve;
@@ -12,8 +11,7 @@ using DesktopApplication.View.Controls;
 using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Sudokus.Player;
-using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Descriptions;
 using Model.Utility;
 using Model.Utility.Collections;
 
@@ -26,7 +24,7 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
     private const int CellsHighlightIndex = 1;
     private const int PossibilitiesHighlightIndex = 2;
     private const int CursorIndex = 3;
-    private const int LinesIndex = 4;
+    protected const int LinesIndex = 4;
     private const int NumbersIndex = 5;
     private const int EncirclesIndex = 6;
     private const int LinksIndex = 7;
@@ -48,7 +46,7 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
         Focusable = true;
         
         Layers[BackgroundIndex].Add(new BackgroundDrawableComponent());
-        Layers[LinesIndex].Add(new SudokuGridDrawableComponent());
+        Layers[LinesIndex].Add(new SudokuGridDrawableComponent(SudokuCropping.Default()));
         
         MouseLeftButtonDown += (_, args) =>
         {
@@ -72,13 +70,6 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
             var cell = ComputeSelectedCell(args.GetPosition(this));
             if(cell is not null) CellAddedToSelection?.Invoke(cell[0], cell[1]);
         };
-    }
-
-    public BitmapSource AsImage(int fromRow, int fromColumn, int toRow, int toColumn)
-    {
-        return new CroppedBitmap(AsImage(), new Int32Rect((int)GetLeftOfCellWithBorder(fromColumn),
-            (int)GetTopOfCellWithBorder(fromRow), (int)GetLeftOfCell(toColumn + 1),
-            (int)GetTopOfCell(toRow + 1)));
     }
 
     #region ISudokuDrawingData
@@ -172,12 +163,12 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
     
     public double GetLeftOfCellWithBorder(int col)
     {
-        return GetLeftOfCell(col) - col % 3 == 0 ? _bigLineWidth : _smallLineWidth;
+        return GetLeftOfCell(col) - (col % 3 == 0 ? _bigLineWidth : _smallLineWidth);
     }
 
     public double GetTopOfCellWithBorder(int row)
     {
-        return GetTopOfCell(row) - row % 3 == 0 ? _bigLineWidth : _smallLineWidth;
+        return GetTopOfCell(row) - (row % 3 == 0 ? _bigLineWidth : _smallLineWidth);
     }
 
     public bool IsClue(int row, int col)
@@ -185,7 +176,7 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
         return _isClue[row, col];
     }
     
-    public double GetLeftOfPossibility(int col, int possibility)
+    public virtual double GetLeftOfPossibility(int col, int possibility)
     {
         var miniCol = col / 3;
         var posCol = (possibility - 1) % 3;
@@ -193,13 +184,13 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
                + (col - miniCol) * _smallLineWidth;
     }
     
-    public double GetTopOfCell(int row)
+    public virtual double GetTopOfCell(int row)
     {
         var miniRow = row / 3;
         return row * _cellSize + miniRow * _bigLineWidth + _bigLineWidth + (row - miniRow) * _smallLineWidth;
     }
 
-    public double GetTopOfPossibility(int row, int possibility)
+    public virtual double GetTopOfPossibility(int row, int possibility)
     {
         var miniRow = row / 3;
         var posRow = (possibility - 1) / 3;
@@ -207,7 +198,7 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
                + (row - miniRow) * _smallLineWidth;
     }
     
-    public double GetLeftOfCell(int col)
+    public virtual double GetLeftOfCell(int col)
     {
         var miniCol = col / 3;
         return col * _cellSize + miniCol * _bigLineWidth + _bigLineWidth + (col - miniCol) * _smallLineWidth;
@@ -358,7 +349,7 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
 
     #region Private
 
-    private void UpdateSize(bool fireEvent)
+    protected virtual void UpdateSize(bool fireEvent)
     {
         var newSize = _cellSize * 9 + _smallLineWidth * 6 + _bigLineWidth * 4;
         if (Math.Abs(Width - newSize) < 0.01) return;
@@ -416,6 +407,11 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
     #region ISizeOptimizable
 
     public event OnSizeChange? OptimizableSizeChanged;
+
+    protected void FireOptimizableSizeChanged()
+    {
+        OptimizableSizeChanged?.Invoke();
+    }
 
     public double GetWidthSizeMetricFor(double space)
     {

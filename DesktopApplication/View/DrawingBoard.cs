@@ -14,6 +14,7 @@ using Model.Core.Changes;
 using Model.Core.Explanations;
 using Model.Core.Graphs;
 using Model.Sudokus.Player;
+using Model.Sudokus.Solver.Descriptions;
 using Model.Utility;
 using Model.Utility.Collections;
 using MathUtility = DesktopApplication.View.Utility.MathUtility;
@@ -1338,29 +1339,31 @@ public class GreaterThanDrawableComponent : IDrawableComponent<ICellGameDrawingD
 
 public class SudokuGridDrawableComponent : IDrawableComponent<ICellGameDrawingData>
 {
+    private readonly SudokuCropping _cropping;
+
+    public SudokuGridDrawableComponent(SudokuCropping cropping)
+    {
+        _cropping = cropping;
+    }
+
     public void Draw(DrawingContext context, ICellGameDrawingData data)
     {
-        var delta = data.BigLineWidth + data.CellSize;
-        for (int i = 0; i < 6; i++)
+        var delta = 0.0;
+        for (int c = _cropping.ColumnFrom; c <= _cropping.ColumnTo + 1; c++)
         {
+            var w = c % 3 == 0 ? data.BigLineWidth : data.SmallLineWidth;
             context.DrawRectangle(data.LineBrush, null,
-                new Rect(0, delta, data.Width, data.SmallLineWidth));
-            context.DrawRectangle(data.LineBrush, null,
-                new Rect(delta, 0, data.SmallLineWidth, data.Height));
-
-            delta += i % 2 == 0 ? data.SmallLineWidth + data.CellSize : data.SmallLineWidth + data.CellSize 
-                + data.BigLineWidth + data.CellSize;
+                new Rect(delta, 0, w, data.Height));
+            delta += data.CellSize + w;
         }
 
-        delta = 0;
-        for (int i = 0; i < 4; i++)
+        delta = 0.0;
+        for (int r = _cropping.RowFrom; r <= _cropping.RowTo + 1; r++)
         {
+            var h = r % 3 == 0 ? data.BigLineWidth : data.SmallLineWidth;
             context.DrawRectangle(data.LineBrush, null,
-                new Rect(0, delta, data.Width, data.BigLineWidth));
-            context.DrawRectangle(data.LineBrush, null,
-                new Rect(delta, 0, data.BigLineWidth, data.Height));
-
-            delta += data.CellSize * 3 + data.SmallLineWidth * 2 + data.BigLineWidth;
+                new Rect(0, delta, data.Width, h));
+            delta += data.CellSize + h;
         }
     }
 }

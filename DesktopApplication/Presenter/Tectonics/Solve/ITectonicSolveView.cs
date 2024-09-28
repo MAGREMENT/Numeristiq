@@ -1,6 +1,6 @@
 ﻿namespace DesktopApplication.Presenter.Tectonics.Solve;
 
-public interface ITectonicSolveView : ISolveWithStepsView
+public interface ITectonicSolveView : IStepManagingView
 {
     public ITectonicDrawer Drawer { get; }
 

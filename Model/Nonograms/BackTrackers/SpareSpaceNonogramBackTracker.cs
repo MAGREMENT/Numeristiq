@@ -30,7 +30,7 @@ public class SpareSpaceNonogramBackTracker : BackTracker<Nonogram, IAvailability
                 var pos = 0;
                 var ok = true;
                 
-                foreach (var value in Current.HorizontalLines[position])
+                foreach (var value in Current.HorizontalLines.AsEnumerable(position))
                 {
                     var posEnd = pos + spaceRepartition[cursor] + (cursor == 0 ? 0 : 1);
                     for (; pos < posEnd; pos++)
@@ -90,7 +90,7 @@ public class SpareSpaceNonogramBackTracker : BackTracker<Nonogram, IAvailability
                 var pos = 0;
                 var ok = true;
                 
-                foreach (var value in Current.HorizontalLines[position])
+                foreach (var value in Current.HorizontalLines.AsEnumerable(position))
                 {
                     var posEnd = pos + spaceRepartition[cursor] + (cursor == 0 ? 0 : 1);
                     for (; pos < posEnd; pos++)

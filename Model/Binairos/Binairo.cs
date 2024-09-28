@@ -7,7 +7,7 @@ using Model.Utility;
 
 namespace Model.Binairos;
 
-public class Binairo : IReadOnlyBinairo, ICopyable<Binairo>, ICellsAndDigitsPuzzle
+public class Binairo : IReadOnlyBinairo, ICellsAndDigitsPuzzle
 {
     private readonly int[,] _cells;
     private readonly ReadOnlyBinairoUnitBitSet[] _rowSets;
@@ -306,7 +306,7 @@ public readonly struct ReadOnlyBinairoUnitBitSet
     }
 }
 
-public interface IReadOnlyBinairo
+public interface IReadOnlyBinairo : ICopyable<Binairo>
 {
     public int RowCount { get; }
     public int ColumnCount { get; }

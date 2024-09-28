@@ -5,11 +5,10 @@ using Model.Core.Highlighting;
 using Model.Core.Steps;
 using Model.Nonograms;
 using Model.Nonograms.Solver;
-using Model.Nonograms.Solver.Strategies;
 
 namespace DesktopApplication.Presenter.Nonograms.Solve;
 
-public class NonogramSolvePresenter : SolveWithStepsPresenter<INonogramHighlighter,
+public class NonogramSolvePresenter : StepManagingPresenter<INonogramHighlighter,
     IStep<INonogramHighlighter, IDichotomousSolvingState>, IDichotomousSolvingState>
 {
     private readonly INonogramSolveView _view;
@@ -42,6 +41,16 @@ public class NonogramSolvePresenter : SolveWithStepsPresenter<INonogramHighlight
         _solver.StrategyEnded -= OnStrategyEnd;
     }
 
+    public void SetSizeTo(int rDiff, int cDiff)
+    {
+        var n = _solver.Nonogram.CopyWithoutDichotomy();
+        n.SetSizeTo(n.RowCount + rDiff, n.ColumnCount + cDiff);
+        
+        _solver.SetNonogram(n);
+        SetUpNewNonogram();
+        SetShownState(_solver, true, false);
+    }
+
     private void OnStrategyEnd(Strategy strategy, int index, int p, int s)
     {
         if (p + s == 0) return;
@@ -53,8 +62,8 @@ public class NonogramSolvePresenter : SolveWithStepsPresenter<INonogramHighlight
     private void SetUpNewNonogram()
     {
         var drawer = _view.Drawer;
-        drawer.SetRows(_solver.Nonogram.HorizontalLines);
-        drawer.SetColumns(_solver.Nonogram.VerticalLines);
+        drawer.SetRows(_solver.Nonogram.HorizontalLines.Enumerate());
+        drawer.SetColumns(_solver.Nonogram.VerticalLines.Enumerate());
     }
 
     protected override void SetShownState(IDichotomousSolvingState state, bool solutionAsClues, bool showPossibilities)
@@ -77,7 +86,7 @@ public class NonogramSolvePresenter : SolveWithStepsPresenter<INonogramHighlight
     }
 
     protected override IReadOnlyList<IStep<INonogramHighlighter, IDichotomousSolvingState>> Steps => _solver.Steps;
-    protected override ISolveWithStepsView View => _view;
+    protected override IStepManagingView View => _view;
     public override IStepExplanationPresenterBuilder? RequestExplanation()
     {
         

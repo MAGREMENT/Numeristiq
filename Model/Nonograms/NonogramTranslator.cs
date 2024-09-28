@@ -92,7 +92,7 @@ public static class NonogramTranslator
             for (int j = 0; j < data.Count; j++)
             {
                 bool notFirst = false;
-                foreach (var v in data[j])
+                foreach (var v in data.AsEnumerable(j))
                 {
                     if (notFirst) builder.Append('.');
                     else notFirst = true;
