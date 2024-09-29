@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Themes;
 using DesktopApplication.View.HelperWindows;
+using DesktopApplication.View.HelperWindows.Dialog;
 using DesktopApplication.View.Themes.Controls;
 using Model.Repositories;
 using Model.Utility;
@@ -26,7 +26,6 @@ public partial class ThemeWindow : IThemeView
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
 
         _presenter = PresenterFactory.Instance.Initialize(this);
-        _presenter.EvaluateName(string.Empty);
     }
     
     private void Minimize()
@@ -39,9 +38,10 @@ public partial class ThemeWindow : IThemeView
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     }
 
-    public void SetCurrentTheme(string name)
+    public void SetCurrentTheme(string name, bool editable)
     {
-        CurrentName.Text = name + " Theme";
+        CurrentName.Text = name;
+        RemoveButton.IsEnabled = editable;
     }
 
     public void SetOtherThemes(IEnumerable<(Theme, bool)> themes)
@@ -81,20 +81,6 @@ public partial class ThemeWindow : IThemeView
         CurrentColorValue.NoColor();
     }
 
-    public void ShowNameError(string error)
-    {
-        NameFeedback.Text = error;
-        NameFeedback.SetResourceReference(ForegroundProperty, "Off");
-        SaveAsButton.IsEnabled = false;
-    }
-
-    public void ShowNameIsCorrect()
-    {
-        NameFeedback.Text = "This name is valid";
-        NameFeedback.SetResourceReference(ForegroundProperty, "On");
-        SaveAsButton.IsEnabled = true;
-    }
-
     public void SetContinuousUpdate(bool yes)
     {
         CurrentColorValue.ContinuousUpdate = yes;
@@ -105,15 +91,11 @@ public partial class ThemeWindow : IThemeView
         (Embedded.OptimizableContent as DrawingBoard)?.Refresh();
     }
 
-    private void EvaluateName(object sender, TextChangedEventArgs e)
+    private void Copy(object sender, RoutedEventArgs e)
     {
-        if (sender is not TextBox box) return;
-        _presenter.EvaluateName(box.Text);
-    }
-
-    private void SaveAs(object sender, RoutedEventArgs e)
-    {
-        _presenter.SaveNewTheme(SaveAsName.Text);
+        var dialog = new NameChooserDialog(_presenter);
+        dialog.NameChosen += _presenter.SaveNewTheme;
+        dialog.Show();
     }
 
     private void ChangeColor(RGB color)
@@ -145,5 +127,10 @@ public partial class ThemeWindow : IThemeView
     {
         var window = new SettingWindow(_presenter.SettingsPresenter);
         window.Show();
+    }
+
+    private void Remove(object sender, RoutedEventArgs e)
+    {
+        _presenter.Remove();
     }
 }

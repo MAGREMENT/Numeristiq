@@ -1,4 +1,5 @@
-﻿using Model.Repositories;
+﻿using System.Windows;
+using Model.Repositories;
 
 namespace Repository;
 
@@ -44,6 +45,11 @@ public class ThemeMultiRepository : IThemeRepository
     public void AddTheme(Theme theme)
     {
         _repositories[^1].AddTheme(theme);
+    }
+
+    public void Remove(int index)
+    {
+        _repositories[^1].Remove(index - WritableStart);
     }
 
     public void ChangeTheme(int index, Theme newTheme)

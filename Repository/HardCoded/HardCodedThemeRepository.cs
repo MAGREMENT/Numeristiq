@@ -26,6 +26,8 @@ public class HardCodedThemeRepository : IThemeRepository
     public int Count() => _themes.Length;
 
     public void AddTheme(Theme theme) { }
+    public void Remove(int index) { }
+
     public void ChangeTheme(int index, Theme newTheme) { }
     public Theme? FindTheme(string name)
     {

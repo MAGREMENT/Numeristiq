@@ -1,0 +1,48 @@
+﻿<local:DialogWindow x:Class="DesktopApplication.View.HelperWindows.Dialog.NameChooserDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:DesktopApplication.View.HelperWindows.Dialog"
+        mc:Ignorable="d"
+        Title="NameChooserDialog"
+        SizeToContent="WidthAndHeight">
+    <Border Background="{DynamicResource BackgroundDeep}" BorderBrush="{DynamicResource BackgroundHighlighted}"
+            BorderThickness="1" Width="250" Padding="10 5">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                       FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource Text}"
+                       VerticalAlignment="Center" Margin="0 5 0 5"
+                       HorizontalAlignment="Center">Enter a name</TextBlock>
+            
+            <TextBlock Grid.Row="1" Grid.Column="0" x:Name="NameFeedback"
+                       FontSize="14" VerticalAlignment="Center"
+                       Margin="0 0 0 5" HorizontalAlignment="Center"/>
+            
+            <TextBox Grid.Row="2" Grid.Column="0" x:Name="NameBox"
+                     HorizontalAlignment="Stretch" Margin="0 0 5 5"
+                     Style="{StaticResource HideableTextBox}"
+                     VerticalAlignment="Center"
+                     TextChanged="UpdateStatus"/>
+            
+            <Button Grid.Row="2" Grid.Column="1" x:Name="NameButton" Margin="0 0 0 5"
+                    Style="{StaticResource PrimaryRoundedButton}"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Click="Validate">
+                <Path Width="15" Height="15" Stroke="{DynamicResource Text}"
+                      StrokeThickness="3" Data="M 2,7 7,13 13,1"/>
+            </Button>
+        </Grid>
+    </Border>
+</local:DialogWindow>

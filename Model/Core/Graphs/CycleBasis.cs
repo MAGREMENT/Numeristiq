@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Model.Core.Graphs;
 
@@ -91,19 +90,58 @@ public static class CycleBasis //TODO test
         return result;
     }
 
-    public static List<TLoop> Multiply<TLoop>(IReadOnlyList<TLoop> loops, CombineLoops<TLoop> combiner) where TLoop : class
+    public static IEnumerable<TLoop> Multiply<TLoop>(IReadOnlyList<TLoop> basis, CombineLoops<TLoop> combiner, int iterations)
     {
-        List<TLoop> result = new();
-        for (int i = 0; i < loops.Count; i++)
+        if (iterations <= 0) return basis;
+
+        HashSet<TLoop> result = new(basis);
+        if (iterations == 1)
         {
-            for (int j = i + 1; j < loops.Count; j++)
-            {
-                var l = combiner(loops[i], loops[j]);
-                if (l is not null) result.Add(l);
-            }
+            result.UnionWith(CombineAll(basis, combiner));
+            return result;
         }
 
+        HashSet<TLoop> added = new();
+        foreach (var loop in CombineAll(basis, combiner))
+        {
+            if (!result.Contains(loop)) added.Add(loop);
+        }
+
+        if (added.Count == 0) return result;
+        
+        for (int i = 1; i < iterations; i++)
+        {
+            HashSet<TLoop> next = new();
+
+            foreach (var l1 in result)
+            {
+                foreach (var l2 in added)
+                {
+                    var l = combiner(l1, l2);
+                    if (l is not null && !added.Contains(l) && !result.Contains(l)) next.Add(l);
+                }
+            }
+
+            result.UnionWith(added);
+            if (next.Count == 0) return result;
+
+            added = next;
+        }
+
+        result.UnionWith(added);
         return result;
+    }
+
+    private static IEnumerable<TLoop> CombineAll<TLoop>(IReadOnlyList<TLoop> basis, CombineLoops<TLoop> combiner)
+    {
+        for (int i = 0; i < basis.Count; i++)
+        {
+            for (int j = i + 1; j < basis.Count; j++)
+            {
+                var l = combiner(basis[i], basis[j]);
+                if (l is not null) yield return l;
+            }
+        }
     }
 
     private static Dictionary<TElement, EdgeTo<LinkStrength, TElement>> FindSpanningForest<TElement>(IGraph<TElement, LinkStrength> graph)

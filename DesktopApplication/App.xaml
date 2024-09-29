@@ -40,6 +40,10 @@
 						<Setter Property="Background" Value="{Binding Path=(view:AttachedProperties.HoverBackground),
 	                        RelativeSource={RelativeSource Self}}"/>
 					</Trigger>
+					
+					<Trigger Property="IsEnabled" Value="False">
+						<Setter Property="Foreground" Value="{DynamicResource Disabled}"/>
+					</Trigger>
 				</ControlTemplate.Triggers>
 			</ControlTemplate>
 			

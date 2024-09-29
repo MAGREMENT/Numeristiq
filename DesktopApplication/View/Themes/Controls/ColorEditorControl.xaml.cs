@@ -40,9 +40,9 @@ public partial class ColorEditorControl
         _fireEvent = false;
         SetColor(new RGB(), false, false);
         
-        RedValue.Text = string.Empty;
-        GreenValue.Text = string.Empty;
-        BlueValue.Text = string.Empty;
+        RedValue.SetCurrent(0);
+        GreenValue.SetCurrent(0);
+        BlueValue.SetCurrent(0);
         HueCursor.Visibility = Visibility.Hidden;
 
         _fireEvent = true;
@@ -55,9 +55,9 @@ public partial class ColorEditorControl
 
         if (updateColorValues)
         {
-            RedValue.Text = _color.Red.ToString();
-            GreenValue.Text = _color.Green.ToString();
-            BlueValue.Text = _color.Blue.ToString();
+            RedValue.SetCurrent(_color.Red);
+            GreenValue.SetCurrent(_color.Green);
+            BlueValue.SetCurrent(_color.Blue);
         }
 
         if (updateHSL)
@@ -84,93 +84,27 @@ public partial class ColorEditorControl
         _fireEvent = true;
     }
 
-    private void OnRedChange(object sender, EventArgs e)
+    private void OnRedChange(int r)
     {
-        if (!_fireEvent || sender is not TextBox box) return;
-
-        if (box.Text.Length > 3)
-        {
-            _fireEvent = false;
-            box.Text = box.Text[..3];
-            _fireEvent = true;
-            return;
-        }
-
-        byte r;
-        if (string.IsNullOrWhiteSpace(box.Text)) r = 0;
-        else
-        {
-            if (int.TryParse(box.Text, out var i)) r = (byte)Math.Max(0, Math.Min(255, i));
-            else r = _color.Red;
-            
-            _fireEvent = false;
-            box.Text = r.ToString();
-            _fireEvent = true;
-        }
-
         if (r == _color.Red) return;
         
-        SetColor(_color.WithRed(r), false, true);
+        SetColor(_color.WithRed((byte)r), false, true);
         ColorChanged?.Invoke(Color);
     }
     
-    private void OnGreenChange(object sender, EventArgs e)
+    private void OnGreenChange(int g)
     {
-        if (!_fireEvent || sender is not TextBox box) return;
-
-        if (box.Text.Length > 3)
-        {
-            _fireEvent = false;
-            box.Text = box.Text[..3];
-            _fireEvent = true;
-            return;
-        }
-
-        byte g;
-        if (string.IsNullOrWhiteSpace(box.Text)) g = 0;
-        else
-        {
-            if (int.TryParse(box.Text, out var i)) g = (byte)Math.Max(0, Math.Min(255, i));
-            else g = _color.Green;
-            
-            _fireEvent = false;
-            box.Text = g.ToString();
-            _fireEvent = true;
-        }
-
         if (g == _color.Green) return;
 
-        SetColor(_color.WithGreen(g), false, true);
+        SetColor(_color.WithGreen((byte)g), false, true);
         ColorChanged?.Invoke(Color);
     }
     
-    private void OnBlueChange(object sender, EventArgs e)
+    private void OnBlueChange(int b)
     {
-        if (!_fireEvent || sender is not TextBox box) return;
-
-        if (box.Text.Length > 3)
-        {
-            _fireEvent = false;
-            box.Text = box.Text[..3];
-            _fireEvent = true;
-            return;
-        }
-
-        byte b;
-        if (string.IsNullOrWhiteSpace(box.Text)) b = 0;
-        else
-        {
-            if (int.TryParse(box.Text, out var i)) b = (byte)Math.Max(0, Math.Min(255, i));
-            else b = _color.Blue;
-
-            _fireEvent = false;
-            box.Text = b.ToString();
-            _fireEvent = true;
-        }
-
         if (b == _color.Blue) return;
 
-        SetColor(_color.WithBlue(b), false, true);
+        SetColor(_color.WithBlue((byte)b), false, true);
         ColorChanged?.Invoke(Color);
     }
 

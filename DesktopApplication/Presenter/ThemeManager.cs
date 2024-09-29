@@ -49,6 +49,14 @@ public class ThemeManager
         _themes.Add(theme);
     }
 
+    public int Remove(int index)
+    {
+        _themes.RemoveAt(index);
+        _repository.Remove(index);
+        
+        return index == 0 ? index : index - 1;
+    }
+
     public void UpdateTheme(int index)
     {
         _repository.ChangeTheme(index, _themes[index]);

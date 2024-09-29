@@ -11,6 +11,7 @@ public interface IThemeRepository
     IReadOnlyList<Theme> GetThemes();
     int Count();
     void AddTheme(Theme theme);
+    void Remove(int index);
     void ChangeTheme(int index, Theme newTheme);
     Theme? FindTheme(string name);
     void ClearThemes();

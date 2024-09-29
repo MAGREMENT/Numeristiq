@@ -3,7 +3,7 @@ using Model.Utility;
 
 namespace DesktopApplication.Presenter.Themes;
 
-public class ThemePresenter
+public class ThemePresenter : INameEvaluator
 {
     private readonly IThemeView _view;
     private readonly ThemeManager _themeManager;
@@ -60,12 +60,6 @@ public class ThemePresenter
         UpdateThemeStuff();
     }
 
-    public void EvaluateName(string name)
-    {
-        if (IsNameCorrect(name, out var error)) _view.ShowNameIsCorrect();
-        else _view.ShowNameError(error);
-    }
-
     public void SaveNewTheme(string name)
     {
         if (!IsNameCorrect(name, out _)) return;
@@ -73,12 +67,18 @@ public class ThemePresenter
         _themeManager.AddNewTheme(theme);
         
         _view.SetOtherThemes(_themeManager.EnumerateThemesAndState(CurrentTheme));
-        _view.ShowNameError("Name is already used");
+    }
+
+    public void Remove()
+    {
+        var newIndex = _themeManager.Remove(CurrentTheme);
+        _settings.TrySet("Theme", new IntSettingValue(newIndex));
+        UpdateThemeStuff();
     }
 
     private int CurrentTheme => _settings.Theme.Get().ToInt();
 
-    private bool IsNameCorrect(string name, out string error)
+    public bool IsNameCorrect(string name, out string error)
     {
         error = string.Empty;
         if (string.IsNullOrEmpty(name))
@@ -124,7 +124,7 @@ public class ThemePresenter
     {
         var current = _themeManager.Themes[CurrentTheme];
 
-        _view.SetCurrentTheme(current.Name);
+        _view.SetCurrentTheme(current.Name, _themeManager.IsEditable(CurrentTheme));
         _view.SetOtherThemes(_themeManager.EnumerateThemesAndState(CurrentTheme));
         _view.SetColors(current.AllColors(), _themeManager.IsEditable(CurrentTheme));
 
@@ -136,4 +136,9 @@ public class ThemePresenter
         _currentColor = null;
         _view.UnselectColor();
     }
+}
+
+public interface INameEvaluator
+{
+    bool IsNameCorrect(string name, out string error);
 }

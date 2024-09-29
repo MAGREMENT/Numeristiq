@@ -32,6 +32,15 @@ public class FileThemeRepository : FileRepository<List<ThemeDAO>>, IThemeReposit
         Upload(_buffer);
     }
 
+    public void Remove(int index)
+    {
+        _buffer ??= Download();
+        if (_buffer is null) return;
+
+        _buffer.RemoveAt(index);
+        Upload(_buffer);
+    }
+
     public void ChangeTheme(int index, Theme newTheme)
     {
         _buffer ??= Download();

@@ -25,11 +25,20 @@ public class CycleBasisTests
         graph.Add(5, 4, LinkStrength.Weak);
         
         loops = CycleBasis.Find(graph, CycleBasis.DefaultConstructLoop);
+        Console.WriteLine();
         foreach (var loop in loops)
         {
             Console.WriteLine(loop);
         }
         Assert.That(loops, Has.Count.EqualTo(2));
+
+        loops = new List<Loop<int, LinkStrength>>(CycleBasis.Multiply(loops, CycleBasis.DefaultCombineLoops, 1));
+        Console.WriteLine();
+        foreach (var loop in loops)
+        {
+            Console.WriteLine(loop);
+        }
+        Assert.That(loops, Has.Count.EqualTo(3));
     }
 
     [Test]
