@@ -267,10 +267,9 @@ public readonly struct ReadOnlyBitSet16
     {
         var builder = new StringBuilder();
         
-        for (int i = 15; i >= 0; i--)
+        for (int i = 0; i < 16; i++)
         {
-            if (!Contains(i)) continue;
-            builder.Append(i);
+            if (Contains(i)) builder.Append(i);
         }
         
         return builder.ToString();

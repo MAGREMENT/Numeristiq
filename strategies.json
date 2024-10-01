@@ -372,7 +372,10 @@
     "Enabled": false,
     "Locked": false,
     "InstanceHandling": 0,
-    "Settings": {}
+    "Settings": {
+      "Maximum length": "7",
+      "Maximum number of guardians": "3"
+    }
   },
   {
     "Name": "Almost Hidden Sets",

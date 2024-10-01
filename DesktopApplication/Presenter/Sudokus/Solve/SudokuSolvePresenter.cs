@@ -40,7 +40,7 @@ public class SudokuSolvePresenter : StepManagingPresenter<ISudokuHighlighter, IS
         _view = view;
         _disabler = new Disabler(_view);
         _solver = solver;
-        solver.HighlightCompiler = new DefaultHighlightCompiler<ISudokuHighlighter>();//new SudokuHighlightCompiler((SudokuHighlighterTranslator)_translator);
+        //solver.HighlightCompiler = new SudokuHighlightCompiler((SudokuHighlighterTranslator)_translator);
         _settings = settings;
         _repo = repo;
 

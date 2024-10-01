@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Graphs;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.AlmostLockedSets;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -77,7 +76,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
             }
         }
 
-        if (one is NakedSet ans && two is CellPossibility cellPossibility)
+        if (one is IPossibilitySet ans && two is CellPossibility cellPossibility)
         {
             foreach (var possibility in ans.EnumeratePossibilities())
             {

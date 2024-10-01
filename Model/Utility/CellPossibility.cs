@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Sudokus;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Tectonics.Solver.Utility;
 using Model.Utility.BitSets;
 
@@ -63,6 +63,11 @@ public readonly struct CellPossibility : ISudokuElement, ITectonicElement
     {
         return new[] { new CellPossibilities(this) };
     }
+    
+    public bool Contains(CellPossibilities cp)
+    {
+        return cp.Possibilities.Count == 1 && Contains(cp.Possibilities.FirstPossibility()) && Contains(cp.Cell);
+    }
 
     public Cell[] EveryCell()
     {
@@ -91,7 +96,7 @@ public readonly struct CellPossibility : ISudokuElement, ITectonicElement
         yield return new CellPossibilities(new Cell(Row, Column), Possibility);
     }
 
-    public IEnumerable<Cell> EnumerateCell()
+    public IEnumerable<Cell> EnumerateCells()
     {
         yield return new Cell(Row, Column);
     }
@@ -109,6 +114,11 @@ public readonly struct CellPossibility : ISudokuElement, ITectonicElement
     public bool Contains(CellPossibility cp)
     {
         return cp == this;
+    }
+
+    public bool Contains(int possibility)
+    {
+        return Possibility == possibility;
     }
 
     public Cell ToCell()
@@ -131,11 +141,21 @@ public class CellPossibilities
 {
     public Cell Cell { get; }
     public ReadOnlyBitSet16 Possibilities { get; }
+
+    public CellPossibilities(int row, int col, ReadOnlyBitSet16 possibilities) : this(new Cell(row, col), possibilities)
+    {
+        
+    }
     
     public CellPossibilities(Cell cell, ReadOnlyBitSet16 possibilities)
     {
         Cell = cell;
         Possibilities = possibilities;
+    }
+    
+    public CellPossibilities(int row, int col, int possibility) : this(new Cell(row, col), possibility)
+    {
+        
     }
 
     public CellPossibilities(Cell cell, int possibility)
@@ -167,7 +187,7 @@ public class CellPossibilities
 
     public override string ToString()
     {
-        return $"{Cell} => {Possibilities}";
+        return Possibilities.ToValuesString() + Cell;
     }
 }
 

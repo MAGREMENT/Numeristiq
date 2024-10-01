@@ -2,6 +2,7 @@
 using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
+using Model.Sudokus;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
@@ -85,7 +86,7 @@ public class SudokuHighlighterTranslator : IHighlighterTranslator<ISudokuHighlig
                 _drawer.EncircleRectangle(rows.Min, pc.Column, pc.Possibility, rows.Max,
                     pc.Column, pc.Possibility, color);
                 break;
-            case NakedSet ans :
+            case IPossibilitySet ans :
                 _drawer.DelimitPossibilityPatch(ans.EveryCellPossibility(), color);
                 break;
         }
@@ -104,7 +105,7 @@ public class SudokuHighlighterTranslator : IHighlighterTranslator<ISudokuHighlig
         if (!_settings.ShowSameCellLinks.Get().ToBool() && from is CellPossibility cp1 && to is CellPossibility cp2
             && cp1.ToCell() == cp2.ToCell()) return;
         
-        if (linkStrength == LinkStrength.Strong && (from is NakedSet || to is NakedSet)) return;
+        if (linkStrength == LinkStrength.Strong && (from is IPossibilitySet || to is IPossibilitySet)) return;
 
         var closest = FindClosest(from, to);
         if (closest is null) return;

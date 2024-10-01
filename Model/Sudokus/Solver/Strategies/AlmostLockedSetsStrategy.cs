@@ -41,9 +41,9 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
             
             foreach (var restrictedCommon in restrictedCommons.EnumeratePossibilities())
             {
-                foreach (var possibility in one.Possibilities.EnumeratePossibilities())
+                foreach (var possibility in one.EnumeratePossibilities())
                 {
-                    if (!two.Possibilities.Contains(possibility) || possibility == restrictedCommon) continue;
+                    if (!two.Contains(possibility) || possibility == restrictedCommon) continue;
 
                     List<Cell> coords = new();
                     coords.AddRange(one.EnumerateCells(possibility));
@@ -58,9 +58,9 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
 
             if (restrictedCommons.Count == 2)
             {
-                foreach (var possibility in one.Possibilities.EnumeratePossibilities())
+                foreach (var possibility in one.EnumeratePossibilities())
                 {
-                    if (restrictedCommons.Contains(possibility) || two.Possibilities.Contains(possibility)) continue;
+                    if (restrictedCommons.Contains(possibility) || two.Contains(possibility)) continue;
 
                     foreach (var coord in SudokuUtility.SharedSeenCells(new List<Cell>(one.EnumerateCells(possibility))))
                     {
@@ -68,9 +68,9 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
                     }
                 }
                     
-                foreach (var possibility in two.Possibilities.EnumeratePossibilities())
+                foreach (var possibility in two.EnumeratePossibilities())
                 {
-                    if (restrictedCommons.Contains(possibility) || one.Possibilities.Contains(possibility)) continue;
+                    if (restrictedCommons.Contains(possibility) || one.Contains(possibility)) continue;
 
                     foreach (var coord in SudokuUtility.SharedSeenCells(new List<Cell>(two.EnumerateCells(possibility))))
                     {

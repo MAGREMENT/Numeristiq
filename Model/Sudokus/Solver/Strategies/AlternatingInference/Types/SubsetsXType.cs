@@ -38,8 +38,8 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
     
     private void ProcessWeakLink(ISudokuSolverData view, ISudokuElement one, ISudokuElement two)
     {
-        List<Cell> cells = new List<Cell>(one.EnumerateCell());
-        cells.AddRange(two.EnumerateCell());
+        List<Cell> cells = new List<Cell>(one.EnumerateCells());
+        cells.AddRange(two.EnumerateCells());
 
         var possibility = one.EveryPossibilities().FirstPossibility();
         foreach (var cell in SudokuUtility.SharedSeenCells(cells))

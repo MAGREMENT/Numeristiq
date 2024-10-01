@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Core.Graphs;
-using Model.Sudokus.Solver.Utility.AlmostLockedSets;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -18,7 +18,7 @@ public class AlmostNakedSetConstructionRule : IConstructionRule<ISudokuSolverDat
     {
         foreach (var als in data.PreComputer.AlmostLockedSets(5))
         {
-            foreach (var p in als.Possibilities.EnumeratePossibilities())
+            foreach (var p in als.EveryPossibilities().EnumeratePossibilities())
             {
                 var rowBuffer = -1;
                 var colBuffer = -1;
@@ -50,7 +50,7 @@ public class AlmostNakedSetConstructionRule : IConstructionRule<ISudokuSolverDat
                     cps.Add(new CellPossibilities(cell, possibilities));
                 }
 
-                var nakedSet = new NakedSet(cps.ToArray());
+                var nakedSet = new ArrayPossibilitySet(cps.ToArray());
                 if (notIn.Count == 1)
                 {
                     linkGraph.Add(new CellPossibility(notIn[0], p), nakedSet,
@@ -72,7 +72,7 @@ public class AlmostNakedSetConstructionRule : IConstructionRule<ISudokuSolverDat
                     }
                 }
                 
-                foreach (var possibility in als.Possibilities.EnumeratePossibilities())
+                foreach (var possibility in als.EveryPossibilities().EnumeratePossibilities())
                 {
                     if (possibility == p) continue;
                     var cells = new List<Cell>(als.EnumerateCells(possibility));

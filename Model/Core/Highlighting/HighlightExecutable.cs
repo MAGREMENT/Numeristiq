@@ -6,9 +6,8 @@ using Model.Core.Graphs;
 using Model.Sudokus;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.AlmostLockedSets;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Core.Highlighting;
 
@@ -32,9 +31,11 @@ public class HighlightExecutable : IHighlightable<ISudokuHighlighter>
     private const int CreateLinkIndex = 5;
     //0-4 = unit   4-8 = number   24-28 = type   28-32 = color
     private const int HighlightNakedSetIndex = 6;
-    //0-10 = possibilities   10-14 = number of cell packets   24-28 = type   28-32 = color
-    //cell packets => repeat 4 times (0-4 = row + 1   4-8 = col + 1)   
+    //0-8 = number of CellPossibilities packets   24-28 = type   28-32 = color
+    //CellPossibilities packet => (0-7 = (row * 9 + col + 1)   7-16 = possibilities) x 2
     private const int EncircleHouseIndex = 7;
+    //0-8 = size of from   8-16 = size of to   24-28 = type   28-32 = link
+    private const int CreateElementLinkIndex = 8;
     
     private readonly int[] _instructions;
 
@@ -131,10 +132,21 @@ public class HighlightExecutable : IHighlightable<ISudokuHighlighter>
                         (StepColor)((instruction >> 28) & 0xF));
                     break;
                 case HighlightNakedSetIndex :
-                    //TODO
+                    var count = instruction & 0xFF;
+                    highlighter.HighlightElement(
+                        new ArrayPossibilitySet(FromCellPossibilitiesPackets(_instructions, i + 1, i + count)
+                            .ToArray()), (StepColor)((instruction >> 28) & 0xF));
+
+                    i += count;
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                case CreateElementLinkIndex :
+                    var c1 = instruction & 0xFF;
+                    var c2 = (instruction >> 8) & 0xFF;
+
+                    highlighter.CreateLink(FromInstruction(_instructions, i + 1),
+                        FromInstruction(_instructions, i + c1 + 1), (LinkStrength)((instruction >> 28) & 0xF));
+                    i += c1 + c2;
+                    break;
             }
         }
     }
@@ -174,32 +186,56 @@ public class HighlightExecutable : IHighlightable<ISudokuHighlighter>
 
         public void HighlightElement(ISudokuElement element, StepColor color)
         {
-            switch (element)
-            {
-                case CellPossibility cp : HighlightPossibility(cp.Possibility, cp.Row, cp.Column, color);
-                    break;
-                case PointingRow pr :
-                    Add(ToInt(pr) | ((int)color << 28));
-                    break;
-                case PointingColumn pc :
-                    Add(ToInt(pc) | ((int)color << 28));
-                    break;
-                case NakedSet ns :
-                    var all = ToInt(ns);
-                    all[0] |= (int)color << 28;
-                    AddRange(all);
-                    break;
-            }
+            var all = ToInstruction(element);
+            all[0] |= (int)color << 28;
+            AddRange(all);
         }
 
         public void CreateLink(ISudokuElement from, ISudokuElement to, LinkStrength linkStrength)
         {
-            //TODO
+            var one = ToInstruction(from);
+            var two = ToInstruction(to);
+            
+            Add(one.Count | one.Count << 8 | CreateElementLinkIndex << 24 | (int)linkStrength << 28);
+            AddRange(one);
+            AddRange(two);
         }
 
         public void CreateLink(IPossibilitySet from, IPossibilitySet to, int link)
         {
             //TODO
+        }
+    }
+
+    private static List<int> ToInstruction(ISudokuElement element)
+    {
+        switch (element)
+        {
+            case CellPossibility cp :
+                return new List<int> { cp.Possibility << 20 | cp.Row << 16 | cp.Column << 12 };
+            case PointingRow pr :
+                return new List<int> { ToInt(pr) };
+            case PointingColumn pc :
+                return new List<int> { ToInt(pc) };
+            case IPossibilitySet ns :
+                return ToInt(ns.EveryCellPossibilities());
+            default: return new List<int>();
+        }
+    }
+
+    private static ISudokuElement FromInstruction(IReadOnlyList<int> instruction, int from)
+    {
+        switch ((instruction[from] >> 24) & 0xF)
+        {
+            case HighlightPointingIndex :
+                return PointingFromInt(instruction[from]);
+            case HighlightPossibilityIndex:
+                return new CellPossibility((instruction[from] >> 16) & 0xF,
+                    (instruction[from] >> 12) & 0xF, (instruction[from] >> 20) & 0xF);
+            case HighlightNakedSetIndex:
+                return new ArrayPossibilitySet(FromCellPossibilitiesPackets(instruction, from,
+                    from + (instruction[from] & 0xFF)).ToArray());
+            default: throw new ArgumentOutOfRangeException();
         }
     }
     
@@ -255,34 +291,63 @@ public class HighlightExecutable : IHighlightable<ISudokuHighlighter>
         return new PointingColumn((n >> 8) & 0xF, (n >> 4) & 0xF, rows);
     }
 
-    private static List<int> ToInt(NakedSet set)
+    private static List<int> ToInt(IEnumerable<CellPossibilities> cps)
     {
         List<int> result = new();
-        var packets = ToCellPackets(set.EveryCell());
-        result.Add(set.EveryPossibilities().Bits | packets.Count << 10 | HighlightNakedSetIndex << 24);
+        var packets = ToCellPossibilitiesPackets(cps);
+        result.Add(packets.Count | HighlightNakedSetIndex << 24);
         result.AddRange(packets);
         return result;
     }
 
-    private static List<int> ToCellPackets(IEnumerable<Cell> cells)
+    private static List<int> ToCellPossibilitiesPackets(IEnumerable<CellPossibilities> cells)
     {
         List<int> result = new();
         int current = 0;
         int start = 0;
         foreach (var cell in cells)
         {
-            current |= (cell.Row + 1) << start;
-            current |= (cell.Column - 1) << (start + 4);
+            current |= (cell.Cell.Row * 9 + cell.Cell.Column + 1) << start;
+            current |= cell.Possibilities.Bits << (start + 6);
 
-            if (start == 24)
+            if (start == 16)
             {
                 start = 0;
                 result.Add(current);
                 current = 0;
             }
-            else start += 8;
+            else start += 16;
         }
 
+        if (start == 16) result.Add(current);
+
+        return result;
+    }
+
+    private static List<CellPossibilities> FromCellPossibilitiesPackets(IReadOnlyList<int> packets,
+        int from, int to)
+    {
+        List<CellPossibilities> result = new();
+
+        for (int i = from; i <= to; i++)
+        {
+            int p = packets[i];
+            
+            var cell = p & 0x7F;
+            if (cell == 0) break;
+
+            cell -= 1;
+            result.Add(new CellPossibilities(new Cell(cell / 9, cell % 9), 
+                ReadOnlyBitSet16.FromBits((ushort)(((p >> 7) & 0x1FF) << 1))));
+            
+            cell = (p >> 16) & 0x7F;
+            if (cell == 0) break;
+
+            cell -= 1;
+            result.Add(new CellPossibilities(new Cell(cell / 9, cell % 9), 
+                ReadOnlyBitSet16.FromBits((ushort)(((p >> 23) & 0x1FF) << 1))));
+        }
+        
         return result;
     }
 }

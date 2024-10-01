@@ -53,7 +53,7 @@ public class DeathBlossomStrategy : SudokuStrategy
                 {
                     if (als.Positions.Contains(current)) continue;
                     
-                    var and = als.Possibilities & possibilities;
+                    var and = als.EveryPossibilities() & possibilities;
                     if (and.Count == 0) continue;
 
                     foreach (var possibilityInCommon in and.EnumeratePossibilities())
@@ -85,9 +85,9 @@ public class DeathBlossomStrategy : SudokuStrategy
                 {
                     foreach (var als in concernedAls[possibility])
                     {
-                        if (!als.Possibilities.Contains(possibility)) continue;
+                        if (!als.Contains(possibility)) continue;
 
-                        foreach (var alsPossibility in als.Possibilities.EnumeratePossibilities())
+                        foreach (var alsPossibility in als.EnumeratePossibilities())
                         {
                             if(alsPossibility == possibility) continue;
 

@@ -233,7 +233,7 @@ public class SudokuPreComputer
                 var one = allAhs[i];
                 var two = allAhs[j];
 
-                if (one.Possibilities.ContainsAny(two.Possibilities)) continue;
+                if (one.EveryPossibilities().ContainsAny(two.EveryPossibilities())) continue;
 
                 var and = one.Positions.And(two.Positions);
                 if(and.Count > 0) graph.Add(one, two, and.ToArray());
@@ -255,7 +255,7 @@ public class SudokuPreComputer
                 var one = allAhs[i];
                 var two = allAhs[j];
 
-                if (one.Possibilities.ContainsAny(two.Possibilities)) continue;
+                if (one.EveryPossibilities().ContainsAny(two.EveryPossibilities())) continue;
 
                 var and = one.Positions.And(two.Positions);
                 if (and.Count == 0) continue;

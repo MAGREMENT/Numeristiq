@@ -226,17 +226,17 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         {
             int i = 0;
             bool useful = false;
-            while (aals.Possibilities.HasNextPossibility(ref i))
+            while (aals.EveryPossibilities().HasNextPossibility(ref i))
             {
                 if (!or.Contains(i)) continue;
 
                 int j = i;
-                while (aals.Possibilities.HasNextPossibility(ref j))
+                while (aals.EveryPossibilities().HasNextPossibility(ref j))
                 {
                     if (!or.Contains(j)) continue;
 
                     int k = j;
-                    while (aals.Possibilities.HasNextPossibility(ref k))
+                    while (aals.EveryPossibilities().HasNextPossibility(ref k))
                     {
                         if (!or.Contains(k)) continue;
 
@@ -252,12 +252,12 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         {
             int i = 0;
             bool useful = false;
-            while (als.Possibilities.HasNextPossibility(ref i))
+            while (als.EveryPossibilities().HasNextPossibility(ref i))
             {
                 if (!or.Contains(i)) continue;
                 
                 int j = i;
-                while (als.Possibilities.HasNextPossibility(ref j))
+                while (als.EveryPossibilities().HasNextPossibility(ref j))
                 {
                     if (!or.Contains(j)) continue;
 
@@ -381,7 +381,7 @@ public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder<NumericC
             int color = (int) StepColor.Cause1;
             foreach (var als in _useful)
             {
-                if (!removed.ContainsAny(als.Possibilities)) continue;
+                if (!removed.ContainsAny(als.EveryPossibilities())) continue;
                 foreach (var coord in als.EnumerateCells())
                 {
                     lighter.HighlightCell(coord.Row, coord.Column, (StepColor) color);

@@ -20,7 +20,7 @@ public class ZoneGroup : ITectonicElement
         Possibility = possibility;
     }
 
-    public IEnumerable<Cell> EnumerateCell()
+    public IEnumerable<Cell> EnumerateCells()
     {
         return _cells;
     }

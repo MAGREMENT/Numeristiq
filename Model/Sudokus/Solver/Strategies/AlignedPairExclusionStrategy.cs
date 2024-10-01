@@ -115,12 +115,12 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
         {
             int i = 0;
             bool useful = false;
-            while (als.Possibilities.HasNextPossibility(ref i))
+            while (als.EveryPossibilities().HasNextPossibility(ref i))
             {
                 if (!or.Contains(i)) continue;
                 
                 int j = i;
-                while (als.Possibilities.HasNextPossibility(ref j))
+                while (als.EveryPossibilities().HasNextPossibility(ref j))
                 {
                     if (!or.Contains(j)) continue;
                     
@@ -193,7 +193,7 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
             int color = (int) StepColor.Cause1;
             foreach (var als in _als)
             {
-                if (!removed.ContainsAny(als.Possibilities)) continue;
+                if (!removed.ContainsAny(als.EveryPossibilities())) continue;
                 foreach (var coord in als.EnumerateCells())
                 {
                     lighter.HighlightCell(coord.Row, coord.Column, (StepColor) color);
@@ -220,10 +220,10 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
 
             bool firstDone = false;
             int i = 0;
-            while (als.Possibilities.HasNextPossibility(ref i))
+            while (als.EveryPossibilities().HasNextPossibility(ref i))
             {
                 int j = i;
-                while (als.Possibilities.HasNextPossibility(ref j))
+                while (als.EveryPossibilities().HasNextPossibility(ref j))
                 {
                     if (snapshot.PossibilitiesAt(_row1, _col1).Contains(i)
                         && snapshot.PossibilitiesAt(_row2, _col2).Contains(j))

@@ -2,7 +2,6 @@
 using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
-using Model.Utility.BitSets;
 using Tests.Utility;
 
 namespace Tests.Sudokus;
@@ -55,7 +54,7 @@ public class RestrictedPossibilityAlgorithmsTests
         {
             for (int j = 0; j < als.Count; j++)
             {
-                foreach (var p in als[i].Possibilities.EnumeratePossibilities())
+                foreach (var p in als[i].EnumeratePossibilities())
                 {
                     expected[i, j, p - 1] = RestrictedPossibilityAlgorithms.EachCaseSearch(als[i], als[j], p);
                 }
@@ -71,7 +70,7 @@ public class RestrictedPossibilityAlgorithmsTests
                     if (als[i] is not SnapshotPossibilitySet als1 
                         || als[j] is not SnapshotPossibilitySet als2) continue;
                     
-                    foreach (var p in als1.Possibilities.EnumeratePossibilities())
+                    foreach (var p in als1.EnumeratePossibilities())
                     {
                         var result = impl(als1, als2, p);
                         Assert.That(result, Is.EqualTo(expected[i, j, p - 1]));

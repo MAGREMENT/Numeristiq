@@ -2,10 +2,11 @@
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus;
+using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Tests.Sudokus;
 
@@ -21,6 +22,9 @@ public class HighlightExecutableTests //TODO
             lighter.HighlightPossibility(4, 5, 7, StepColor.Cause4);
             lighter.EncircleHouse(new House(Unit.Box, 8), StepColor.On);
             lighter.HighlightElement(new PointingRow(5, 2, 3, 4, 5), StepColor.Change1);
+            lighter.HighlightElement(new ArrayPossibilitySet(new CellPossibilities(2, 3, 4),
+                new CellPossibilities(5, 7, ReadOnlyBitSet16.Filled(1, 9)),
+                new CellPossibilities(6, 7, ReadOnlyBitSet16.Filled(5, 7))), StepColor.Cause8);
         });
     }
     
@@ -38,9 +42,9 @@ public class HighlightExecutableTests //TODO
         compiled.Highlight(th2);
 
         Assert.That(th1, Has.Count.EqualTo(th2.Count));
-        for (int i = 0; i < th1.Count; i++)
+        foreach (var t in th1)
         {
-            var index = th2.IndexOf(th1[i]);
+            var index = th2.IndexOf(t);
             Assert.That(index, Is.Not.Negative);
 
             th2.RemoveAt(index);

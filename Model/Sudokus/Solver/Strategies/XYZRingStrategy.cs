@@ -101,7 +101,7 @@ public class XYZRingStrategy : SudokuStrategy
         }
 
         List<Cell> buffer = new() { hingeRow, hinge };
-        buffer.AddRange(rowFriend.EnumerateCell());
+        buffer.AddRange(rowFriend.EnumerateCells());
 
         foreach (var cell in SudokuUtility.SharedSeenCells(buffer))
         {
@@ -114,7 +114,7 @@ public class XYZRingStrategy : SudokuStrategy
         buffer.Clear();
         buffer.Add(hingeCol);
         buffer.Add(hinge);
-        buffer.AddRange(columnFriend.EnumerateCell());
+        buffer.AddRange(columnFriend.EnumerateCells());
         
         foreach (var cell in SudokuUtility.SharedSeenCells(buffer))
         {

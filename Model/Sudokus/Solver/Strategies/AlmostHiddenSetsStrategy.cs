@@ -57,7 +57,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
                     
             foreach (var possibility in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
             {
-                if (one.Possibilities.Contains(possibility)) continue;
+                if (one.Contains(possibility)) continue;
 
                 solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
@@ -69,7 +69,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
                     
             foreach (var possibility in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
             {
-                if (two.Possibilities.Contains(possibility)) continue;
+                if (two.Contains(possibility)) continue;
 
                 solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
@@ -94,7 +94,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
         {
             foreach (var possibility in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
             {
-                if (one.Possibilities.Contains(possibility) || two.Possibilities.Contains(possibility)) continue;
+                if (one.Contains(possibility) || two.Contains(possibility)) continue;
 
                 var current = new CellPossibility(cell, possibility);
                 foreach (var friend in graph.Neighbors(current, LinkStrength.Strong))

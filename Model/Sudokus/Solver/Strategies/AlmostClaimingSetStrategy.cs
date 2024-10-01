@@ -66,14 +66,14 @@ public class AlmostClaimingSetStrategy : SudokuStrategy
                     
                     foreach (var als in SearchRowForAls(data, miniRow * 3 + u, miniCol))
                     {
-                        if(!rowPossibilities.ContainsAll(als.Possibilities)) continue;
+                        if(!rowPossibilities.ContainsAll(als.EveryPossibilities())) continue;
                         
-                        var correspondence = MiniGridCorrespondence(data, als.Possibilities,
+                        var correspondence = MiniGridCorrespondence(data, als.EveryPossibilities(),
                             u, Unit.Row, miniRow, miniCol);
                         if (correspondence.Count != als.PositionsCount) continue;
 
-                        HandleCorrespondence(data, als.Possibilities, correspondence);
-                        HandleAls(data, als.Possibilities, rowCenterCells, als);
+                        HandleCorrespondence(data, als.EveryPossibilities(), correspondence);
+                        HandleAls(data, als.EveryPossibilities(), rowCenterCells, als);
 
                         if (data.ChangeBuffer.NeedCommit())
                         {
@@ -84,14 +84,14 @@ public class AlmostClaimingSetStrategy : SudokuStrategy
 
                     foreach (var als in SearchColumnForAls(data, miniCol * 3 + u, miniRow))
                     {
-                        if(!colPossibilities.ContainsAll(als.Possibilities)) continue;
+                        if(!colPossibilities.ContainsAll(als.EveryPossibilities())) continue;
                         
-                        var correspondence = MiniGridCorrespondence(data, als.Possibilities,
+                        var correspondence = MiniGridCorrespondence(data, als.EveryPossibilities(),
                             u, Unit.Column, miniRow, miniCol);
                         if (correspondence.Count != als.PositionsCount) continue;
 
-                        HandleCorrespondence(data, als.Possibilities, correspondence);
-                        HandleAls(data, als.Possibilities, colCenterCells, als);
+                        HandleCorrespondence(data, als.EveryPossibilities(), correspondence);
+                        HandleAls(data, als.EveryPossibilities(), colCenterCells, als);
                         
                         if (data.ChangeBuffer.NeedCommit())
                         {
@@ -103,17 +103,17 @@ public class AlmostClaimingSetStrategy : SudokuStrategy
                     foreach (var als in SearchMiniGridForAls(data, miniRow, miniCol,
                                  u, Unit.Row))
                     {
-                        if(!rowPossibilities.ContainsAll(als.Possibilities)) continue;
+                        if(!rowPossibilities.ContainsAll(als.EveryPossibilities())) continue;
                         
                         var row = miniRow * 3 + u;
                         
-                        var correspondence = RowCorrespondence(data, als.Possibilities, miniCol,
+                        var correspondence = RowCorrespondence(data, als.EveryPossibilities(), miniCol,
                             row);
                         if (correspondence.Count != als.PositionsCount) continue;
 
                         var cells = correspondence.ToCellArray(Unit.Row, row);
-                        HandleCorrespondence(data, als.Possibilities, cells);
-                        HandleAls(data, als.Possibilities, rowCenterCells, als);
+                        HandleCorrespondence(data, als.EveryPossibilities(), cells);
+                        HandleAls(data, als.EveryPossibilities(), rowCenterCells, als);
                         
                         if (data.ChangeBuffer.NeedCommit())
                         {
@@ -125,17 +125,17 @@ public class AlmostClaimingSetStrategy : SudokuStrategy
                     foreach (var als in SearchMiniGridForAls(data, miniRow, miniCol,
                                  u, Unit.Column))
                     {
-                        if(!colPossibilities.ContainsAll(als.Possibilities)) continue;
+                        if(!colPossibilities.ContainsAll(als.EveryPossibilities())) continue;
                         
                         var col = miniCol * 3 + u;
                         
-                        var correspondence = ColumnCorrespondence(data, als.Possibilities, miniRow,
+                        var correspondence = ColumnCorrespondence(data, als.EveryPossibilities(), miniRow,
                             col);
                         if (correspondence.Count != als.PositionsCount) continue;
 
                         var cells = correspondence.ToCellArray(Unit.Column, col);
-                        HandleCorrespondence(data, als.Possibilities, cells);
-                        HandleAls(data, als.Possibilities, colCenterCells, als);
+                        HandleCorrespondence(data, als.EveryPossibilities(), cells);
+                        HandleAls(data, als.EveryPossibilities(), colCenterCells, als);
                         
                         if (data.ChangeBuffer.NeedCommit())
                         {
@@ -354,7 +354,7 @@ public class AlmostClaimingSetReportBuilder : IChangeReportBuilder<NumericChange
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        var type = _als.Possibilities.Count == 2 ? "Pair" : "Triple";
+        var type = ChangeReportHelper.ToName(_als.PositionsCount);
         return new ChangeReport<ISudokuHighlighter>($"Almost Claiming {type} in " +
                                                     $"{_centerCells.ToStringSequence(", ")}", lighter =>
         {
@@ -370,7 +370,7 @@ public class AlmostClaimingSetReportBuilder : IChangeReportBuilder<NumericChange
 
             foreach (var cell in _correspondence)
             {
-                foreach (var p in _als.Possibilities.EnumeratePossibilities())
+                foreach (var p in _als.EnumeratePossibilities())
                 {
                     if (snapshot.PossibilitiesAt(cell).Contains(p))
                         lighter.HighlightPossibility(p, cell.Row, cell.Column, StepColor.Cause2);

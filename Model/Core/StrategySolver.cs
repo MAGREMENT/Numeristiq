@@ -4,7 +4,6 @@ using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Core.Steps;
 using Model.Core.Trackers;
-using Model.Sudokus.Solver;
 
 namespace Model.Core;
 
@@ -18,6 +17,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
     
     public bool StartedSolving { get; private set; }
     public StrategyManager<TStrategy> StrategyManager { get; init; } = new();
+    public IHighlightCompiler<THighlighter>? HighlightCompiler { get; set; }
 
     public TSolvingState CurrentState
     {
@@ -150,9 +150,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
         StartState = GetSolvingState();
         _steps.Clear();
     }
-
-    protected virtual IHighlightCompiler<THighlighter> GetHighlightCompiler() =>
-        new DefaultHighlightCompiler<THighlighter>();
+    
     protected abstract TSolvingState GetSolvingState();
     public abstract bool IsResultCorrect();
     public abstract bool HasSolverFailed();
@@ -289,7 +287,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
         IReadOnlyList<TChange> changes, TSolvingState state)
     {
         var report = commit.Builder.BuildReport(changes, state);
-        report.HighlightCollection.Compile(GetHighlightCompiler());
+        if(HighlightCompiler is not null) report.HighlightCollection.Compile(HighlightCompiler);
         return report;
     }
 }

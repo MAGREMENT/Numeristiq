@@ -5,6 +5,6 @@ namespace Model.Tectonics.Solver.Utility;
 
 public interface ITectonicElement
 {
-    IEnumerable<Cell> EnumerateCell();
+    IEnumerable<Cell> EnumerateCells();
     IEnumerable<CellPossibility> EnumerateCellPossibility();
 }

@@ -2,7 +2,7 @@
 using Model.Utility;
 using Model.Utility.BitSets;
 
-namespace Model.Sudokus.Solver.Utility.Graphs;
+namespace Model.Sudokus;
 
 public interface ISudokuElement
 {
@@ -15,9 +15,11 @@ public interface ISudokuElement
 
     IEnumerable<int> EnumeratePossibilities();
     IEnumerable<CellPossibilities> EnumerateCellPossibilities();
-    IEnumerable<Cell> EnumerateCell();
+    IEnumerable<Cell> EnumerateCells();
     IEnumerable<CellPossibility> EnumerateCellPossibility();
 
     bool Contains(Cell cell);
     bool Contains(CellPossibility cp);
+    bool Contains(int possibility);
+    bool Contains(CellPossibilities cp);
 }

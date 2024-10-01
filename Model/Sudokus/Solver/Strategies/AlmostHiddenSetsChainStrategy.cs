@@ -7,7 +7,6 @@ using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.PossibilitySets;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -44,7 +43,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
 
         foreach (var start in graph)
         {
-            if (Search(solverData, graph, start.Possibilities, new HashSet<IPossibilitySet> {start},
+            if (Search(solverData, graph, start.EveryPossibilities(), new HashSet<IPossibilitySet> {start},
                     new ChainBuilder<IPossibilitySet, Cell>(start), linkGraph)) return;
         }
     }
@@ -58,7 +57,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
             /*if (chain.Count > 2 && chain.FirstElement().Equals(friend.To) &&
                  CheckForLoop(strategyManager, chain, friend.Cells)) return true;*/
             
-            if (explored.Contains(friend.To) || occupied.ContainsAny(friend.To.Possibilities)) continue;
+            if (explored.Contains(friend.To) || occupied.ContainsAny(friend.To.EveryPossibilities())) continue;
 
             var lastLink = chain.LastLink();
             foreach (var possibleLink in friend.Edge)
@@ -67,7 +66,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
 
                 chain.Add(possibleLink, friend.To);
                 explored.Add(friend.To);
-                var occupiedCopy = occupied | friend.To.Possibilities;
+                var occupiedCopy = occupied | friend.To.EveryPossibilities();
 
                 if (CheckForChain(solverData, chain, linkGraph)) return true;
                 if(Search(solverData, graph, occupiedCopy, explored, chain, linkGraph)) return true;
@@ -138,7 +137,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
             
             foreach (var possibility in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
             {
-                if (first.Possibilities.Contains(possibility) || last.Possibilities.Contains(possibility)) continue;
+                if (first.Contains(possibility) || last.Contains(possibility)) continue;
 
                 var current = new CellPossibility(cell, possibility);
                 foreach (var friend in linkGraph.Neighbors(current, LinkStrength.Strong))
@@ -198,7 +197,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericCh
             var color = (int)StepColor.Cause1;
             foreach (var ahs in _chain.Elements)
             {
-                foreach (var possibility in ahs.Possibilities.EnumeratePossibilities())
+                foreach (var possibility in ahs.EnumeratePossibilities())
                 {
                     foreach (var cell in ahs.EnumerateCells(possibility))
                     {

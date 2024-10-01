@@ -87,7 +87,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
             for (int i = 0; i < chain.Elements.Length; i++)
             {
                 var element = chain.Elements[i];
-                foreach (var p in element.Possibilities.EnumeratePossibilities())
+                foreach (var p in element.EnumeratePossibilities())
                 {
                     var indexBefore = i - 1 < 0 ? chain.Links.Length - 1 : i - 1;
                     if (p == chain.Links[indexBefore]) continue;
@@ -127,9 +127,9 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
 
         var nope = new ReadOnlyBitSet16(chain.FirstLink(), chain.LastLink());
 
-        foreach (var possibility in first.Possibilities.EnumeratePossibilities())
+        foreach (var possibility in first.EnumeratePossibilities())
         {
-            if (!last.Possibilities.Contains(possibility) || nope.Contains(possibility)) continue;
+            if (!last.Contains(possibility) || nope.Contains(possibility)) continue;
 
             var cells = new List<Cell>();
             cells.AddRange(first.EnumerateCells(possibility));

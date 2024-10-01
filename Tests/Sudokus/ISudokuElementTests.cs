@@ -1,4 +1,5 @@
 ﻿using Model.Sudokus.Solver.Position;
+using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility;
@@ -19,11 +20,11 @@ public class ISudokuElementTests
         var csp2 = new CellsPossibility(3, new Cell(5, 4), new Cell(1, 2), new Cell(2, 8));
         AssertSameHashCodeAndEquals(csp1, csp2);
 
-        var ns1 = new NakedSet(new CellPossibilities(new Cell(5, 8), 3),
+        var ns1 = new ArrayPossibilitySet(new CellPossibilities(new Cell(5, 8), 3),
             new CellPossibilities(new Cell(2, 1), new ReadOnlyBitSet16(5, 9, 4)),
             new CellPossibilities(new Cell(8, 2), new ReadOnlyBitSet16(2, 8)),
             new CellPossibilities(new Cell(0, 0), new ReadOnlyBitSet16(5, 8, 3, 1)));
-        var ns2 =  new NakedSet(new CellPossibilities(new Cell(0, 0), new ReadOnlyBitSet16(5, 8, 3, 1)),
+        var ns2 =  new ArrayPossibilitySet(new CellPossibilities(new Cell(0, 0), new ReadOnlyBitSet16(5, 8, 3, 1)),
             new CellPossibilities(new Cell(8, 2), new ReadOnlyBitSet16(2, 8)),
             new CellPossibilities(new Cell(2, 1), new ReadOnlyBitSet16(5, 9, 4)),
             new CellPossibilities(new Cell(5, 8), 3));

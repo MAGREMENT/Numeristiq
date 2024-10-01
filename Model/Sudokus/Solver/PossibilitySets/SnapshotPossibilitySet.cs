@@ -1,45 +1,87 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using Model.Core;
 using Model.Sudokus.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.PossibilitySets;
 
 public class SnapshotPossibilitySet : IPossibilitySet
 {
+    private readonly ReadOnlyBitSet16 _possibilities;
     private readonly Cell[] _cells;
     private GridPositions? _gp;
     private readonly ISudokuSolvingState _snapshot;
-    
-    public ReadOnlyBitSet16 Possibilities { get; }
-    public GridPositions PositionsFor(int p)
-    {
-        return Positions.And(_snapshot.PositionsFor(p));
-    }
-
-    public int PossibilityCount => Possibilities.Count;
-    public int PositionsCount => _cells.Length;
 
     public SnapshotPossibilitySet(Cell[] cells, ReadOnlyBitSet16 possibilities, ISudokuSolvingState snapshot)
     {
         _cells = cells;
-        Possibilities = possibilities;
+        _possibilities = possibilities;
         _snapshot = snapshot;
     }
     
     public SnapshotPossibilitySet(Cell cell, ReadOnlyBitSet16 possibilities, ISudokuSolvingState snapshot)
     {
         _cells = new[] { cell };
-        Possibilities = possibilities;
+        _possibilities = possibilities;
         _snapshot = snapshot;
+    }
+    
+    public GridPositions PositionsFor(int p)
+    {
+        return Positions.And(_snapshot.PositionsFor(p));
+    }
+
+    public int PossibilityCount => _possibilities.Count;
+    public int PositionsCount => _cells.Length;
+
+    public IEnumerable<CellPossibilities> EnumerateCellPossibilities()
+    {
+        foreach (var cell in _cells)
+        {
+            yield return new CellPossibilities(cell, _snapshot.PossibilitiesAt(cell) & _possibilities);
+        }
     }
 
     public IEnumerable<Cell> EnumerateCells()
     {
         return _cells;
+    }
+
+    public IEnumerable<CellPossibility> EnumerateCellPossibility()
+    {
+        foreach (var cell in _cells)
+        {
+            foreach (var p in _possibilities.EnumeratePossibilities())
+            {
+                if (_snapshot.PossibilitiesAt(cell).Contains(p)) yield return new CellPossibility(cell, p);
+            }
+        }
+    }
+
+    public bool Contains(Cell cell)
+    {
+        return _cells.Contains(cell);
+    }
+
+    public bool Contains(CellPossibility cp)
+    {
+        var cell = cp.ToCell();
+        return Contains(cell) & _possibilities.Contains(cp.Possibility) 
+                              & _snapshot.PossibilitiesAt(cell).Contains(cp.Possibility);
+    }
+
+    public bool Contains(int possibility)
+    {
+        return _possibilities.Contains(possibility);
+    }
+
+    public bool Contains(CellPossibilities cp)
+    {
+        return _cells.Contains(cp.Cell) && (_snapshot.PossibilitiesAt(cp.Cell) & _possibilities) == cp.Possibilities;
     }
 
     public IEnumerable<Cell> EnumerateCells(int possibility)
@@ -50,20 +92,31 @@ public class SnapshotPossibilitySet : IPossibilitySet
         }
     }
 
-    public IEnumerable<CellPossibility> EnumeratePossibilities()
+    public ReadOnlyBitSet16 EveryPossibilities() => _possibilities;
+
+    public CellPossibilities[] EveryCellPossibilities()
     {
-        foreach (var cell in _cells)
+        var result = new CellPossibilities[PositionsCount];
+        for (int i = 0; i < _cells.Length; i++)
         {
-            foreach (var p in Possibilities.EnumeratePossibilities())
-            {
-                if (_snapshot.PossibilitiesAt(cell).Contains(p)) yield return new CellPossibility(cell, p);
-            }
+            result[i] = new CellPossibilities(_cells[i], _snapshot.PossibilitiesAt(_cells[i]) & _possibilities);
         }
+
+        return result;
     }
+
+    public Cell[] EveryCell() => _cells;
+
+    public CellPossibility[] EveryCellPossibility()
+    {
+        return EnumerateCellPossibility().ToArray();
+    }
+
+    public IEnumerable<int> EnumeratePossibilities() => _possibilities.EnumeratePossibilities();
 
     public ReadOnlyBitSet16 PossibilitiesInCell(Cell cell)
     {
-        return Possibilities & _snapshot.PossibilitiesAt(cell);
+        return _possibilities & _snapshot.PossibilitiesAt(cell);
     }
 
     public GridPositions Positions
@@ -83,17 +136,6 @@ public class SnapshotPossibilitySet : IPossibilitySet
         }
     }
 
-    public CellPossibilities[] ToCellPossibilitiesArray()
-    {
-        CellPossibilities[] result = new CellPossibilities[PositionsCount];
-        for (int i = 0; i < _cells.Length; i++)
-        {
-            result[i] = new CellPossibilities(_cells[i], _snapshot.PossibilitiesAt(_cells[i]) & Possibilities);
-        }
-
-        return result;
-    }
-
     public bool IsPossibilityRestricted(IPossibilitySet other, int possibility)
     {
         return RestrictedPossibilityAlgorithms.AlternatingCommonHouseSearch(this, other, possibility);
@@ -101,32 +143,16 @@ public class SnapshotPossibilitySet : IPossibilitySet
 
     public override bool Equals(object? obj)
     {
-        return obj is SnapshotPossibilitySet pp && Possibilities.Equals(pp.Possibilities)
-                                                                     && Positions.Equals(pp.Positions);
+        return IPossibilitySet.InternalEquals(this, obj);
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Possibilities.GetHashCode(), Positions.GetHashCode());
+        return IPossibilitySet.InternalHash(this);
     }
-    
+
     public override string ToString()
     {
-        var builder = new StringBuilder();
-
-        foreach (var pos in Possibilities.EnumeratePossibilities())
-        {
-            builder.Append(pos);
-        }
-
-        builder.Append("{ ");
-        foreach(var cell in EnumerateCells())
-        {
-            builder.Append(cell + " ");
-        }
-
-        builder.Append('}');
-
-        return builder.ToString();
+        return IPossibilitySet.InternalToString(this);
     }
 }

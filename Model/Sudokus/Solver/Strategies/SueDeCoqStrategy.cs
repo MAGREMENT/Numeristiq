@@ -108,11 +108,11 @@ public class SueDeCoqStrategy : SudokuStrategy
             foreach (var unitPP in Combinations(solverData, forbiddenPositions,
                          forbiddenPossibilities, maxCellsPerUnit, cellsInUnit))
             {
-                var outOfCenterPossibilities = boxPossibilities | unitPP.Possibilities;
+                var outOfCenterPossibilities = boxPossibilities | unitPP.EveryPossibilities();
                 if ((outOfCenterPossibilities & possibilities).Count < minimumPossibilitiesDrawn) continue;
 
                 var notDrawnPossibilities = possibilities - outOfCenterPossibilities;
-                if(unitPP.Possibilities.Count + boxPossibilities.Count + notDrawnPossibilities.Count 
+                if(unitPP.EveryPossibilities().Count + boxPossibilities.Count + notDrawnPossibilities.Count 
                    != cells.Length + boxCombination.Length + unitPP.PositionsCount) continue;
 
                 var boxPP = new SnapshotPossibilitySet(boxCombination, boxPossibilities, solverData.CurrentState);
@@ -141,8 +141,8 @@ public class SueDeCoqStrategy : SudokuStrategy
         var forbiddenBox = centerGP.Or(boxPP.Positions);
         var forbiddenUnit = centerGP.Or(unitPP.Positions);
 
-        var boxElimination = boxPP.Possibilities | (centerPossibilities - unitPP.Possibilities);
-        var unitElimination = unitPP.Possibilities | (centerPossibilities - boxPP.Possibilities);
+        var boxElimination = boxPP.EveryPossibilities() | (centerPossibilities - unitPP.EveryPossibilities());
+        var unitElimination = unitPP.EveryPossibilities() | (centerPossibilities - boxPP.EveryPossibilities());
 
         foreach (var cell in cellsInBox)
         {
@@ -261,9 +261,9 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder<NumericChange, ISudoku
 
                 foreach (var possibility in snapshot.PossibilitiesAt(cell).EnumeratePossibilities())
                 {
-                    if(_boxPP.Possibilities.Contains(possibility)) lighter.HighlightPossibility(possibility, cell.Row,
+                    if(_boxPP.EveryPossibilities().Contains(possibility)) lighter.HighlightPossibility(possibility, cell.Row,
                         cell.Column, StepColor.Cause1);
-                    else if(_unitPP.Possibilities.Contains(possibility)) lighter.HighlightPossibility(possibility, cell.Row,
+                    else if(_unitPP.EveryPossibilities().Contains(possibility)) lighter.HighlightPossibility(possibility, cell.Row,
                         cell.Column, StepColor.Cause2);
                     else lighter.HighlightPossibility(possibility, cell.Row, cell.Column, StepColor.On);
                 }

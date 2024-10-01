@@ -141,7 +141,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         var ssc = new List<Cell>(SudokuUtility.SharedSeenCells(roof[0], roof[1]));
         foreach (var als in AlmostNakedSetSearcher.InCells(solverData, _maxAlsSize.Value, 1, ssc))
         {
-            if (!als.Possibilities.ContainsAll(notBiValuePossibilities)) continue;
+            if (!als.EveryPossibilities().ContainsAll(notBiValuePossibilities)) continue;
 
             ProcessUrWithAls(solverData, roof, als);
             if (solverData.ChangeBuffer.NeedCommit())
@@ -272,7 +272,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
     private void ProcessUrWithAls(ISudokuSolverData solverData, Cell[] roof, IPossibilitySet als)
     {
         List<Cell> buffer = new();
-        foreach (var possibility in als.Possibilities.EnumeratePossibilities())
+        foreach (var possibility in als.EveryPossibilities().EnumeratePossibilities())
         {
             foreach (var cell in als.EnumerateCells())
             {

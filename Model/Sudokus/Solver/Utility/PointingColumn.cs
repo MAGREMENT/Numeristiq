@@ -68,7 +68,7 @@ public class PointingColumn : ISudokuElement
     {
         var minRow = 9;
         var maxRow = -1;
-        foreach (var cell in EnumerateCell())
+        foreach (var cell in EnumerateCells())
         {
             if (cell.Row < minRow) minRow = cell.Row;
             if (cell.Row > maxRow) maxRow = cell.Row;
@@ -163,7 +163,7 @@ public class PointingColumn : ISudokuElement
         }
     }
 
-    public IEnumerable<Cell> EnumerateCell()
+    public IEnumerable<Cell> EnumerateCells()
     {
         foreach (var row in _pos)
         {
@@ -187,5 +187,15 @@ public class PointingColumn : ISudokuElement
     public bool Contains(CellPossibility cp)
     {
         return Possibility == cp.Possibility && Column == cp.Column && _pos.Contains(cp.Row);
+    }
+
+    public bool Contains(int possibility)
+    {
+        return Possibility == possibility;
+    }
+    
+    public bool Contains(CellPossibilities cp)
+    {
+        return cp.Possibilities.Count == 1 && Contains(cp.Possibilities.FirstPossibility()) && Contains(cp.Cell);
     }
 }

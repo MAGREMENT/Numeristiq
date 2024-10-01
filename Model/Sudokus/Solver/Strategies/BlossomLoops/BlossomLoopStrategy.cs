@@ -103,14 +103,14 @@ public class BlossomLoopStrategy : SudokuStrategy
         {
             var and = one.EveryPossibilities() & two.EveryPossibilities();
             var or = one.EveryPossibilities() | two.EveryPossibilities();
-            var cells = new HashSet<Cell>(one.EnumerateCell());
-            cells.UnionWith(two.EnumerateCell());
+            var cells = new HashSet<Cell>(one.EnumerateCells());
+            cells.UnionWith(two.EnumerateCells());
 
             foreach (var element in toTakeIntoAccount)
             {
                 and &= element.EveryPossibilities();
                 or |= element.EveryPossibilities();
-                cells.UnionWith(element.EnumerateCell());
+                cells.UnionWith(element.EnumerateCells());
             }
 
             if (cells.Count == 1)

@@ -19,7 +19,7 @@ public class AlmostLockedSetExplanationElement : IExplanationElement<ISudokuHigh
     
     public void Highlight(ISudokuHighlighter highlighter)
     {
-        foreach (var cp in _als.EnumeratePossibilities())
+        foreach (var cp in _als.EnumerateCellPossibility())
         {
             highlighter.HighlightPossibility(cp, StepColor.Cause1); 
         }

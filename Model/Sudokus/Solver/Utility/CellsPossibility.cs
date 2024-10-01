@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
 using Model.Utility.Collections;
@@ -66,7 +65,7 @@ public class CellsPossibility : ISudokuElement
         }
     }
 
-    public IEnumerable<Cell> EnumerateCell()
+    public IEnumerable<Cell> EnumerateCells()
     {
         return _cells;
     }
@@ -87,6 +86,16 @@ public class CellsPossibility : ISudokuElement
     public bool Contains(CellPossibility cp)
     {
         return _possibility == cp.Possibility && _cells.Contains(cp.ToCell());
+    }
+
+    public bool Contains(int possibility)
+    {
+        return _possibility == possibility;
+    }
+
+    public bool Contains(CellPossibilities cp)
+    {
+        return cp.Possibilities.Count == 1 && Contains(cp.Possibilities.FirstPossibility()) && Contains(cp.Cell);
     }
 
     public override bool Equals(object? obj)

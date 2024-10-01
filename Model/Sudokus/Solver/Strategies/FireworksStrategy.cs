@@ -8,7 +8,6 @@ using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -251,7 +250,7 @@ public class FireworksStrategy : SudokuStrategy
         {
             foreach (var als in allAls)
             {
-                if (!als.Possibilities.ContainsAll(df.Possibilities)) continue;
+                if (!als.EveryPossibilities().ContainsAll(df.Possibilities)) continue;
 
                 bool one = true;
                 bool two = true;
