@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Text;
 using Model.Core.Changes;
 using Model.Core.Graphs;
-using Model.Sudokus;
+using Model.Core.Highlighting;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
-namespace Model.Core.Highlighting;
+namespace Model.Sudokus.Solver.Highlighting;
 
 /// <summary>
 /// This class is made so not too many model class instances are kept in memory just for the logs.
 /// I have no idea if this is needed or useful but it has been on my mind for a long time and i wanna do it
 /// </summary>
-public class HighlightExecutable : IHighlightable<ISudokuHighlighter>
+public class SudokuHighlightExecutable : IHighlightable<ISudokuHighlighter>
 {
     //12-16 = col   16-20 = row   20-24 = possibility   24-28 = type   28-32 = color
     private const int HighlightPossibilityIndex = 0;
@@ -36,22 +36,24 @@ public class HighlightExecutable : IHighlightable<ISudokuHighlighter>
     private const int EncircleHouseIndex = 7;
     //0-8 = size of from   8-16 = size of to   24-28 = type   28-32 = link
     private const int CreateElementLinkIndex = 8;
+    //0-8 = size of from   8-16 = size of to   24-28 = type   28-32 = link
+    private const int CreatePossibilitySetLinkIndex = 9;
     
     private readonly int[] _instructions;
 
-    private HighlightExecutable(int[] instructions)
+    private SudokuHighlightExecutable(int[] instructions)
     {
         _instructions = instructions;
     }
 
-    public static HighlightExecutable FromHighlightable(IHighlightable<ISudokuHighlighter> highlightable)
+    public static SudokuHighlightExecutable FromHighlightable(IHighlightable<ISudokuHighlighter> highlightable)
     {
         var instructions = new Instructionalizer();
         highlightable.Highlight(instructions);
-        return new HighlightExecutable(instructions.ToArray());
+        return new SudokuHighlightExecutable(instructions.ToArray());
     }
     
-    public static HighlightExecutable FromBase16(string s, IAlphabet alphabet)
+    public static SudokuHighlightExecutable FromBase16(string s, IAlphabet alphabet)
     {
         var result = new int[s.Length / 8];
         for (int i = 0; i < s.Length; i += 8)
@@ -60,7 +62,7 @@ public class HighlightExecutable : IHighlightable<ISudokuHighlighter>
             result[i / 8] = FromBase16(s.AsSpan(i, 8), alphabet);
         }
 
-        return new HighlightExecutable(result);
+        return new SudokuHighlightExecutable(result);
     }
 
     private static int FromBase16(ReadOnlySpan<char> s, IAlphabet alphabet)
@@ -147,6 +149,16 @@ public class HighlightExecutable : IHighlightable<ISudokuHighlighter>
                         FromInstruction(_instructions, i + c1 + 1), (LinkStrength)((instruction >> 28) & 0xF));
                     i += c1 + c2;
                     break;
+                case CreatePossibilitySetLinkIndex :
+                    var c3 = instruction & 0xFF;
+                    var c4 = (instruction >> 8) & 0xFF;
+
+                    highlighter.CreateLink(
+                        new ArrayPossibilitySet(FromCellPossibilitiesPackets(_instructions, i + 2, i + c3).ToArray()),
+                        new ArrayPossibilitySet(FromCellPossibilitiesPackets(_instructions, i + 2 + c3, i + c3 + c4).ToArray()), 
+                        (instruction >> 28) & 0xF);
+                    i += c3 + c4;
+                    break;
             }
         }
     }
@@ -196,14 +208,19 @@ public class HighlightExecutable : IHighlightable<ISudokuHighlighter>
             var one = ToInstruction(from);
             var two = ToInstruction(to);
             
-            Add(one.Count | one.Count << 8 | CreateElementLinkIndex << 24 | (int)linkStrength << 28);
+            Add(one.Count | two.Count << 8 | CreateElementLinkIndex << 24 | (int)linkStrength << 28);
             AddRange(one);
             AddRange(two);
         }
 
         public void CreateLink(IPossibilitySet from, IPossibilitySet to, int link)
         {
-            //TODO
+            var one = ToInt(from.EveryCellPossibilities());
+            var two = ToInt(to.EveryCellPossibilities());
+            
+            Add(one.Count | two.Count << 8 | CreatePossibilitySetLinkIndex << 24 | link << 28);
+            AddRange(one);
+            AddRange(two);
         }
     }
 
@@ -233,7 +250,7 @@ public class HighlightExecutable : IHighlightable<ISudokuHighlighter>
                 return new CellPossibility((instruction[from] >> 16) & 0xF,
                     (instruction[from] >> 12) & 0xF, (instruction[from] >> 20) & 0xF);
             case HighlightNakedSetIndex:
-                return new ArrayPossibilitySet(FromCellPossibilitiesPackets(instruction, from,
+                return new ArrayPossibilitySet(FromCellPossibilitiesPackets(instruction, from + 1,
                     from + (instruction[from] & 0xFF)).ToArray());
             default: throw new ArgumentOutOfRangeException();
         }

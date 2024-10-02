@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Utility;
 
 namespace Model.Core.Highlighting;
@@ -44,10 +46,12 @@ public class HighlightCollection<THighlighter> : IHighlightable<THighlighter>
 
     public string TryGetInstructionsAsString()
     {
-        return _highlights[_cursor] is not HighlightExecutable exe 
+        return _highlights[_cursor] is not SudokuHighlightExecutable exe 
             ? string.Empty 
             : exe.ToBase16(DefaultBase16Alphabet.Instance);
     }
+
+    public IEnumerable<IHighlightable<THighlighter>> Enumerate() => _highlights;
 
     public void ShiftLeft()
     {
@@ -58,10 +62,5 @@ public class HighlightCollection<THighlighter> : IHighlightable<THighlighter>
     public void ShiftRight()
     {
         _cursor = (_cursor + 1) % Count;
-    }
-
-    public string CursorPosition()
-    {
-        return $"{_cursor + 1} / {Count}";
     }
 }

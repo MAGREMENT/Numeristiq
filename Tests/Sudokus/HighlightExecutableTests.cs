@@ -3,29 +3,61 @@ using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus;
 using Model.Sudokus.Solver;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Repository;
+using Repository.Files;
+using Repository.Files.Types;
 
 namespace Tests.Sudokus;
 
-public class HighlightExecutableTests //TODO
+public class HighlightExecutableTests
 {
     [Test]
-    public void SimpleTests()
+    public void SimpleTest()
     {
         var compiler = new SudokuHighlightCompiler();
+        var set1 = new ArrayPossibilitySet(new CellPossibilities(2, 3, 4),
+            new CellPossibilities(5, 7, ReadOnlyBitSet16.Filled(1, 9)),
+            new CellPossibilities(6, 7, ReadOnlyBitSet16.Filled(5, 7)));
+        var set2 = new ArrayPossibilitySet(new CellPossibilities(8, 2, new ReadOnlyBitSet16(1, 3, 4)));
+        
         Test(compiler, lighter =>
         {
             lighter.HighlightCell(1, 3, StepColor.Cause10);
             lighter.HighlightPossibility(4, 5, 7, StepColor.Cause4);
             lighter.EncircleHouse(new House(Unit.Box, 8), StepColor.On);
             lighter.HighlightElement(new PointingRow(5, 2, 3, 4, 5), StepColor.Change1);
-            lighter.HighlightElement(new ArrayPossibilitySet(new CellPossibilities(2, 3, 4),
-                new CellPossibilities(5, 7, ReadOnlyBitSet16.Filled(1, 9)),
-                new CellPossibilities(6, 7, ReadOnlyBitSet16.Filled(5, 7))), StepColor.Cause8);
+            lighter.HighlightElement(set1, StepColor.Cause8);
+            lighter.CreateLink(set1, set2, 4);
         });
+    }
+
+    [Test]
+    public void SolveTest()
+    {
+        var compiler = new SudokuHighlightCompiler();
+        var solver = new SudokuSolver();
+        var repo = new FileSudokuStrategiesRepository("strategies", true, false,
+            new JsonType<List<StrategyDAO>>());
+        solver.StrategyManager.AddStrategies(repo.GetStrategies());
+        var sudoku = SudokuTranslator.TranslateLineFormat(
+                "4...3.......6..8..........1....5..9..8....6...7.2........1.27..5.3....4.9........");
+        solver.SetSudoku(sudoku);
+        
+        solver.Solve();
+        Console.WriteLine(solver.Steps.Count);
+
+        foreach (var step in solver.Steps)
+        {
+            foreach (var h in step.HighlightCollection.Enumerate())
+            {
+                Test(compiler, h);
+            }
+        }
     }
     
     private static void Test(IHighlightCompiler<ISudokuHighlighter> compiler, Highlight<ISudokuHighlighter> highlightable)

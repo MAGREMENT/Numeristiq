@@ -1,11 +1,11 @@
 ﻿using Model.Core.Highlighting;
 
-namespace Model.Sudokus.Solver;
+namespace Model.Sudokus.Solver.Highlighting;
 
 public class SudokuHighlightCompiler : IHighlightCompiler<ISudokuHighlighter>
 {
     public IHighlightable<ISudokuHighlighter> Compile(IHighlightable<ISudokuHighlighter> d)
     {
-        return HighlightExecutable.FromHighlightable(d);
+        return SudokuHighlightExecutable.FromHighlightable(d);
     }
 }

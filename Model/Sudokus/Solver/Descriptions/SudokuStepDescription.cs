@@ -1,6 +1,7 @@
 ﻿using Model.Core;
 using Model.Core.Descriptions;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Utility;
 
 namespace Model.Sudokus.Solver.Descriptions;
@@ -20,7 +21,7 @@ public class SudokuStepDescription : IDescription<SudokuDescriptionDisplayer>
         _text = text;
         _cropping = new SudokuCropping(rowFrom, colFrom, rowTo, colTo);
         _disposition = disposition;
-        _highlight = HighlightExecutable.FromBase16(highlight, DefaultBase16Alphabet.Instance);
+        _highlight = SudokuHighlightExecutable.FromBase16(highlight, DefaultBase16Alphabet.Instance);
     }
 
     public void Display(SudokuDescriptionDisplayer displayer)
