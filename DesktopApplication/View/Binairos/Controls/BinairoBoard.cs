@@ -147,7 +147,7 @@ public class BinairoBoard : LayeredDrawingBoard, IBinairoDrawingData, ISizeOptim
         }
     }
 
-    public double InwardCellLineWidth => 3;
+    public double InwardCellLineWidth => 5;
 
     public double CellSize
     {

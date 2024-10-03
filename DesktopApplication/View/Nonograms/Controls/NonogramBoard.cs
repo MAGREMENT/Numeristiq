@@ -86,7 +86,7 @@ public class NonogramBoard : LayeredDrawingBoard, INonogramDrawingData, ISizeOpt
         get => (Brush)GetValue(BackgroundBrushProperty);
     }
 
-    public double InwardCellLineWidth => 3;
+    public double InwardCellLineWidth => 5;
 
     public double CellSize
     {

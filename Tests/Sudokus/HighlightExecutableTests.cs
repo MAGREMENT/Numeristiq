@@ -32,6 +32,9 @@ public class HighlightExecutableTests
             lighter.EncircleHouse(new House(Unit.Box, 8), StepColor.On);
             lighter.HighlightElement(new PointingRow(5, 2, 3, 4, 5), StepColor.Change1);
             lighter.HighlightElement(set1, StepColor.Cause8);
+            lighter.HighlightElement(new CellsPossibility(3, new Cell(1, 2),
+                new Cell(4, 8), new Cell(7, 3), new Cell(3, 3), new Cell(4, 5)),
+                StepColor.Cause10);
             lighter.CreateLink(set1, set2, 4);
         });
     }
@@ -88,7 +91,7 @@ public class TestHighlighter : List<object>, ISudokuHighlighter
 {
     public void HighlightPossibility(int possibility, int row, int col, StepColor color)
     {
-        Add((new CellPossibility(row, col, possibility), color));
+        Add(((ISudokuElement)new CellPossibility(row, col, possibility), color));
     }
 
     public void HighlightCell(int row, int col, StepColor color)

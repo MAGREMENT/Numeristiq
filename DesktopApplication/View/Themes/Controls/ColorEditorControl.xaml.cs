@@ -19,7 +19,7 @@ public partial class ColorEditorControl
     public RGB Color
     {
         get => _color;
-        set => SetColor(value, true, true);
+        set => SetColor(value, true, true, true);
     }
     
     public bool ContinuousUpdate { get; set; }
@@ -35,20 +35,23 @@ public partial class ColorEditorControl
         _fireEvent = true;
     }
 
-    public void NoColor() //TODO
+    public void NoColor()
     {
         _fireEvent = false;
-        SetColor(new RGB(), false, false);
+        SetColor(new RGB(), false, false, false);
         
         RedValue.SetCurrent(0);
         GreenValue.SetCurrent(0);
         BlueValue.SetCurrent(0);
+        HexCode.Text = string.Empty;
+        
         HueCursor.Visibility = Visibility.Hidden;
+        SLCursor.Visibility = Visibility.Hidden;
 
         _fireEvent = true;
     }
 
-    private void SetColor(RGB rgb, bool updateColorValues, bool updateHSL)
+    private void SetColor(RGB rgb, bool updateColorValues, bool updateHSL, bool updateHexaString)
     {
         _color = rgb;
         _fireEvent = false;
@@ -60,10 +63,13 @@ public partial class ColorEditorControl
             BlueValue.SetCurrent(_color.Blue);
         }
 
-        if (updateHSL)
+        if (updateHexaString)
         {
-            SetHSL(rgb.ToHSL(), true, true, true, false);
+            HexCode.Text = _color.ToHexString();
         }
+
+        if (updateHSL) SetHSL(rgb.ToHSL(), true, true, true, false);
+        
 
         _fireEvent = true;
     }
@@ -79,33 +85,9 @@ public partial class ColorEditorControl
         
         if(updateSLCursor) UpdateSLCursor();
         
-        if(updateColor) SetColor(_hsl.ToRGB(), true, false);
+        if(updateColor) SetColor(_hsl.ToRGB(), true, false, true);
 
         _fireEvent = true;
-    }
-
-    private void OnRedChange(int r)
-    {
-        if (r == _color.Red) return;
-        
-        SetColor(_color.WithRed((byte)r), false, true);
-        ColorChanged?.Invoke(Color);
-    }
-    
-    private void OnGreenChange(int g)
-    {
-        if (g == _color.Green) return;
-
-        SetColor(_color.WithGreen((byte)g), false, true);
-        ColorChanged?.Invoke(Color);
-    }
-    
-    private void OnBlueChange(int b)
-    {
-        if (b == _color.Blue) return;
-
-        SetColor(_color.WithBlue((byte)b), false, true);
-        ColorChanged?.Invoke(Color);
     }
 
     private void InitializeHueSlider()
@@ -214,21 +196,45 @@ public partial class ColorEditorControl
             + y * SLMap.Height - SLCursor.Height / 2;
         SLCursor.Margin = new Thickness(left, top, 0, 0);
     }
+    
+    private void OnRedChange(int r)
+    {
+        if (!_fireEvent || r == _color.Red) return;
+        
+        SetColor(_color.WithRed((byte)r), false, true, true);
+        ColorChanged?.Invoke(Color);
+    }
+    
+    private void OnGreenChange(int g)
+    {
+        if (!_fireEvent || g == _color.Green) return;
+
+        SetColor(_color.WithGreen((byte)g), false, true, true);
+        ColorChanged?.Invoke(Color);
+    }
+    
+    private void OnBlueChange(int b)
+    {
+        if (!_fireEvent || b == _color.Blue) return;
+
+        SetColor(_color.WithBlue((byte)b), false, true, true);
+        ColorChanged?.Invoke(Color);
+    }
 
     private void OnHueChange(object sender, MouseEventArgs e)
     {
-        if (e.LeftButton != MouseButtonState.Pressed) return;
+        if (!_fireEvent || e.LeftButton != MouseButtonState.Pressed) return;
         
         var x = e.MouseDevice.GetPosition(HueSlider).X;
         SetHSL(_hsl.WithHue((int)Math.Round(x / (HueSlider.Width - 1) * 360)),
             true, true, false, true);
         
-        if(ContinuousUpdate) ColorChanged?.Invoke(Color);
+        if(ContinuousUpdate && _fireEvent) ColorChanged?.Invoke(Color);
     }
     
     private void OnSLChange(object sender, MouseEventArgs e)
     {
-        if (e.LeftButton != MouseButtonState.Pressed) return;
+        if (!_fireEvent || e.LeftButton != MouseButtonState.Pressed) return;
         
         var p = e.MouseDevice.GetPosition(SLMap);
         var s = p.X / SLMap.Width;
@@ -241,12 +247,30 @@ public partial class ColorEditorControl
 
     private void StopOnUp(object sender, MouseEventArgs e)
     {
-        if(!ContinuousUpdate) ColorChanged?.Invoke(Color);
+        if(!ContinuousUpdate && _fireEvent) ColorChanged?.Invoke(Color);
     }
     
     private void StopOnLeave(object sender, MouseEventArgs e)
     {
-        if(!ContinuousUpdate && e.LeftButton == MouseButtonState.Pressed) ColorChanged?.Invoke(Color);
+        if(!ContinuousUpdate && e.LeftButton == MouseButtonState.Pressed && _fireEvent) ColorChanged?.Invoke(Color);
+    }
+
+    private void OnHexCodeChanged(object sender, TextChangedEventArgs e)
+    {
+        if(!_fireEvent) return;
+
+        var s = HexCode.Text;
+        var alphabet = HexadecimalAlphabet.Instance;
+        if (s.Length != 7 || !alphabet.Contains(s[1..]))
+        {
+            _fireEvent = false;
+            HexCode.Text = _color.ToHexString();
+            _fireEvent = true;
+            return;
+        }
+
+        SetColor(RGB.FromHexString(s), true, true, false);
+        ColorChanged?.Invoke(Color);
     }
 }
 

@@ -81,7 +81,7 @@ public class TectonicBoard : LayeredDrawingBoard, ITectonicDrawingData, ITectoni
     public CultureInfo CultureInfo { get; } =  CultureInfo.CurrentUICulture;
     public double LinkOffset => 20;
     public LinkOffsetSidePriority LinkOffsetSidePriority { get; set; } = LinkOffsetSidePriority.Any;
-    public double InwardCellLineWidth => 3;
+    public double InwardCellLineWidth => 5;
     
     public Brush DefaultNumberBrush
     {

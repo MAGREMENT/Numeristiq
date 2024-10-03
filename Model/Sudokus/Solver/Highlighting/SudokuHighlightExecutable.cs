@@ -38,6 +38,9 @@ public class SudokuHighlightExecutable : IHighlightable<ISudokuHighlighter>
     private const int CreateElementLinkIndex = 8;
     //0-8 = size of from   8-16 = size of to   24-28 = type   28-32 = link
     private const int CreatePossibilitySetLinkIndex = 9;
+    //0-4 = possibility   4-12 = number of Cell packets   24-28 = type   28-32 = color
+    //Cell packets => (0-4 = row   4-8 = col) x 4
+    private const int HighlightCellsPossibilityIndex = 10;
     
     private readonly int[] _instructions;
 
@@ -159,6 +162,14 @@ public class SudokuHighlightExecutable : IHighlightable<ISudokuHighlighter>
                         (instruction >> 28) & 0xF);
                     i += c3 + c4;
                     break;
+                case HighlightCellsPossibilityIndex :
+                    var count2 = (instruction >> 4) & 0xFF;
+                    highlighter.HighlightElement(new CellsPossibility(instruction & 0xF,
+                        FromCellPackets(_instructions, i + 1, i + count2).ToArray()),
+                        (StepColor)((instruction >> 28) & 0xF));
+                    
+                    i += count2;
+                    break;
             }
         }
     }
@@ -199,6 +210,8 @@ public class SudokuHighlightExecutable : IHighlightable<ISudokuHighlighter>
         public void HighlightElement(ISudokuElement element, StepColor color)
         {
             var all = ToInstruction(element);
+            if (all.Count == 0) return;
+            
             all[0] |= (int)color << 28;
             AddRange(all);
         }
@@ -236,6 +249,8 @@ public class SudokuHighlightExecutable : IHighlightable<ISudokuHighlighter>
                 return new List<int> { ToInt(pc) };
             case IPossibilitySet ns :
                 return ToInt(ns.EveryCellPossibilities());
+            case CellsPossibility csp :
+                return ToInt(csp);
             default: return new List<int>();
         }
     }
@@ -252,6 +267,9 @@ public class SudokuHighlightExecutable : IHighlightable<ISudokuHighlighter>
             case HighlightNakedSetIndex:
                 return new ArrayPossibilitySet(FromCellPossibilitiesPackets(instruction, from + 1,
                     from + (instruction[from] & 0xFF)).ToArray());
+            case HighlightCellsPossibilityIndex:
+                return new CellsPossibility(instruction[from] & 0xF, FromCellPackets(
+                    instruction, from + 1, from + ((instruction[from] >> 4) & 0xFF)).ToArray());
             default: throw new ArgumentOutOfRangeException();
         }
     }
@@ -267,6 +285,13 @@ public class SudokuHighlightExecutable : IHighlightable<ISudokuHighlighter>
         }
 
         return result;
+    }
+
+    private static List<int> ToInt(CellsPossibility cp)
+    {
+        var packets = ToCellPackets(cp.Cells);
+        packets.Insert(0, cp.Possibility | packets.Count << 4 | HighlightCellsPossibilityIndex << 24);
+        return packets;
     }
         
     private static int ToInt(PointingColumn pc)
@@ -365,6 +390,58 @@ public class SudokuHighlightExecutable : IHighlightable<ISudokuHighlighter>
                 ReadOnlyBitSet16.FromBits((ushort)(((p >> 23) & 0x1FF) << 1))));
         }
         
+        return result;
+    }
+
+    private static List<int> ToCellPackets(IEnumerable<Cell> cells)
+    {
+        List<int> result = new();
+        int current = 0;
+        int start = 0;
+        foreach (var cell in cells)
+        {
+            current |= (cell.Row + 1) << start;
+            current |= (cell.Column + 1) << (start + 4);
+
+            if (start == 24)
+            {
+                start = 0;
+                result.Add(current);
+                current = 0;
+            }
+            else start += 8;
+        }
+
+        if (start != 0) result.Add(current);
+
+        return result;
+    }
+
+    private static List<Cell> FromCellPackets(IReadOnlyList<int> packets,
+        int from, int to)
+    {
+        List<Cell> result = new();
+        for (int i = from; i <= to; i++)
+        {
+            int p = packets[i];
+            
+            bool stop = false;
+            for (int start = 0; start < 32; start += 8)
+            {
+                var row = (p >> start) & 0xF;
+                var col = (p >> (start + 4)) & 0xF;
+                if (row == 0 || col == 0)
+                {
+                    stop = true;
+                    break;
+                }
+                
+                result.Add(new Cell(row - 1, col - 1));
+            }
+
+            if (stop) break;
+        }
+
         return result;
     }
 }

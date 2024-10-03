@@ -9,23 +9,23 @@ namespace Model.Sudokus.Solver.Utility;
 
 public class CellsPossibility : ISudokuElement
 {
-    private readonly int _possibility;
-    private readonly Cell[] _cells;
+    public int Possibility { get; }
+    public Cell[] Cells { get; }
 
     public CellsPossibility(int possibility, params Cell[] cells)
     {
-        _possibility = possibility;
-        _cells = cells;
+        Possibility = possibility;
+        Cells = cells;
     }
 
     public int DifficultyRank => 2;
     
     public CellPossibilities[] EveryCellPossibilities()
     {
-        var result = new CellPossibilities[_cells.Length];
-        for (int i = 0; i < _cells.Length; i++)
+        var result = new CellPossibilities[Cells.Length];
+        for (int i = 0; i < Cells.Length; i++)
         {
-            result[i] = new CellPossibilities(_cells[i], _possibility);
+            result[i] = new CellPossibilities(Cells[i], Possibility);
         }
 
         return result;
@@ -33,20 +33,20 @@ public class CellsPossibility : ISudokuElement
 
     public Cell[] EveryCell()
     {
-        return _cells;
+        return Cells;
     }
 
     public ReadOnlyBitSet16 EveryPossibilities()
     {
-        return new ReadOnlyBitSet16(_possibility);
+        return new ReadOnlyBitSet16(Possibility);
     }
 
     public CellPossibility[] EveryCellPossibility()
     {
-        var result = new CellPossibility[_cells.Length];
-        for (int i = 0; i < _cells.Length; i++)
+        var result = new CellPossibility[Cells.Length];
+        for (int i = 0; i < Cells.Length; i++)
         {
-            result[i] = new CellPossibility(_cells[i], _possibility);
+            result[i] = new CellPossibility(Cells[i], Possibility);
         }
 
         return result;
@@ -54,43 +54,43 @@ public class CellsPossibility : ISudokuElement
 
     public IEnumerable<int> EnumeratePossibilities()
     {
-        yield return _possibility;
+        yield return Possibility;
     }
 
     public IEnumerable<CellPossibilities> EnumerateCellPossibilities()
     {
-        for (int i = 0; i < _cells.Length; i++)
+        for (int i = 0; i < Cells.Length; i++)
         {
-            yield return new CellPossibilities(_cells[i], _possibility);
+            yield return new CellPossibilities(Cells[i], Possibility);
         }
     }
 
     public IEnumerable<Cell> EnumerateCells()
     {
-        return _cells;
+        return Cells;
     }
 
     public IEnumerable<CellPossibility> EnumerateCellPossibility()
     {
-        for (int i = 0; i < _cells.Length; i++)
+        for (int i = 0; i < Cells.Length; i++)
         {
-            yield return new CellPossibility(_cells[i], _possibility);
+            yield return new CellPossibility(Cells[i], Possibility);
         }
     }
 
     public bool Contains(Cell cell)
     {
-        return _cells.Contains(cell);
+        return Cells.Contains(cell);
     }
 
     public bool Contains(CellPossibility cp)
     {
-        return _possibility == cp.Possibility && _cells.Contains(cp.ToCell());
+        return Possibility == cp.Possibility && Cells.Contains(cp.ToCell());
     }
 
     public bool Contains(int possibility)
     {
-        return _possibility == possibility;
+        return Possibility == possibility;
     }
 
     public bool Contains(CellPossibilities cp)
@@ -100,11 +100,11 @@ public class CellsPossibility : ISudokuElement
 
     public override bool Equals(object? obj)
     {
-        if (obj is not CellsPossibility cp || cp._possibility != _possibility 
-            || cp._cells.Length != _cells.Length) return false;
-        foreach (var c in cp._cells)
+        if (obj is not CellsPossibility cp || cp.Possibility != Possibility 
+            || cp.Cells.Length != Cells.Length) return false;
+        foreach (var c in cp.Cells)
         {
-            if (!_cells.Contains(c)) return false;
+            if (!Cells.Contains(c)) return false;
         }
 
         return true;
@@ -113,16 +113,16 @@ public class CellsPossibility : ISudokuElement
     public override int GetHashCode()
     {
         var hash = 0;
-        foreach (var c in _cells)
+        foreach (var c in Cells)
         {
             hash ^= c.GetHashCode();
         }
 
-        return HashCode.Combine(_possibility, _cells.Length, hash);
+        return HashCode.Combine(Possibility, Cells.Length, hash);
     }
 
     public override string ToString()
     {
-        return $"{_possibility}{_cells.ToStringSequence(", ")}";
+        return $"{Possibility}{Cells.ToStringSequence(", ")}";
     }
 }

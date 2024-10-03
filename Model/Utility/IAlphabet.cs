@@ -7,6 +7,20 @@ public interface IAlphabet
     public int Count { get; }
     public int ToInt(char c);
     public char ToChar(int n);
+    public bool Contains(char c);
+}
+
+public static class AlphabetExtensions
+{
+    public static bool Contains(this IAlphabet alphabet, string s)
+    {
+        foreach (var c in s)
+        {
+            if (!alphabet.Contains(c)) return false;
+        }
+
+        return true;
+    }
 }
 
 public class RFC4648Base32Alphabet : IAlphabet
@@ -42,6 +56,40 @@ public class RFC4648Base32Alphabet : IAlphabet
             _ => 'A'
         };
     }
+
+    public bool Contains(char c)
+    {
+        return (c < 91 && c > 64) || (c < 56 && c > 49);
+    }
+}
+
+public class HexadecimalAlphabet : IAlphabet
+{
+    public static HexadecimalAlphabet Instance { get; } = new();
+    
+    private HexadecimalAlphabet(){}
+    public int Count => 16;
+
+    public int ToInt(char c)
+    {
+        return c switch
+        {
+            >= '0' and <= '9' => c - '0',
+            >= 'A' and <= 'F' => c - 'A' + 10,
+            _ => throw new ArgumentOutOfRangeException(nameof(c))
+        };
+    }
+
+    public char ToChar(int n)
+    {
+        if (n > 9) return (char)('A' + n - 10);
+        return (char)('0' + n);
+    }
+
+    public bool Contains(char c)
+    {
+        return (c is >= '0' and <= '9' or >= 'A' and <= 'F');
+    }
 }
 
 public class DefaultBase16Alphabet : IAlphabet
@@ -58,6 +106,11 @@ public class DefaultBase16Alphabet : IAlphabet
     public char ToChar(int n)
     {
         return (char)('a' + n);
+    }
+
+    public bool Contains(char c)
+    {
+        return c is >= 'a' and <= (char)('a' + 16);
     }
 }
 
@@ -83,6 +136,11 @@ public class DefaultBase32Alphabet : IAlphabet
     {
         if (n < 10) return (char)(n + '0');
         return (char)(n - 10 + 'a');
+    }
+
+    public bool Contains(char c)
+    {
+        return c is >= '0' and <= '9' or >= 'a' and <= 'w';
     }
 }
 
@@ -116,5 +174,10 @@ public class LexicographicAlphabet : IAlphabet
             <= 47 => (char)('A' + n),
             _ => throw new ArgumentOutOfRangeException(nameof(n))
         };
+    }
+
+    public bool Contains(char c)
+    {
+        return c == 48 || c == 49 || c is >= 'a' and <= 'z' or >= 'A' and <= 'Z';
     }
 }

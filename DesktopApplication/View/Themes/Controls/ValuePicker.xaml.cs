@@ -4,7 +4,7 @@ using System.Windows.Controls;
 
 namespace DesktopApplication.View.Themes.Controls;
 
-public partial class ValuePicker : UserControl
+public partial class ValuePicker
 {
     private bool _fireEvent = true;
     private int _current;
@@ -64,9 +64,7 @@ public partial class ValuePicker : UserControl
     public void SetCurrent(int n)
     {
         _current = n;
-        _fireEvent = false;
         ActualValue.Text = _current.ToString();
-        _fireEvent = true;
     }
 
     private void UpValue(object sender, RoutedEventArgs e)

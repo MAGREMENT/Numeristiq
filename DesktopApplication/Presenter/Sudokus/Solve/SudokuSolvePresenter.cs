@@ -12,6 +12,7 @@ using Model.Repositories;
 using Model.Sudokus;
 using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Descriptions;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -40,7 +41,7 @@ public class SudokuSolvePresenter : StepManagingPresenter<ISudokuHighlighter, IS
         _view = view;
         _disabler = new Disabler(_view);
         _solver = solver;
-        //solver.HighlightCompiler = new SudokuHighlightCompiler((SudokuHighlighterTranslator)_translator);
+        solver.HighlightCompiler = new SudokuHighlightCompiler();
         _settings = settings;
         _repo = repo;
 

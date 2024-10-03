@@ -144,4 +144,32 @@ public static class StringExtensions
         cells.Add(last);
         return cells;
     }
+
+    public static string ToHexString(this int n)
+    {
+        var builder = new StringBuilder();
+        var alphabet = HexadecimalAlphabet.Instance;
+        for (int offset = 28; offset >= 0; offset -= 4)
+        {
+            var v = (n >> offset) & 0xF;
+            if (v == 0 && builder.Length == 0) continue;
+ 
+            builder.Append(alphabet.ToChar(v));
+        }
+
+        return builder.ToString();
+    }
+
+    public static int FromHexString(this string s)
+    {
+        int result = 0;
+        var alphabet = HexadecimalAlphabet.Instance;
+        var max = Math.Min(7, s.Length - 1);
+        for (int i = max; i >= 0 ; i--)
+        {
+            result |= alphabet.ToInt(s[i]) << ((max - i) * 4);
+        }
+
+        return result;
+    }
 }

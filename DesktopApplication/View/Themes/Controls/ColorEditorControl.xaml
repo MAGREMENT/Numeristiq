@@ -47,12 +47,21 @@
         </Grid>
         
         <c:ValuePicker Grid.Row="2" Grid.Column="0" Title="Red" x:Name="RedValue"
-                       Min="0" Max="255" ValuePicked="OnRedChange"/>
+                       Min="0" Max="255" ValuePicked="OnRedChange" Margin="10 0 10 10"/>
         
         <c:ValuePicker Grid.Row="2" Grid.Column="1" Title="Green" x:Name="GreenValue"
-                       Min="0" Max="255" ValuePicked="OnGreenChange"/>
+                       Min="0" Max="255" ValuePicked="OnGreenChange" Margin="0 0 10 10"/>
         
         <c:ValuePicker Grid.Row="2" Grid.Column="2" Title="Blue" x:Name="BlueValue"
-                       Min="0" Max="255" ValuePicked="OnBlueChange"/>
+                       Min="0" Max="255" ValuePicked="OnBlueChange" Margin="0 0 10 10"/>
+        
+        <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+                Margin="50 0 50 10" Padding="5" CornerRadius="5"
+                Background="{DynamicResource Background2}">
+            <TextBox x:Name="HexCode" Style="{StaticResource SimpleTextBox}"
+                     FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                     TextAlignment="Center"
+                     TextChanged="OnHexCodeChanged"/>
+        </Border>
     </Grid>
 </UserControl>

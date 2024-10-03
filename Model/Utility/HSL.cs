@@ -61,4 +61,9 @@ public readonly struct HSL
         return new RGB((byte)Math.Round((r + m) * 255), 
             (byte)Math.Round((g + m) * 255), (byte)Math.Round((b + m) * 255));
     }
+
+    public override string ToString()
+    {
+        return $"{Hue}, {Saturation * 100}%, {Lightness * 100}%";
+    }
 }

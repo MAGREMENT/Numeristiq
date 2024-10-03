@@ -99,7 +99,7 @@ public class YourPuzzleBoard : LayeredDrawingBoard, IVaryingBordersCellGameDrawi
         }
     }
 
-    public double InwardCellLineWidth => 3;
+    public double InwardCellLineWidth => 5;
     public double CellSize
     {
         get => _cellSize;

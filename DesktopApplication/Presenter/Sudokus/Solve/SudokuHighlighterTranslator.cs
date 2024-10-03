@@ -5,8 +5,6 @@ using Model.Core.Highlighting;
 using Model.Sudokus;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.AlmostLockedSets;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -85,6 +83,9 @@ public class SudokuHighlighterTranslator : IHighlighterTranslator<ISudokuHighlig
 
                 _drawer.EncircleRectangle(rows.Min, pc.Column, pc.Possibility, rows.Max,
                     pc.Column, pc.Possibility, color);
+                break;
+            case CellsPossibility csp :
+                _drawer.DelimitPossibilityPatch(csp.EveryCellPossibility(), color);
                 break;
             case IPossibilitySet ans :
                 _drawer.DelimitPossibilityPatch(ans.EveryCellPossibility(), color);

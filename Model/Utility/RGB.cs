@@ -12,6 +12,11 @@ public readonly struct RGB
     {
         return new RGB((byte)(hex >> 16), (byte)(hex >> 8), (byte)hex);
     }
+
+    public static RGB FromHexString(string s)
+    {
+        return FromHex(s[1..].FromHexString());
+    }
     
     public RGB(byte red, byte green, byte blue)
     {
@@ -27,6 +32,13 @@ public readonly struct RGB
     public int ToHex()
     {
         return (Red << 16) | (Green << 8) | Blue;
+    }
+
+    public string ToHexString()
+    {
+        var buffer = ToHex().ToHexString();
+        buffer = buffer.FillLeftWith('0', 6);
+        return '#' + buffer;
     }
 
     public HSL ToHSL()
@@ -59,6 +71,11 @@ public readonly struct RGB
     public override int GetHashCode()
     {
         return HashCode.Combine(Red, Green, Blue);
+    }
+
+    public override string ToString()
+    {
+        return $"{Red}, {Green}, {Blue}";
     }
 
     public static bool operator ==(RGB left, RGB right)

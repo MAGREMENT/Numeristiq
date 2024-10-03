@@ -152,13 +152,13 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
     }
 
     public double LinkOffset => 20;
-    public double InwardCellLineWidth => 3;
+    public double InwardCellLineWidth => 5;
     public double StartAngle { get; set; } = 45;
     public int RotationFactor { get; set; } = 1;
-    public double LinePossibilitiesOutlineWidth => 2;
+    public double LinePossibilitiesOutlineWidth => 3;
     public LinkOffsetSidePriority LinkOffsetSidePriority { get; set; } = LinkOffsetSidePriority.Any;
     public bool FastPossibilityDisplay { get; set; }
-    public double InwardPossibilityLineWidth => 2;
+    public double InwardPossibilityLineWidth => 3;
     public double PossibilityPadding => 3;
     
     public double GetLeftOfCellWithBorder(int col)
