@@ -56,7 +56,7 @@ public partial class ValuePicker
         }
 
         UpButton.IsEnabled = _current < _max;
-        DownButton.IsEnabled = _current > _max;
+        DownButton.IsEnabled = _current > _min;
 
         ValuePicked?.Invoke(_current);
     }

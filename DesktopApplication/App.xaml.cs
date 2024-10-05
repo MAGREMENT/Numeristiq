@@ -29,34 +29,107 @@ public partial class App : IResourceView
     
     public void SetTheme(Theme t)
     {
-        Resources["BackgroundDeep"] = ThemeInformation.ToBrush(t.BackgroundDeep);
-        Resources["Background1"] = ThemeInformation.ToBrush(t.Background1);
-        Resources["Background1Color"] = ThemeInformation.ToColor(t.Background1);
-        Resources["Background2"] = ThemeInformation.ToBrush(t.Background2);
-        Resources["BackgroundHighlighted"] = ThemeInformation.ToBrush(t.BackgroundHighlighted);
-        Resources["Primary"] = ThemeInformation.ToBrush(t.Primary);
-        Resources["PrimaryColor"] = ThemeInformation.ToColor(t.Primary);
-        Resources["PrimaryHighlighted"] = ThemeInformation.ToBrush(t.PrimaryHighlighted);
-        Resources["PrimaryHighlightedColor"] = ThemeInformation.ToColor(t.PrimaryHighlighted);
-        Resources["Secondary"] = ThemeInformation.ToBrush(t.Secondary);
-        Resources["SecondaryColor"] = ThemeInformation.ToColor(t.Secondary);
-        Resources["SecondaryHighlighted"] = ThemeInformation.ToBrush(t.SecondaryHighlighted);
-        Resources["SecondaryHighlightedColor"] = ThemeInformation.ToColor(t.SecondaryHighlighted);
-        Resources["Accent"] = ThemeInformation.ToBrush(t.Accent);
-        Resources["Text"] = ThemeInformation.ToBrush(t.Text);
-        Resources["TextColor"] = ThemeInformation.ToColor(t.Text);
-        Resources["On"] = ThemeInformation.ToBrush(t.On);
-        Resources["OnColor"] = ThemeInformation.ToColor(t.On);
-        Resources["Off"] = ThemeInformation.ToBrush(t.Off);
-        Resources["OffColor"] = ThemeInformation.ToColor(t.Off);
-        Resources["Disabled"] = ThemeInformation.ToBrush(t.Disabled);
-        Resources["DifficultyBasic"] = ThemeInformation.ToBrush(t.DifficultyBasic);
-        Resources["DifficultyEasy"] = ThemeInformation.ToBrush(t.DifficultyEasy);
-        Resources["DifficultyMedium"] = ThemeInformation.ToBrush(t.DifficultyMedium);
-        Resources["DifficultyHard"] = ThemeInformation.ToBrush(t.DifficultyHard);
-        Resources["DifficultyExtreme"] = ThemeInformation.ToBrush(t.DifficultyExtreme);
-        Resources["DifficultyInhuman"] = ThemeInformation.ToBrush(t.DifficultyInhuman);
-        Resources["DifficultyByTrial"] = ThemeInformation.ToBrush(t.DifficultyByTrial);
+        var current = ThemeInformation.Current;
+
+        //This is incredibly ugly but whatever
+        if (current is null)
+        {
+            Resources["BackgroundDeep"] = ThemeInformation.ToBrush(t.BackgroundDeep);
+            Resources["Background1"] = ThemeInformation.ToBrush(t.Background1);
+            Resources["Background1Color"] = ThemeInformation.ToColor(t.Background1);
+            Resources["Background2"] = ThemeInformation.ToBrush(t.Background2);
+            Resources["BackgroundHighlighted"] = ThemeInformation.ToBrush(t.BackgroundHighlighted);
+            Resources["Primary"] = ThemeInformation.ToBrush(t.Primary);
+            Resources["PrimaryColor"] = ThemeInformation.ToColor(t.Primary);
+            Resources["PrimaryHighlighted"] = ThemeInformation.ToBrush(t.PrimaryHighlighted);
+            Resources["PrimaryHighlightedColor"] = ThemeInformation.ToColor(t.PrimaryHighlighted);
+            Resources["Secondary"] = ThemeInformation.ToBrush(t.Secondary);
+            Resources["SecondaryColor"] = ThemeInformation.ToColor(t.Secondary);
+            Resources["SecondaryHighlighted"] = ThemeInformation.ToBrush(t.SecondaryHighlighted);
+            Resources["SecondaryHighlightedColor"] = ThemeInformation.ToColor(t.SecondaryHighlighted);
+            Resources["Accent"] = ThemeInformation.ToBrush(t.Accent);
+            Resources["Text"] = ThemeInformation.ToBrush(t.Text);
+            Resources["TextColor"] = ThemeInformation.ToColor(t.Text);
+            Resources["On"] = ThemeInformation.ToBrush(t.On);
+            Resources["OnColor"] = ThemeInformation.ToColor(t.On);
+            Resources["Off"] = ThemeInformation.ToBrush(t.Off);
+            Resources["OffColor"] = ThemeInformation.ToColor(t.Off);
+            Resources["Disabled"] = ThemeInformation.ToBrush(t.Disabled);
+            Resources["DifficultyBasic"] = ThemeInformation.ToBrush(t.DifficultyBasic);
+            Resources["DifficultyEasy"] = ThemeInformation.ToBrush(t.DifficultyEasy);
+            Resources["DifficultyMedium"] = ThemeInformation.ToBrush(t.DifficultyMedium);
+            Resources["DifficultyHard"] = ThemeInformation.ToBrush(t.DifficultyHard);
+            Resources["DifficultyExtreme"] = ThemeInformation.ToBrush(t.DifficultyExtreme);
+            Resources["DifficultyInhuman"] = ThemeInformation.ToBrush(t.DifficultyInhuman);
+            Resources["DifficultyByTrial"] = ThemeInformation.ToBrush(t.DifficultyByTrial);
+        }
+        else
+        {
+            if(current.BackgroundDeep != t.BackgroundDeep) 
+                Resources["BackgroundDeep"] = ThemeInformation.ToBrush(t.BackgroundDeep);
+            if (current.Background1 != t.Background1)
+            {
+                Resources["Background1"] = ThemeInformation.ToBrush(t.Background1);
+                Resources["Background1Color"] = ThemeInformation.ToColor(t.Background1);
+            }
+            if(current.Background2 != t.Background2) 
+                Resources["Background2"] = ThemeInformation.ToBrush(t.Background2);
+            if(current.BackgroundHighlighted != t.BackgroundHighlighted) 
+                Resources["BackgroundHighlighted"] = ThemeInformation.ToBrush(t.BackgroundHighlighted);
+            if (current.Primary != t.Primary)
+            {
+                Resources["Primary"] = ThemeInformation.ToBrush(t.Primary);
+                Resources["PrimaryColor"] = ThemeInformation.ToColor(t.Primary);
+            }
+            if (current.PrimaryHighlighted != t.PrimaryHighlighted)
+            {
+                Resources["PrimaryHighlighted"] = ThemeInformation.ToBrush(t.PrimaryHighlighted);
+                Resources["PrimaryHighlightedColor"] = ThemeInformation.ToColor(t.PrimaryHighlighted);
+            } 
+            if (current.Secondary != t.Secondary)
+            {
+                Resources["Secondary"] = ThemeInformation.ToBrush(t.Secondary);
+                Resources["SecondaryColor"] = ThemeInformation.ToColor(t.Secondary); 
+            } 
+            if (current.SecondaryHighlighted != t.SecondaryHighlighted)
+            {
+                Resources["SecondaryHighlighted"] = ThemeInformation.ToBrush(t.SecondaryHighlighted);
+                Resources["SecondaryHighlightedColor"] = ThemeInformation.ToColor(t.SecondaryHighlighted);
+            }
+            if(current.Accent != t.Accent) 
+                Resources["Accent"] = ThemeInformation.ToBrush(t.Accent);
+            if (current.Text != t.Text)
+            {
+                Resources["Text"] = ThemeInformation.ToBrush(t.Text);
+                Resources["TextColor"] = ThemeInformation.ToColor(t.Text);
+            }
+            if (current.On != t.On)
+            {
+                Resources["On"] = ThemeInformation.ToBrush(t.On);
+                Resources["OnColor"] = ThemeInformation.ToColor(t.On);
+            } 
+            if (current.Off != t.Off)
+            {
+                Resources["Off"] = ThemeInformation.ToBrush(t.Off);
+                Resources["OffColor"] = ThemeInformation.ToColor(t.Off);
+            }
+            if(current.Disabled != t.Disabled) 
+                Resources["Disabled"] = ThemeInformation.ToBrush(t.Disabled);
+            if(current.DifficultyBasic != t.DifficultyBasic) 
+                Resources["DifficultyBasic"] = ThemeInformation.ToBrush(t.DifficultyBasic);
+            if(current.DifficultyEasy != t.DifficultyEasy) 
+                Resources["DifficultyEasy"] = ThemeInformation.ToBrush(t.DifficultyEasy);
+            if(current.DifficultyMedium != t.DifficultyMedium) 
+                Resources["DifficultyMedium"] = ThemeInformation.ToBrush(t.DifficultyMedium);
+            if(current.DifficultyHard != t.DifficultyHard) 
+                Resources["DifficultyHard"] = ThemeInformation.ToBrush(t.DifficultyHard);
+            if(current.DifficultyExtreme != t.DifficultyExtreme) 
+                Resources["DifficultyExtreme"] = ThemeInformation.ToBrush(t.DifficultyExtreme);
+            if(current.DifficultyInhuman != t.DifficultyInhuman) 
+                Resources["DifficultyInhuman"] = ThemeInformation.ToBrush(t.DifficultyInhuman);
+            if(current.DifficultyByTrial != t.DifficultyByTrial) 
+                Resources["DifficultyByTrial"] = ThemeInformation.ToBrush(t.DifficultyByTrial);
+        }
 
         ThemeInformation.SetTheme(t);
     }
@@ -64,6 +137,8 @@ public partial class App : IResourceView
 
 public class ThemeInformation
 {
+    public Theme? Current { get; private set; }
+    
     private Brush Primary = Brushes.Orange;
     private Brush Secondary = Brushes.Purple;
     private Brush Text = Brushes.Black;
@@ -95,6 +170,8 @@ public class ThemeInformation
 
     public void SetTheme(Theme theme)
     {
+        Current = theme.Copy();
+        
         Primary = ToBrush(theme.Primary);
         Secondary = ToBrush(theme.Secondary);
         Text = ToBrush(theme.Text);
