@@ -88,7 +88,20 @@ public class SumListKakuro : IKakuro, INumericSolvingState
         return result;
     }
     
-    public IKakuroSum? FindSum(Cell amountCell)
+    public IKakuroSum? FindSum(Cell amountCell, Orientation preferred)
+    {
+        IKakuroSum? sum;
+        if (preferred == Orientation.Horizontal)
+        {
+            sum = FindHorizontalSum(amountCell);
+            return sum ?? FindVerticalSum(amountCell);
+        }
+        
+        sum = FindVerticalSum(amountCell);
+        return sum ?? FindHorizontalSum(amountCell);
+    }
+
+    private IKakuroSum? FindHorizontalSum(Cell amountCell)
     {
         var cell = new Cell(amountCell.Row + 1, amountCell.Column);
         if (cell is { Row: >= 0, Column: >= 0 } && cell.Row < RowCount && cell.Column < ColumnCount)
@@ -97,6 +110,12 @@ public class SumListKakuro : IKakuro, INumericSolvingState
             if (sum is not null && sum.GetAmountCell() == amountCell) return sum;
         }
 
+        return null;
+    }
+
+    private IKakuroSum? FindVerticalSum(Cell amountCell)
+    {
+        var cell = new Cell(amountCell.Row, amountCell.Column + 1);
         if (cell is { Row: >= 0, Column: >= 0 } && cell.Row < RowCount && cell.Column < ColumnCount)
         {
             var sum = _cells[cell.Row, cell.Column].HorizontalSum;

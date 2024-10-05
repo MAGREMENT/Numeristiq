@@ -99,11 +99,11 @@ public class KakuroSolvePresenter : StepManagingPresenter<INumericSolvingStateHi
         }
     }
 
-    public void SelectSum(int row, int col)
+    public void SelectSum(int row, int col, Orientation preferred)
     {
         _selectedCell = null;
 
-        var sum = _solver.Kakuro.FindSum(new Cell(row, col));
+        var sum = _solver.Kakuro.FindSum(new Cell(row, col), preferred);
 
         switch (_mode)
         {
@@ -132,7 +132,7 @@ public class KakuroSolvePresenter : StepManagingPresenter<INumericSolvingStateHi
 
     public void AddDigitToAmount(int n)
     {
-        if (_selectedSum is null) return;
+        if (_selectedSum is null || _bufferedAmount > 10) return;
         
         _bufferedAmount *= 10;
         _bufferedAmount += n;
