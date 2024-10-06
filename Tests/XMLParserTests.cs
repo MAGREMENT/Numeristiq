@@ -18,6 +18,19 @@ public class XMLParserTests
         expected.Add(b);
         expected.Add(new Text("Test"));
         Test(@"Data\XML\Tests\Simple.txt", expected);
+        
+        expected.Clear();
+        a = new Tag("a");
+        a.AddAttribute("cool", "yes");
+        b = new Tag("b");
+        var c = new Tag("c");
+        c.AddAttribute("height", "32");
+        c.AddAttribute("width", "69");
+        b.AddToContent(c);
+        b.AddToContent("YES");
+        a.SetContent(b);
+        expected.Add(a);
+        Test(@"Data\XML\Tests\Attribute.txt", expected);
     }
     
     private static void Test(string fileName, List<IXMLElement> expected)

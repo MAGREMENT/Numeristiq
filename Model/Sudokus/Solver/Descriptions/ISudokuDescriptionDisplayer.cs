@@ -4,7 +4,7 @@ using Model.Core.Highlighting;
 
 namespace Model.Sudokus.Solver.Descriptions;
 
-public interface SudokuDescriptionDisplayer : IDescriptionDisplayer
+public interface ISudokuDescriptionDisplayer : IDescriptionDisplayer
 {
     void AddParagraph(string text, INumericSolvingState state, SudokuCropping cropping,
         IHighlightable<ISudokuHighlighter> highlight, TextDisposition disposition);

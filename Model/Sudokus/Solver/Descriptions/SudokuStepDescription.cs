@@ -6,7 +6,7 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Descriptions;
 
-public class SudokuStepDescription : IDescription<SudokuDescriptionDisplayer>
+public class SudokuStepDescription : IDescription<ISudokuDescriptionDisplayer>
 {
     private readonly string _text;
     private readonly TextDisposition _disposition;
@@ -15,16 +15,20 @@ public class SudokuStepDescription : IDescription<SudokuDescriptionDisplayer>
     private readonly IHighlightable<ISudokuHighlighter> _highlight;
 
     public SudokuStepDescription(string text, string state32, int rowFrom, int rowTo, int colFrom, int colTo,
-        string highlight, TextDisposition disposition)
+        string highlight, TextDisposition disposition) : this(text, state32, 
+        new SudokuCropping(rowFrom, colFrom, rowTo, colTo), highlight, disposition) { }
+
+    public SudokuStepDescription(string text, string state32, SudokuCropping cropping, string highlight,
+        TextDisposition disposition)
     {
         _state = SudokuTranslator.TranslateBase32Format(state32, DefaultBase32Alphabet.Instance);
         _text = text;
-        _cropping = new SudokuCropping(rowFrom, colFrom, rowTo, colTo);
+        _cropping = cropping;
         _disposition = disposition;
         _highlight = SudokuHighlightExecutable.FromBase16(highlight, DefaultBase16Alphabet.Instance);
     }
 
-    public void Display(SudokuDescriptionDisplayer displayer)
+    public void Display(ISudokuDescriptionDisplayer displayer)
     {
         displayer.AddParagraph(_text, _state, _cropping, _highlight, _disposition);
     }

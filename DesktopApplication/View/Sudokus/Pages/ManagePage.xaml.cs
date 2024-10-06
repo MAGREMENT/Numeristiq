@@ -18,7 +18,7 @@ using Model.Sudokus.Solver.Descriptions;
 
 namespace DesktopApplication.View.Sudokus.Pages;
 
-public partial class ManagePage : ISudokuManageView, SudokuDescriptionDisplayer
+public partial class ManagePage : ISudokuManageView, ISudokuDescriptionDisplayer
 {
     private const int ToleranceForDragScroll = 80;
     private const int DragScrollOffset = 60;
@@ -145,7 +145,7 @@ public partial class ManagePage : ISudokuManageView, SudokuDescriptionDisplayer
         InfoPanel.Children.Add(tb);
     }
 
-    public void SetStrategyDescription(IDescription<SudokuDescriptionDisplayer> description)
+    public void SetStrategyDescription(IDescription<ISudokuDescriptionDisplayer> description)
     {
         InfoPanel.Children.Clear();
 

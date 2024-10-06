@@ -23,10 +23,39 @@ public class Tag : IXMLElement, ITagContent
         _attributes.Add(name, value);
     }
 
-    public string GetValue(string name)
+    public bool TryGetAttributeValue(string name, out string value)
     {
-        if (_attributes is null) return string.Empty;
-        return _attributes.TryGetValue(name, out var v) ? v : string.Empty;
+        if (_attributes is null)
+        {
+            value = string.Empty;
+            return false;
+        }
+
+        if (_attributes.TryGetValue(name, out var v))
+        {
+            value = v;
+            return true;
+        }
+
+        value = string.Empty;
+        return false;
+    }
+
+    public T GetAttributeValue<T>(string name, T defaultValue, Cast<T> cast)
+    {
+        if (_attributes is null) return defaultValue;
+        return _attributes.TryGetValue(name, out var v) ? cast(v) : defaultValue;
+    }
+
+    public string GetAttributeValue(string name)
+    {
+        return GetAttributeValue(name, string.Empty);
+    }
+    
+    public string GetAttributeValue(string name, string defaultValue)
+    {
+        if (_attributes is null) return defaultValue;
+        return _attributes.TryGetValue(name, out var v) ? v : defaultValue;
     }
 
     public bool IsTag => true;
@@ -124,6 +153,8 @@ public class Tag : IXMLElement, ITagContent
         return builder.ToString();
     }
 }
+
+public delegate T Cast<out T>(string s);
 
 public class TagContentCollection : List<ITagContent>, ITagContent
 {

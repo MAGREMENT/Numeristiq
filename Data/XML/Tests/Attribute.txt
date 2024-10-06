@@ -1,0 +1,6 @@
+﻿<a cool="yes">
+<b>
+<c height="32" width="69"/>
+YES
+</b>
+</a>

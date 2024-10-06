@@ -124,33 +124,33 @@ public static class SudokuStrategyPool
 
     #region Descriptions
 
-    private static readonly IDescription<SudokuDescriptionDisplayer> NoDescription = 
-        new TextDescription<SudokuDescriptionDisplayer>("No Description Found");
+    private static readonly IDescription<ISudokuDescriptionDisplayer> NoDescription = 
+        new TextDescription<ISudokuDescriptionDisplayer>("No Description Found");
 
-    private static readonly IDescription<SudokuDescriptionDisplayer> NakedSingleDescription = new TextDescription<SudokuDescriptionDisplayer>(
+    private static readonly IDescription<ISudokuDescriptionDisplayer> NakedSingleDescription = new TextDescription<ISudokuDescriptionDisplayer>(
         "One of the basic strategies for solving Sudoku's. When a cell has only one possibility, then it must be the solution for that cell");
 
-    private static readonly IDescription<SudokuDescriptionDisplayer> HiddenSingleDescription = new TextDescription<SudokuDescriptionDisplayer>(
+    private static readonly IDescription<ISudokuDescriptionDisplayer> HiddenSingleDescription = new TextDescription<ISudokuDescriptionDisplayer>(
         "One the basic strategies for solving Sudoku's. When a unit (row, column or box) has only one cell holding a possibility, " +
         "then that possibility must be the solution for that cell");
 
-    private static readonly IDescription<SudokuDescriptionDisplayer> JuniorExocetDescription = new TextDescription<SudokuDescriptionDisplayer>("This is a very complex strategy. For a Junior Exocet to exist, there are multiple requirements :\n" +
+    private static readonly IDescription<ISudokuDescriptionDisplayer> JuniorExocetDescription = new TextDescription<ISudokuDescriptionDisplayer>("This is a very complex strategy. For a Junior Exocet to exist, there are multiple requirements :\n" +
         "1) There exist 2 base cells and 2 target cells in a band (e.g. 3 lines in 3 boxes). The base cells" +
         "need to be in the same mini-line, meaning a line restricted to a box, and have a total of" +
         "candidates between 2 and 4, called base candidates. Each target cell is in a different line and in a different box" +
         "than the base cells and the other target. These targets must each hold at least one base candidate" +
         "2) TODO");
 
-    private static readonly IDescription<SudokuDescriptionDisplayer> UniquenessClueCoverDescription = new TextDescription<SudokuDescriptionDisplayer>("This is a strategy relying on uniqueness." +
+    private static readonly IDescription<ISudokuDescriptionDisplayer> UniquenessClueCoverDescription = new TextDescription<ISudokuDescriptionDisplayer>("This is a strategy relying on uniqueness." +
         " It consists of a catalogue of patterns that examine every clue and any solution in a designated area of the Sudoku. These patterns" +
         " are generated beforehand by computers, making this strategy a bit controversial.");
 
-    private static readonly IDescription<SudokuDescriptionDisplayer> BUGDescription = new TextDescription<SudokuDescriptionDisplayer>("A Bi-value Universal Grave (BUG) is a pattern in" +
+    private static readonly IDescription<ISudokuDescriptionDisplayer> BUGDescription = new TextDescription<ISudokuDescriptionDisplayer>("A Bi-value Universal Grave (BUG) is a pattern in" +
         "which every candidates is found either 0 or 2 times in each unit (row, column and box). A Sudoku presenting this pattern" +
         "has more than one solution. In the case of Sudoku with a unique solution, at least one possibility preventing the" +
         "BUG must be true");
 
-    private static readonly IDescription<SudokuDescriptionDisplayer> APEDescription = new DescriptionCollection<SudokuDescriptionDisplayer>().Add(
+    private static readonly IDescription<ISudokuDescriptionDisplayer> APEDescription = new DescriptionCollection<ISudokuDescriptionDisplayer>().Add(
         "An aligned pair exclusion is the removal of candidate(s) using the following logic : " +
                                 "Any two cells cannot have solutions that are candidates contained in an almost locked set they both see.")
         .Add(new SudokuStepDescription("Let's take these two boxes as an example where r45c1 is the target. There are 3 ways to make 5 fit into r4c1 :\n\n" +
@@ -162,15 +162,15 @@ public static class SudokuStrategyPool
             0, 5, 3, 5, 
             "bbaddaaabbaedaaaebaefaaaebaffaaafbaadaaafbabdaaadafddaaa", TextDisposition.Left));
 
-    private static readonly IDescription<SudokuDescriptionDisplayer> BandUniquenessDescription = new TextDescription<SudokuDescriptionDisplayer>(
+    private static readonly IDescription<ISudokuDescriptionDisplayer> BandUniquenessDescription = new TextDescription<ISudokuDescriptionDisplayer>(
         "If a group of all instances of N different digits in a band (aka 3 rows or 3 columns in the same 3 boxes) is spread" +
         " over N+1 or less mini-rows/-columns, then the group will contain at least one unavoidable set.");
 
-    private static readonly IDescription<SudokuDescriptionDisplayer> ClaimingSetDescription = new TextDescription<SudokuDescriptionDisplayer>("When all possibilities in a" +
+    private static readonly IDescription<ISudokuDescriptionDisplayer> ClaimingSetDescription = new TextDescription<ISudokuDescriptionDisplayer>("When all possibilities in a" +
         " row/column are restrained to a single box, the solution, wherever it is is, will always remove the possibilities" +
         " from the remaining cells of the box.");
 
-    private static readonly Dictionary<string, IDescription<SudokuDescriptionDisplayer>> Descriptions = new()
+    private static readonly Dictionary<string, IDescription<ISudokuDescriptionDisplayer>> Descriptions = new()
     {
         {NakedSingleStrategy.OfficialName, NakedSingleDescription},
         {HiddenSingleStrategy.OfficialName, HiddenSingleDescription},
@@ -213,7 +213,7 @@ public static class SudokuStrategyPool
         return !Pool.TryGetValue(name, out var giver) ? null : giver();
     }
 
-    public static IDescription<SudokuDescriptionDisplayer> GetDescription(string name) 
+    public static IDescription<ISudokuDescriptionDisplayer> GetDescription(string name) 
         => Descriptions.TryGetValue(name, out var d) ? d : NoDescription;
 }
 

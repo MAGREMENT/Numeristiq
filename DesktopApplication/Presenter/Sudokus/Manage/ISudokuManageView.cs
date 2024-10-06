@@ -14,7 +14,7 @@ public interface ISudokuManageView
     public void SetSelectedStrategyName(string name);
     public void SetManageableSettings(StrategySettingsPresenter presenter);
     public void SetNotFoundSettings();
-    public void SetStrategyDescription(IDescription<SudokuDescriptionDisplayer> description);
+    public void SetStrategyDescription(IDescription<ISudokuDescriptionDisplayer> description);
     public void ClearSelectedStrategy();
     Stream? GetUploadPresetStream();
     Stream? GetDownloadPresetStream();

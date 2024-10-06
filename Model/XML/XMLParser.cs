@@ -122,7 +122,7 @@ public static class XMLParser
                 default:
                     if (tag is not null)
                     {
-                        var (name, value) = ReadAttribute(reader, builder);
+                        var (name, value) = ReadAttribute(reader, builder, c);
                         tag.AddAttribute(name, value);
                         break;
                     }
@@ -149,9 +149,10 @@ public static class XMLParser
         return false;
     }
 
-    private static (string, string) ReadAttribute(StreamReader reader, StringBuilder builder)
+    private static (string, string) ReadAttribute(StreamReader reader, StringBuilder builder, char start)
     {
         builder.Clear();
+        builder.Append(start);
         string? name = null;
         
         while (!reader.EndOfStream)
@@ -179,9 +180,6 @@ public static class XMLParser
 
                     return (name, builder.ToString());
                 default :
-                    if (!IsAlphabetical(c))
-                        throw new Exception("Unexpected character in attribute : " + c);
-
                     builder.Append(c);
                     break;
             }
