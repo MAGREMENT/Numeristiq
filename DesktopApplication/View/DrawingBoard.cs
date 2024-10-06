@@ -359,22 +359,25 @@ public class InwardAmountCellDrawableComponent : IDrawableComponent<IKakuroDrawi
 
     public void Draw(DrawingContext context, IKakuroDrawingData data)
     {
+        var half = data.InwardCellLineWidth / 2;
         if (_orientation == Orientation.Vertical)
         {
-            var xBr = data.GetLeftOfCell(_col) + data.CellSize - data.InwardCellLineWidth;
+            var xBr = data.GetLeftOfCell(_col) + data.CellSize - half;
             var yBr = _row < 0 
-                ? data.AmountHeight + data.BigLineWidth + data.InwardCellLineWidth - data.BigLineWidth
-                : data.GetTopOfCell(_row) + data.CellSize + data.InwardCellLineWidth - data.BigLineWidth;
+                ? data.AmountHeight - half + data.BigLineWidth
+                : data.GetTopOfCell(_row) + data.CellSize - half;
             
-            context.DrawLine(new Pen(data.CursorBrush, data.BigLineWidth),
+            context.DrawLine(new Pen(data.CursorBrush, data.InwardCellLineWidth),
                 new Point(xBr, yBr), new Point(data.GetLeftOfCellWithBorder(_col), yBr));
         }
         else
         {
-            var xBr = data.GetLeftOfCell(_col) + data.CellSize + data.InwardCellLineWidth - data.BigLineWidth;
-            var yBr = data.GetTopOfCell(_row) + data.CellSize - data.InwardCellLineWidth;
+            var xBr = _col < 0 
+                ? data.AmountWidth - half + data.BigLineWidth
+                : data.GetLeftOfCell(_col) + data.CellSize - half;
+            var yBr = data.GetTopOfCell(_row) + data.CellSize - half;
             
-            context.DrawLine(new Pen(data.CursorBrush, data.BigLineWidth),
+            context.DrawLine(new Pen(data.CursorBrush, data.InwardCellLineWidth),
                 new Point(xBr, yBr), new Point(xBr, data.GetTopOfCellWithBorder(_row)));
         }
     }

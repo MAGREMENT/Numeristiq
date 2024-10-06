@@ -67,9 +67,9 @@ public class KakuroBoard : LayeredDrawingBoard, IKakuroDrawingData, ISizeOptimiz
         {
             Focus();
             var result = ComputeSelectedCell(args.GetPosition(this));
-            if (result.Item1 is not null)
+            if (result is not null)
             {
-                CellSelected?.Invoke(result.Item1.Value, result.Item2);
+                CellSelected?.Invoke(result.Value.Item1, result.Value.Item2, result.Value.Item3);
             }
 
             args.Handled = true;
@@ -336,17 +336,16 @@ public class KakuroBoard : LayeredDrawingBoard, IKakuroDrawingData, ISizeOptimiz
         if(fireEvent) OptimizableSizeChanged?.Invoke();
     }
     
-    private (Cell?, bool) ComputeSelectedCell(Point position)
+    private (Cell, bool, Orientation)? ComputeSelectedCell(Point position)
     {
         var row = -2;
         var col = -2;
 
         var x = position.X;
         var y = position.Y;
-        bool isAmountCell = false;
 
-        if (x < _bigLineWidth) return (null, false);
-        if (y < _bigLineWidth) return (null, false);
+        if (x < _bigLineWidth) return null;
+        if (y < _bigLineWidth) return null;
 
         x -= _bigLineWidth;
         y -= _bigLineWidth;
@@ -354,13 +353,11 @@ public class KakuroBoard : LayeredDrawingBoard, IKakuroDrawingData, ISizeOptimiz
         if (x < AmountWidth)
         {
             col = -1;
-            isAmountCell = true;
         }
 
         if (y < AmountHeight)
         {
             row = -1;
-            isAmountCell = true;
         }
 
         x -= AmountWidth;
@@ -370,7 +367,7 @@ public class KakuroBoard : LayeredDrawingBoard, IKakuroDrawingData, ISizeOptimiz
         {
             for (int c = 0; c < ColumnCount; c++)
             {
-                if(x < _bigLineWidth) return (null, false);
+                if(x < _bigLineWidth) return null;
                 x -= _bigLineWidth;
                 if (x < _cellSize)
                 {
@@ -386,7 +383,7 @@ public class KakuroBoard : LayeredDrawingBoard, IKakuroDrawingData, ISizeOptimiz
         {
             for (int r = 0; r < RowCount; r++)
             {
-                if(y < _bigLineWidth) return (null, false);
+                if (y < _bigLineWidth) return null;
                 y -= _bigLineWidth;
                 if (y < _cellSize)
                 {
@@ -398,22 +395,24 @@ public class KakuroBoard : LayeredDrawingBoard, IKakuroDrawingData, ISizeOptimiz
             }
         }
 
-        if (row == -2 || col == -2) return (null, false);
+        if (row == -2 || col == -2) return null;
 
         var cell = new Cell(row, col);
         var ac1 = new AmountCell(row, col, Orientation.Horizontal);
         var ac2 = new AmountCell(row, col, Orientation.Vertical);
-        if (isAmountCell)
+        if (_amounts.ContainsKey(ac1) || _amounts.ContainsKey(ac2))
         {
-            if(_amounts.ContainsKey(ac1) || _amounts.ContainsKey(ac2)) return (cell, true);
-        }
-        else
-        {
-            if (_presence[row, col]) return (cell, false);
-            if(_amounts.ContainsKey(ac1) || _amounts.ContainsKey(ac2)) return (cell, true);
+            var objective = GetTopOfCell(row) + position.X - GetLeftOfCell(col);
+            return (cell, true, position.Y > objective ? Orientation.Horizontal : Orientation.Vertical);
         }
 
-        return (null, false);
+        if (row >= 0 && col >= 0)
+        {
+            if (_presence[row, col]) return (cell, false, Orientation.Horizontal);
+            if(_amounts.ContainsKey(ac1) || _amounts.ContainsKey(ac2)) return (cell, true, Orientation.Horizontal);
+        }
+
+        return null;
     }
     
     #endregion
@@ -478,4 +477,4 @@ public readonly struct AmountCell
     public Orientation Orientation { get; }
 }
 
-public delegate void OnCellSelection(Cell cell, bool isAmountCell);
+public delegate void OnCellSelection(Cell cell, bool isAmountCell, Orientation preferred);

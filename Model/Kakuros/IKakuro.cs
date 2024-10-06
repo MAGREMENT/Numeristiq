@@ -55,7 +55,7 @@ public interface IReadOnlyKakuro : ICopyable<IKakuro>
     IEnumerable<IKakuroSum> SumsFor(Cell cell);
     IKakuroSum VerticalSumFor(Cell cell);
     IKakuroSum HorizontalSumFor(Cell cell);
-    IKakuroSum? FindSum(Cell amountCell);
+    IKakuroSum? FindSum(Cell amountCell, Orientation preferred);
     List<int> GetSolutions(IKakuroSum sum);
 
     int this[int row, int col] { get; }

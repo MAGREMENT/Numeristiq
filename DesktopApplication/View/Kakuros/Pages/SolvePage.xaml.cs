@@ -7,6 +7,7 @@ using DesktopApplication.Presenter.Kakuros.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.Kakuros.Controls;
 using Model.Utility;
+using Orientation = Model.Utility.Orientation;
 
 namespace DesktopApplication.View.Kakuros.Pages;
 
@@ -45,9 +46,9 @@ public partial class SolvePage : IKakuroSolveView
         _presenter.Solve(true);
     }
 
-    private void OnCellSelection(Cell cell, bool isAmountCell)
+    private void OnCellSelection(Cell cell, bool isAmountCell, Orientation preferred)
     {
-        if (isAmountCell) _presenter.SelectSum(cell.Row, cell.Column);
+        if (isAmountCell) _presenter.SelectSum(cell.Row, cell.Column, preferred);
         else _presenter.SelectCell(cell.Row, cell.Column);
     }
 
@@ -138,7 +139,7 @@ public partial class SolvePage : IKakuroSolveView
             CellSize = 20
         };
 
-        board.SetResourceReference(LayeredDrawingBoard.DefaultNumberBrushProperty, "Text");
+        board.SetResourceReference(DrawingBoard.DefaultNumberBrushProperty, "Text");
         board.SetResourceReference(KakuroBoard.AmountLineBrushProperty, "Accent");
 
         return board;

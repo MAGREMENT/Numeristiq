@@ -13,6 +13,18 @@ public class RGBTests
         Assert.That(hsl.Hue, Is.EqualTo(300));
         Assert.That(Math.Round(hsl.Saturation * 100, 0), Is.EqualTo(100));
         Assert.That(Math.Round(hsl.Lightness * 100, 0), Is.EqualTo(50));
+
+        var white = new RGB(255, 255, 255);
+        hsl = white.ToHSL();
+        Assert.That(hsl.Hue, Is.EqualTo(0));
+        Assert.That(Math.Round(hsl.Saturation * 100, 0), Is.EqualTo(0));
+        Assert.That(Math.Round(hsl.Lightness * 100, 0), Is.EqualTo(100));
+
+        var black = new RGB(0, 0, 0);
+        hsl = black.ToHSL();
+        Assert.That(hsl.Hue, Is.EqualTo(0));
+        Assert.That(Math.Round(hsl.Saturation * 100, 0), Is.EqualTo(0));
+        Assert.That(Math.Round(hsl.Lightness * 100, 0), Is.EqualTo(0));
     }
 
     [Test]

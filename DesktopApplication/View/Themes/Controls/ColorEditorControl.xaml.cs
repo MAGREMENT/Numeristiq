@@ -157,8 +157,8 @@ public partial class ColorEditorControl
                 {
                     for (int row = 0; row < h; row++)
                     {
-                        var s = (double)col / w;
-                        var temp = 1 - (double)row / h;
+                        var s = (double)col / (w - 1);
+                        var temp = 1 - (double)row / (h - 1);
                         var l = temp - 0.5 * s * temp;
                         var hsl = new HSL(_hsl.Hue, s, l);
                         var rgb = hsl.ToRGB();
@@ -191,7 +191,7 @@ public partial class ColorEditorControl
         SLCursor.Visibility = Visibility.Visible;
         var left = (SLWrapper.Width - SLMap.Width) / 2 
             + _hsl.Saturation * SLMap.Width - SLCursor.Width / 2;
-        var y = 1 - _hsl.Lightness / (1 - 0.5 * _hsl.Saturation);
+        var y = Math.Max(0, 1 - _hsl.Lightness / (1 - 0.5 * _hsl.Saturation));
         var top = (SLWrapper.Height - SLMap.Height) / 2 
             + y * SLMap.Height - SLCursor.Height / 2;
         SLCursor.Margin = new Thickness(left, top, 0, 0);
@@ -237,8 +237,8 @@ public partial class ColorEditorControl
         if (!_fireEvent || e.LeftButton != MouseButtonState.Pressed) return;
         
         var p = e.MouseDevice.GetPosition(SLMap);
-        var s = p.X / SLMap.Width;
-        var temp = 1 - p.Y / SLMap.Height;
+        var s = p.X / (int)SLMap.Width;
+        var temp = 1 - p.Y / (int)SLMap.Height;
         var l = temp - 0.5 * s * temp;
         SetHSL(new HSL(_hsl.Hue, s, l),
             true, false, true, true);
