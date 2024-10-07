@@ -114,6 +114,9 @@ public static class XMLParser
                     if (builder.Length == 0) throw new Exception("Empty tag");
 
                     return (new Tag(builder.ToString()), false);
+                case '\r' :
+                case '\n' :
+                case '\t' :
                 case ' ' :
                     if (!SkipSpacing(reader)) throw new Exception("Unfinished Tag");
                     

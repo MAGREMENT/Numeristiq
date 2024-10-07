@@ -3,9 +3,9 @@
     cropping="0, 5, 3, 5" highlight="bbaddaaabbaedaaaebaefaaaebaffaaafbaadaaafbabdaaadafddaaa" disposition="left">
 Let's take these two boxes as an example where r45c1 is the target. There are 3 ways to make 5 fit into r4c1 : 
 
-    5 4 -> Impossible because of r56c3 +
-    5 8 -> Impossible because of r12c1 +
+    5 4 -> Impossible because of r56c3
+    5 8 -> Impossible because of r12c1
     5 9 -> Impossible because of r12c1
-                                           
+
 We can therefore safely remove 5 from r4c1
 </step>

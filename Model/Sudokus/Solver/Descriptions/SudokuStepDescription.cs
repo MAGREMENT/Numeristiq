@@ -15,7 +15,7 @@ public class SudokuStepDescription : IDescription<ISudokuDescriptionDisplayer>
     private readonly SudokuCropping _cropping;
     private readonly IHighlightable<ISudokuHighlighter> _highlight;
 
-    public SudokuStepDescription(string text, string state32, int rowFrom, int rowTo, int colFrom, int colTo,
+    public SudokuStepDescription(string text, string state32, int rowFrom, int colFrom, int rowTo, int colTo,
         string highlight, TextDisposition disposition) : this(text, state32, 
         new SudokuCropping(rowFrom, colFrom, rowTo, colTo), highlight, disposition) { }
 

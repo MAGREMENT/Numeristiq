@@ -47,17 +47,29 @@ public static class SudokuDescriptionParser
         Span<int> span = stackalloc int[4];
         int cursor = 0;
         int buffer = 0;
+        var wasEscape = true;
         foreach (var c in s)
         {
             if (c is ',' or ';' or ' ')
             {
+                if (wasEscape) continue;
+                
                 span[cursor++] = buffer;
                 if (cursor == 4) break;
                 buffer = 0;
+
+                wasEscape = true;
+                continue;
             }
 
             buffer *= 10;
             buffer += c - '0';
+            wasEscape = false;
+        }
+
+        if (buffer != 0 && cursor < 4)
+        {
+            span[cursor] = buffer;
         }
 
         return new SudokuCropping(span[0], span[1], span[2], span[3]);
