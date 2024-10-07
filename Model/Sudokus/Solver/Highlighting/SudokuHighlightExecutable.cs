@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Descriptions;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Highlighting;
 
@@ -173,7 +176,17 @@ public class SudokuHighlightExecutable : IHighlightable<ISudokuHighlighter>
             }
         }
     }
-    
+
+    public override bool Equals(object? obj)
+    {
+        return obj is SudokuHighlightExecutable s && s._instructions.SequenceEqual(_instructions);
+    }
+
+    public override int GetHashCode()
+    {
+        return _instructions.GetSequenceHashCode();
+    }
+
     private class Instructionalizer : List<int>, ISudokuHighlighter
     {
         public void HighlightPossibility(int possibility, int row, int col, StepColor color)

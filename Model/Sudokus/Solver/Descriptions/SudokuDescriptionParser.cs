@@ -67,7 +67,7 @@ public static class SudokuDescriptionParser
     {
         return s switch
         {
-            "Right" => TextDisposition.Right,
+            "right" => TextDisposition.Right,
             _ => TextDisposition.Left
         };
     }

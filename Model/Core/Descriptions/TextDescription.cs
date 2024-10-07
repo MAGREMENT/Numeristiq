@@ -13,4 +13,14 @@ public class TextDescription<TDisplayer> : IDescription<TDisplayer> where TDispl
     {
         displayer.AddParagraph(_paragraph);
     }
+
+    public override int GetHashCode()
+    {
+        return _paragraph.GetHashCode();
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is TextDescription<TDisplayer> t && t._paragraph == _paragraph;
+    }
 }

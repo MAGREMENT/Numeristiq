@@ -142,7 +142,8 @@ public static class XMLParser
     {
         while (!reader.EndOfStream)
         {
-            if ((char)reader.Peek() != ' ') return true; //TODO other than spaces ?
+            var c = (char)reader.Peek();
+            if (c is not ' ' and not '\n' and not '\r' and not '\t') return true;
             reader.Read();
         }
 

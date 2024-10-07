@@ -1,4 +1,5 @@
-﻿using Model.Core;
+﻿using System;
+using Model.Core;
 using Model.Core.Descriptions;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Highlighting;
@@ -32,6 +33,18 @@ public class SudokuStepDescription : IDescription<ISudokuDescriptionDisplayer>
     {
         displayer.AddParagraph(_text, _state, _cropping, _highlight, _disposition);
     }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_text, _state.GetHashCode(), _disposition.GetHashCode(),
+            _cropping.GetHashCode(), _highlight.GetHashCode());
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is SudokuStepDescription s && s._text.Equals(_text) && s._state.Equals(_state)
+               && _disposition == s._disposition && _cropping == s._cropping && _highlight.Equals(s._highlight);
+    }
 }
 
 public readonly struct SudokuCropping
@@ -50,4 +63,26 @@ public readonly struct SudokuCropping
     public int ColumnFrom { get; }
     public int RowTo { get; }
     public int ColumnTo { get; }
+
+    public static bool operator ==(SudokuCropping left, SudokuCropping right)
+    {
+        return left.RowFrom == right.RowFrom && left.ColumnFrom == right.ColumnFrom
+                                             && left.RowTo == right.RowTo && left.ColumnTo == right.ColumnTo;
+    }
+    
+    public static bool operator !=(SudokuCropping left, SudokuCropping right)
+    {
+        return left.RowFrom != right.RowFrom || left.ColumnFrom != right.ColumnFrom
+                                             || left.RowTo != right.RowTo || left.ColumnTo != right.ColumnTo;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is SudokuCropping sc && sc == this;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(RowFrom, ColumnFrom, RowTo, ColumnTo);
+    }
 }

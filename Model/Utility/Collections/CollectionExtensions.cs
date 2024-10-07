@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -76,10 +77,21 @@ public static class CollectionExtensions
     {
         foreach (var e in enumerable)
         {
-            if (e is TNew n) return true;
+            if (e is TNew) return true;
         }
 
         return false;
+    }
+
+    public static int GetSequenceHashCode<T>(this IEnumerable<T> enumerable) where T : notnull
+    {
+        var hash = 0;
+        foreach (var e in enumerable)
+        {
+            HashCode.Combine(e.GetHashCode(), hash);
+        }
+
+        return hash;
     }
 }
 
