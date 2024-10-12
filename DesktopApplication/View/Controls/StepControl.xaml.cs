@@ -17,7 +17,7 @@ public partial class StepControl
     public event OnStateShownChange? StateShownChanged;
     public event OnExplanationAsked? ExplanationAsked;
     
-    public StepControl(IStep step, StateShown stateShown)
+    public StepControl(IStep step, StepState stepState)
     {
         InitializeComponent();
 
@@ -26,7 +26,7 @@ public partial class StepControl
         Title.Text = step.Title;
         Title.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(step.Difficulty));
         PageSelector.Max = step.HighlightCount();
-        SetStateShown(stateShown);
+        SetStateShown(stepState);
         TextOutput.Text = step.Description;
     }
 
@@ -39,7 +39,7 @@ public partial class StepControl
         Title.Text = commit.Maker.Name;
         Title.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(commit.Maker.Difficulty));
         PageSelector.Max = commit.Report.HighlightCollection.Count;
-        SetStateShown(StateShown.Before);
+        SetStateShown(StepState.From);
         TextOutput.Text = commit.Report.Description;
         ExplanationButton.Visibility = Visibility.Collapsed;
     }
@@ -68,10 +68,10 @@ public partial class StepControl
         BottomPart.Visibility = Visibility.Collapsed;
     }
 
-    public void SetStateShown(StateShown stateShown)
+    public void SetStateShown(StepState stepState)
     {
         _shouldCallStateShownEvent = false;
-        if (stateShown == StateShown.Before) BeforeButton.IsChecked = true;
+        if (stepState == StepState.From) BeforeButton.IsChecked = true;
         else AfterButton.IsChecked = true;
         _shouldCallStateShownEvent = true;
     }
@@ -83,12 +83,12 @@ public partial class StepControl
 
     private void BeforeChecked(object sender, RoutedEventArgs e)
     {
-        if (_shouldCallStateShownEvent) StateShownChanged?.Invoke(StateShown.Before);
+        if (_shouldCallStateShownEvent) StateShownChanged?.Invoke(StepState.From);
     }
     
     private void AfterChecked(object sender, RoutedEventArgs e)
     {
-        if (_shouldCallStateShownEvent) StateShownChanged?.Invoke(StateShown.After);
+        if (_shouldCallStateShownEvent) StateShownChanged?.Invoke(StepState.To);
     }
 
     private void OnExplanationAsked(object sender, RoutedEventArgs e)
@@ -98,5 +98,5 @@ public partial class StepControl
 }
 
 public delegate void OnOpenRequest(int id);
-public delegate void OnStateShownChange(StateShown stateShown);
+public delegate void OnStateShownChange(StepState stepState);
 public delegate void OnExplanationAsked();

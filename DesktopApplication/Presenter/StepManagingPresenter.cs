@@ -9,8 +9,8 @@ public abstract class StepManagingPresenter<THighlight, TStep, TState> : IStepMa
 {
     protected readonly IHighlighterTranslator<THighlight> _translator;
     protected int _currentlyOpenedStep = -1;
+    protected StepState _stepState = StepState.From;
     private int _stepCount;
-    private StateShown _stateShown = StateShown.Before;
     
     protected abstract IReadOnlyList<TStep> Steps { get; }
     protected abstract IStepManagingView View { get; }
@@ -30,7 +30,7 @@ public abstract class StepManagingPresenter<THighlight, TStep, TState> : IStepMa
 
         for (;_stepCount < Steps.Count; _stepCount++)
         {
-            View.AddStep(Steps[_stepCount], _stateShown);
+            View.AddStep(Steps[_stepCount], _stepState);
         }
     }
 
@@ -52,19 +52,19 @@ public abstract class StepManagingPresenter<THighlight, TStep, TState> : IStepMa
             _currentlyOpenedStep = index;
 
             var log = Steps[index];
-            SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
+            SetShownState(_stepState == StepState.From ? log.From : log.To, false, true); 
             _translator.Translate(log.HighlightCollection, false); 
         }
     }
 
-    public void RequestStateShownChange(StateShown ss)
+    public void RequestStateShownChange(StepState ss)
     {
-        _stateShown = ss;
+        _stepState = ss;
         View.SetStepsStateShown(ss);
         if (_currentlyOpenedStep < 0 || _currentlyOpenedStep >= Steps.Count) return;
         
         var log = Steps[_currentlyOpenedStep];
-        SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
+        SetShownState(_stepState == StepState.From ? log.From : log.To, false, true); 
         _translator.Translate(log.HighlightCollection, false);
     }
 
@@ -92,7 +92,7 @@ public abstract class StepManagingPresenter<THighlight, TStep, TState> : IStepMa
 public interface IStepManagingPresenter
 {
     public void RequestStepOpening(int id);
-    public void RequestStateShownChange(StateShown ss);
+    public void RequestStateShownChange(StepState ss);
     public void RequestHighlightChange(int newHighlight);
     public IStepExplanationPresenterBuilder? RequestExplanation();
 }
@@ -104,14 +104,9 @@ public interface IHighlighterTranslator<out T>
 
 public interface IStepManagingView
 {
-    void AddStep(IStep step, StateShown _shown);
+    void AddStep(IStep step, StepState shown);
     void ClearSteps();
     void OpenStep(int index);
     void CloseStep(int index);
-    void SetStepsStateShown(StateShown stateShown);
-}
-
-public enum StateShown
-{
-    Before, After
+    void SetStepsStateShown(StepState stepState);
 }

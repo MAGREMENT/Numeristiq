@@ -44,3 +44,8 @@ public interface IStep<THighlighter, out TState, out TChange> : IStep<THighlight
         return Changes.ToStringSequence(", ");
     }
 }
+
+public enum StepState
+{
+    From, To
+}

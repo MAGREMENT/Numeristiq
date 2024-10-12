@@ -1,2 +1,0 @@
-A naked single is the most basic strategy in Sudoku. If there is only one possibility in a cell, it is the solution for
-that cell

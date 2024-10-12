@@ -31,7 +31,7 @@ public partial class OptionChooserDialog
     
     private static IEnumerable<(Geometry?, string, int)> SudokuSolverCopyOptions()
     {
-        return SudokuStringFormatOptions().Append((null, "Highlight", 3));
+        return SudokuStringFormatOptions().Append((Geometry.Parse("M 7,5 3,10 7,15 M 13,5 17,10 13,15"), "XML", 3));
     }
     
     private OptionChooserDialog(string name, IEnumerable<(Geometry?, string, int)> collection)

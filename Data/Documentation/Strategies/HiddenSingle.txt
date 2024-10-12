@@ -1,2 +1,0 @@
-A naked hidden is other very basic strategy in Sudoku. If a possibility in a unit is limited to only one cell, it is the
-solution for that cell.

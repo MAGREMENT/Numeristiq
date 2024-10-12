@@ -28,7 +28,7 @@ public class SudokuManagePresenter
         _repo = repo;
         _settings = settings;
 
-        _parser = new SudokuDescriptionParser(@"Data\XML\SudokuStrategyDescriptions",
+        _parser = new SudokuDescriptionParser(@"Descriptions\Sudoku",
             !PresenterFactory.IsForProduction, false);
     }
     

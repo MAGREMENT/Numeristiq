@@ -12,11 +12,11 @@ public abstract class SolveWithStepsPage : ManagedPage
     protected abstract ScrollViewer GetStepViewer();
     protected abstract IStepManagingPresenter GetStepsPresenter();
     
-    public void AddStep(IStep step, StateShown stateShown)
+    public void AddStep(IStep step, StepState stepState)
     {
         GetStepPanel().Dispatcher.Invoke(() =>
         {
-            var lc = new StepControl(step, stateShown);
+            var lc = new StepControl(step, stepState);
             GetStepPanel().Children.Add(lc);
             lc.OpenRequested += GetStepsPresenter().RequestStepOpening;
             lc.StateShownChanged += GetStepsPresenter().RequestStateShownChange;
@@ -54,13 +54,13 @@ public abstract class SolveWithStepsPage : ManagedPage
         lc.Close();
     }
 
-    public void SetStepsStateShown(StateShown stateShown)
+    public void SetStepsStateShown(StepState stepState)
     {
         foreach (var child in GetStepPanel().Children)
         {
             if (child is not StepControl lc) continue;
 
-            lc.SetStateShown(stateShown);
+            lc.SetStateShown(stepState);
         }
     }
     

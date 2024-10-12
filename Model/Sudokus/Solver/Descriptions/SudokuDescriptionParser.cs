@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Model.Core;
 using Model.Core.Descriptions;
+using Model.Core.Highlighting;
+using Model.Core.Steps;
+using Model.Utility;
 using Model.XML;
 
 namespace Model.Sudokus.Solver.Descriptions;
@@ -72,6 +76,14 @@ public class SudokuDescriptionParser : DescriptionParser<ISudokuDescriptionDispl
         }
 
         return result;
+    }
+
+    public static string ToXml(IStep<ISudokuHighlighter, ISudokuSolvingState> step, StepState ss)
+    {
+        var state = ss == StepState.From ? step.From : step.To;
+        return $"<step state=\"{SudokuTranslator.TranslateBase32Format(state, DefaultBase32Alphabet.Instance)}\" \n" +
+               $"highlight=\"{step.HighlightCollection.TryGetInstructionsAsString()}\" \n" +
+               $"cropping=\"0 0 8 8\" disposition=\"left\"></step>";
     }
 
     private static SudokuCropping CastCropping(string s)

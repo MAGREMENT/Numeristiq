@@ -227,7 +227,7 @@ public class SudokuSolvePresenter : StepManagingPresenter<ISudokuHighlighter, IS
                 _settings.EmptyCellRepresentation.Get().ToInt()),
             (int)SudokuStringFormat.Grid => SudokuTranslator.TranslateGridFormat(state),
             (int)SudokuStringFormat.Base32 => SudokuTranslator.TranslateBase32Format(state, DefaultBase32Alphabet.Instance),
-            3 => _currentlyOpenedStep == -1 ? string.Empty : _solver.Steps[_currentlyOpenedStep].HighlightCollection.TryGetInstructionsAsString(),
+            3 => _currentlyOpenedStep == -1 ? string.Empty : SudokuDescriptionParser.ToXml(_solver.Steps[_currentlyOpenedStep], _stepState),
             _ => throw new Exception()
         });
     }
