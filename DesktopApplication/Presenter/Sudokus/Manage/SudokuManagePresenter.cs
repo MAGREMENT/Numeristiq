@@ -1,8 +1,10 @@
 ﻿using DesktopApplication.Presenter.Sudokus.Solve;
 using Model.Core;
+using Model.Core.Descriptions;
 using Model.Core.Highlighting;
 using Model.Repositories;
 using Model.Sudokus.Solver;
+using Model.Sudokus.Solver.Descriptions;
 using Repository.Files;
 
 namespace DesktopApplication.Presenter.Sudokus.Manage;
@@ -12,6 +14,7 @@ public class SudokuManagePresenter
     private readonly ISudokuManageView _view;
     private readonly StrategyManager<SudokuStrategy> _manager;
     private readonly IStrategyRepository<SudokuStrategy> _repo;
+    private readonly DescriptionParser<ISudokuDescriptionDisplayer> _parser;
     private readonly Settings _settings;
     
     private ShownInfo _shownInfo = ShownInfo.Settings;
@@ -24,6 +27,9 @@ public class SudokuManagePresenter
         _manager = manager;
         _repo = repo;
         _settings = settings;
+
+        _parser = new SudokuDescriptionParser(@"Data\XML\SudokuStrategyDescriptions",
+            !PresenterFactory.IsForProduction, false);
     }
     
     public void Initialize()
@@ -71,7 +77,7 @@ public class SudokuManagePresenter
         _currentlyDisplayed = s.Name;
         
         if(_shownInfo == ShownInfo.Settings) _view.SetManageableSettings(new StrategySettingsPresenter(s, _repo));
-        else _view.SetStrategyDescription(SudokuStrategyPool.GetDescription(s.Name));
+        else _view.SetStrategyDescription(_parser.Get(s.Name));
     }
 
     public void AddStrategy(string s, int position)
@@ -135,7 +141,7 @@ public class SudokuManagePresenter
             if(strategy is null) _view.SetNotFoundSettings();
             else _view.SetManageableSettings(new StrategySettingsPresenter(strategy, _repo));
         }
-        else _view.SetStrategyDescription(SudokuStrategyPool.GetDescription(s));
+        else _view.SetStrategyDescription(_parser.Get(s));
     }
 
     public void Highlight(ISudokuSolverDrawer drawer, IHighlightable<ISudokuHighlighter> highlight)

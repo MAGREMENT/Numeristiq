@@ -1,0 +1,1 @@
+﻿When all possibilities in a row/column are restrained to a single box, the solution, wherever it is is, will always remove the possibilities from the remaining cells of the box.

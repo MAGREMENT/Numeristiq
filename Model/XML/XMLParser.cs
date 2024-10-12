@@ -17,6 +17,7 @@ public static class XMLParser
         });
         StringBuilder builder = new();
         List<Tag> tagQueue = new();
+        int spaceCount = 0;
         
         while (!reader.EndOfStream)
         {
@@ -24,9 +25,11 @@ public static class XMLParser
             switch (c)
             {
                 case ' ' :
+                    spaceCount++;
+                    break;
                 case '\n' :
                 case '\r' :
-                case '\t':
+                    spaceCount = 0;
                     break;
                 case '<' :
                     if (reader.EndOfStream) throw new Exception("Tag not closed");
@@ -57,31 +60,52 @@ public static class XMLParser
                         }
                     }
 
+                    spaceCount = 0;
                     break;
                 default :
-                    var s = ReadText(reader, builder, c);
+                    var s = ReadText(reader, builder, c, spaceCount);
                     if (tagQueue.Count == 0) yield return new Text(s);
                     else tagQueue[^1].AddToContent(s);
-                    
+
+                    spaceCount = 0;
                     break;
             }
         }
     }
 
-    private static string ReadText(StreamReader reader, StringBuilder builder, char start)
+    private static string ReadText(StreamReader reader, StringBuilder builder, char start, int ignorable)
     {
         builder.Clear();
         builder.Append(start);
 
+        var canIgnore = true;
+        var streak = 0;
         while (!reader.EndOfStream)
         {
             var peeked = (char)reader.Peek();
             if (peeked == '<') break;
 
-            builder.Append((char)reader.Read());
+            var c = (char)reader.Read();
+            switch (c)
+            {
+                case '\n' :
+                case '\r' :
+                    builder.Append(c);
+                    canIgnore = true;
+                    streak = 0;
+                    break;
+                case ' ' :
+                    if (!canIgnore || streak >= ignorable) builder.Append(c);
+                    else streak++;
+                    break;
+                default:
+                    builder.Append(c);
+                    canIgnore = false;
+                    break;
+            }
         }
 
-        return builder.ToString().TrimEnd('\n', '\r', ' ', '\t');
+        return builder.ToString().TrimEnd('\n', '\r', ' ');
     }
 
     private static (Tag, bool) ReadOpeningTag(StreamReader reader, StringBuilder builder, char start)
@@ -116,7 +140,6 @@ public static class XMLParser
                     return (new Tag(builder.ToString()), false);
                 case '\r' :
                 case '\n' :
-                case '\t' :
                 case ' ' :
                     if (!SkipSpacing(reader)) throw new Exception("Unfinished Tag");
                     
@@ -146,7 +169,7 @@ public static class XMLParser
         while (!reader.EndOfStream)
         {
             var c = (char)reader.Peek();
-            if (c is not ' ' and not '\n' and not '\r' and not '\t') return true;
+            if (c is not ' ' and not '\n' and not '\r') return true;
             reader.Read();
         }
 

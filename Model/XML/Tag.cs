@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Model.Utility.Collections;
 
 namespace Model.XML;
 
-public class Tag : IXMLElement, ITagContent
+public class Tag : ITagContent
 {
     private Dictionary<string, string>? _attributes;
     
@@ -99,6 +101,11 @@ public class Tag : IXMLElement, ITagContent
         return hash;
     }
 
+    public IEnumerator<ITagContent> GetEnumerator()
+    {
+        return Content is null ? Enumerable.Empty<ITagContent>().GetEnumerator() : Content.GetEnumerator();
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not Tag t || !t.Name.Equals(Name)) return false;
@@ -147,10 +154,15 @@ public class Tag : IXMLElement, ITagContent
             return builder.ToString();
         }
 
-        builder.Append(">\n");
+        builder.Append('>');
         builder.Append(Content);
         builder.Append($"</{Name}>");
         return builder.ToString();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }
 
@@ -158,6 +170,8 @@ public delegate T Cast<out T>(string s);
 
 public class TagContentCollection : List<ITagContent>, ITagContent
 {
+    public bool IsTag => false;
+
     public string GetStringValue()
     {
         var builder = new StringBuilder();
@@ -167,6 +181,11 @@ public class TagContentCollection : List<ITagContent>, ITagContent
         }
 
         return builder.ToString();
+    }
+
+    public Tag GetTagValue()
+    {
+        throw new Exception("Not a tag");
     }
 
     public override int GetHashCode()
@@ -194,11 +213,11 @@ public class TagContentCollection : List<ITagContent>, ITagContent
 
     public override string ToString()
     {
-        return this.ToStringSequence("\n");
+        return this.ToStringSequence("");
     }
 }
 
-public class Text : IXMLElement, ITagContent
+public class Text : ITagContent
 {
     private readonly string _value;
 
@@ -224,6 +243,11 @@ public class Text : IXMLElement, ITagContent
         return _value.GetHashCode();
     }
 
+    public IEnumerator<ITagContent> GetEnumerator()
+    {
+        yield break;
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is Text t && t._value == _value;
@@ -233,9 +257,13 @@ public class Text : IXMLElement, ITagContent
     {
         return _value;
     }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
 
-public interface ITagContent
+public interface ITagContent : IXMLElement, IEnumerable<ITagContent>
 {
-    string GetStringValue();
 }

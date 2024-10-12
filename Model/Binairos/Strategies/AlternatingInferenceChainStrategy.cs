@@ -116,7 +116,7 @@ public class AlternatingInferenceChainReportBuilder : IChangeReportBuilder<Binar
                 lighter.HighlightCell(e.ToCell(), StepColor.Cause1);
                 lighter.SimulateSolution(e.Possibility, e.Row, e.Column);
             
-                for (int i = 0; i < chain.Links.Length; i++)
+                for (int i = 0; i < chain.Links.Count; i++)
                 {
                     lighter.CreateLink(chain.Elements[i].ToCell(), chain.Elements[i + 1].ToCell());
                     
@@ -134,7 +134,7 @@ public class AlternatingInferenceChainReportBuilder : IChangeReportBuilder<Binar
     private static string Description(Chain<CellPossibility, LinkStrength> chain)
     {
         var builder = new StringBuilder($"Chain : {ToString(chain.Elements[0])}");
-        for (int i = 0; i < chain.Links.Length; i++)
+        for (int i = 0; i < chain.Links.Count; i++)
         {
             builder.Append(" = ");
             builder.Append(ToString(chain.Elements[i + 1]));

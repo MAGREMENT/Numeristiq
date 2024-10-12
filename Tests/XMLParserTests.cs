@@ -17,7 +17,7 @@ public class XMLParserTests
         expected.Add(a);
         expected.Add(b);
         expected.Add(new Text("Test"));
-        Test(@"Data\XML\Tests\Simple.txt", expected);
+        Test(@"Data\XML\Tests\Simple.xml", expected);
         
         expected.Clear();
         a = new Tag("a");
@@ -30,7 +30,7 @@ public class XMLParserTests
         b.AddToContent("YES");
         a.SetContent(b);
         expected.Add(a);
-        Test(@"Data\XML\Tests\Attribute.txt", expected);
+        Test(@"Data\XML\Tests\Attribute.xml", expected);
     }
     
     private static void Test(string fileName, List<IXMLElement> expected)
@@ -44,7 +44,7 @@ public class XMLParserTests
         foreach (var element in result)
         {
             Assert.That(expected, Has.Count.GreaterThan(n));
-            Assert.That(element, Is.EqualTo(expected[n++]));
+            Assert.That(element.Equals(expected[n++]), Is.True);
         }
 
         Assert.That(expected, Has.Count.EqualTo(n));

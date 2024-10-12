@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Model.Core;
 using Model.Core.Graphs;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Sudokus.Solver.Utility.Oddagons.Algorithms;
 using Model.Utility;
@@ -75,14 +74,14 @@ public static class OddagonSearcher
     public static CellPossibility[]? FindGuardians(ISudokuSolvingState holder, Loop<CellPossibility, LinkStrength> loop)
     {
         HashSet<CellPossibility> result = new();
-        for (int i = 0; i < loop.Count; i++)
+        for (int i = 0; i < loop.Elements.Count; i++)
         {
-            if (i < loop.Count - 1)
+            if (i < loop.Elements.Count - 1)
             {
                 if(loop.Links[i] == LinkStrength.Weak) result.UnionWith(FindGuardians(holder, loop.Elements[i],
                     loop.Elements[i + 1]));
             }
-            else if(loop.LastLink == LinkStrength.Weak) result.UnionWith(FindGuardians(holder, loop.Elements[^1],
+            else if(loop.Links[^1] == LinkStrength.Weak) result.UnionWith(FindGuardians(holder, loop.Elements[^1],
                 loop.Elements[0]));
         }
 

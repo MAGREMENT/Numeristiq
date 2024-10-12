@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Model.Core;
 using Model.Sudokus.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
-using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.PossibilitySets;
 

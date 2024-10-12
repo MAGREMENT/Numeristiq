@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Model.Core.Graphs;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.Collections;
 
@@ -20,7 +19,7 @@ public class AlmostOddagon
 
     public override string ToString()
     {
-        return $"{Loop.ToLinkLoopString()} with guardians {Guardians.ToStringSequence(", ")}";
+        return $"{Loop} with guardians {Guardians.ToStringSequence(", ")}";
     }
 
     public override int GetHashCode()
@@ -41,7 +40,7 @@ public class AlmostOddagon
 
     public override bool Equals(object? obj)
     {
-        if (obj is not AlmostOddagon ao || ao.Loop.Count != Loop.Count || ao.Guardians.Length != Guardians.Length)
+        if (obj is not AlmostOddagon ao || ao.Loop.Elements.Count != Loop.Elements.Count || ao.Guardians.Length != Guardians.Length)
             return false;
 
         foreach (var g in Guardians)

@@ -25,19 +25,53 @@ public static class PathFinder
             }
         }
 
-        if (createIfNotFound)
+        if (!createIfNotFound) return null;
+        
+        try
         {
-            try
+            using var stream = File.Create(initialPath);
+            return initialPath;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+}
+
+public static class DirectoryFinder
+{
+    public static string? Find(string directoryName, bool searchParentDirectories, bool createIfNotFound)
+    {
+        var current = Directory.GetCurrentDirectory();
+        var initialPath = $@"{current}\{directoryName}";
+        if (Directory.Exists(initialPath)) return initialPath;
+
+        if (searchParentDirectories)
+        {
+            var buffer = Directory.GetParent(current);
+            while (buffer is not null)
             {
-                using var stream = File.Create(initialPath);
-                return initialPath;
-            }
-            catch
-            {
-                //ignored
+                var p = $@"{buffer.FullName}\{directoryName}";
+                if (Directory.Exists(p))
+                {
+                    return p;
+                }
+
+                buffer = Directory.GetParent(buffer.FullName);
             }
         }
-
-        return null;
+        
+        if (!createIfNotFound) return null;
+        
+        try
+        {
+            var info = Directory.CreateDirectory(initialPath);
+            return info.FullName;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

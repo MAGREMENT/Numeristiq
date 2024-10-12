@@ -1,0 +1,8 @@
+﻿This is a very complex strategy. For a Junior Exocet to exist, there are multiple requirements :
+
+    1) There exist 2 base cells and 2 target cells in a band (e.g. 3 lines in 3 boxes). The base cells
+       need to be in the same mini-line, meaning a line restricted to a box, and have a total of
+       candidates between 2 and 4, called base candidates. Each target cell is in a different line and in a different box
+       than the base cells and the other target. These targets must each hold at least one base candidate.
+        
+    2) TODO

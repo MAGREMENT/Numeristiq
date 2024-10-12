@@ -5,7 +5,6 @@ using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -53,7 +52,7 @@ public class BlossomLoopStrategy : SudokuStrategy
 
                 foreach (var b in branches)
                 {
-                    for (int i = 0; i < b.Branch.Links.Length; i++)
+                    for (int i = 0; i < b.Branch.Links.Count; i++)
                     {
                         if(b.Branch.Links[i] == LinkStrength.Weak) HandleWeakBranchLink(solverData,
                             b.Branch.Elements[i], b.Branch.Elements[i + 1], nope);
@@ -222,14 +221,14 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<NumericChange, ISud
             branchesHighlight[i] = lighter =>
             {
                 var current = _branches[iForDelegate];
-                for (int j = 0; j < current.Branch.Links.Length; j++)
+                for (int j = 0; j < current.Branch.Links.Count; j++)
                 {
                     lighter.CreateLink(current.Branch.Elements[j], current.Branch.Elements[j + 1], current.Branch.Links[j]);
                     var color = current.Branch.Links[j] == LinkStrength.Weak
                         ? StepColor.On
                         : StepColor.Cause1;
                     lighter.HighlightElement(current.Branch.Elements[j], color);
-                    if (j == current.Branch.Links.Length - 1)
+                    if (j == current.Branch.Links.Count - 1)
                     {
                         lighter.HighlightElement(current.Branch.Elements[j + 1], color == StepColor.On ?
                             StepColor.Cause1 : StepColor.On);
@@ -245,7 +244,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<NumericChange, ISud
             };
         }
         
-        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>(Explanation(), lighter =>
         {
             var coloring = _loop.Links[0] == LinkStrength.Strong
                 ? StepColor.Cause1
@@ -259,9 +258,10 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<NumericChange, ISud
                     : StepColor.On;
             }
 
-            for (int i = 0; i < _loop.Links.Length; i++)
+            for (int i = 0; i < _loop.Links.Count; i++)
             {
-                lighter.CreateLink(_loop.Elements[i], _loop.Elements[i + 1], _loop.Links[i]);
+                lighter.CreateLink(_loop.Elements[i], _loop.Elements[i < _loop.Elements.Count - 1 ? i + 1 : 0],
+                    _loop.Links[i]);
             }
 
             foreach (var cp in _cps)

@@ -3,7 +3,6 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Tectonics.Solver.Utility;
 using Model.Utility;
 
@@ -122,12 +121,12 @@ public class AlternatingInferenceChainReportBuilder : IChangeReportBuilder<Numer
     public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, INumericSolvingState snapshot)
     {
         var chain = ChainExtensions.ReconstructChain(_on, _off, _end, LinkStrength.Strong, false);
-        return new ChangeReport<ITectonicHighlighter>($"Chain : {chain.ToLinkChainString()}",
+        return new ChangeReport<ITectonicHighlighter>($"Chain : {chain}",
             lighter =>
         {
             lighter.HighlightElement(chain.Elements[0], StepColor.Cause1);
             
-            for (int i = 0; i < chain.Links.Length; i++)
+            for (int i = 0; i < chain.Links.Count; i++)
             {
                 lighter.CreateLink(chain.Elements[i], chain.Elements[i + 1], chain.Links[i]);
                 lighter.HighlightElement(chain.Elements[i + 1], chain.Links[i] == LinkStrength.Strong ? StepColor.On :

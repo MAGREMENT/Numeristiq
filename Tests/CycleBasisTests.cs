@@ -52,5 +52,14 @@ public class CycleBasisTests
         
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.EqualTo(expected));
+
+        l1 = new Loop<int, LinkStrength>(new[] { 3, 2, 1, 4 }, new LinkStrength[4]);
+        l2 = new Loop<int, LinkStrength>(new[] { 5, 4, 1, 2, 3 }, new LinkStrength[5]);
+        expected = new Loop<int, LinkStrength>(new[] { 3, 5, 4 }, new LinkStrength[3]);
+        
+        result = CycleBasis.DefaultCombineLoops(l1, l2);
+        
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.EqualTo(expected));
     }
 }

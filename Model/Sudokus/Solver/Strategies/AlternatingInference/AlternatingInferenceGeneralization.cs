@@ -60,7 +60,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     static bool ProcessChainWithSimpleGraph(ISudokuSolverData solverData, Chain<CellPossibility, LinkStrength> chain,
         IGraph<CellPossibility, LinkStrength> graph, SudokuStrategy strategy)
     {
-        if (chain.Count < 3 || chain.Count % 2 == 1) return false;
+        if (chain.Elements.Count < 3 || chain.Elements.Count % 2 == 1) return false;
 
         foreach (var target in graph.Neighbors(chain.Elements[0]))
         {
@@ -77,7 +77,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     static bool ProcessChainWithComplexGraph(ISudokuSolverData solverData, Chain<ISudokuElement, LinkStrength> chain,
         IGraph<ISudokuElement, LinkStrength> graph, SudokuStrategy strategy)
     {
-        if (chain.Count < 3 || chain.Count % 2 == 1) return false;
+        if (chain.Elements.Count < 3 || chain.Elements.Count % 2 == 1) return false;
 
         foreach (var target in graph.Neighbors(chain.Elements[0]))
         {
@@ -156,7 +156,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<Num
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        return result + $" found\nLoop :: {_loop.ToLinkLoopString()}";
+        return result + $" found\nLoop :: {_loop}";
     }
 
     public int MaxRank()
@@ -166,7 +166,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<Num
 
     public int Length()
     {
-        return _loop.Count;
+        return _loop.Elements.Count;
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
@@ -207,7 +207,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<Nu
                         : StepColor.On;
                 }
 
-                for (int i = 0; i < _chain.Links.Length; i++)
+                for (int i = 0; i < _chain.Links.Count; i++)
                 {
                     lighter.CreateLink(_chain.Elements[i], _chain.Elements[i + 1], _chain.Links[i]);
                 }
@@ -228,7 +228,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<Nu
 
     public int Length()
     {
-        return _chain.Count;
+        return _chain.Elements.Count;
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

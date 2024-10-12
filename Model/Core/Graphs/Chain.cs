@@ -3,32 +3,29 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Model.Utility.Collections;
 
 namespace Model.Core.Graphs;
 
 public class Chain<TElement, TLink> : IEnumerable<TElement> where TElement : notnull where TLink : notnull
 {
-    public TElement[] Elements { get; }
-    public TLink[] Links { get; }
+    public IReadOnlyList<TElement> Elements { get; }
+    public IReadOnlyList<TLink> Links { get; }
 
-    public int Count => Elements.Length;
+    public Chain(IReadOnlyList<TElement> elements, IReadOnlyList<TLink> links) : this(elements, links, 1) {}
 
-    public Chain(TElement[] elements, TLink[] links)
+    public Chain(TElement element) : this(new[] { element }, Array.Empty<TLink>()) {}
+
+    protected Chain(IReadOnlyList<TElement> elements, IReadOnlyList<TLink> links, int diff)
     {
-        if (links.Length + 1 != elements.Length) throw new ArgumentException("Not a chain");
+        if (links.Count + diff != elements.Count) throw new ArgumentException("Incompatible element and link counts");
         Elements = elements;
         Links = links;
     }
 
-    public Chain(TElement element)
-    {
-        Elements = new[] { element };
-        Links = Array.Empty<TLink>();
-    }
-
     public int IndexOf(TElement element)
     {
-        for (int i = 0; i < Elements.Length; i++)
+        for (int i = 0; i < Elements.Count; i++)
         {
             if (element.Equals(Elements[i])) return i;
         }
@@ -38,37 +35,53 @@ public class Chain<TElement, TLink> : IEnumerable<TElement> where TElement : not
 
     public override bool Equals(object? obj)
     {
-        if (obj is not Chain<TElement, TLink> chain || chain.Count != Count) return false;
-        for (int i = 0; i < Links.Length; i++)
+        if (obj is not Chain<TElement, TLink> chain || chain.Elements.Count != Elements.Count
+                                                    || chain.Links.Count != Links.Count) return false;
+        for (int i = 0; i < Elements.Count; i++)
         {
             if (!Elements[i].Equals(chain.Elements[i])) return false;
+        }
+        
+        for (int i = 0; i < Links.Count; i++)
+        {
             if (!Links[i].Equals(chain.Links[i])) return false;
         }
 
-        return Elements[^1].Equals(chain.Elements[^1]);
+        return true;
     }
 
     public override int GetHashCode()
     {
         int hash = 0;
-        for (int i = 0; i < Links.Length; i++)
+        
+        foreach (var e in Elements)
         {
-            hash ^= Elements[i].GetHashCode() ^ Links[i].GetHashCode();
+            HashCode.Combine(e);
+        }
+        
+        foreach (var l in Links)
+        {
+            HashCode.Combine(l);
         }
 
-        return hash ^ Elements[^1].GetHashCode();
+        return hash;
     }
 
     public override string ToString()
     {
-        var builder = new StringBuilder();
-
-        for (int i = 0; i < Links.Length; i++)
+        var builder = new StringBuilder(Elements[0].ToString());
+        
+        for (int i = 0; i < Elements.Count - 1; i++)
         {
-            builder.Append($"{Elements[i]} -{Links[i]}- ");
+            var l = Links[i] is LinkStrength ls ? ls.ToChar().ToString() : $"-{Links[i]}-";
+            builder.Append($"{Elements[i + 1]} {l} ");
         }
 
-        builder.Append(Elements[^1]);
+        if (Links.Count == Elements.Count)
+        {
+            var l = Links[^1] is LinkStrength ls ? ls.ToChar().ToString() : $"-{Links[^1]}-";
+            builder.Append(" " + l);
+        }
 
         return builder.ToString();
     }
@@ -86,74 +99,40 @@ public class Chain<TElement, TLink> : IEnumerable<TElement> where TElement : not
 
 public class Loop<TElement, TLink> : Chain<TElement, TLink> where TElement : notnull where TLink : notnull
 {
-    public TLink LastLink { get; }
-    
-    public Loop(TElement[] elements, TLink[] links, TLink lastLink) : base(elements, links)
-    {
-        LastLink = lastLink;
-    }
-    
-    public Loop(TElement[] elements, TLink[] links) : base(elements, CutLast(links))
-    {
-        LastLink = links[^1];
-    }
-
-    private static TLink[] CutLast(TLink[] links)
-    {
-        var buffer = new TLink[links.Length - 1];
-        Array.Copy(links, 0, buffer, 0, links.Length - 1);
-        return buffer;
-    }
+    public Loop(IReadOnlyList<TElement> elements, IReadOnlyList<TLink> links) : base(elements, links, 0) {}
     
     public delegate void LinkHandler(TElement one, TElement two);
 
     public void ForEachLink(LinkHandler handler, TLink link)
     {
-        for (int i = 0; i < Links.Length; i++)
+        for (int i = 0; i < Links.Count; i++)
         {
-            if (Links[i].Equals(link)) handler(Elements[i], Elements[i + 1]);
+            if (Links[i].Equals(link)) handler(Elements[i], Elements[i < Elements.Count - 1 ? i + 1 : 0]);
         }
-
-        if (LastLink.Equals(link)) handler(Elements[0], Elements[^1]);
     }
     
     public void ForEachLink(LinkHandler handler)
     {
-        for (int i = 0; i < Links.Length; i++)
+        for (int i = 0; i < Links.Count; i++)
         {
-            handler(Elements[i], Elements[i + 1]);
+            handler(Elements[i], Elements[i < Elements.Count - 1 ? i + 1 : 0]);
         }
-
-        handler(Elements[0], Elements[^1]);
     }
 
     public bool Contains(TElement element)
     {
-        var half = Elements.Length / 2;
+        var half = Elements.Count / 2;
         for (int i = 0; i < half; i++)
         {
             if (Elements[i].Equals(element)) return true;
             if (Elements[^(i + 1)].Equals(element)) return true;
         }
 
-        if (Elements.Length % 2 == 1 && Elements[half].Equals(element)) return true;
+        if (Elements.Count % 2 == 1 && Elements[half].Equals(element)) return true;
         
         return false;
     }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not Loop<TElement, TLink> loop) return false;
-        return base.Equals(loop) && LastLink.Equals(loop.LastLink);
-    }
-
-    public override int GetHashCode()
-    {
-        return base.GetHashCode() ^ LastLink.GetHashCode();
-    }
 }
-
-
 
 public class ChainBuilder<TElement, TLink> where TElement : notnull where TLink : notnull
 {
@@ -210,7 +189,10 @@ public class ChainBuilder<TElement, TLink> where TElement : notnull where TLink 
     
     public Loop<TElement, TLink> ToLoop(TLink lastLink)
     {
-        return new Loop<TElement, TLink>(_elements.ToArray(), _links.ToArray(), lastLink);
+        _links.Add(lastLink);
+        var buffer = _links.ToArray();
+        _links.RemoveAt(_links.Count - 1);
+        return new Loop<TElement, TLink>(_elements.ToArray(), buffer);
     }
 
     public TElement FirstElement()
@@ -274,7 +256,7 @@ public static class ChainExtensions
         
         if (!path2.Elements[0].Equals(path1.Elements[0]) || !path2.Elements[^1].Equals(path1.Elements[^1])) return null;
         
-        var total = path1.Count + path2.Count - 2;
+        var total = path1.Elements.Count + path2.Elements.Count - 2;
         
         var all = new HashSet<T>(path1.Elements);
         all.UnionWith(path2.Elements);
@@ -298,13 +280,13 @@ public static class ChainExtensions
             default : return null;
         }
 
-        Array.Copy(first.Elements, 0, elements, 0, first.Elements.Length - 1);
-        Array.Copy(second.Elements, 1, elements, first.Elements.Length - 1, second.Elements.Length - 1);
-        Array.Reverse(elements, first.Elements.Length - 1, second.Elements.Length - 1);
+        first.Elements.CopyInto(0, elements, 0, first.Elements.Count - 1);
+        second.Elements.CopyInto(1, elements, first.Elements.Count - 1, second.Elements.Count - 1);
+        Array.Reverse(elements, first.Elements.Count - 1, second.Elements.Count - 1);
             
-        Array.Copy(first.Links, 0, links, 0, first.Links.Length);
-        Array.Copy(second.Links, 0, links, first.Links.Length, second.Links.Length);
-        Array.Reverse(links, first.Links.Length, second.Links.Length);
+        first.Links.CopyInto(0, links, 0, first.Links.Count);
+        second.Links.CopyInto(0, links, first.Links.Count, second.Links.Count);
+        Array.Reverse(links, first.Links.Count, second.Links.Count);
 
         return new Loop<T, LinkStrength>(elements, links);
     }
@@ -336,32 +318,9 @@ public static class ChainExtensions
         
         e.Reverse();
         l.Reverse();
-
-        return isLoop ? new Loop<T, LinkStrength>(e.ToArray(), l.ToArray(), firstLink) :
-            new Chain<T, LinkStrength>(e.ToArray(), l.ToArray());
-    }
-    
-    public static string ToLinkChainString<TElement>(this Chain<TElement, LinkStrength> chain) where TElement : notnull
-    {
-        var builder = new StringBuilder();
-        for (int i = 0; i < chain.Elements.Length - 1; i++)
-        {
-            builder.Append(chain.Elements[i] + (chain.Links[i] == LinkStrength.Strong ? " = " : " - "));
-        }
-
-        builder.Append(chain.Elements[^1]);
-        return builder.ToString();
-    }
-    
-    public static string ToLinkLoopString<TElement>(this Loop<TElement, LinkStrength> loop) where TElement : notnull
-    {
-        string result = loop.Elements[0] + (loop.Links[0] == LinkStrength.Strong ? " = " : " - ");
-        for (int i = 1; i < loop.Elements.Length; i++)
-        {
-            if(i == loop.Elements.Length - 1) result += loop.Elements[i] + (loop.LastLink == LinkStrength.Strong ? " = " : " - ");
-            else result += loop.Elements[i] + (loop.Links[i] == LinkStrength.Strong ? " = " : " - ");
-        }
-
-        return result;
+        if (!isLoop) return new Chain<T, LinkStrength>(e, l);
+        
+        l.Add(firstLink);
+        return new Loop<T, LinkStrength>(e, l);
     }
 }

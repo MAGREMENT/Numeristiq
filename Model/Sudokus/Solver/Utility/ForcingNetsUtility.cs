@@ -5,7 +5,6 @@ using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Graphs.Coloring;
 using Model.Core.Highlighting;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -29,7 +28,7 @@ public static class ForcingNetsUtility
 
         foreach (var path in paths)
         {
-            for (int i = path.Links.Length - 1; i >= 0; i--)
+            for (int i = path.Links.Count - 1; i >= 0; i--)
             {
                 var from = path.Elements[i];
                 var to = path.Elements[i + 1];
@@ -60,7 +59,7 @@ public static class ForcingNetsUtility
         for (int i = 0; i < paths.Count; i++)
         {
             var letter = (char)('a' + i);
-            builder.Append($"{letter}) {paths[i].ToLinkChainString()}\n");
+            builder.Append($"{letter}) {paths[i]}\n");
         }
 
         return builder.ToString();
@@ -78,7 +77,7 @@ public static class ForcingNetsUtility
         {
             var current = queue.Dequeue();
 
-            for (int i = 0; i < current.Links.Length; i++)
+            for (int i = 0; i < current.Links.Count; i++)
             {
                 if (current.Elements[i] is not CellPossibility from) continue;
                 if (current.Elements[i + 1] is not CellPossibility to) continue;

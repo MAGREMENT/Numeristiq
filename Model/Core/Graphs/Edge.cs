@@ -15,7 +15,7 @@ public class Edge<T> where T : notnull
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(From.GetHashCode() ^ To.GetHashCode());
+        return From.GetHashCode() ^ To.GetHashCode();
     }
 
     public override bool Equals(object? obj)

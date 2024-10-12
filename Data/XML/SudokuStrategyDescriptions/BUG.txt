@@ -1,0 +1,2 @@
+﻿A Bi-value Universal Grave (BUG) is a pattern in which every candidates is found either 0 or 2 times in each unit (row, column and box).
+A Sudoku presenting this pattern has more than one solution. In the case of Sudoku with a unique solution, at least one possibility preventing the BUG must be true

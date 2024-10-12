@@ -1,10 +1,8 @@
 ﻿using Model.Core;
 using Model.Sudokus;
 using Model.Sudokus.Solver;
-using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
-using Model.Utility.BitSets;
 using Tests.Utility;
 
 namespace Tests;

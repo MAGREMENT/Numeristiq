@@ -1,0 +1,1 @@
+﻿One the basic strategies for solving Sudoku's. When a unit (row, column or box) has only one cell holding a possibility, then that possibility must be the solution for that cell

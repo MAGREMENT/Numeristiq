@@ -1,16 +1,48 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using Model.Core.Descriptions;
 using Model.XML;
 
 namespace Model.Sudokus.Solver.Descriptions;
 
-public static class SudokuDescriptionParser
+public class SudokuDescriptionParser : DescriptionParser<ISudokuDescriptionDisplayer>
 {
+    public SudokuDescriptionParser(string directory, bool searchParentDirectories, bool createIfNotFound) 
+        : base(directory, searchParentDirectories, createIfNotFound) { }
+
+    protected override IDescription<ISudokuDescriptionDisplayer> ParseXml(string path)
+    {
+        return FromXML(path);
+    }
+    
+    protected override IDescription<ISudokuDescriptionDisplayer> ParseTxt(string path)
+    {
+        return FromTxt(path);
+    }
+
+    public static IDescription<ISudokuDescriptionDisplayer> FromTxt(string path)
+    {
+        using var reader = new StreamReader(path, Encoding.UTF8);
+        return new TextDescription<ISudokuDescriptionDisplayer>(reader.ReadToEnd());
+    }
+    
     public static IDescription<ISudokuDescriptionDisplayer> FromXML(string path)
     {
-        var parsed = XMLParser.Parse(path);
+        var parsed = XMLParser.Parse(path).ToArray();
         var result = new DescriptionCollection<ISudokuDescriptionDisplayer>();
-        foreach (var element in parsed)
+        if (parsed.Length == 0) return result;
+
+        IEnumerable<IXMLElement> enumerable = parsed;
+        if (parsed.Length == 1 && parsed[0].IsTag)
+        {
+            var root = parsed[0].GetTagValue();
+            if (root.Name == "description") enumerable = root;
+        }
+        
+        foreach (var element in enumerable)
         {
             if (element.IsTag)
             {

@@ -1,0 +1,1 @@
+﻿This is a strategy relying on uniqueness. It consists of a catalogue of patterns that examine every clue and any solution in a designated area of the Sudoku. These patterns are generated beforehand by computers, making this strategy a bit controversial.

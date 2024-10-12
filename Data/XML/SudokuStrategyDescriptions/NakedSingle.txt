@@ -1,0 +1,1 @@
+﻿One of the basic strategies for solving Sudoku's. When a cell has only one possibility, then it must be the solution for that cell

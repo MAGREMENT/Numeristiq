@@ -1,7 +1,6 @@
 using Model.Core.Graphs;
 using Model.Core.Graphs.Coloring;
 using Model.Core.Graphs.Coloring.ColoringResults;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.AlternatingInference.Algorithms;
@@ -28,7 +27,7 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
                 {
                     var (path1, isMono1) = onColoring.History!.GetPathToRootWithGuessedLinksAndMonoCheck(entry.Key, entry.Value, graph);
                     var (path2, isMono2) = offColoring.History!.GetPathToRootWithGuessedLinksAndMonoCheck(entry.Key, coloring, graph);
-                    if(path2.Count < 2 || path1.Count < 2 || path1.Count + path2.Count < 6) continue;
+                    if(path2.Elements.Count < 2 || path1.Elements.Count < 2 || path1.Elements.Count + path2.Elements.Count < 6) continue;
                     
                     var loop = path1.TryMakeLoop(isMono1, path2, isMono2);
                     if (loop is null) continue;

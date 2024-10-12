@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Model.Core.Graphs;
 
@@ -182,10 +182,10 @@ public static class CycleBasis //TODO test
         List<T> elements = new();
         List<LinkStrength> links = new();
 
-        for (int i = 0; i < fullPath.Count; i++)
+        for (int i = 0; i < fullPath.Elements.Count; i++)
         {
             elements.Add(fullPath.Elements[i]); 
-            links.Add(i == fullPath.Count - 1 ? middleLink : fullPath.Links[i]);
+            links.Add(i == fullPath.Elements.Count - 1 ? middleLink : fullPath.Links[i]);
         }
 
         for (int i = index; i >= 0; i--)
@@ -200,60 +200,65 @@ public static class CycleBasis //TODO test
     public static Loop<TElement, LinkStrength>? DefaultCombineLoops<TElement>(Loop<TElement, LinkStrength> one,
         Loop<TElement, LinkStrength> two) where TElement : notnull
     {
-        int oneIndex1 = -1;
-        int oneIndex2 = -1;
-        
-        int twoIndex1 = -1;
-        int twoIndex2 = -1;
-
-        for (int i = 0; i < one.Count; i++)
+        Dictionary<TElement, EdgeTo<LinkStrength, TElement>> edges = new();
+        for (int i = 0; i < one.Elements.Count; i++)
         {
-            var index = two.IndexOf(one.Elements[i]);
-            if (index == -1) continue;
+            edges.Add(one.Elements[i], new EdgeTo<LinkStrength, TElement>(
+                one.Links[i],
+                one.Elements[i < one.Elements.Count - 1 ? i + 1 : 0]));
+        }
 
-            if (oneIndex1 == -1)
+        for (int i = 0; i < two.Elements.Count; i++)
+        {
+            var curr = two.Elements[i];
+            var next = two.Elements[i < two.Elements.Count - 1 ? i + 1 : 0];
+            var link = two.Links[i];
+
+            var fromCurr = edges.TryGetValue(curr, out var v);
+            if (fromCurr && v!.To.Equals(next))
             {
-                oneIndex1 = i;
-                twoIndex1 = index;
+                if (!v.Edge.Equals(link)) return null;
+                
+                edges.Remove(curr);
+                continue;
             }
-            else if (oneIndex2 == -1)
+
+            var fromNext = edges.TryGetValue(next, out v);
+            if (fromNext && v!.To.Equals(curr))
             {
-                oneIndex2 = i;
-                twoIndex2 = index;
+                if (!v.Edge.Equals(link)) return null;
+                
+                edges.Remove(next);
+                continue;
             }
+
+            if (fromCurr) edges.Add(next, new EdgeTo<LinkStrength, TElement>(link, curr));
+            else if (fromNext) edges.Add(curr, new EdgeTo<LinkStrength, TElement>(link, next));
             else return null;
         }
-        
-        if (twoIndex1 == -1) return null;
 
-        var elements = new TElement[one.Count + two.Count - 2];
-        var links = new LinkStrength[one.Count + two.Count - 2];
+        if (edges.Count <= 2) return null;
 
-        var oneLength = oneIndex2 - oneIndex1 + 1;
-        Array.Copy(one.Elements, 0, elements, oneIndex1, oneLength);
-        Array.Copy(one.Links, 0, links, oneIndex1, oneLength - 1);
+        var elements = new TElement[edges.Count];
+        var links = new LinkStrength[edges.Count];
+        var current = edges.Keys.First();
+        elements[0] = current;
 
-        var diff = twoIndex2 < oneIndex2 ? 1 : -1;
-        var cursor1 = oneLength;
-        var cursor2 = twoIndex1;
-
-        AdvanceInLoop(ref cursor2, diff, two.Count);
-        while (cursor2 != twoIndex2)
+        EdgeTo<LinkStrength, TElement>? buffer;
+        for (int i = 1; i < elements.Length; i++)
         {
-            elements[cursor1] = two.Elements[cursor2];
-            
-            cursor1++;
-            AdvanceInLoop(ref cursor2, diff, two.Count);
-        }
-        
-        return new Loop<TElement, LinkStrength>(elements, links);
-    }
+            if (!edges.TryGetValue(current, out buffer)) return null;
 
-    private static void AdvanceInLoop(ref int index, int diff, int count)
-    {
-        index += diff;
-        if (index == -1) index = count - 1;
-        else if (index == count) index = 0;
+            elements[i] = buffer.To;
+            links[i - 1] = buffer.Edge;
+            current = buffer.To;
+        }
+
+        buffer = edges[elements[^1]];
+        if (!buffer.To.Equals(elements[0])) return null;
+
+        links[^1] = buffer.Edge;
+        return new Loop<TElement, LinkStrength>(elements, links);
     }
 }
 

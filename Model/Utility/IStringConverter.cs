@@ -7,6 +7,34 @@ public interface IStringConverter
     public string Convert(string s);
 }
 
+public class SpacedToCamelCaseConverter : IStringConverter
+{
+    private readonly StringBuilder _builder = new();
+
+    public static SpacedToCamelCaseConverter Instance { get; } = new();
+
+    public string Convert(string? s)
+    {
+        if (s is null) return string.Empty;
+
+        _builder.Clear();
+        var shouldBeUpper = true;
+        foreach (var c in s)
+        {
+            if (c == ' ')
+            {
+                shouldBeUpper = true;
+                continue;
+            }
+
+            _builder.Append(shouldBeUpper ? char.ToUpper(c) : c);
+            shouldBeUpper = false;
+        }
+
+        return _builder.ToString();
+    }
+}
+
 public class CamelCaseToSpacedConverter : IStringConverter
 {
     private readonly StringBuilder _builder = new();

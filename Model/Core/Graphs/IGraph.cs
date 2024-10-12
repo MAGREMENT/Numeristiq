@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Model.Core.Graphs;
 
@@ -41,6 +42,21 @@ public interface IValueCollection<in TElement, TValue>
 public enum LinkStrength
 {
     None = 0, Strong = 1, Weak = 2, Any = 3
+}
+
+public static class LinkStrengthExtensions
+{
+    public static char ToChar(this LinkStrength ls)
+    {
+        return ls switch
+        {
+            LinkStrength.Strong => '=',
+            LinkStrength.Weak => '-',
+            LinkStrength.None => '|',
+            LinkStrength.Any => '?',
+            _ => throw new ArgumentOutOfRangeException(nameof(ls), ls, null)
+        };
+    }
 }
 
 public enum LinkType

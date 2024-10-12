@@ -21,7 +21,7 @@ public class SudokuDescriptionParserTests
                 0, 5, 3, 5, 
                 "bbaddaaabbaedaaaebaefaaaebaffaaafbaadaaafbabdaaadafddaaa", TextDisposition.Left));
 
-        var path = PathFinder.Find(@"\Data\XML\Tests\Sudoku.txt", true, false);
+        var path = PathFinder.Find(@"\Data\XML\Tests\Sudoku.xml", true, false);
         Assert.That(path, Is.Not.Null);
 
         var parsed = SudokuDescriptionParser.FromXML(path!);

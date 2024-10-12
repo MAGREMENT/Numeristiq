@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Model.Sudokus.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -35,22 +36,17 @@ public interface IPossibilitySet : ISudokuElement
 
     public static bool InternalEquals(IPossibilitySet s, object? obj)
     {
-        if (obj is not IPossibilitySet set || set.PositionsCount != s.PositionsCount) return false;
-
-        foreach (var cp in s.EnumerateCellPossibilities())
-        {
-            if (!set.Contains(cp)) return false;
-        }
-
-        return true;
+        return obj is IPossibilitySet set && set.EveryPossibilities() == s.EveryPossibilities()
+                                          && set.PositionsCount == s.PositionsCount
+                                          && s.EveryCell().SequenceEqual(set.EveryCell());
     }
 
     public static int InternalHash(IPossibilitySet s)
     {
-        int hash = 0;
-        foreach (var cp in s.EnumerateCellPossibilities())
+        int hash = s.EveryPossibilities().GetHashCode();
+        foreach (var cell in s.EveryCell())
         {
-            hash ^= cp.GetHashCode();
+            hash ^= cell.GetHashCode();
         }
 
         return hash;

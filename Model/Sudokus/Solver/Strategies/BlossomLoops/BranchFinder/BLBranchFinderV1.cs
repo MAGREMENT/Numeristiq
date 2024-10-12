@@ -42,7 +42,7 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
 
                     bool isBranch = false;
                     int i = 0;
-                    for (; i < loop.Elements.Length; i += 2)
+                    for (; i < loop.Elements.Count; i += 2)
                     {
                         if (graph.AreNeighbors(loop.Elements[i], friend) &&
                             graph.AreNeighbors(loop.Elements[i + 1], friend))
@@ -55,7 +55,7 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
                     if (!isBranch) continue;
                     
                     var path = parents.GetPathToRootWithGuessedLinks(friend, opposite);
-                    if (path.Count < 3 || path.Count % 2 != 1) continue;
+                    if (path.Elements.Count < 3 || path.Elements.Count % 2 != 1) continue;
 
                     var branch = new BlossomLoopBranch(path, loop.Elements[i], loop.Elements[i + 1]);
                     if (!CheckTargetOverlap(result, cursor, branch, graph)) continue;

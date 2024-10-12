@@ -54,9 +54,6 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
     {
         foreach (var friend in graph.NeighborsWithEdges(chain.LastElement()))
         {
-            /*if (chain.Count > 2 && chain.FirstElement().Equals(friend.To) &&
-                 CheckForLoop(strategyManager, chain, friend.Cells)) return true;*/
-            
             if (explored.Contains(friend.To) || occupied.ContainsAny(friend.To.EveryPossibilities())) continue;
 
             var lastLink = chain.LastLink();
@@ -73,46 +70,6 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
                 
                 chain.RemoveLast();
             }
-        }
-
-        return false;
-    }
-
-    private bool CheckForLoop(ISudokuSolverData solverData, ChainBuilder<IPossibilitySet, Cell> builder,
-        Cell[] possibleLastLinks)
-    {
-        foreach (var ll in possibleLastLinks)
-        {
-            if (ll == builder.FirstLink()) continue;
-            var chain = builder.ToChain();
-
-            foreach (var pp in chain.Elements)
-            {
-                foreach (var cell in pp.EnumerateCells())
-                {
-                    foreach (var p in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
-                    {
-                        var cp = new CellPossibility(cell, p);
-                        if (!Contains(chain, cp)) solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
-                    }
-                }
-            }
-
-            if (solverData.ChangeBuffer.NeedCommit())
-            {
-                solverData.ChangeBuffer.Commit(new AlmostHiddenSetsChainReportBuilder(chain, ll));
-                if (StopOnFirstCommit) return true;
-            }
-        }
-
-        return false;
-    }
-
-    private bool Contains(Chain<IPossibilitySet, Cell> chain, CellPossibility cp)
-    {
-        foreach (var element in chain)
-        {
-            if (element.Contains(cp)) return true;
         }
 
         return false;
@@ -174,20 +131,11 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericCh
 {
     private readonly Chain<IPossibilitySet, Cell> _chain;
     private readonly List<Edge<CellPossibility>> _links;
-    private readonly Cell? _additionalLink;
 
     public AlmostHiddenSetsChainReportBuilder(Chain<IPossibilitySet, Cell> chain, List<Edge<CellPossibility>> links)
     {
         _chain = chain;
         _links = links;
-        _additionalLink = null;
-    }
-
-    public AlmostHiddenSetsChainReportBuilder(Chain<IPossibilitySet, Cell> chain, Cell additionalLink)
-    {
-        _chain = chain;
-        _links = new List<Edge<CellPossibility>>();
-        _additionalLink = additionalLink;
     }
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
@@ -212,7 +160,6 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericCh
             {
                 lighter.EncircleCell(cell);
             }
-            if(_additionalLink is not null) lighter.EncircleCell(_additionalLink.Value);
 
             foreach (var link in _links)
             {

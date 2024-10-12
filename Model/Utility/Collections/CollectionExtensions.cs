@@ -93,6 +93,14 @@ public static class CollectionExtensions
 
         return hash;
     }
+
+    public static void CopyInto<T>(this IReadOnlyList<T> list, int ind1, T[] output, int ind2, int len)
+    {
+        for (int i = 0; i < len; i++)
+        {
+            output[ind2 + i] = list[ind1 + i];
+        }
+    }
 }
 
 public delegate string Stringify<in T>(T value);
