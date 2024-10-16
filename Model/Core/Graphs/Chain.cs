@@ -74,7 +74,7 @@ public class Chain<TElement, TLink> : IEnumerable<TElement> where TElement : not
         for (int i = 0; i < Elements.Count - 1; i++)
         {
             var l = Links[i] is LinkStrength ls ? ls.ToChar().ToString() : $"-{Links[i]}-";
-            builder.Append($"{Elements[i + 1]} {l} ");
+            builder.Append($" {l} {Elements[i + 1]}");
         }
 
         if (Links.Count == Elements.Count)
@@ -131,6 +131,24 @@ public class Loop<TElement, TLink> : Chain<TElement, TLink> where TElement : not
         if (Elements.Count % 2 == 1 && Elements[half].Equals(element)) return true;
         
         return false;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Loop<TElement, TLink> loop || loop.Elements.Count != Elements.Count) return false;
+
+        var index = loop.IndexOf(Elements[0]);
+        if (index == -1) return false;
+
+        for (int i = 1; i < Elements.Count; i++)
+        {
+            if (!loop.Links[index].Equals(Links[i])) return false;
+            
+            index = (index + 1) % Elements.Count;
+            if (!loop.Elements[index].Equals(Elements[i])) return false;
+        }
+
+        return loop.Links[index].Equals(Links[0]);
     }
 }
 

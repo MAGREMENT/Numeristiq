@@ -43,7 +43,7 @@ public class SudokuDescriptionParser : DescriptionParser<ISudokuDescriptionDispl
         if (parsed.Length == 1 && parsed[0].IsTag)
         {
             var root = parsed[0].GetTagValue();
-            if (root.Name == "description") enumerable = root;
+            if (root.Name == "description") enumerable = root.Content ?? Enumerable.Empty<IXMLElement>();
         }
         
         foreach (var element in enumerable)
@@ -54,14 +54,14 @@ public class SudokuDescriptionParser : DescriptionParser<ISudokuDescriptionDispl
                 switch (tag.Name)
                 {
                     case "p":
-                        result.Add(new TextDescription<ISudokuDescriptionDisplayer>(tag.GetStringValue()));
+                        result.Add(new TextDescription<ISudokuDescriptionDisplayer>(tag.AsString()));
                         break;
                     case "step":
                         if (!tag.TryGetAttributeValue("state", out var state))
                             throw new Exception("step tag need state attribute");
 
                         result.Add(new SudokuStepDescription(
-                            tag.GetStringValue(),
+                            tag.AsString(),
                             state,
                             tag.GetAttributeValue("cropping", SudokuCropping.Default(), CastCropping),
                             tag.GetAttributeValue("highlight"),

@@ -42,7 +42,7 @@ public class CycleBasisTests
     }
 
     [Test]
-    public void CombineLoopsTest() //TODO test more situations + links
+    public void CombineLoopsTest() //TODO test more situations (for exemple, where there is 2 result loops)
     {
         var l1 = new Loop<int, LinkStrength>(new[] { 1, 2, 3, 4, 5 }, new LinkStrength[5]);
         var l2 = new Loop<int, LinkStrength>(new[] { 5, 1, 6 }, new LinkStrength[3]);
@@ -55,11 +55,65 @@ public class CycleBasisTests
 
         l1 = new Loop<int, LinkStrength>(new[] { 3, 2, 1, 4 }, new LinkStrength[4]);
         l2 = new Loop<int, LinkStrength>(new[] { 5, 4, 1, 2, 3 }, new LinkStrength[5]);
-        expected = new Loop<int, LinkStrength>(new[] { 3, 5, 4 }, new LinkStrength[3]);
+        expected = new Loop<int, LinkStrength>(new[] { 5, 4, 3 }, new LinkStrength[3]);
         
         result = CycleBasis.DefaultCombineLoops(l1, l2);
         
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.EqualTo(expected));
+
+        l1 = new Loop<int, LinkStrength>(
+            new[]
+            {
+                1, 2, 3, 4, 5, 6
+            },
+            new[]
+            {
+                LinkStrength.Weak, LinkStrength.Weak, LinkStrength.Strong, LinkStrength.Weak,
+                LinkStrength.Weak, LinkStrength.Strong
+            });
+        l2 = new Loop<int, LinkStrength>(
+            new[]
+            {
+                7, 2, 3, 8, 9
+            },
+            new[]
+            {
+                LinkStrength.Weak, LinkStrength.Weak, LinkStrength.Weak, LinkStrength.Weak, LinkStrength.Weak
+            });
+        expected = new Loop<int, LinkStrength>(new[]
+        {
+            1, 2, 7, 9, 8, 3, 4, 5, 6
+        }, new[]
+        {
+            LinkStrength.Weak, LinkStrength.Weak, LinkStrength.Weak, LinkStrength.Weak, LinkStrength.Weak,
+            LinkStrength.Strong, LinkStrength.Weak, LinkStrength.Weak, LinkStrength.Strong
+        });
+
+        result = CycleBasis.DefaultCombineLoops(l1, l2);
+        
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.EqualTo(expected));
+
+        l1 = new Loop<int, LinkStrength>(new[]
+        {
+            1, 2, 3, 4, 5, 6
+        }, new[]
+        {
+            LinkStrength.Weak, LinkStrength.Weak, LinkStrength.Strong, LinkStrength.Weak, LinkStrength.Weak,
+            LinkStrength.Strong
+        });
+        l2 = new Loop<int, LinkStrength>(new[]
+        {
+            7, 8, 4, 9, 10, 11, 5, 6
+        }, new[]
+        {
+            LinkStrength.Weak, LinkStrength.Weak, LinkStrength.Weak, LinkStrength.Weak, 
+            LinkStrength.Strong, LinkStrength.Strong, LinkStrength.Weak, LinkStrength.Strong
+        });
+        
+        result = CycleBasis.DefaultCombineLoops(l1, l2);
+
+        Assert.That(result, Is.Null);
     }
 }

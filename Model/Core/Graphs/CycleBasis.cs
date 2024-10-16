@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Utility.BitSets;
 
 namespace Model.Core.Graphs;
 
@@ -208,50 +209,104 @@ public static class CycleBasis //TODO test
                 one.Elements[i < one.Elements.Count - 1 ? i + 1 : 0]));
         }
 
+        TElement curr;
+        TElement next;
+        //-1 = undetermined, 0 = same, 1 = opposite
+        int cycle = -1;
+        InfiniteBitSet ignored = new();
+
         for (int i = 0; i < two.Elements.Count; i++)
         {
-            var curr = two.Elements[i];
-            var next = two.Elements[i < two.Elements.Count - 1 ? i + 1 : 0];
-            var link = two.Links[i];
+            curr = two.Elements[i];
+            var ind = i < two.Elements.Count - 1 ? i + 1 : 0;
+            next = two.Elements[ind];
 
-            var fromCurr = edges.TryGetValue(curr, out var v);
-            if (fromCurr && v!.To.Equals(next))
+            if (edges.TryGetValue(curr, out var v) && v.To.Equals(next))
             {
-                if (!v.Edge.Equals(link)) return null;
+                if (!v.Edge.Equals(two.Links[i])) return null;
                 
                 edges.Remove(curr);
+                ignored.Add(i);
+                
+                switch (cycle)
+                {
+                    case -1:
+                        cycle = 1;
+                        break;
+                    case 0:
+                        return null;
+                }
+
                 continue;
             }
 
-            var fromNext = edges.TryGetValue(next, out v);
-            if (fromNext && v!.To.Equals(curr))
+            if (edges.TryGetValue(next, out v) && v.To.Equals(curr))
             {
-                if (!v.Edge.Equals(link)) return null;
+                if (!v.Edge.Equals(two.Links[i])) return null;
                 
                 edges.Remove(next);
-                continue;
+                ignored.Add(ind);
+                
+                switch (cycle)
+                {
+                    case -1:
+                        cycle = 0;
+                        break;
+                    case 1:
+                        return null;
+                }
             }
+        }
 
-            if (fromCurr) edges.Add(next, new EdgeTo<LinkStrength, TElement>(link, curr));
-            else if (fromNext) edges.Add(curr, new EdgeTo<LinkStrength, TElement>(link, next));
-            else return null;
+        switch (cycle)
+        {
+            case -1:
+                return null;
+            case 0:
+            {
+                for (int i = 0; i < two.Elements.Count; i++)
+                {
+                    curr = two.Elements[i];
+                    var ind = i < two.Elements.Count - 1 ? i + 1 : 0;
+                    next = two.Elements[ind];
+
+                    if (!ignored.Contains(ind) &&
+                        !edges.TryAdd(curr, new EdgeTo<LinkStrength, TElement>(two.Links[i], next))) return null;
+                }
+
+                break;
+            }
+            default:
+            {
+                for (int i = two.Elements.Count - 1; i >= 0; i--)
+                {
+                    curr = two.Elements[i];
+                    var ind = i == 0 ? two.Elements.Count - 1 : i - 1;
+                    next = two.Elements[ind];
+
+                    if (!ignored.Contains(ind) &&
+                        !edges.TryAdd(curr, new EdgeTo<LinkStrength, TElement>(two.Links[i], next))) return null;
+                }
+
+                break;
+            }
         }
 
         if (edges.Count <= 2) return null;
 
         var elements = new TElement[edges.Count];
         var links = new LinkStrength[edges.Count];
-        var current = edges.Keys.First();
-        elements[0] = current;
+        curr = edges.Keys.First();
+        elements[0] = curr;
 
         EdgeTo<LinkStrength, TElement>? buffer;
         for (int i = 1; i < elements.Length; i++)
         {
-            if (!edges.TryGetValue(current, out buffer)) return null;
+            if (!edges.TryGetValue(curr, out buffer)) return null;
 
             elements[i] = buffer.To;
             links[i - 1] = buffer.Edge;
-            current = buffer.To;
+            curr = buffer.To;
         }
 
         buffer = edges[elements[^1]];

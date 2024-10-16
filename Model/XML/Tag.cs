@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Model.Utility.Collections;
 
 namespace Model.XML;
 
-public class Tag : ITagContent
+public class Tag : ITagContentXMLElement
 {
     private Dictionary<string, string>? _attributes;
     
@@ -62,9 +61,14 @@ public class Tag : ITagContent
 
     public bool IsTag => true;
 
+    public string AsString()
+    {
+        return Content is null ? string.Empty : Content.AsString();
+    }
+
     public string GetStringValue()
     {
-        return Content is null ? string.Empty : Content.GetStringValue();
+        return AsString();
     }
 
     public Tag GetTagValue() => this;
@@ -72,7 +76,7 @@ public class Tag : ITagContent
     public void SetContent(ITagContent content) => Content = content;
     public void SetContent(string content) => Content = new Text(content);
 
-    public void AddToContent(ITagContent content)
+    public void AddToContent(ITagContentXMLElement content)
     {
         if (Content is null)
         {
@@ -80,7 +84,9 @@ public class Tag : ITagContent
             return;
         }
 
-        var collection = new TagContentCollection { Content, content };
+        var collection = new TagContentCollection();
+        collection.AddRange(Content);
+        collection.Add(content);
         Content = collection;
     }
 
@@ -101,9 +107,9 @@ public class Tag : ITagContent
         return hash;
     }
 
-    public IEnumerator<ITagContent> GetEnumerator()
+    public IEnumerator<IXMLElement> GetEnumerator()
     {
-        return Content is null ? Enumerable.Empty<ITagContent>().GetEnumerator() : Content.GetEnumerator();
+        yield return this;
     }
 
     public override bool Equals(object? obj)
@@ -168,11 +174,9 @@ public class Tag : ITagContent
 
 public delegate T Cast<out T>(string s);
 
-public class TagContentCollection : List<ITagContent>, ITagContent
+public class TagContentCollection : List<IXMLElement>, ITagContent
 {
-    public bool IsTag => false;
-
-    public string GetStringValue()
+    public string AsString()
     {
         var builder = new StringBuilder();
         foreach (var tag in this)
@@ -181,11 +185,6 @@ public class TagContentCollection : List<ITagContent>, ITagContent
         }
 
         return builder.ToString();
-    }
-
-    public Tag GetTagValue()
-    {
-        throw new Exception("Not a tag");
     }
 
     public override int GetHashCode()
@@ -217,7 +216,7 @@ public class TagContentCollection : List<ITagContent>, ITagContent
     }
 }
 
-public class Text : ITagContent
+public class Text : ITagContentXMLElement
 {
     private readonly string _value;
 
@@ -227,6 +226,11 @@ public class Text : ITagContent
     }
 
     public bool IsTag => false;
+
+    public string AsString()
+    {
+        return _value;
+    }
 
     public string GetStringValue()
     {
@@ -243,9 +247,9 @@ public class Text : ITagContent
         return _value.GetHashCode();
     }
 
-    public IEnumerator<ITagContent> GetEnumerator()
+    public IEnumerator<IXMLElement> GetEnumerator()
     {
-        yield break;
+        yield return this;
     }
 
     public override bool Equals(object? obj)
@@ -264,6 +268,9 @@ public class Text : ITagContent
     }
 }
 
-public interface ITagContent : IXMLElement, IEnumerable<ITagContent>
+public interface ITagContent : IEnumerable<IXMLElement>
 {
+    string AsString();
 }
+
+public interface ITagContentXMLElement : ITagContent, IXMLElement {}

@@ -23,6 +23,11 @@ public class Edge<T> where T : notnull
         return obj is Edge<T> l &&
                ((l.From.Equals(From) && l.To.Equals(To)) || (l.From.Equals(To) && l.To.Equals(From)));
     }
+
+    public override string ToString()
+    {
+        return $"{From} -> {To}";
+    }
 }
 
 public class EdgeTo<TEdge, TElement>  where TEdge : notnull where TElement : notnull
@@ -44,5 +49,14 @@ public class EdgeTo<TEdge, TElement>  where TEdge : notnull where TElement : not
     public override bool Equals(object? obj)
     {
         return obj is EdgeTo<TEdge, TElement> e && e.Edge.Equals(Edge) && e.To.Equals(To);
+    }
+
+    public override string ToString()
+    {
+        string link;
+        if (Edge is LinkStrength ls) link = ls.ToChar().ToString();
+        else link = $"-{Edge}-";
+
+        return $"{link} {To}";
     }
 }

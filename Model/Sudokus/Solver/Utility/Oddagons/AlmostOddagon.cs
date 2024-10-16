@@ -25,32 +25,21 @@ public class AlmostOddagon
     public override int GetHashCode()
     {
         var hash = 0;
-        foreach (var e in Loop.Elements)
-        {
-            hash ^= e.GetHashCode();
-        }
-
-        var hash2 = 0;
         foreach (var g in Guardians)
         {
             hash ^= g.GetHashCode();
         }
-        return HashCode.Combine(hash, hash2);
+        return HashCode.Combine(hash, Loop.GetHashCode());
     }
 
     public override bool Equals(object? obj)
     {
-        if (obj is not AlmostOddagon ao || ao.Loop.Elements.Count != Loop.Elements.Count || ao.Guardians.Length != Guardians.Length)
+        if (obj is not AlmostOddagon ao || ao.Guardians.Length != Guardians.Length || !ao.Loop.Equals(Loop))
             return false;
 
         foreach (var g in Guardians)
         {
             if (!ao.Guardians.Contains(g)) return false;
-        }
-
-        foreach (var e in Loop.Elements)
-        {
-            if (!ao.Loop.Contains(e)) return false;
         }
 
         return true;
