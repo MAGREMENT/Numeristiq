@@ -88,7 +88,7 @@ public partial class ThemeWindow : IThemeView
 
     public void RedrawExampleGrid()
     {
-        (Embedded.OptimizableContent as DrawingBoard)?.Refresh();
+        Board.Refresh();
     }
 
     private void Copy(object sender, RoutedEventArgs e)

@@ -2,134 +2,67 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
-using DesktopApplication.View.Controls;
-using Model.Core.Changes;
 
 namespace DesktopApplication.View.Themes.Controls;
 
-public class ExampleBoard : DrawingBoard, ISizeOptimizable
+public class ExampleBoard : StackedDrawingBoard, IThemeExampleDrawingData
 {
-    private const int RowCount = 5;
-    private const int ColumnCount = 7;
+    private const int CellCount = 10;
     
-    private double _cellSize;
-    private double _lineWidth;
-    
+    public override double Size => ActualWidth;
+    public override double Space => CellSize / 2;
+    public double LineWidth => 3;
+    public double CellSize => (Size - (CellCount + 1) * LineWidth) / CellCount;
+
     public Typeface Typeface { get; } = new(new FontFamily(new Uri("pack://application:,,,/View/Fonts/"), "./#Roboto Mono"),
         FontStyles.Normal, FontWeights.Regular, FontStretches.Normal);
     public CultureInfo CultureInfo { get; } =  CultureInfo.CurrentUICulture;
-
-    public double CellSize
-    {
-        get => _cellSize;
-        set
-        {
-            _cellSize = value;
-            UpdateSize(true);
-        }
-    }
-    
-    public double LineWidth
-    {
-        get => _lineWidth;
-        set
-        {
-            _lineWidth = value;
-            UpdateSize(true);
-        }
-    }
-    
-    public Brush BackgroundBrush
-    {
-        set => SetValue(BackgroundBrushProperty, value);
-        get => (Brush)GetValue(BackgroundBrushProperty);
-    }
     
     public Brush LineBrush
     {
         set => SetValue(LineBrushProperty, value);
         get => (Brush)GetValue(LineBrushProperty);
     }
-    
-    protected override void Draw(DrawingContext context)
-    {
-        context.DrawRectangle(BackgroundBrush, null, new Rect(0, 0, Width, Height));
-        
-        context.DrawRectangle(App.Current.ThemeInformation.ToBrush(StepColor.Change1), null,
-            GetGridRect(0, 1));
-        context.DrawRectangle(App.Current.ThemeInformation.ToBrush(StepColor.Change2), null,
-            GetGridRect(0, 2));
 
-        var color = (int)StepColor.Cause1;
-        int row = 1;
-        int col = 0;
-        while (color <= (int)StepColor.Cause10)
+    public ExampleBoard()
+    {
+        AddLayer(new CellNumbersExampleDrawableComponent());
+        //TODO rest
+    }
+}
+
+public interface IThemeExampleDrawingData : IDefaultSingleSizeConstraintDrawingData
+{
+    public double LineWidth { get; }
+    public double CellSize { get; }
+    public Brush LineBrush { get; }
+}
+
+public class CellNumbersExampleDrawableComponent : ISingleSizeConstraintDrawableComponent<IThemeExampleDrawingData>
+{
+    public double Draw(DrawingContext context, double start, IThemeExampleDrawingData data)
+    {
+        var h = data.CellSize + 2 * data.LineWidth;
+        double x = 0;
+        for (int i = 0; i < 11; i++)
         {
-            var rect = GetGridRect(row, col);
-            context.DrawRectangle(App.Current.ThemeInformation.ToBrush((StepColor) color), null, rect);
-            
-            var text = new FormattedText(((color - (int)StepColor.Cause1 + 1) % 10).ToString(), CultureInfo,
-                FlowDirection.LeftToRight, Typeface, CellSize / 4 * 3, LineBrush, GetPixelsPerDip());
-            DrawableComponentHelper.DrawTextInRectangle(context, text, rect, ComponentHorizontalAlignment.Center,
-                ComponentVerticalAlignment.Center);
-            
-            col++;
-            if (col >= ColumnCount)
+            context.DrawRectangle(data.LineBrush, null, new Rect(x, start, data.LineWidth, h));
+            if (i is > 0 and < 10)
             {
-                col = 0;
-                row++;
+                var text = new FormattedText(i.ToString(), data.CultureInfo, FlowDirection.LeftToRight,
+                    data.Typeface, data.CellSize * 3 / 4, data.LineBrush, data.GetPixelsPerDip());
+                DrawableComponentHelper.DrawTextInRectangle(context, text, new Rect(x + data.LineWidth,
+                        start + data.LineWidth, data.CellSize, data.CellSize),
+                    ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center);
             }
 
-            color++;
+            x += data.CellSize + data.LineWidth;
         }
-
-        var start = 0.0;
-        for (int i = 0; i < ColumnCount + 1; i++)
-        {
-            context.DrawRectangle(LineBrush, null, new Rect(start, 0, _lineWidth, Height));
-            start += _cellSize + _lineWidth;
-        }
-
-        start = 0;
-        for (int i = 0; i < RowCount + 1; i++)
-        {
-            context.DrawRectangle(LineBrush, null, new Rect(0, start, Width, _lineWidth));
-            start += _cellSize + _lineWidth;
-        }
-    }
-
-    private Rect GetGridRect(int row, int col) => new(_lineWidth + col * (_lineWidth + _cellSize),
-        _lineWidth + row * (_lineWidth + _cellSize), CellSize, CellSize);
-    
-    private void UpdateSize(bool fireEvent)
-    {
-        var w = _lineWidth + (_lineWidth + _cellSize) * ColumnCount;
-        var h =  _lineWidth + (_lineWidth + _cellSize) * RowCount;
-        if (Math.Abs(Width - w) < 0.01 && Math.Abs(Height - h) < 0.01) return;
-
-        Width = w;
-        Height = h;
-        Refresh();
         
-        if(fireEvent) OptimizableSizeChanged?.Invoke();
-    }
+        context.DrawRectangle(data.LineBrush, null, new Rect(0, start, data.Size, data.LineWidth));
+        context.DrawRectangle(data.LineBrush, null, new Rect(0, start + data.CellSize + data.LineWidth,
+            data.Size, data.LineWidth));
 
-    public event OnSizeChange? OptimizableSizeChanged;
-    public double GetWidthSizeMetricFor(double space)
-    {
-        return (space - _lineWidth * (ColumnCount + 1)) / ColumnCount;
-    }
-
-    public double GetHeightSizeMetricFor(double space)
-    {
-        return (space - _lineWidth * (RowCount + 1)) / RowCount;
-    }
-
-    public bool HasSize() => true;
-
-    public void SetSizeMetric(double n)
-    {
-        _cellSize = n;
-        UpdateSize(false);
+        return h;
     }
 }

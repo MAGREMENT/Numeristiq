@@ -130,13 +130,13 @@
                     </ScrollViewer>
                 </Border>
                 
-                <controls:SizeOptimizedContentControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10"
-                                                      x:Name="Embedded">
-                    <controls:SizeOptimizedContentControl.OptimizableContent>
+                <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" CornerRadius="5"
+                        Background="{DynamicResource Background1}" Padding="10">
+                    <ScrollViewer Style="{StaticResource TransparentBarScrollViewer}">
                         <controls1:ExampleBoard LineBrush="{DynamicResource Text}"
-                                                LineWidth="3" CellSize="40" BackgroundBrush="Transparent"/>
-                    </controls:SizeOptimizedContentControl.OptimizableContent>
-                </controls:SizeOptimizedContentControl>
+                                                x:Name="Board"/>
+                    </ScrollViewer>
+                </Border>
             </Grid>
         </Border>
         

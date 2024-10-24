@@ -141,9 +141,37 @@ public abstract class LayeredDrawingBoard : DrawingBoard
     }
 }
 
+public abstract class StackedDrawingBoard : DrawingBoard
+{
+    private readonly List<ISingleSizeConstraintDrawableComponent> _layers = new();
+    
+    public abstract double Size { get; }
+    
+    public abstract double Space { get; }
+
+    protected void AddLayer(ISingleSizeConstraintDrawableComponent component) => _layers.Add(component);
+
+    protected override void Draw(DrawingContext context)
+    {
+        if (Size is double.NaN or <= 0) return;
+        
+        double start = 0;
+        for (int i = 0; i < _layers.Count; i++)
+        {
+            if(i > 0) start += Space;
+            start += _layers[i].Draw(context, start, this);
+        }
+    }
+}
+
 public interface IDrawableComponent
 {
     void Draw(DrawingContext context, object data);
+}
+
+public interface ISingleSizeConstraintDrawableComponent
+{
+    double Draw(DrawingContext context, double start, object data);
 }
 
 public interface IDrawableComponent<in T> : IDrawableComponent
@@ -153,6 +181,16 @@ public interface IDrawableComponent<in T> : IDrawableComponent
     void IDrawableComponent.Draw(DrawingContext context, object data)
     {
         if (data is T t) Draw(context, t);
+    }
+}
+
+public interface ISingleSizeConstraintDrawableComponent<in T> : ISingleSizeConstraintDrawableComponent
+{
+    double Draw(DrawingContext context, double start, T data);
+
+    double ISingleSizeConstraintDrawableComponent.Draw(DrawingContext context, double start, object data)
+    {
+        return data is T t ? Draw(context, start, t) : 0;
     }
 }
 
@@ -216,6 +254,16 @@ public static class DrawableComponentHelper
 
         context.DrawGeometry(brush, null, geometry);
     }
+}
+
+public interface IDefaultSingleSizeConstraintDrawingData
+{
+    double Size { get; }
+    
+    Typeface Typeface { get; }
+    CultureInfo CultureInfo { get; }
+    
+    double GetPixelsPerDip();
 }
 
 public interface IDefaultDrawingData
