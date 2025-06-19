@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Json;
 using Model.Core;
 using Model.Core.Trackers;
 
@@ -13,6 +14,7 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
     private const int AbsencesIndex = 3;
     private const int LimitIndex = 4;
     private const int OutputIndex = 5;
+    private const int SaveStatsIndex = 6;
     
     public override string Description { get; }
 
@@ -34,7 +36,9 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
                 ValueRequirement.Mandatory, ValueType.String),
             new Option("--limit", $"Limits the number of {name} solved", ValueRequirement.Mandatory,
                 ValueType.Int),
-            new Option("--output", "File to write the output to", 
+            new Option("--output", $"File to write the output {name}'s to", 
+                ValueRequirement.Mandatory, ValueType.WriteFile),
+            new Option("--save-stats", "File to write the statistics to",
                 ValueRequirement.Mandatory, ValueType.WriteFile)
         })
     {
@@ -103,6 +107,12 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
         Console.WriteLine(_statistics);
         _statistics.Detach();
 
+        if (report.IsOptionUsed(SaveStatsIndex))
+        {
+            var w = (StreamWriter)report.GetOptionValue(SaveStatsIndex)!;
+            w.Write(JsonSerializer.Serialize(_statistics.GetStatistics()));
+        }
+
         if (report.IsOptionUsed(FailsIndex))
         {
             if(fails.Count == 0) Console.WriteLine("\nNo fail detected");
@@ -140,6 +150,11 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
                     Console.WriteLine(a);
                 }
             }
+        }
+
+        if (report.IsOptionUsed(SaveStatsIndex))
+        {
+            
         }
     }
 

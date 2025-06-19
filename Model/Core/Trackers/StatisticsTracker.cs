@@ -146,6 +146,8 @@ public class StatisticsTracker<TSolvingState> : Tracker<TSolvingState>
                + '-'.Repeat(widthCap[6]) + "+" + '-'.Repeat(widthCap[7]) + "\n";
     }
 
+    public IReadOnlyList<StrategyStatistics> GetStatistics() => _statistics;
+
     private StrategyStatistics? Get(int initialIndex)
     {
         if (initialIndex < 0 || initialIndex >= _retransmissions.Count) return null;
@@ -155,8 +157,6 @@ public class StatisticsTracker<TSolvingState> : Tracker<TSolvingState>
 
         return _statistics[index];
     }
-
-    
 }
 
 public class StrategyStatistics
