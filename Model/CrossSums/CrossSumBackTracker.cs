@@ -42,7 +42,7 @@ public class CrossSumBackTracker : BackTracker<CrossSum, IAvailabilityChecker>
             _colTotals[col] -= val;
         }
 
-        return IsCorrect();
+        return Current.IsCorrect(_rowTotals, _colTotals);
     }
 
     protected override bool Search(IBackTrackingResult<CrossSum> result, int position)
@@ -74,43 +74,14 @@ public class CrossSumBackTracker : BackTracker<CrossSum, IAvailabilityChecker>
             _colTotals[col] -= val;
         }
 
-        if (!IsCorrect()) return false;
+        if (!Current.IsCorrect(_rowTotals, _colTotals)) return false;
         
         result.AddNewResult(Current.Copy());
         return StopAt >= result.Count;
     }
 
-    private bool IsCorrect()
-    {
-        for (int r = 0; r < Current.RowCount; r++)
-        {
-            if (_rowTotals[r] != Current.ExpectedForRow(r)) return false;
-        }
-
-        for (int c = 0; c < Current.ColumnCount; c++)
-        {
-            if (_colTotals[c] != Current.ExpectedForColumn(c)) return false;
-        }
-
-        return true;
-    }
-
     protected override void Initialize(bool reset)
     {
-        _colTotals = new int[Current.ColumnCount];
-        _rowTotals = new int[Current.RowCount];
-
-        for (int i = 0; i < Current.RowCount; i++)
-        {
-            for (int j = 0; j < Current.ColumnCount; j++)
-            {
-                if (Current.IsChosen(i, j))
-                {
-                    var v = Current[i, j];
-                    _colTotals[j] += v;
-                    _rowTotals[i] += v;
-                }
-            }
-        }
+        (_rowTotals, _colTotals) = Current.GetCurrentTotals();
     }
 }

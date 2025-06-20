@@ -101,6 +101,22 @@ public static class CollectionExtensions
             output[ind2 + i] = list[ind1 + i];
         }
     }
+
+    public static void SetAllValuesInRow<T>(this T[,] arr, int row, T val)
+    {
+        for (int c = 0; c < arr.GetLength(1); c++)
+        {
+            arr[row, c] = val;
+        }
+    }
+
+    public static void SetAllValuesInColumn<T>(this T[,] arr, int col, T val)
+    {
+        for(int r = 0; r < arr.GetLength(0); r++)
+        {
+            arr[r, col] = val;
+        }   
+    }
 }
 
 public delegate string Stringify<in T>(T value);

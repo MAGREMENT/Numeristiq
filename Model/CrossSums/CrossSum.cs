@@ -65,3 +65,42 @@ public interface IReadOnlyCrossSum
 
     public int ExpectedForRow(int row);
 }
+
+public static class CrossSumExtensions
+{
+    public static (int[], int[]) GetCurrentTotals(this IReadOnlyCrossSum cs)
+    {
+        var colTotals = new int[cs.ColumnCount];
+        var rowTotals = new int[cs.RowCount];
+
+        for (int i = 0; i < cs.RowCount; i++)
+        {
+            for (int j = 0; j < cs.ColumnCount; j++)
+            {
+                if (cs.IsChosen(i, j))
+                {
+                    var v = cs[i, j];
+                    colTotals[j] += v;
+                    rowTotals[i] += v;
+                }
+            }
+        }
+
+        return (rowTotals, colTotals);
+    }
+
+    public static bool IsCorrect(this IReadOnlyCrossSum cs, int[] rowTotals, int[] colTotals)
+    {
+        for (int r = 0; r < cs.RowCount; r++)
+        {
+            if (rowTotals[r] != cs.ExpectedForRow(r)) return false;
+        }
+
+        for (int c = 0; c < cs.ColumnCount; c++)
+        {
+            if (colTotals[c] != cs.ExpectedForColumn(c)) return false;
+        }
+
+        return true;
+    }
+}

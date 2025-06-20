@@ -27,7 +27,6 @@ public interface INumericSolvingState
     }
 }
 
-
 public interface ISudokuSolvingState : INumericSolvingState
 {
     public bool ContainsAny(int row, int col, ReadOnlyBitSet16 possibilities)
