@@ -1,5 +1,7 @@
-﻿using Model.Core.BackTracking;
+﻿using System.Text;
+using Model.Core.BackTracking;
 using Model.Core.Generators;
+using Model.Utility;
 
 namespace Model.CrossSums;
 
@@ -21,11 +23,24 @@ public class CrossSum : IReadOnlyCrossSum, ICellsAndDigitsPuzzle, ICopyable<Cros
         _expectedRows = new int[rowCount];
     }
 
-    public int ExpectedForColumn(int col) => _expectedCols[col];
+    private CrossSum(CrossSum cs)
+    {
+        _values = new int[cs.RowCount, cs.ColumnCount];
+        _chosen = new bool[cs.RowCount, cs.ColumnCount];
+        _expectedCols = new int[cs.ColumnCount];
+        _expectedRows = new int[cs.RowCount];
+        
+        cs._values.CopyTo(_values, 0);
+        cs._chosen.CopyTo(_chosen, 0);
+        cs._expectedCols.CopyTo(_expectedCols, 0);
+        cs._expectedRows.CopyTo(_expectedRows, 0);
+    }
+
+    public int GetExpectedForColumn(int col) => _expectedCols[col];
 
     public int AddToExpectedForColumn(int col, int v) => _expectedCols[col] += v;
 
-    public int ExpectedForRow(int row) => _expectedRows[row];
+    public int GetExpectedForRow(int row) => _expectedRows[row];
     
     public int AddToExpectedForRow(int row, int v) => _expectedRows[row] += v;
 
@@ -45,9 +60,41 @@ public class CrossSum : IReadOnlyCrossSum, ICellsAndDigitsPuzzle, ICopyable<Cros
         set => _values[row, col] = value;
     }
 
-    public CrossSum Copy()
+    public CrossSum Copy() => new CrossSum(this);
+
+    public override string ToString()
     {
-        throw new System.NotImplementedException();
+        var builder = new StringBuilder("xxx|");
+
+        for (int c = 0; c < ColumnCount; c++)
+        {
+            builder.Append(_expectedCols[c].ToString().FillEvenlyWith(' ', 3));
+            builder.Append('|');
+        }
+
+        var total = ColumnCount * 3 + ColumnCount + 4;
+        builder.Append('\n');
+        builder.Append('-'.Repeat(total));
+        builder.Append('\n');
+        for (int r = 0; r < RowCount; r++)
+        {
+            builder.Append(_expectedRows[r].ToString().FillEvenlyWith(' ', 3));
+            builder.Append('|');
+
+            for (int c = 0; c < ColumnCount; c++)
+            {
+                builder.Append(IsChosen(r, c) ? '(' : ' ');
+                builder.Append(this[r, c]);
+                builder.Append(IsChosen(r, c) ? ')' : ' ');
+                builder.Append('|');
+            }
+            
+            builder.Append('\n');
+            builder.Append('-'.Repeat(total));
+            builder.Append('\n');
+        }
+        
+        return builder.ToString();
     }
 }
 
@@ -61,9 +108,9 @@ public interface IReadOnlyCrossSum
     
     public int this[int row, int col] { get; }
 
-    public int ExpectedForColumn(int col);
+    public int GetExpectedForColumn(int col);
 
-    public int ExpectedForRow(int row);
+    public int GetExpectedForRow(int row);
 }
 
 public static class CrossSumExtensions
@@ -93,12 +140,12 @@ public static class CrossSumExtensions
     {
         for (int r = 0; r < cs.RowCount; r++)
         {
-            if (rowTotals[r] != cs.ExpectedForRow(r)) return false;
+            if (rowTotals[r] != cs.GetExpectedForRow(r)) return false;
         }
 
         for (int c = 0; c < cs.ColumnCount; c++)
         {
-            if (colTotals[c] != cs.ExpectedForColumn(c)) return false;
+            if (colTotals[c] != cs.GetExpectedForColumn(c)) return false;
         }
 
         return true;

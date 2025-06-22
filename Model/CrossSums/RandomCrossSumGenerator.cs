@@ -41,7 +41,7 @@ public class RandomCrossSumGenerator : IPuzzleGenerator<CrossSum>
 
                 var v = result[r, c];
                 result.AddToExpectedForRow(r, v);
-                result.AddToExpectedForRow(r, c);
+                result.AddToExpectedForColumn(c, v);
                 
                 if(!KeepUniqueness) continue;
                 

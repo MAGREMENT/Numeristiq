@@ -91,8 +91,8 @@ public class CrossSumSolver : DichotomousStrategySolver<Strategy<ICrossSumSolver
         _rowTotals[row] += val;
         _colTotals[col] += val;
         
-        if(_rowTotals[row] >= _cs.ExpectedForRow(row)) OnHorizontalLineCompletion(row);
-        if(_colTotals[col] >= _cs.ExpectedForColumn(col)) OnVerticalLineCompletion(col);
+        if(_rowTotals[row] >= _cs.GetExpectedForRow(row)) OnHorizontalLineCompletion(row);
+        if(_colTotals[col] >= _cs.GetExpectedForColumn(col)) OnVerticalLineCompletion(col);
 
         return true;
     }
@@ -110,6 +110,27 @@ public class CrossSumSolver : DichotomousStrategySolver<Strategy<ICrossSumSolver
     public int GetTotalForRow(int row) => _rowTotals[row];
 
     public int GetTotalForColumn(int col) => _colTotals[col];
+    public int GetAvailableForRow(int row)
+    {
+        var n = 0;
+        for (int c = 0; c < CrossSum.ColumnCount; c++)
+        {
+            if (IsAvailable(row, c)) n += CrossSum[row, c];
+        }
+
+        return n;
+    }
+
+    public int GetAvailableForColumn(int col)
+    {
+        var n = 0;
+        for (int r = 0; r < CrossSum.RowCount; r++)
+        {
+            if (IsAvailable(r, col)) n += CrossSum[r, col];
+        }
+
+        return n;
+    }
 
     public bool this[int row, int col] => _cs.IsChosen(row, col);
 
@@ -120,7 +141,7 @@ public class CrossSumSolver : DichotomousStrategySolver<Strategy<ICrossSumSolver
         for (int row = 0; row < _cs.RowCount; row++)
         {
             var total = _rowTotals[row];
-            if(total >= _cs.ExpectedForRow(row)) OnHorizontalLineCompletion(row);
+            if(total >= _cs.GetExpectedForRow(row)) OnHorizontalLineCompletion(row);
             else if (total > 0)
             {
                 for (int col = 0; col < _cs.ColumnCount; col++)
@@ -132,7 +153,7 @@ public class CrossSumSolver : DichotomousStrategySolver<Strategy<ICrossSumSolver
 
         for (int col = 0; col < _cs.ColumnCount; col++)
         {
-            if (_colTotals[col] >= _cs.ExpectedForColumn(col)) _completedLines++;
+            if (_colTotals[col] >= _cs.GetExpectedForColumn(col)) _completedLines++;
         }
     }
 

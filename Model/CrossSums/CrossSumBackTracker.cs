@@ -29,7 +29,7 @@ public class CrossSumBackTracker : BackTracker<CrossSum, IAvailabilityChecker>
             var currRow = val + _rowTotals[row];
             var currCol = val + _colTotals[col];
 
-            if (currRow > Current.ExpectedForRow(row) || currCol > Current.ExpectedForColumn(col)) continue;
+            if (currRow > Current.GetExpectedForRow(row) || currCol > Current.GetExpectedForColumn(col)) continue;
             
             Current.Choose(row, col);
             _rowTotals[row] = currRow;
@@ -59,7 +59,7 @@ public class CrossSumBackTracker : BackTracker<CrossSum, IAvailabilityChecker>
             var currRow = val + _rowTotals[row];
             var currCol = val + _colTotals[col];
 
-            if (currRow > Current.ExpectedForRow(row) || currCol > Current.ExpectedForColumn(col)) continue;
+            if (currRow > Current.GetExpectedForRow(row) || currCol > Current.GetExpectedForColumn(col)) continue;
             
             Current.Choose(row, col);
             _rowTotals[row] = currRow;
