@@ -140,7 +140,7 @@ public class ValueSpacesNonogramBackTracker : BackTracker<Nonogram, IAvailabilit
             return false;
         }
 
-        result.AddNewResult(Current.Copy());
+        result.AddNewResult(Current);
         return result.Count >= StopAt;
     }
 

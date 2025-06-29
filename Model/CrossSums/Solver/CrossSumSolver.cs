@@ -141,12 +141,12 @@ public class CrossSumSolver : DichotomousStrategySolver<Strategy<ICrossSumSolver
         for (int row = 0; row < _cs.RowCount; row++)
         {
             var total = _rowTotals[row];
-            if(total >= _cs.GetExpectedForRow(row)) OnHorizontalLineCompletion(row);
-            else if (total > 0)
+            if(total >= _cs.GetExpectedForRow(row)) _completedLines++;
+            else
             {
                 for (int col = 0; col < _cs.ColumnCount; col++)
                 {
-                    if (_cs.IsChosen(row, col)) _availability[row, col] = false;
+                    _availability[row, col] = !_cs.IsChosen(row, col);
                 }
             }
         }

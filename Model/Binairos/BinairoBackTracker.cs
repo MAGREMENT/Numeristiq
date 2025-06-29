@@ -286,7 +286,7 @@ public class BinairoBackTracker : BackTracker<Binairo, object?>
             return false;
         }
 
-        result.AddNewResult(Current.Copy());
+        result.AddNewResult(Current);
         return result.Count >= StopAt;
     }
 

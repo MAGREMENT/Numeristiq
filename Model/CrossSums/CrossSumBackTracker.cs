@@ -23,6 +23,9 @@ public class CrossSumBackTracker : BackTracker<CrossSum, IAvailabilityChecker>
             var row = position / Current.ColumnCount;
             var col = position % Current.ColumnCount;
             
+            if (col == 0 && row > 1 && _rowTotals[row - 1] != Current.GetExpectedForRow(row - 1)) return false;
+            if (_colTotals[col] > Current.GetExpectedForColumn(col)) return false;
+            
             if(!_giver.IsAvailable(row, col) || Current.IsChosen(row, col)) continue;
 
             var val = Current[row, col];
@@ -52,20 +55,23 @@ public class CrossSumBackTracker : BackTracker<CrossSum, IAvailabilityChecker>
         {
             var row = position / Current.ColumnCount;
             var col = position % Current.ColumnCount;
+
+            if (col == 0 && row > 1 && _rowTotals[row - 1] != Current.GetExpectedForRow(row - 1)) return false;
+            if (_colTotals[col] > Current.GetExpectedForColumn(col)) return false;
             
             if(!_giver.IsAvailable(row, col) || Current.IsChosen(row, col)) continue;
 
             var val = Current[row, col];
             var currRow = val + _rowTotals[row];
             var currCol = val + _colTotals[col];
-
+            
             if (currRow > Current.GetExpectedForRow(row) || currCol > Current.GetExpectedForColumn(col)) continue;
             
             Current.Choose(row, col);
             _rowTotals[row] = currRow;
             _colTotals[col] = currCol;
 
-            var found = Search(position + 1);
+            var found = Search(result, position + 1);
             Current.Choose(row, col, false);
 
             if (found) return true;
@@ -76,7 +82,7 @@ public class CrossSumBackTracker : BackTracker<CrossSum, IAvailabilityChecker>
 
         if (!Current.IsCorrect(_rowTotals, _colTotals)) return false;
         
-        result.AddNewResult(Current.Copy());
+        result.AddNewResult(Current);
         return StopAt >= result.Count;
     }
 

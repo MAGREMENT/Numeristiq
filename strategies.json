@@ -85,7 +85,7 @@
   },
   {
     "Name": "Uniqueness Clue Cover",
-    "Enabled": false,
+    "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {}
@@ -268,7 +268,9 @@
     "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
-    "Settings": {}
+    "Settings": {
+      "Max ALS Size": "5"
+    }
   },
   {
     "Name": "SK-Loops",
@@ -382,7 +384,9 @@
     "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
-    "Settings": {}
+    "Settings": {
+      "Max AHS Size": "5"
+    }
   },
   {
     "Name": "Almost Locked Sets",
@@ -398,21 +402,29 @@
     "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
-    "Settings": {}
+    "Settings": {
+      "Ignore length two": "True",
+      "Max AHS Size": "5"
+    }
   },
   {
     "Name": "Almost Locked Sets Chain",
     "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
-    "Settings": {}
+    "Settings": {
+      "Ignore length two": "True",
+      "Max ALS Size": "5"
+    }
   },
   {
     "Name": "Death Blossom",
     "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
-    "Settings": {}
+    "Settings": {
+      "Max ALS Size": "5"
+    }
   },
   {
     "Name": "Subsets Alternating Inference Loops",
@@ -476,6 +488,7 @@
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {
+      "Maximum length": "7",
       "Maximum number of guardians": "3"
     }
   },

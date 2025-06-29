@@ -1,5 +1,6 @@
 ﻿using Model.Binairos;
 using Model.Core;
+using Model.CrossSums.Solver;
 using Model.Kakuros;
 using Model.Nonograms.Solver;
 using Model.Repositories;
@@ -26,6 +27,8 @@ public class Instantiator
         new HardCodedNonogramStrategyRepository();
     private readonly IStrategyRepository<Strategy<IBinairoSolverData>> _binairoRepository =
         new HardCodedBinairoStrategyRepository();
+    private readonly IStrategyRepository<Strategy<ICrossSumSolverData>> _crossSumRepository =
+        new HardCodedCrossSumStrategyRepository();
 
     private ThemeMultiRepository? _themeRepository;
 
@@ -66,6 +69,14 @@ public class Instantiator
         var solver = new BinairoSolver();
         solver.StrategyManager.AddStrategies(_binairoRepository.GetStrategies());
         
+        return solver;
+    }
+
+    public CrossSumSolver InstantiateCrossSumSolver()
+    {
+        var solver = new CrossSumSolver();
+        solver.StrategyManager.AddStrategies(_crossSumRepository.GetStrategies());
+
         return solver;
     }
 

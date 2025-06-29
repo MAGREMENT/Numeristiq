@@ -129,7 +129,7 @@ public class SpareSpaceNonogramBackTracker : BackTracker<Nonogram, IAvailability
             if (!Current.IsColumnCorrect(col)) return false;
         }
 
-        result.AddNewResult(Current.Copy());
+        result.AddNewResult(Current);
         return result.Count >= StopAt;
     }
 

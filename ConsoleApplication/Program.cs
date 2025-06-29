@@ -50,6 +50,10 @@ public static class Program
             .AddCommand(new BinairoSolveBatchCommand())
             .AddCommand(new BinairoGenerateBatchCommand());
 
+        instance.Root.AddDirectory(new Directory("CrossSum"))
+            .AddCommand(new HelpCommand(), true)
+            .AddCommand(new CrossSumSolveCommand());
+
         if (!IsForProduction)
         {
             sDir.AddDirectory(new Directory("Bank"))
