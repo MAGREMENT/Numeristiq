@@ -3,6 +3,7 @@ using Model.Core.Generators;
 using Model.Core.Settings;
 using Model.Utility;
 using Model.Utility.Collections;
+using Model.YourPuzzles.Syntax;
 
 namespace Model.YourPuzzles;
 
@@ -203,7 +204,7 @@ public class NumericCell
     public void RemoveRule(ILocalNumericPuzzleRule rule) => _rules.Remove(rule);
 }
 
-public interface INumericPuzzleRule : INamed
+public interface INumericPuzzleRule : INamed, ISyntaxTranslatable
 { 
     string Abbreviation { get; }
     IEnumerable<ISetting> EnumerateSettings();

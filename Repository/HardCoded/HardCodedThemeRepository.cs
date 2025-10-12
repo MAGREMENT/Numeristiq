@@ -9,7 +9,7 @@ public class HardCodedThemeRepository : IThemeRepository
     {
         new("Abyss",                                                                          
             RGB.FromHex(921109), RGB.FromHex(1842220), RGB.FromHex(2236983), RGB.FromHex(2565954),     
-            RGB.FromHex(9571314), RGB.FromHex(10703844), RGB.FromHex(15798227), RGB.FromHex(15031506), 
+            RGB.FromHex(9571314), RGB.FromHex(0xAC60E2), RGB.FromHex(15798227), RGB.FromHex(15031506), 
             RGB.FromHex(6863844), RGB.FromHex(16777215), RGB.FromHex(711178), RGB.FromHex(14552590),   
             RGB.FromHex(11842740), RGB.FromHex(4176607), RGB.FromHex(634121), RGB.FromHex(16753920),   
             RGB.FromHex(14552590), RGB.FromHex(6952846), RGB.FromHex(5258648), RGB.FromHex(16777215),  

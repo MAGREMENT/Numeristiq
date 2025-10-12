@@ -4,6 +4,7 @@ using Model.Core.Settings;
 using Model.Utility;
 using Model.Utility.BitSets;
 using Model.Utility.Collections;
+using Model.YourPuzzles.Syntax;
 
 namespace Model.YourPuzzles.Rules;
 
@@ -65,6 +66,11 @@ public class NonRepeatingBatchNumericPuzzleRule : ILocalNumericPuzzleRule
         }
 
         return false;
+    }
+    
+    public BinaryTreeNode<ISyntaxElement> ToSyntax()
+    {
+        return null!;
     }
 }
 

@@ -17,6 +17,7 @@ public class YourPuzzlePresenter
     {
         _view = view;
         FullUpdate();
+        _view.SetRuleType(true);
     }
 
     public void OnNewPuzzle(string s)

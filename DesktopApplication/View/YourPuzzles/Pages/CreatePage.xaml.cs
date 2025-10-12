@@ -1,5 +1,8 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using DesktopApplication.Presenter;
@@ -13,6 +16,14 @@ namespace DesktopApplication.View.YourPuzzles.Pages;
 public partial class CreatePage : IYourPuzzleView
 {
     private readonly YourPuzzlePresenter _presenter;
+
+    private readonly StackPanel _currentRulesList = new();
+
+    private readonly TextBlock _currentRulesText = new()
+    {
+        FontSize = 15,
+        FontWeight = FontWeights.Bold
+    };
     
     public CreatePage()
     {
@@ -106,7 +117,8 @@ public partial class CreatePage : IYourPuzzleView
 
     public void ClearCurrentRules()
     {
-        CurrentRules.Children.Clear();
+        _currentRulesList.Children.Clear();
+        _currentRulesText.Inlines.Clear();
     }
 
     public void AddCurrentRule(INumericPuzzleRule rule, int index, bool isGlobal)
@@ -177,7 +189,37 @@ public partial class CreatePage : IYourPuzzleView
             Style = (Style)FindResource("RuleButton"),
         };
 
-        CurrentRules.Children.Add(button);
+        _currentRulesList.Children.Add(button);
+
+        var syntax = rule.ToSyntax();
+        var elements = syntax.EnumerateLeftToRight().ToList();
+        for (int i = 0; i < elements.Count; i++)
+        {
+            if(i != 0) _currentRulesText.Inlines.Add(new Run(" "));
+            var str = elements[i].ToSyntaxString();
+            _currentRulesText.Inlines.Add(new Run(str.value)
+            {
+                Foreground = App.Current.ThemeInformation.ToBrush(str.color)
+            });
+        }
+        
+        _currentRulesText.Inlines.Add(new Run("\n"));
+    }
+
+    public void SetRuleType(bool list)
+    {
+        if (list)
+        {
+            CurrentRuleContainer.Content = _currentRulesList;
+            TextOption.SetResourceReference(TextBlock.ForegroundProperty, "Text");
+            ListOption.SetResourceReference(TextBlock.ForegroundProperty, "Primary");
+        }
+        else
+        {
+            CurrentRuleContainer.Content = _currentRulesText;
+            TextOption.SetResourceReference(TextBlock.ForegroundProperty, "Primary");
+            ListOption.SetResourceReference(TextBlock.ForegroundProperty, "Text");
+        }
     }
 
     public void SetYourPuzzleString(string s)
@@ -239,5 +281,15 @@ public partial class CreatePage : IYourPuzzleView
     private void OnTextChange(string s)
     {
         _presenter.OnNewPuzzle(s);
+    }
+
+    private void OnListClick(object sender, MouseButtonEventArgs e)
+    {
+        SetRuleType(true);
+    }
+    
+    private void OnTextClick(object sender, MouseButtonEventArgs e)
+    {
+        SetRuleType(false);
     }
 }

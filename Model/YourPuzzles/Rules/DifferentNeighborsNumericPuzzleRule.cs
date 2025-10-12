@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Core.Settings;
 using Model.Tectonics;
+using Model.Utility.Collections;
+using Model.YourPuzzles.Syntax;
 
 namespace Model.YourPuzzles.Rules;
 
@@ -43,6 +45,11 @@ public class DifferentNeighborsNumericPuzzleRule : IGlobalNumericPuzzleRule
     public string DataToString()
     {
         return string.Empty;
+    }
+
+    public BinaryTreeNode<ISyntaxElement> ToSyntax()
+    {
+        return null!;
     }
 }
 

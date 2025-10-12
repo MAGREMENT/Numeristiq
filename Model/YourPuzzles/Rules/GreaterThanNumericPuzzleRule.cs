@@ -3,6 +3,9 @@ using System.Linq;
 using Model.Core.Settings;
 using Model.Utility;
 using Model.Utility.Collections;
+using Model.YourPuzzles.Syntax;
+using Model.YourPuzzles.Syntax.Operators;
+using Model.YourPuzzles.Syntax.Values;
 
 namespace Model.YourPuzzles.Rules;
 
@@ -54,6 +57,14 @@ public class GreaterThanNumericPuzzleRule : ILocalNumericPuzzleRule
     public bool IsStillApplicable(int rowCount, int colCount)
     {
         return ILocalNumericPuzzleRule.DefaultIsStillApplicable(this, rowCount, colCount);
+    }
+
+    public BinaryTreeNode<ISyntaxElement> ToSyntax()
+    {
+        var result = new BinaryTreeNode<ISyntaxElement>(new GreaterThanOperator());
+        result.SetLeft(new CellValue(Greater));
+        result.SetRight(new CellValue(Smaller));
+        return result;
     }
 }
 
