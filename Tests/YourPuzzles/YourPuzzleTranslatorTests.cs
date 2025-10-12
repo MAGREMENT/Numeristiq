@@ -4,7 +4,7 @@ using Model.YourPuzzles.Rules;
 
 namespace Tests.YourPuzzles;
 
-public class YourPuzzleTranslatorTest
+public class YourPuzzleTranslatorTests
 {
     [Test]
     public void Test()

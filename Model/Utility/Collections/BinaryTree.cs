@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 
 namespace Model.Utility.Collections;
 
@@ -44,5 +45,25 @@ public class BinaryTreeNode<T>
     public BinaryTreeNode(T value)
     {
         Value = value;
+    }
+
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+        if (Left is not null)
+        {
+            builder.Append(Left);
+            builder.Append(' ');
+        }
+
+        builder.Append(Value);
+
+        if (Right is not null)
+        {
+            builder.Append(' ');
+            builder.Append(Right);
+        }
+
+        return builder.ToString();
     }
 }

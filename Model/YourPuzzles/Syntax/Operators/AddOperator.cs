@@ -2,17 +2,17 @@ using Model.Sudokus.Player;
 
 namespace Model.YourPuzzles.Syntax.Operators;
 
-public class GreaterThanOperator : ISyntaxOperator
+public class AddOperator : ISyntaxOperator
 {
-    public int Priority => 0;
+    public int Priority => 1;
     
     public SyntaxString ToSyntaxString()
     {
-        return new SyntaxString(">", HighlightColor.Third);
+        return new SyntaxString("+", HighlightColor.First);
     }
     
     public override string ToString()
     {
-        return ">";
+        return "+";
     }
 }
