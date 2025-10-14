@@ -18,31 +18,40 @@ public class SyntaxParser
         }
     }
 
-    public IReadOnlyList<BinaryTreeNode<ISyntaxElement>> ParseText(string s)
+    public ParserError? TryParseText(string s, out IReadOnlyList<ParsedLine> list)
     {
-        List<BinaryTreeNode<ISyntaxElement>> result = new();
-        int start = 0;
+        var result = new List<ParsedLine>();
+        var start = 0;
+        var line = 0;
         for (int current = 0; current < s.Length; current++)
         {
             if (current != s.Length - 1 && s[current] != '\n') continue;
             
             if (current != start)
             {
-                var e = TryParseLine(s.AsSpan(start, current - start), out var b);
-                if(e == ParserError.None && b is not null) result.Add(b);
+                var e = TryParseLine(s.AsSpan(start, current - start), out var b, line);
+                if (e != ParserError.None)
+                {
+                    list = Array.Empty<ParsedLine>();
+                    return e;
+                }
+                
+                if(b is not null) result.Add(new ParsedLine(line, b));
             }
 
             start = current + 1;
+            line++;
         }
 
-        return result;
+        list = result;
+        return ParserError.None;
     }
 
     public ParserError? TryParseLine(ReadOnlySpan<char> s, out BinaryTreeNode<ISyntaxElement>? result, int line = 0)
     {
         result = null;
         BinaryTreeNode<ISyntaxElement>? node = null;
-        int start = 0;
+        var start = 0;
         for (int current = 0; current <= s.Length; current++)
         {
             if (current != s.Length && s[current] != ' ') continue;
@@ -61,54 +70,53 @@ public class SyntaxParser
                     }
                 }
 
-                if (el is not null)
+                if (el is null) return new ParserError(line, start, current, ParseErrorType.UnrecognizedElement);
+                
+                if (node is null)
                 {
-                    if (node is null)
-                    {
-                        node = new BinaryTreeNode<ISyntaxElement>(el);
-                        result = node;
-                    }
-                    else switch (el.Type)
-                    {
-                        case SyntaxElementType.Operator:
-                            if (node.Value.Type == SyntaxElementType.Value)
-                            {
-                                node.SetLeft(node.Value);
-                                node.Value = el;
-                                break;
-                            }
+                    node = new BinaryTreeNode<ISyntaxElement>(el);
+                    result = node;
+                }
+                else switch (el.Type)
+                {
+                    case SyntaxElementType.Operator:
+                        if (node.Value.Type == SyntaxElementType.Value)
+                        {
+                            node.SetLeft(node.Value);
+                            node.Value = el;
+                            break;
+                        }
                             
-                            if (node.Left is null) return new ParserError(line, start, ParseErrorType.OperatorStart);
-                            if (node.Right is null) return new ParserError(line, start, ParseErrorType.DoubleOperator);
+                        if (node.Left is null) return new ParserError(line, start, current, ParseErrorType.OperatorStart);
+                        if (node.Right is null) return new ParserError(line, start, current, ParseErrorType.DoubleOperator);
 
-                            if (el.Priority < node.Value.Priority)
-                            {
-                                var buffer = result;
-                                result = new BinaryTreeNode<ISyntaxElement>(el);
-                                result.Left = buffer;
-                                node = result;
-                            }
-                            else if (node.Right.Value.Type == SyntaxElementType.Operator)
-                                return new ParserError(0, start, ParseErrorType.DoubleOperator);
-                            else
-                            {
-                                var buffer = new BinaryTreeNode<ISyntaxElement>(el);
-                                buffer.Left = node.Right;
-                                node.Right = buffer;
-                                node = node.Right;
-                            }
+                        if (el.Priority < node.Value.Priority)
+                        {
+                            var buffer = result;
+                            result = new BinaryTreeNode<ISyntaxElement>(el);
+                            result.Left = buffer;
+                            node = result;
+                        }
+                        else if (node.Right.Value.Type == SyntaxElementType.Operator)
+                            return new ParserError(0, start, current, ParseErrorType.DoubleOperator);
+                        else
+                        {
+                            var buffer = new BinaryTreeNode<ISyntaxElement>(el);
+                            buffer.Left = node.Right;
+                            node.Right = buffer;
+                            node = node.Right;
+                        }
                             
-                            break;
-                        case SyntaxElementType.Value:
-                            if(node.Value.Type == SyntaxElementType.Value) 
-                                return new ParserError(line, start, ParseErrorType.DoubleValue);
+                        break;
+                    case SyntaxElementType.Value:
+                        if(node.Value.Type == SyntaxElementType.Value) 
+                            return new ParserError(line, current, start, ParseErrorType.DoubleValue);
                             
-                            if (node.Left is null) node.SetLeft(el);
-                            else if (node.Right is null) node.SetRight(el);
-                            else return new ParserError(line, start, ParseErrorType.DoubleValue);
+                        if (node.Left is null) node.SetLeft(el);
+                        else if (node.Right is null) node.SetRight(el);
+                        else return new ParserError(line, current, start, ParseErrorType.DoubleValue);
                             
-                            break;
-                    }
+                        break;
                 }
             }
 
@@ -119,23 +127,43 @@ public class SyntaxParser
     }
 }
 
-public enum ParseErrorType
+public readonly struct ParsedLine
 {
-    DoubleOperator, DoubleValue, OperatorStart
+    public readonly int Line;
+    public readonly BinaryTreeNode<ISyntaxElement> Value;
+
+    public ParsedLine(int line, BinaryTreeNode<ISyntaxElement> value)
+    {
+        Line = line;
+        Value = value;
+    }
 }
 
-public class ParserError
+public enum ParseErrorType
+{
+    UnrecognizedElement, DoubleOperator, DoubleValue, OperatorStart
+}
+
+public class ParserError : ISyntaxError
 {
     public static readonly ParserError? None = null;
 
-    public ParserError(int line, int column, ParseErrorType error)
+    public ParserError(int line, int start, int end, ParseErrorType error)
     {
         Line = line;
-        Column = column;
+        Start = start;
+        End = end;
         Error = error;
     }
 
     public int Line { get; }
-    public int Column { get; }
+    public int Start { get; }
+    public int End { get; }
     public ParseErrorType Error { get; }
+
+    public (int, int, int) FindWhereToHighlight(string text) => (Line, Start, End);
+    public string GetErrorMessage()
+    {
+        throw new NotImplementedException();
+    }
 }

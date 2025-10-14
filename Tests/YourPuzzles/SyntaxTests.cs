@@ -4,10 +4,11 @@ using Repository.HardCoded;
 
 namespace Tests.YourPuzzles;
 
-public class SyntaxParseTests
+public class SyntaxTests
 {
     private static readonly ISyntaxParsablesRepository _repository = new HardCodedSyntaxParsablesRepository();
     private static readonly SyntaxParser _parser = new(_repository.GetParsables());
+    private static readonly SyntaxInterpreter _interpreter = new();
     
     [Test]
     public void SimpleEquationTest()
@@ -17,6 +18,9 @@ public class SyntaxParseTests
         Assert.That(e, Is.EqualTo(ParserError.None));
         Assert.That(b, Is.Not.Null);
         Assert.That(b!.ToString(), Is.EqualTo(s));
+
+        var e2 = _interpreter.TryInterpret(new ParsedLine[] { new(0, b) }, out var i);
+        Assert.That(e2, Is.EqualTo(InterpreterError.None));
     }
 
     [Test]

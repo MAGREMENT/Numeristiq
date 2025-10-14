@@ -1,3 +1,4 @@
+using System;
 using Model.Sudokus.Player;
 
 namespace Model.YourPuzzles.Syntax;
@@ -11,9 +12,10 @@ public interface ISyntaxElement
     SyntaxString ToSyntaxString();
 }
 
+[Flags]
 public enum SyntaxElementType
 {
-    Value, Operator
+    None = 0, Value = 0b1, Operator = 0b10
 }
 
 public readonly struct SyntaxString

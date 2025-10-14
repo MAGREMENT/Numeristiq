@@ -15,4 +15,7 @@ public class MultiplyOperator : ISyntaxOperator
     {
         return "*";
     }
+
+    public SyntaxElementType ExpectedOnLeft => SyntaxElementType.Operator | SyntaxElementType.Value;
+    public SyntaxElementType ExpectedOnRight => SyntaxElementType.Operator | SyntaxElementType.Value;
 }

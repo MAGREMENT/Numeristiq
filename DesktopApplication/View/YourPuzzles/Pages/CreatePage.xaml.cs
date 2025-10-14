@@ -1,7 +1,5 @@
-﻿using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -19,7 +17,7 @@ public partial class CreatePage : IYourPuzzleView
 
     private readonly StackPanel _currentRulesList = new();
 
-    private readonly TextBlock _currentRulesText = new()
+    private readonly TextBox _currentRulesText = new()
     {
         FontSize = 15,
         FontWeight = FontWeights.Bold
@@ -118,7 +116,7 @@ public partial class CreatePage : IYourPuzzleView
     public void ClearCurrentRules()
     {
         _currentRulesList.Children.Clear();
-        _currentRulesText.Inlines.Clear();
+        _currentRulesText.Text = "";
     }
 
     public void AddCurrentRule(INumericPuzzleRule rule, int index, bool isGlobal)
@@ -191,7 +189,7 @@ public partial class CreatePage : IYourPuzzleView
 
         _currentRulesList.Children.Add(button);
 
-        var syntax = rule.ToSyntax();
+        /*var syntax = rule.ToSyntax();
         var elements = syntax.EnumerateLeftToRight().ToList();
         for (int i = 0; i < elements.Count; i++)
         {
@@ -203,7 +201,7 @@ public partial class CreatePage : IYourPuzzleView
             });
         }
         
-        _currentRulesText.Inlines.Add(new Run("\n"));
+        _currentRulesText.Inlines.Add(new Run("\n"));*/
     }
 
     public void SetRuleType(bool list)
