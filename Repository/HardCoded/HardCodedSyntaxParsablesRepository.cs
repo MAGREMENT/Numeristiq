@@ -1,14 +1,14 @@
+using Model.Core.Syntax;
+using Model.Core.Syntax.Operators;
+using Model.Core.Syntax.Parsables;
+using Model.Core.Syntax.Values;
 using Model.Repositories;
-using Model.YourPuzzles.Syntax;
-using Model.YourPuzzles.Syntax.Operators;
-using Model.YourPuzzles.Syntax.Parsables;
-using Model.YourPuzzles.Syntax.Values;
 
 namespace Repository.HardCoded;
 
-public class HardCodedSyntaxParsablesRepository : ISyntaxParsablesRepository
+public class HardCodedSyntaxParsablesRepository : ISyntaxParsablesRepository<ISyntaxElement>
 {
-    private static readonly ISyntaxParsable[] _arr =
+    private static readonly ISyntaxParsable<ISyntaxElement>[] _arr =
     {
         new CellParsable(),
         new IntParsable(),
@@ -16,10 +16,11 @@ public class HardCodedSyntaxParsablesRepository : ISyntaxParsablesRepository
         new SimpleStringParsable<EqualsOperator>("="),
         new SimpleStringParsable<GreaterThanOperator>(">"),
         new SimpleStringParsable<AddOperator>("+"),
-        new SimpleStringParsable<MultiplyOperator>("*")
+        new SimpleStringParsable<MultiplyOperator>("*"),
+        new SimpleStringParsable<PowerOperator>("^")
     };
 
-    public IEnumerable<ISyntaxParsable> GetParsables()
+    public IEnumerable<ISyntaxParsable<ISyntaxElement>> GetParsables()
     {
         return _arr;
     }

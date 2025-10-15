@@ -1,4 +1,4 @@
-namespace Model.YourPuzzles.Syntax;
+namespace Model.Core.Syntax;
 
 public interface ISyntaxError
 {

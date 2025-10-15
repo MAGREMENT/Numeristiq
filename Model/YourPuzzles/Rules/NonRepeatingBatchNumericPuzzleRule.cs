@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Model.Core.Settings;
+using Model.Core.Syntax;
 using Model.Utility;
 using Model.Utility.BitSets;
 using Model.Utility.Collections;
-using Model.YourPuzzles.Syntax;
 
 namespace Model.YourPuzzles.Rules;
 
@@ -68,7 +68,7 @@ public class NonRepeatingBatchNumericPuzzleRule : ILocalNumericPuzzleRule
         return false;
     }
     
-    public BinaryTreeNode<ISyntaxElement> ToSyntax()
+    public ISyntaxElement ToSyntax()
     {
         return null!;
     }

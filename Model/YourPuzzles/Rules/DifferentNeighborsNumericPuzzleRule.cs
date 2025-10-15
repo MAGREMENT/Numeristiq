@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Core.Settings;
+using Model.Core.Syntax;
 using Model.Tectonics;
 using Model.Utility.Collections;
-using Model.YourPuzzles.Syntax;
 
 namespace Model.YourPuzzles.Rules;
 
@@ -47,7 +47,7 @@ public class DifferentNeighborsNumericPuzzleRule : IGlobalNumericPuzzleRule
         return string.Empty;
     }
 
-    public BinaryTreeNode<ISyntaxElement> ToSyntax()
+    public ISyntaxElement ToSyntax()
     {
         return null!;
     }

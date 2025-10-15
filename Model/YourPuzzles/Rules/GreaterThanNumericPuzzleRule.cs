@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Model.Core.Settings;
+using Model.Core.Syntax;
+using Model.Core.Syntax.Operators;
+using Model.Core.Syntax.Values;
 using Model.Utility;
 using Model.Utility.Collections;
-using Model.YourPuzzles.Syntax;
-using Model.YourPuzzles.Syntax.Operators;
-using Model.YourPuzzles.Syntax.Values;
 
 namespace Model.YourPuzzles.Rules;
 
@@ -59,11 +59,11 @@ public class GreaterThanNumericPuzzleRule : ILocalNumericPuzzleRule
         return ILocalNumericPuzzleRule.DefaultIsStillApplicable(this, rowCount, colCount);
     }
 
-    public BinaryTreeNode<ISyntaxElement> ToSyntax()
+    public ISyntaxElement ToSyntax()
     {
-        var result = new BinaryTreeNode<ISyntaxElement>(new GreaterThanOperator());
-        result.SetLeft(new CellValue(Greater));
-        result.SetRight(new CellValue(Smaller));
+        var result = new GreaterThanOperator();
+        result.Left = new CellValue(Greater);
+        result.Right = new CellValue(Smaller);
         return result;
     }
 }

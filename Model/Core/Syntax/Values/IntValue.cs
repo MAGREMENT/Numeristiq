@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Model.Core.Syntax.Parsables;
 using Model.Sudokus.Player;
-using Model.YourPuzzles.Syntax.Parsables;
 
-namespace Model.YourPuzzles.Syntax.Values;
+namespace Model.Core.Syntax.Values;
 
-public class IntValue : ISyntaxValue
+public class IntValue : SyntaxValue
 {
     private readonly int _i;
 
@@ -14,20 +14,13 @@ public class IntValue : ISyntaxValue
         _i = i;
     }
 
-    public SyntaxString ToSyntaxString()
-    {
-        return new SyntaxString(_i.ToString(), HighlightColor.Second);
-    }
-
-    public override string ToString()
-    {
-        return _i.ToString();
-    }
+    protected override HighlightColor GetHighlight() => HighlightColor.Second;
+    protected override string GetString() => _i.ToString();
 }
 
-public class IntParsable : FormatParsable
+public class IntParsable : FormatParsable<ISyntaxElement>
 {
-    public IntParsable() : base(@"\d+$")
+    public IntParsable() : base(@"^\d+$")
     {
     }
 

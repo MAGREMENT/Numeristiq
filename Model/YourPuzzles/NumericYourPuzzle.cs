@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Model.Core.Generators;
 using Model.Core.Settings;
+using Model.Core.Syntax;
 using Model.Utility;
 using Model.Utility.Collections;
-using Model.YourPuzzles.Syntax;
 
 namespace Model.YourPuzzles;
 
