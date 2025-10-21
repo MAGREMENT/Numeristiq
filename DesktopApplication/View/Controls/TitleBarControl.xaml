@@ -23,7 +23,10 @@
 			Height="32"
 			Margin="4"
 			x:Name="Icon"
-			Visibility="Collapsed"/>
+			Visibility="Collapsed"
+			MouseLeftButtonDown="OnAppIconClick"
+			WindowChrome.IsHitTestVisibleInChrome="True"
+			Cursor="Hand"/>
 		
 		<TextBlock
 			Grid.Column="1"

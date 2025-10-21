@@ -88,6 +88,13 @@ public partial class PageWindow
     {
         if(_cancelNavigation) e.Cancel = true;
     }
+
+    private void ReturnToWelcomeWindow()
+    {
+        var window = new WelcomeWindow();
+        window.Show();
+        Close();
+    }
 }
 
 public abstract class ManagedPage : Page

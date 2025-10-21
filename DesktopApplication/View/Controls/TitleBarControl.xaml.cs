@@ -1,4 +1,6 @@
+using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Shell;
@@ -11,6 +13,8 @@ public partial class TitleBarControl
     public event TitleBarAction? Minimize;
     public event TitleBarAction? ChangeSize;
     public event TitleBarAction? Close;
+
+    public event Action? AppIconClick;
 
     private bool _allowResize = true;
     
@@ -91,6 +95,11 @@ public partial class TitleBarControl
             MaximizeButton.Visibility = Visibility.Visible;
             RestoreButton.Visibility = Visibility.Collapsed;
         }
+    }
+
+    private void OnAppIconClick(object sender, MouseButtonEventArgs e)
+    {
+        AppIconClick?.Invoke();
     }
 }
 
