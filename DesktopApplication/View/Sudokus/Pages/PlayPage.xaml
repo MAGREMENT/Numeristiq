@@ -25,7 +25,7 @@
                     CornerRadius="5" Padding="5" Width="350" VerticalAlignment="Top">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
@@ -37,20 +37,19 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     
-                    <TextBlock Grid.Row="0" Grid.Column="0" FontSize="18" Margin="5 0 0 0"
-                               Foreground="{DynamicResource Text}"
+                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource BlockTitle}" 
                                VerticalAlignment="Center">Edit</TextBlock>
                     
                     <Button Grid.Row="0" Grid.Column="2" Padding="5"
                             Style="{StaticResource SimpleHoverButton}" 
-                            x:Name="BackButton" Click="MoveBack">
+                            x:Name="BackButton" Click="MoveBack" VerticalAlignment="Center">
                         <Path Stroke="Gray" Width="30" Height="30" x:Name="BackArrow"
                               Data="M 5,15 H 25 M 5,15 14,7 M 5,15 14,23"/>
                     </Button>
                 
                     <Button Grid.Row="0" Grid.Column="3" Padding="5" 
                             Style="{StaticResource SimpleHoverButton}" 
-                            x:Name="ForwardButton" Click="MoveForward">
+                            x:Name="ForwardButton" Click="MoveForward" VerticalAlignment="Center">
                         <Path Stroke="Gray" Width="30" Height="30" x:Name="ForwardArrow"
                               Data="M 5,15 H 25 M 25,15 16,7 M 25,15 16,23"/>
                     </Button>
@@ -125,13 +124,11 @@
                     Padding="5 5 5 10" CornerRadius="5">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     
-                    <TextBlock Grid.Row="0"
-                               FontSize="18" Foreground="{DynamicResource Text}"
-                               Margin="5 0 0 0" VerticalAlignment="Center">Find</TextBlock>
+                    <TextBlock Grid.Row="0" Style="{StaticResource BlockTitle}">Find</TextBlock>
                     
                     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" 
                                 Visibility="Hidden" VerticalAlignment="Center" x:Name="ReadyPanel">
@@ -186,8 +183,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 
-                <TextBlock Grid.Row="0" FontSize="18" Foreground="{DynamicResource Text}"
-                           Margin="5 0 0  0">Help</TextBlock>
+                <TextBlock Grid.Row="0" Style="{StaticResource BlockTitle}">Help</TextBlock>
                 
                 <Border Grid.Row="1" Background="{DynamicResource Background2}" 
                         CornerRadius="5"

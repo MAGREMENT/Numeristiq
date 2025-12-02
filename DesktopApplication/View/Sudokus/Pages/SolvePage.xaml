@@ -35,12 +35,11 @@
                     Padding="5" CornerRadius="5" Margin="0, 0, 0, 10">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <TextBlock Grid.Row="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
-                               Foreground="{DynamicResource Text}" Margin="5, 0, 0, 0">Steps</TextBlock>
+                    <TextBlock Grid.Row="0" Style="{StaticResource BlockTitle}">Steps</TextBlock>
             
                     <ScrollViewer Grid.Row="1" x:Name="StepViewer" Margin="0,0, 0, 10"
                                   Style="{StaticResource TransparentBarScrollViewer}" VerticalAlignment="Stretch">
@@ -71,13 +70,12 @@
                 Padding="5" CornerRadius="5">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
             
                 <Grid Grid.Row="0">
-                    <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
-                               Foreground="{DynamicResource Text}" Margin="5, 0, 0, 0">Strategies</TextBlock>
+                    <TextBlock Grid.Column="0" Style="{StaticResource BlockTitle}">Strategies</TextBlock>
                 </Grid>
             
                 <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollViewer}">

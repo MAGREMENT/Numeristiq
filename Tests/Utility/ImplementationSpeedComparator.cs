@@ -42,16 +42,16 @@ public class SpeedTestResult
     private long _minIndex = -1;
     private long _maxIndex = -1;
     private long _totalTicks;
-    private int _ignored;
+    private long _dry = -1;
 
     public void AddEntry(int entryNumber, long ticks)
     {
-        if (entryNumber == 0 || (_maxTicks > 0 && ticks > _maxTicks * 3))
+        if (_dry < 0)
         {
-            _ignored++;
+            _dry = ticks;
             return;
         }
-                
+        
         _totalTicks += ticks;
         if (ticks < _minTicks)
         {
@@ -72,7 +72,7 @@ public class SpeedTestResult
         Console.WriteLine($"   Average: {TimeInNanosToString((double)(_totalTicks * nanosPerTick) / repeatCount)}");
         Console.WriteLine($"   Minimum: {TimeInNanosToString(_minTicks * nanosPerTick)} on try #{_minIndex + 1}");
         Console.WriteLine($"   Maximum: {TimeInNanosToString(_maxTicks * nanosPerTick)} on try #{_maxIndex + 1}");
-        Console.WriteLine($"   Ignored: {_ignored}");
+        Console.WriteLine($"   Dry: {TimeInNanosToString(_dry * nanosPerTick)}");
     }
     
     private static string TimeInNanosToString(double nanos)

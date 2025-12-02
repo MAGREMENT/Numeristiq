@@ -32,9 +32,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 
-                <TextBlock Grid.Row="0" FontSize="20" Margin="10, 5, 0, 0" Foreground="{DynamicResource Text}">
-                    Generator
-                </TextBlock>
+                <TextBlock Grid.Row="0" Style="{StaticResource BlockTitle}">Generator</TextBlock>
                 
                 <controls1:FilledSudokuGeneratorControl Grid.Row="1" Width="350" Height="100" Margin="20, 20, 20, 0"
                                                         HorizontalAlignment="Center" x:Name="FSG" RandomSelected="OnRandomSelection"
@@ -104,7 +102,7 @@
                  Padding="5" CornerRadius="5" Background="{DynamicResource Background1}">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
             
@@ -114,9 +112,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
             
-                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{DynamicResource Text}"
-                           FontSize="18" Margin="5,0,0,0" VerticalAlignment="Center"
-                           FontWeight="Normal">Final List</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource BlockTitle}">Result</TextBlock>
             
                 <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource SimpleHoverButton}" Click="CopyAll"
                         ToolTip="Copy full list">

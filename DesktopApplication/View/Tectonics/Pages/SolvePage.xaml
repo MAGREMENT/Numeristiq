@@ -71,12 +71,11 @@
                     Padding="5">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <TextBlock Grid.Row="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
-                               Margin="5 0 0 0" Foreground="{DynamicResource Text}">Steps</TextBlock>
+                    <TextBlock Grid.Row="0" Style="{StaticResource BlockTitle}">Steps</TextBlock>
             
                     <ScrollViewer Grid.Row="1" Margin="0,0,0,5" x:Name="LogViewer"
                                   Style="{StaticResource TransparentBarScrollViewer}" VerticalAlignment="Stretch">

@@ -28,6 +28,13 @@
 				<Setter Property="BorderBrush" Value="{DynamicResource BackgroundHighlighted}"/>
 			</Style>
 			
+			<Style TargetType="TextBlock" x:Key="BlockTitle">
+				<Setter Property="FontSize" Value="22"/>
+				<Setter Property="Foreground" Value="{DynamicResource Text}"/>
+				<Setter Property="FontWeight" Value="Bold"></Setter>
+				<Setter Property="Margin" Value="10, 7, 0, 7"></Setter>
+			</Style>
+			
 			<ControlTemplate TargetType="Button" x:Key="RoundedButton">
 				<Border CornerRadius="5" Background="{TemplateBinding Background}"
 				        Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
@@ -764,7 +771,7 @@
 		    <ControlTemplate TargetType="Button" x:Key="LightUpButtonTemplate">
 			    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" 
 			            Background="{TemplateBinding Background}" x:Name="OutsideBorder" Padding="{TemplateBinding Padding}"
-			            Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+			            Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" CornerRadius="5">
 				    <ContentPresenter
 					    Margin="0"
 					    HorizontalAlignment="Center"

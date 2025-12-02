@@ -55,12 +55,11 @@
                     CornerRadius="5" Background="{DynamicResource Background1}">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <TextBlock Grid.Row="0" FontSize="18" Margin="5 0 0 0" VerticalAlignment="Center"
-                               Foreground="{DynamicResource Text}">Steps</TextBlock>
+                    <TextBlock Grid.Row="0" Style="{StaticResource BlockTitle}">Steps</TextBlock>
                     
                     <ScrollViewer Grid.Row="1" x:Name="StepViewer" Style="{StaticResource TransparentBarScrollViewer}">
                         <StackPanel x:Name="StepPanel"/>

@@ -18,8 +18,8 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
         
-            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20"
-                       Foreground="{DynamicResource Text}" Margin="5,0,0,0">Puzzle Evaluator</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                       Style="{StaticResource BlockTitle}">Evaluator</TextBlock>
         
             <Border Grid.Row="0" Grid.Column="1" x:Name="ActivatedLamp" Margin="5"
                     CornerRadius="10" Width="20" Height="20" Background="{DynamicResource Off}"
