@@ -21,8 +21,8 @@ public class MySqlSudokuBankRepository : ISudokuBankRepository
                                            "ORDER BY Rand()\n" +
                                            "LIMIT 1;";
 
-    private const string InsertQuery = "INSERT IGNORE INTO Numeristiq_Sudoku(id, difficulty)" +
-                                       "\nVALUES (@id, @difficulty);";
+    private const string InsertQuery = "INSERT IGNORE INTO Numeristiq_Sudoku(id, difficulty)\n" +
+                                       "VALUES (@id, @difficulty);";
 
     private const string DeleteQuery = "DELETE FROM Numeristiq_Sudoku;";
     
