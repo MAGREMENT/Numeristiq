@@ -1,4 +1,4 @@
-﻿<view:SolveWithStepsPage x:Class="DesktopApplication.View.Kakuros.Pages.SolvePage"
+﻿<view:StepManagingPage x:Class="DesktopApplication.View.Kakuros.Pages.SolvePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -76,4 +76,4 @@
         <controls:HideableTextBox Grid.Column="0" Grid.ColumnSpan="2" TextChanged="OnNewKakuro" x:Name="KakuroAsString"
                                   Showed="OnKakuroAsStringShowed"/>
     </Grid>
-</view:SolveWithStepsPage>
+</view:StepManagingPage>

@@ -9,7 +9,6 @@ namespace Model.Core.Steps;
 public class ByHandNumericStep<THighlighter, TSolvingState> : IStep<THighlighter, TSolvingState, NumericChange>
     where THighlighter : INumericSolvingStateHighlighter
 {
-    public int Id { get; }
     public string Title { get; }
     public Difficulty Difficulty => Difficulty.None;
     public IReadOnlyList<NumericChange> Changes => new[] { _progress };
@@ -21,10 +20,9 @@ public class ByHandNumericStep<THighlighter, TSolvingState> : IStep<THighlighter
 
     private readonly NumericChange _progress;
 
-    public ByHandNumericStep(int id, int possibility, int row, int col, ChangeType changeType, TSolvingState stateBefore,
+    public ByHandNumericStep(int possibility, int row, int col, ChangeType changeType, TSolvingState stateBefore,
         TSolvingState stateAfter)
     {
-        Id = id;
         From = stateBefore;
         switch (changeType)
         {

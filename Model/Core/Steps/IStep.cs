@@ -7,7 +7,6 @@ namespace Model.Core.Steps;
 
 public interface IStep
 {
-    int Id { get; }
     string Title { get; }
     Difficulty Difficulty { get; }
     string Description { get; }
@@ -36,7 +35,6 @@ public interface IStep<THighlighter, out TState> : IStep
 
 public interface IStep<THighlighter, out TState, out TChange> : IStep<THighlighter, TState> where TChange : notnull
 {
-    
     IReadOnlyList<TChange> Changes { get; }
 
     string IStep.ChangesToString()

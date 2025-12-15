@@ -7,13 +7,13 @@ using Model.Core.Trackers;
 
 namespace Model.Core;
 
-public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TChange, TChangeBuffer, TStep> 
+public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TChange, TChangeBuffer> 
     : ISolveResult<TSolvingState>, ITrackerAttachableSolver<TSolvingState>
     where TStrategy : Strategy where TChangeBuffer : IChangeBuffer<TChange, TSolvingState, THighlighter>
-    where TStep : IStep
+    where TChange : notnull
 {
     protected TSolvingState? _currentState;
-    protected readonly List<TStep> _steps = new();
+    protected readonly List<IStep<THighlighter, TSolvingState, TChange>> _steps = new();
     
     public bool StartedSolving { get; private set; }
     public StrategyManager<TStrategy> StrategyManager { get; init; } = new();
@@ -35,7 +35,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
     /// </summary>
     public bool FastMode { get; set; }
     public abstract TChangeBuffer ChangeBuffer { get; }
-    public IReadOnlyList<TStep> Steps => _steps;
+    public IReadOnlyList<IStep<THighlighter, TSolvingState, TChange>> Steps => _steps;
     IEnumerable<IStep> ISolver.Steps => (IEnumerable<IStep>)_steps;
 
     public event OnSolveStart? SolveStarted;
@@ -81,9 +81,9 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
         SolveDone?.Invoke(this);
     }
 
-    public IReadOnlyList<BuiltChangeCommit<TChange, THighlighter>> EveryPossibleNextStep()
+    public IReadOnlyList<IStep<THighlighter, TSolvingState, TChange>> EveryPossibleNextStep()
     {
-        List<BuiltChangeCommit<TChange, THighlighter>> result = new();
+        List<IStep<THighlighter, TSolvingState, TChange>> result = new();
         
         for (int i = 0; i < StrategyManager.Strategies.Count; i++)
         {
@@ -92,7 +92,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
             
             StrategyStarted?.Invoke(current, i);
             ApplyStrategy(current);
-            result.AddRange(GetCommits(current));
+            result.AddRange(GetAllSteps(current));
             StrategyEnded?.Invoke(current, i, 0, 0);
         }
         
@@ -125,18 +125,18 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
         return result;
     }
     
-    public void ApplyCommit(BuiltChangeCommit<TChange, THighlighter> commit)
+    public void ApplyStep(IStep<THighlighter, TSolvingState, TChange> step)
     {
         StartedSolving = true;
         var state = CurrentState;
         var didSomething = false;
-        foreach (var change in commit.Changes)
+        foreach (var change in step.Changes)
         {
             if (ExecuteChange(change)) didSomething = true;
         }
         
         if(didSomething && !FastMode) 
-            AddStepFromReport(commit.Report, commit.Changes, commit.Maker, state);
+            _steps.Add(step);
     }
     
     public IEnumerable<Strategy> EnumerateStrategies()
@@ -161,7 +161,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
     protected abstract bool ExecuteChange(TChange change, ref int solutionAdded, ref int possibilitiesRemoved);
     protected abstract bool ExecuteChange(TChange change);
     protected abstract void AddStepFromReport(ChangeReport<THighlighter> report, IReadOnlyList<TChange> changes,
-        Strategy maker, TSolvingState stateBefore);
+        Strategy maker, TSolvingState stateBefore); //TODO check utility ?
     protected abstract ICommitComparer<TChange> GetDefaultCommitComparer();
     protected abstract TSolvingState ApplyChangesToState(TSolvingState state, IEnumerable<TChange> changes);
     
@@ -192,15 +192,15 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
         }
     }
 
-    private IEnumerable<BuiltChangeCommit<TChange, THighlighter>> GetCommits(Strategy strategy)
+    private IEnumerable<IStep<THighlighter, TSolvingState, TChange>> GetAllSteps(Strategy strategy)
     {
         if (ChangeBuffer.Commits.Count == 0) yield break;
         
         var state = CurrentState;
         foreach (var commit in ChangeBuffer.Commits)
         {
-            yield return new BuiltChangeCommit<TChange, THighlighter>(strategy, commit.Changes,
-                commit.Builder.BuildReport(commit.Changes, state));
+            yield return new ChangeReportStep<THighlighter, TSolvingState, TChange>(strategy, commit.Changes,
+                commit.Builder.BuildReport(commit.Changes, state), state, ApplyChangesToState(state, commit.Changes));
         }
 
         ChangeBuffer.Commits.Clear();

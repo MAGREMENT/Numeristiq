@@ -12,7 +12,6 @@ using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.HelperWindows.Dialog;
 using DesktopApplication.View.Sudokus.Controls;
 using Microsoft.Win32;
-using Model.Sudokus;
 using Model.Sudokus.Solver;
 
 namespace DesktopApplication.View.Sudokus.Pages;
@@ -118,13 +117,18 @@ public partial class SolvePage : ISudokuSolveView
 
     #endregion
 
-    protected override StackPanel GetStepPanel() => StepPanel;
+    public override StackPanel GetStepPanel() => StepPanel;
 
-    protected override ScrollViewer GetStepViewer() => StepViewer;
+    public override ScrollViewer GetStepViewer() => StepViewer;
 
-    protected override IStepManagingPresenter GetStepsPresenter() => _presenter;
+    public override IStepManagingPresenter GetStepsPresenter() => _presenter;
 
-    protected override ISizeOptimizable GetExplanationDrawer()
+    public override ISizeOptimizable GetExplanationDrawer()
+    {
+        return GetSudokuExplanationDrawer();
+    }
+
+    public static ISizeOptimizable GetSudokuExplanationDrawer()
     {
         var board = new SudokuBoard
         {

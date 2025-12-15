@@ -8,7 +8,6 @@ namespace Model.Core.Steps;
 public class ChangeReportStep<THighlighter, TSolvingState, TChange> : IStep<THighlighter, TSolvingState, TChange>
     where TChange : notnull
 {
-    public int Id { get; }
     public string Title { get; }
     public Difficulty Difficulty { get; }
     public string Description { get; }
@@ -18,10 +17,9 @@ public class ChangeReportStep<THighlighter, TSolvingState, TChange> : IStep<THig
     public TSolvingState To { get; }
     public HighlightCollection<THighlighter> HighlightCollection { get; }
 
-    public ChangeReportStep(int id, Strategy maker, IReadOnlyList<TChange> changes,
+    public ChangeReportStep(Strategy maker, IReadOnlyList<TChange> changes,
         ChangeReport<THighlighter> report, TSolvingState stateBefore, TSolvingState stateAfter)
     {
-        Id = id;
         Title = maker.Name;
         Difficulty = maker.Difficulty;
         Description = report.Description;

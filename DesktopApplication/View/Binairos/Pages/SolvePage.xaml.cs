@@ -42,22 +42,22 @@ public partial class SolvePage : IBinairoSolveView
         return settings;
     }
 
-    protected override StackPanel GetStepPanel()
+    public override StackPanel GetStepPanel()
     {
         return StepPanel;
     }
 
-    protected override ScrollViewer GetStepViewer()
+    public override ScrollViewer GetStepViewer()
     {
         return StepViewer;
     }
 
-    protected override IStepManagingPresenter GetStepsPresenter()
+    public override IStepManagingPresenter GetStepsPresenter()
     {
         return _presenter;
     }
 
-    protected override ISizeOptimizable GetExplanationDrawer()
+    public override ISizeOptimizable GetExplanationDrawer()
     {
         var board = new BinairoBoard
         {

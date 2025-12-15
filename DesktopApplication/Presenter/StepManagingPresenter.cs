@@ -10,7 +10,7 @@ public abstract class StepManagingPresenter<THighlight, TStep, TState> : IStepMa
     protected readonly IHighlighterTranslator<THighlight> _translator;
     protected int _currentlyOpenedStep = -1;
     protected StepState _stepState = StepState.From;
-    private int _stepCount;
+    protected int _stepCount;
     
     protected abstract IReadOnlyList<TStep> Steps { get; }
     protected abstract IStepManagingView View { get; }
@@ -19,8 +19,13 @@ public abstract class StepManagingPresenter<THighlight, TStep, TState> : IStepMa
     {
         _translator = translator;
     }
+
+    public virtual int GetViewIndex(int ind)
+    {
+        return ind;
+    }
     
-    public void UpdateSteps()
+    public virtual void UpdateSteps()
     {
         if (Steps.Count < _stepCount)
         {
@@ -30,16 +35,16 @@ public abstract class StepManagingPresenter<THighlight, TStep, TState> : IStepMa
 
         for (;_stepCount < Steps.Count; _stepCount++)
         {
-            View.AddStep(Steps[_stepCount], _stepState);
+            View.AddStep(_stepCount + 1, Steps[_stepCount], _stepState);
         }
     }
 
-    public void RequestStepOpening(int id)
+    public virtual void RequestStepOpening(int id)
     {
         var index = id - 1;
         if (index < 0 || index >= Steps.Count) return;
         
-        if(_currentlyOpenedStep != -1) View.CloseStep(_currentlyOpenedStep);
+        if(_currentlyOpenedStep != -1) View.CloseStep(GetViewIndex(_currentlyOpenedStep));
 
         if (_currentlyOpenedStep == index)
         {
@@ -48,10 +53,10 @@ public abstract class StepManagingPresenter<THighlight, TStep, TState> : IStepMa
         }
         else
         {
-            View.OpenStep(index);
             _currentlyOpenedStep = index;
+            View.OpenStep(GetViewIndex(_currentlyOpenedStep));
 
-            var log = Steps[index];
+            var log = Steps[_currentlyOpenedStep];
             SetShownState(_stepState == StepState.From ? log.From : log.To, false, true); 
             _translator.Translate(log.HighlightCollection, false); 
         }
@@ -104,7 +109,7 @@ public interface IHighlighterTranslator<out T>
 
 public interface IStepManagingView
 {
-    void AddStep(IStep step, StepState shown);
+    void AddStep(int id, IStep step, StepState shown);
     void ClearSteps();
     void OpenStep(int index);
     void CloseStep(int index);

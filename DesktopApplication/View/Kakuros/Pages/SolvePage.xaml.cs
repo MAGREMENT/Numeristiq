@@ -122,13 +122,13 @@ public partial class SolvePage : IKakuroSolveView
         return null;
     }
 
-    protected override StackPanel GetStepPanel() => StepPanel;
+    public override StackPanel GetStepPanel() => StepPanel;
 
-    protected override ScrollViewer GetStepViewer() => StepViewer;
+    public override ScrollViewer GetStepViewer() => StepViewer;
 
-    protected override IStepManagingPresenter GetStepsPresenter() => _presenter;
+    public override IStepManagingPresenter GetStepsPresenter() => _presenter;
 
-    protected override ISizeOptimizable GetExplanationDrawer()
+    public override ISizeOptimizable GetExplanationDrawer()
     {
         var board = new KakuroBoard
         {

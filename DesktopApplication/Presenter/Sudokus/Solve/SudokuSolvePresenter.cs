@@ -19,7 +19,7 @@ using Model.Utility.BitSets;
 namespace DesktopApplication.Presenter.Sudokus.Solve;
 
 public class SudokuSolvePresenter : StepManagingPresenter<ISudokuHighlighter, IStep<ISudokuHighlighter, INumericSolvingState>,
-    INumericSolvingState>, ICommitApplier
+    INumericSolvingState>, ICommitApplier<ISudokuHighlighter, ISudokuSolvingState, NumericChange>
 {
     private readonly ISudokuSolveView _view;
     private readonly Disabler _disabler;
@@ -83,7 +83,7 @@ public class SudokuSolvePresenter : StepManagingPresenter<ISudokuHighlighter, IS
         SetNewSudoku(SudokuTranslator.TranslateLineFormat(s));
     }
 
-    public async void Solve(bool stopAtProgress)
+    public async Task Solve(bool stopAtProgress)
     {
         _disabler.Disable(1);
         
@@ -207,9 +207,9 @@ public class SudokuSolvePresenter : StepManagingPresenter<ISudokuHighlighter, IS
             OptionCollection.SudokuStringFormat);
     }
     
-    public void Apply(BuiltChangeCommit<NumericChange, ISudokuHighlighter> commit)
+    public void Apply(IStep<ISudokuHighlighter, ISudokuSolvingState, NumericChange> step)
     {
-        _solver.ApplyCommit(commit);
+        _solver.ApplyStep(step);
         ShowCurrentState();
         UpdateSteps();
     }
@@ -355,13 +355,13 @@ public class UIUpdaterTracker : Tracker<object>
 
 public class ChooseStepPresenterBuilder
 {
-    private readonly IReadOnlyList<BuiltChangeCommit<NumericChange, ISudokuHighlighter>> _commits;
+    private readonly IReadOnlyList<IStep<ISudokuHighlighter, ISudokuSolvingState, NumericChange>> _commits;
     private readonly INumericSolvingState _currentState;
     private readonly Settings _settings;
-    private readonly ICommitApplier _applier;
+    private readonly ICommitApplier<ISudokuHighlighter, ISudokuSolvingState, NumericChange> _applier;
 
-    public ChooseStepPresenterBuilder(IReadOnlyList<BuiltChangeCommit<NumericChange, ISudokuHighlighter>> commits, Settings settings,
-        INumericSolvingState currentState, ICommitApplier applier)
+    public ChooseStepPresenterBuilder(IReadOnlyList<IStep<ISudokuHighlighter, ISudokuSolvingState, NumericChange>> commits, Settings settings,
+        INumericSolvingState currentState, ICommitApplier<ISudokuHighlighter, ISudokuSolvingState, NumericChange> applier)
     {
         _commits = commits;
         _settings = settings;
@@ -375,7 +375,7 @@ public class ChooseStepPresenterBuilder
     }
 }
 
-public interface ICommitApplier
+public interface ICommitApplier<THighlighted, in TState, in TChange> where TChange : notnull
 {
-    public void Apply(BuiltChangeCommit<NumericChange, ISudokuHighlighter> commit);
+    public void Apply(IStep<THighlighted, TState, TChange> step);
 }

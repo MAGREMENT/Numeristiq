@@ -17,31 +17,17 @@ public partial class StepControl
     public event OnStateShownChange? StateShownChanged;
     public event OnExplanationAsked? ExplanationAsked;
     
-    public StepControl(IStep step, StepState stepState)
+    public StepControl(int id, IStep step, StepState stepState)
     {
         InitializeComponent();
 
-        _id = step.Id;
-        Number.Text = step.Id.ToString();
+        _id = id;
+        Number.Text = id.ToString();
         Title.Text = step.Title;
         Title.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(step.Difficulty));
         PageSelector.Max = step.HighlightCount();
         SetStateShown(stepState);
         TextOutput.Text = step.Description;
-    }
-
-    public StepControl(int id, BuiltChangeCommit<NumericChange, ISudokuHighlighter> commit) //TODO use
-    {
-        InitializeComponent();
-        
-        _id = id;
-        Number.Text = id.ToString();
-        Title.Text = commit.Maker.Name;
-        Title.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(commit.Maker.Difficulty));
-        PageSelector.Max = commit.Report.HighlightCollection.Count;
-        SetStateShown(StepState.From);
-        TextOutput.Text = commit.Report.Description;
-        ExplanationButton.Visibility = Visibility.Collapsed;
     }
 
     private void OnMouseEnter(object sender, MouseEventArgs e)

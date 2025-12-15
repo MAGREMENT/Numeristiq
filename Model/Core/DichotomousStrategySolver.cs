@@ -7,7 +7,7 @@ namespace Model.Core;
 
 public abstract class DichotomousStrategySolver<TStrategy, TSolvingState, THighlighter> : 
     StrategySolver<TStrategy, TSolvingState, THighlighter, DichotomousChange,
-        DichotomousChangeBuffer<TSolvingState, THighlighter>, IStep<THighlighter, TSolvingState, DichotomousChange>>, IDichotomousChangeProducer
+        DichotomousChangeBuffer<TSolvingState, THighlighter>>, IDichotomousChangeProducer
     where TSolvingState : IDichotomousSolvingState where TStrategy : Strategy
 {
     public override DichotomousChangeBuffer<TSolvingState, THighlighter> ChangeBuffer { get; }
@@ -57,7 +57,7 @@ public abstract class DichotomousStrategySolver<TStrategy, TSolvingState, THighl
     protected override void AddStepFromReport(ChangeReport<THighlighter> report, IReadOnlyList<DichotomousChange> changes,
         Strategy maker, TSolvingState stateBefore)
     {
-        _steps.Add(new ChangeReportStep<THighlighter, TSolvingState, DichotomousChange>(_steps.Count + 1, maker, changes, report,
+        _steps.Add(new ChangeReportStep<THighlighter, TSolvingState, DichotomousChange>(maker, changes, report,
             stateBefore, ApplyChangesToState(stateBefore, changes)));
     }
 }

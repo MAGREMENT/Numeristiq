@@ -178,22 +178,22 @@ public partial class SolvePage : ITectonicSolveView
         return null;
     }
 
-    protected override StackPanel GetStepPanel()
+    public override StackPanel GetStepPanel()
     {
         return LogPanel;
     }
 
-    protected override ScrollViewer GetStepViewer()
+    public override ScrollViewer GetStepViewer()
     {
         return LogViewer;
     }
 
-    protected override IStepManagingPresenter GetStepsPresenter()
+    public override IStepManagingPresenter GetStepsPresenter()
     {
         return _presenter;
     }
 
-    protected override ISizeOptimizable GetExplanationDrawer()
+    public override ISizeOptimizable GetExplanationDrawer()
     {
         var board = new TectonicBoard
         {

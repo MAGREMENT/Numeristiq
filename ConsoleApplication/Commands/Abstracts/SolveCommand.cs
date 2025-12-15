@@ -38,10 +38,12 @@ public abstract class SolveCommand : Command
         if (report.IsOptionUsed(PathIndex))
         {
             Console.WriteLine("\nPath :");
+            
+            var id = 1;
             foreach (var step in solver.Steps)
             {
                 var explanation = step.ExplanationToString();
-                Console.WriteLine($"{step.Id}. {step.Title}\nDescription : {step.Description}\nChanges :" +
+                Console.WriteLine($"{id++}. {step.Title}\nDescription : {step.Description}\nChanges :" +
                                   $" {step.ChangesToString()}\nExplanation : {explanation}");
             }
         }
