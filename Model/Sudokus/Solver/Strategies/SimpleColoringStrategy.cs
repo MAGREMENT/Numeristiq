@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
@@ -23,12 +24,16 @@ public class SimpleColoringStrategy : SudokuStrategy
     {
         solverData.PreComputer.SimpleGraph.Construct(UnitStrongLinkConstructionRule.Instance);
 
-        foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
-                     ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColorWithoutRules, solverData.PreComputer.SimpleGraph.Graph,
-                     ElementColor.On, !solverData.FastMode))
+        var list = ColorHelper.ColorAll<CellPossibility, ColoringListCollection<CellPossibility>>(
+            ColorHelper.Algorithm.ColorWithoutRules,
+            solverData.PreComputer.SimpleGraph.Graph,
+            ElementColor.On, 
+            !solverData.FastMode);
+        
+        foreach (var coloredVertices in list)
         {
             if(coloredVertices.Count <= 1) continue;
-
+            
             if (SearchForTwiceInTheSameUnit(solverData, coloredVertices))
             {
                 if (solverData.ChangeBuffer.NeedCommit())

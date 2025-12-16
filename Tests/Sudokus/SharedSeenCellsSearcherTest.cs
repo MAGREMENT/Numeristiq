@@ -20,7 +20,15 @@ public class SharedSeenCellsSearcherTest
             }
         }
 
-        Assert.Multiple(() => ImplementationSpeedComparator.Compare<SharedSeenCells>(value =>
+        (SharedSeenCells, string)[] impl =
+        [
+            (SharedSeenAlgorithms.FullGridSharedSeenCells, "FullGrid"),
+            (SharedSeenAlgorithms.GridPositionsSharedSeenCells, "GridPositions"),
+            (SharedSeenAlgorithms.InCommonSharedSeenCells, "InCommon"),
+            (SharedSeenAlgorithms.SharedUnitSharedSeenCells, "SharedUnit")
+        ];
+
+        Assert.Multiple(() => ImplementationSpeedComparator.Compare(impl, 50, value =>
         {
             for (int first = 0; first < 80; first++)
             {
@@ -37,10 +45,7 @@ public class SharedSeenCellsSearcherTest
                     Assert.That(gp, Has.Count.EqualTo(total));
                 }
             }
-        }, 50, SharedSeenAlgorithms.FullGridSharedSeenCells, 
-            SharedSeenAlgorithms.GridPositionsSharedSeenCells,
-            SharedSeenAlgorithms.InCommonSharedSeenCells,
-            SharedSeenAlgorithms.SharedUnitSharedSeenCells));
+        }));
     }
 }
 

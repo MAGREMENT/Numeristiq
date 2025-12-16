@@ -65,10 +65,10 @@ public class TruthAndLinksLogicTests
         var bank = new MergedTruthAndLinkBank<CellPossibility, ITruthOrLink<CellPossibility>>();
         SudokuTruthAndLinksLogic.SetUpForSudoku(solver, bank);
         
-        ImplementationSpeedComparator.Compare(b =>
+        ImplementationSpeedComparator.Compare([(bank, "Default")], 3, b =>
         {
             var r = TruthAndLinksLogic.FindRank0(b, 3, false);
             Assert.That(r.Count(), Is.GreaterThan(0));
-        }, 3, bank);
+        });
     }
 }

@@ -7,7 +7,7 @@ using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.Implementations;
 
-public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength>
+public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength> //TODO finish and look into using
 {
     private UniqueList<ISudokuElement>?[,,,] _cps = new UniqueList<ISudokuElement>[9, 9, 9, 2];
     private readonly Dictionary<ISudokuElement, UniqueList<ISudokuElement>[]> _others = new();
@@ -22,7 +22,7 @@ public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength>
     {
         if (strength == LinkStrength.Any) return Neighbors(from);
         
-        if (from is CellPossibility cp) return _cps[cp.Row, cp.Column, cp.Possibility - 1, (int)strength] ?? Enumerable.Empty<ISudokuElement>();
+        if (from is CellPossibility cp) return _cps[cp.Row, cp.Column, cp.Possibility - 1, (int)strength - 1] ?? Enumerable.Empty<ISudokuElement>();
         
         return _others.TryGetValue(from, out var resume) ? resume[(int)strength - 1] : Enumerable.Empty<ISudokuElement>();
     }
@@ -67,7 +67,7 @@ public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength>
         if (from is not CellPossibility cp)
             return _others.TryGetValue(from, out var resume) && resume[(int)strength - 1].Contains(to);
         
-        var l = _cps[cp.Row, cp.Column, cp.Possibility - 1, (int)strength];
+        var l = _cps[cp.Row, cp.Column, cp.Possibility - 1, (int)strength - 1];
         return l is not null && l.Contains(to);
     }
 
@@ -125,8 +125,8 @@ public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength>
     {
         if (from is CellPossibility cp)
         {
-            _cps[cp.Row, cp.Column, cp.Possibility - 1, (int)strength] ??= new UniqueList<ISudokuElement>();
-            _cps[cp.Row, cp.Column, cp.Possibility - 1, (int)strength]!.Add(to);
+            _cps[cp.Row, cp.Column, cp.Possibility - 1, (int)strength - 1] ??= new UniqueList<ISudokuElement>();
+            _cps[cp.Row, cp.Column, cp.Possibility - 1, (int)strength - 1]!.Add(to);
         }
         else
         {

@@ -7,7 +7,13 @@ public class ArrayGameTests //Might be useful for some optimizations
     [Test]
     public void Test()
     {
-        ImplementationSpeedComparator.Compare<IArrayGame>(game =>
+        (IArrayGame, string)[] impl =
+        [
+            (new ArrayArrayGame(), "Array"),
+            (new BinaryArrayGame(), "Binary")
+        ];
+        
+        ImplementationSpeedComparator.Compare(impl, 1000,game =>
             {
                 int cursor = 0;
                 for (int row = 0; row < IArrayGame.RowCount; row++)
@@ -28,7 +34,7 @@ public class ArrayGameTests //Might be useful for some optimizations
                         cursor = (cursor + 1) % 9;
                     }
                 }
-            }, 1000, new ArrayArrayGame(), new BinaryArrayGame());
+            });
     }
 }
 

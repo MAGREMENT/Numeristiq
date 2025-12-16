@@ -98,12 +98,18 @@ public class NonogramBackTrackerTests
         var expected = NonogramTranslator.TranslateLineFormat(
             "1.2-3-1.2-1.2-2.2-2::3-1.2-1.1-3-2.2-2.1::0.2-0.3-0.4-1.0-1.4-1.5-2.2-2.5-3.1-3.2-3.3-4.0-4.1-4.3-4.4-5.0-5.1-5.4");
         
-        ImplementationSpeedComparator.Compare<BackTracker<Nonogram, IAvailabilityChecker>>(bt =>
+        (BackTracker<Nonogram, IAvailabilityChecker>, string)[] impl =
+        [
+            (new NaiveNonogramBackTracker(), "Naive"),
+            (new SpareSpaceNonogramBackTracker(), "SpareSpace")
+        ];
+        
+        ImplementationSpeedComparator.Compare(impl, 100, bt =>
         {
             bt.Set(nonogram);
             var solution = bt.Solutions()[0];
             Assert.That(solution.SamePattern(expected));
-        }, 100, new NaiveNonogramBackTracker(), new SpareSpaceNonogramBackTracker());
+        });
     }
 
     /*
@@ -128,12 +134,18 @@ public class NonogramBackTrackerTests
             "6-1.2.2-1.3-1.1.1-2.3-3-7::2.2.1-1.3-3.2-2.1.2-1.1.1.1-5.1-2.1.1::0.0-0.1-0.3-0.4-0.6-1.6-2.1-2.6-3.0-3.1-3.3-3.5-3.6-4.0-4.2-4.4-4.6-5.0-5.1-5.2-5.3-5.4-5.6-6.1-6.6");
         var expected = NonogramTranslator.TranslateLineFormat(
             "6-1.2.2-1.3-1.1.1-2.3-3-7::2.2.1-1.3-3.2-2.1.2-1.1.1.1-5.1-2.1.1::0.0-0.1-0.3-0.4-0.6-1.0-1.4-1.5-1.6-2.0-2.1-2.2-2.5-2.6-3.0-3.1-3.3-3.5-3.6-4.0-4.2-4.4-4.6-5.0-5.1-5.2-5.3-5.4-5.6-6.1-6.2-6.4-6.6");
+
+        (BackTracker<Nonogram, IAvailabilityChecker>, string)[] impl =
+        [
+            (new NaiveNonogramBackTracker(), "Naive"),
+            (new SpareSpaceNonogramBackTracker(), "SpareSpace")
+        ];
         
-        ImplementationSpeedComparator.Compare<BackTracker<Nonogram, IAvailabilityChecker>>(bt =>
+        ImplementationSpeedComparator.Compare(impl, 10000, bt =>
         {
             bt.Set(nonogram);
             var solution = bt.Solutions()[0];
             Assert.That(solution.SamePattern(expected));
-        }, 10000, new NaiveNonogramBackTracker(), new SpareSpaceNonogramBackTracker());
+        });
     }
 }

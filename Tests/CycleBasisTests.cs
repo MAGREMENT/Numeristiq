@@ -8,7 +8,7 @@ public class CycleBasisTests
     [Test]
     public void BasicTest()
     {
-        var graph = new HDictionaryLinkGraph<int>();
+        var graph = GraphCreator.CreateForLink<int>(GraphCollectionType.HashSet, false);
         graph.Add(1, 2, LinkStrength.Strong);
         graph.Add(2, 3, LinkStrength.Weak);
         graph.Add(3, 4, LinkStrength.Strong);

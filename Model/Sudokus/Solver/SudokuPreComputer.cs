@@ -30,8 +30,9 @@ public class SudokuPreComputer
     private DoubleIntArgumentPrecomputing _alsGraphPrecomputing = DoubleIntArgumentPrecomputing.NotDone;
     private DoubleIntArgumentPrecomputing _ahsGraphPrecomputing = DoubleIntArgumentPrecomputing.NotDone;
     private List<IPossibilitySet> _als = new();
-    private IGraph<IPossibilitySet, ReadOnlyBitSet16> _alsGraph = new HDictionaryGraph<IPossibilitySet, ReadOnlyBitSet16>();
-    private IGraph<IPossibilitySet, Cell[]> _ahsGraph = new HDictionaryGraph<IPossibilitySet, Cell[]>();
+
+    private IGraph<IPossibilitySet, ReadOnlyBitSet16> _alsGraph = GraphCreator.Create<IPossibilitySet, ReadOnlyBitSet16>(GraphCollectionType.HashSet);
+    private IGraph<IPossibilitySet, Cell[]> _ahsGraph = GraphCreator.Create<IPossibilitySet, Cell[]>(GraphCollectionType.HashSet);
     
     public ConstructedGraph<ISudokuSolverData, IGraph<CellPossibility, LinkStrength>> SimpleGraph { get; }
     public ConstructedGraph<ISudokuSolverData, IConditionalGraph<ISudokuElement, LinkStrength, ElementColor>> ComplexGraph { get; }
@@ -40,9 +41,9 @@ public class SudokuPreComputer
     {
         _solverData = solverData;
         SimpleGraph = new ConstructedGraph<ISudokuSolverData, IGraph<CellPossibility, LinkStrength>>(
-            new HDictionaryLinkGraph<CellPossibility>(), _solverData);
+            GraphCreator.CreateForLink<CellPossibility>(GraphCollectionType.HashSet, false), _solverData);
         ComplexGraph = new ConstructedGraph<ISudokuSolverData, IConditionalGraph<ISudokuElement, LinkStrength, ElementColor>>(
-            new HDictionaryConditionalLinkGraph<ISudokuElement, ElementColor>(), _solverData);
+            GraphCreator.CreateForConditionalLink<ISudokuElement, ElementColor>(GraphCollectionType.HashSet), _solverData);
     }
 
     public void Reset()
@@ -128,7 +129,7 @@ public class SudokuPreComputer
 
     public IEnumerable<LinkedAlmostLockedSets> ConstructAlmostLockedSetGraph(int maxSize)
     {
-        _alsGraph = new HDictionaryGraph<IPossibilitySet, ReadOnlyBitSet16>();
+        _alsGraph = GraphCreator.Create<IPossibilitySet, ReadOnlyBitSet16>(GraphCollectionType.HashSet);
         _alsGraphPrecomputing = new DoubleIntArgumentPrecomputing(true, maxSize, 1);
         return DoAlmostLockedSetGraph(_alsGraph, maxSize);
     }
@@ -144,7 +145,7 @@ public class SudokuPreComputer
 
     public IEnumerable<LinkedAlmostHiddenSets> ConstructAlmostHiddenSetGraph(int maxSize)
     {
-        _ahsGraph = new HDictionaryGraph<IPossibilitySet, Cell[]>();
+        _ahsGraph = GraphCreator.Create<IPossibilitySet, Cell[]>(GraphCollectionType.HashSet);
         _ahsGraphPrecomputing = new DoubleIntArgumentPrecomputing(true, maxSize, 1);
         return DoAlmostHiddenSetGraph(_ahsGraph, maxSize);
     }
@@ -179,7 +180,7 @@ public class SudokuPreComputer
 
     private IGraph<IPossibilitySet, ReadOnlyBitSet16> DoAlmostLockedSetGraph(int maxSize)
     {
-        var graph = new HDictionaryGraph<IPossibilitySet, ReadOnlyBitSet16>();
+        var graph = GraphCreator.Create<IPossibilitySet, ReadOnlyBitSet16>(GraphCollectionType.HashSet);
         var allAls = AlmostLockedSets(maxSize);
 
         for (int i = 0; i < allAls.Count; i++)
@@ -222,7 +223,7 @@ public class SudokuPreComputer
 
     private IGraph<IPossibilitySet, Cell[]> DoAlmostHiddenSetGraph(int maxSize)
     {
-        var graph = new HDictionaryGraph<IPossibilitySet, Cell[]>();
+        var graph = GraphCreator.Create<IPossibilitySet, Cell[]>(GraphCollectionType.HashSet);
         var allAhs = AlmostHiddenSetSearcher.FullGrid(_solverData, maxSize, 1);
 
         for (int i = 0; i < allAhs.Count; i++)

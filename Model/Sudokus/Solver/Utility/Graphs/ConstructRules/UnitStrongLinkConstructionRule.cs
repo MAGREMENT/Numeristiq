@@ -5,7 +5,7 @@ using Model.Utility;
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
 public class UnitStrongLinkConstructionRule : IConstructionRule<ISudokuSolverData, IGraph<ISudokuElement, LinkStrength>>,
-    IConstructionRule<ISudokuSolverData, IGraph<CellPossibility, LinkStrength>>//TODO another rule with merged weak & strong links
+    IConstructionRule<ISudokuSolverData, IGraph<CellPossibility, LinkStrength>>
 {
     public static UnitStrongLinkConstructionRule Instance { get; } = new();
     

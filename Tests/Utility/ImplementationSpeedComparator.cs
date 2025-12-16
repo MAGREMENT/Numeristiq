@@ -1,82 +1,93 @@
 ﻿using System.Diagnostics;
+using Model.Utility;
 
 namespace Tests.Utility;
 
 public static class ImplementationSpeedComparator
 {
-    public static void Compare<T>(Test<T> test, int repeatCount, params T[] implementations)
-    {
-        Compare(test, repeatCount, (IReadOnlyList<T>)implementations);
-    }
-    
-    public static void Compare<T>(Test<T> test, int repeatCount, IReadOnlyList<T> implementations)
+    public static void Compare<T>(IReadOnlyList<(T, string)> implementations, int repeatCount, Test<T> test, TearDown<T>? tearDown = null)
     {
         var stopWatch = new Stopwatch();
         var nanosPerTick = 1000L * 1000L * 1000L / Stopwatch.Frequency;
+        var result = new SpeedTestResult[implementations.Count];
         
         for(int i = 0; i < implementations.Count; i++)
         {
             var implementation = implementations[i];
-            var result = new SpeedTestResult();
+            result[i] = new SpeedTestResult(implementation.Item2, repeatCount, nanosPerTick);
             
             for (int n = 0; n <= repeatCount; n++)
             {
                 stopWatch.Restart();
-                test(implementation);
+                test(implementation.Item1);
                 stopWatch.Stop();
+                tearDown?.Invoke(implementation.Item1);
 
-                result.AddEntry(n, stopWatch.ElapsedTicks);
+                result[i].AddEntry(n, stopWatch.ElapsedTicks);
             }
-            
-            Console.WriteLine($"#{i + 1} {implementation!.GetType().Name}");
-            result.ToConsole(nanosPerTick, repeatCount);
-            Console.WriteLine();
         }
+        
+        Console.WriteLine(result.ToGridReport(6, str => [
+            str.Name,
+            str.TicksToString(str.TotalTicks),
+            str.TicksToString(str.GetAverageTicks()),
+            str.TicksToString(str.MinTicks),
+            str.TicksToString(str.MaxTicks),
+            str.TicksToString(str.Dry)
+        ], ColumnTitle.Follow("Name", "Total", "Average", "Minimum", "Maximum", "Dry")));
     }
 }
 
 public class SpeedTestResult
 {
-    private long _minTicks = long.MaxValue;
-    private long _maxTicks;
+    public long MinTicks { get; private set; } = long.MaxValue;
+    public long MaxTicks { get; private set; }
+    public long TotalTicks { get; private set; }
+    public long Dry { get; private set; } = -1;
+    public string Name { get; }
+    
     private long _minIndex = -1;
     private long _maxIndex = -1;
-    private long _totalTicks;
-    private long _dry = -1;
+    private readonly int _repeatCount;
+    private readonly long _nanosPerTick;
+
+    public SpeedTestResult(string name, int repeatCount, long nanosPerTick)
+    {
+        Name = name;
+        _repeatCount = repeatCount;
+        _nanosPerTick = nanosPerTick;
+    }
 
     public void AddEntry(int entryNumber, long ticks)
     {
-        if (_dry < 0)
+        if (Dry < 0)
         {
-            _dry = ticks;
+            Dry = ticks;
             return;
         }
         
-        _totalTicks += ticks;
-        if (ticks < _minTicks)
+        TotalTicks += ticks;
+        if (ticks < MinTicks)
         {
-            _minTicks = ticks;
+            MinTicks = ticks;
             _minIndex = entryNumber;
         }
 
-        if (ticks > _maxTicks)
+        if (ticks > MaxTicks)
         {
-            _maxTicks = ticks;
+            MaxTicks = ticks;
             _maxIndex = entryNumber;
         }
     }
 
-    public void ToConsole(long nanosPerTick, int repeatCount)
+    public double GetAverageTicks()
     {
-        Console.WriteLine($"   Total: {TimeInNanosToString(_totalTicks * nanosPerTick)}");
-        Console.WriteLine($"   Average: {TimeInNanosToString((double)(_totalTicks * nanosPerTick) / repeatCount)}");
-        Console.WriteLine($"   Minimum: {TimeInNanosToString(_minTicks * nanosPerTick)} on try #{_minIndex + 1}");
-        Console.WriteLine($"   Maximum: {TimeInNanosToString(_maxTicks * nanosPerTick)} on try #{_maxIndex + 1}");
-        Console.WriteLine($"   Dry: {TimeInNanosToString(_dry * nanosPerTick)}");
+        return (double)TotalTicks / _repeatCount;
     }
     
-    private static string TimeInNanosToString(double nanos)
+    public string TicksToString(double ticks)
     {
+        var nanos = ticks * _nanosPerTick;
         return nanos switch
         {
             < 1_000 => nanos + " ns",
@@ -86,8 +97,9 @@ public class SpeedTestResult
         };
     }
 
-    private static string TimeInNanosToString(long nanos)
+    public string TicksToString(long ticks)
     {
+        var nanos = ticks * _nanosPerTick;
         return nanos switch
         {
             < 1_000 => nanos + " ns",
@@ -99,3 +111,4 @@ public class SpeedTestResult
 }
 
 public delegate void Test<in T>(T value);
+public delegate void TearDown<in T>(T value);

@@ -5,17 +5,16 @@ using Model.Utility.Collections;
 
 namespace Model.Core.Graphs.Implementations;
 
-public abstract class DictionaryGraph<TElement, TEdge> : IGraph<TElement, TEdge> where TElement : notnull where TEdge : notnull
+public class DictionaryGraph<TElement, TEdge, TCollection> : IGraph<TElement, TEdge> 
+    where TElement : notnull where TEdge : notnull where TCollection : IContainingCollection<EdgeTo<TEdge, TElement>>, new()
 {
-    private readonly Dictionary<TElement, IContainingCollection<EdgeTo<TEdge, TElement>>> _edges = new();
-
-    protected abstract IContainingCollection<EdgeTo<TEdge, TElement>> CreateCollection();
+    private readonly Dictionary<TElement, TCollection> _edges = new();
     
     public void Add(TElement from, TElement to, TEdge edge, LinkType type = LinkType.BiDirectional)
     {
         if (!_edges.TryGetValue(from, out var hs))
         {
-            hs = CreateCollection();
+            hs = new TCollection();
             _edges[from] = hs;
         }
 
@@ -25,7 +24,7 @@ public abstract class DictionaryGraph<TElement, TEdge> : IGraph<TElement, TEdge>
         
         if (!_edges.TryGetValue(to, out hs))
         {
-            hs = CreateCollection();
+            hs = new TCollection();
             _edges[to] = hs;
         }
         hs.Add(new EdgeTo<TEdge, TElement>(edge, from));
@@ -97,14 +96,4 @@ public abstract class DictionaryGraph<TElement, TEdge> : IGraph<TElement, TEdge>
     {
         return GetEnumerator();
     }
-}
-
-public class HDictionaryGraph<TElement, TEdge> : DictionaryGraph<TElement, TEdge> where TElement : notnull where TEdge : notnull
-{
-    protected override IContainingCollection<EdgeTo<TEdge, TElement>> CreateCollection() => new ContainingHashSet<EdgeTo<TEdge, TElement>>();
-}
-
-public class ULDictionaryGraph<TElement, TEdge> : DictionaryGraph<TElement, TEdge> where TElement : notnull where TEdge : notnull
-{
-    protected override IContainingCollection<EdgeTo<TEdge, TElement>> CreateCollection() => new UniqueList<EdgeTo<TEdge, TElement>>();
 }

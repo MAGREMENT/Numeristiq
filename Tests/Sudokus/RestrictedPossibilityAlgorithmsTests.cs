@@ -56,12 +56,20 @@ public class RestrictedPossibilityAlgorithmsTests
             {
                 foreach (var p in als[i].EnumeratePossibilities())
                 {
-                    expected[i, j, p - 1] = RestrictedPossibilityAlgorithms.EachCaseSearch(als[i], als[j], p);
+                    expected[i, j, p - 1] = RestrictedPossibilityAlgorithms. EachCaseSearch(als[i], als[j], p);
                 }
             }
         }
-        
-        ImplementationSpeedComparator.Compare<AreRestricted>(impl =>
+
+        (AreRestricted, string)[] impl =
+        [
+            (RestrictedPossibilityAlgorithms.EachCaseSearch, "EachCase"),
+            (RestrictedPossibilityAlgorithms.GridPositionsSearch, "GridPositions"),
+            (RestrictedPossibilityAlgorithms.CommonHouseSearch, "CommonHouse"),
+            (RestrictedPossibilityAlgorithms.AlternatingCommonHouseSearch, "AlternatingCommonHouse")
+        ];
+
+        ImplementationSpeedComparator.Compare(impl, 20, implementation =>
         {
             for (int i = 0; i < als.Count - 1; i++)
             {
@@ -72,15 +80,12 @@ public class RestrictedPossibilityAlgorithmsTests
                     
                     foreach (var p in als1.EnumeratePossibilities())
                     {
-                        var result = impl(als1, als2, p);
+                        var result = implementation(als1, als2, p);
                         Assert.That(result, Is.EqualTo(expected[i, j, p - 1]));
                     }
                 }
             }
-        }, 20, RestrictedPossibilityAlgorithms.EachCaseSearch,
-            RestrictedPossibilityAlgorithms.GridPositionsSearch,
-            RestrictedPossibilityAlgorithms.CommonHouseSearch,
-            RestrictedPossibilityAlgorithms.AlternatingCommonHouseSearch);
+        });
     }
 }
 

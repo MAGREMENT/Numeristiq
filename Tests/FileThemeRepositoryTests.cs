@@ -8,15 +8,15 @@ namespace Tests;
 
 public class FileThemeRepositoryTests
 {
-    private readonly List<FileThemeRepository> _repositories = new();
+    private readonly List<(FileThemeRepository, string)> _repositories = new();
 
     [OneTimeSetUp]
     public void SetUp()
     {
-        _repositories.Add(new FileThemeRepository("theme-tests", false, true,
-            new JsonType<List<ThemeDAO>>()));
-        _repositories.Add(new FileThemeRepository("theme-tests", false, true,
-            new ThemeNativeType()));
+        _repositories.Add((new FileThemeRepository("theme-tests", false, true,
+            new JsonType<List<ThemeDAO>>()), "JSON"));
+        _repositories.Add((new FileThemeRepository("theme-tests", false, true,
+            new ThemeNativeType()), "Native"));
     }
 
     [OneTimeTearDown]
@@ -24,7 +24,7 @@ public class FileThemeRepositoryTests
     {
         foreach (var repo in _repositories)
         {
-            repo.TearDown();
+            repo.Item1.TearDown();
         }
         
         _repositories.Clear();
@@ -34,7 +34,7 @@ public class FileThemeRepositoryTests
     public void SpeedTest()
     {
         var themes = new HardCodedThemeRepository().GetThemes();
-        ImplementationSpeedComparator.Compare(repo =>
+        ImplementationSpeedComparator.Compare<FileThemeRepository>(_repositories, 200, repo =>
         {
             foreach (var theme in themes) repo.AddTheme(theme);
 
@@ -47,6 +47,6 @@ public class FileThemeRepositoryTests
             
             repo.ClearThemes();
             Assert.That(repo.GetThemes(), Has.Count.EqualTo(0));
-        }, 200, _repositories);
+        });
     }
 }

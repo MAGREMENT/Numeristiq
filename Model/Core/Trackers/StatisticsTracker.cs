@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Text.Json.Serialization;
 using Model.Utility;
 
 namespace Model.Core.Trackers;
@@ -67,69 +68,28 @@ public class StatisticsTracker<TSolvingState> : Tracker<TSolvingState>
     
     public override string ToString()
     {
-        string[] columnTitles = { "Strategy name", "Usage", "Score", "Solutions added", "Possibilities removed",
-            "Score percentage", "Total time", "Average time" };
-        int[] widthCap = new int[columnTitles.Length];
-
-        for (int i = 0; i < columnTitles.Length; i++)
-        {
-            widthCap[i] = columnTitles[i].Length + 2;
-        }
-
-        foreach (var report in _statistics)
-        {
-            widthCap[0] = Math.Max(widthCap[0], report.Name.Length + 2);
-            widthCap[1] = Math.Max(widthCap[1], report.Usage.ToString().Length + 2);
-            widthCap[2] = Math.Max(widthCap[2], report.Score.ToString().Length + 2);
-            widthCap[3] = Math.Max(widthCap[3], report.SolutionsAdded.ToString().Length + 2);
-            widthCap[4] = Math.Max(widthCap[4], report.PossibilitiesRemoved.ToString().Length + 2);
-            widthCap[5] = Math.Max(widthCap[5], report.ScorePercentage()
-                .ToString(CultureInfo.InvariantCulture).Length + 3);
-            widthCap[6] = Math.Max(widthCap[6], report.TotalTimeInSecond()
-                .ToString(CultureInfo.InvariantCulture).Length + 3);
-            widthCap[7] = Math.Max(widthCap[7], report.AverageTime()
-                .ToString(CultureInfo.InvariantCulture).Length + 4);
-        }
-
-        var totalWidth = columnTitles.Length - 1;
-
-        foreach (var width in widthCap)
-        {
-            totalWidth += width;
-        }
-
-        var result = new StringBuilder("Result".FillEvenlyWith('-', totalWidth) + "\n\n");
+        var result = new StringBuilder("\n\n");
+        _statistics.ToGridReport(result, 8, report =>
+        [
+            report.Name,
+            report.Usage.ToString(),
+            report.Score.ToString(),
+            report.SolutionsAdded.ToString(),
+            report.PossibilitiesRemoved.ToString(),
+            report.ScorePercentage().ToString(CultureInfo.InvariantCulture) + "s",
+            report.TotalTimeInSecond().ToString(CultureInfo.InvariantCulture) + "s",
+            report.AverageTime().ToString(CultureInfo.InvariantCulture) + "ms"
+        ], ColumnTitle.Follow("Strategy name", "Usage", "Score", 
+            "Solutions added", "Possibilities removed",
+            "Score percentage", "Total time", "Average time"));
 
         result.Append($"Completion rate : {_success} / {Count}\n");
         result.Append($"Solver fails : {_solverFails}\n\n");
-
-        result.Append(columnTitles[0].FillEvenlyWith(' ', widthCap[0]) + "|"
-                                                                       + columnTitles[1].FillEvenlyWith(' ', widthCap[1]) + "|"
-                                                                       + columnTitles[2].FillEvenlyWith(' ', widthCap[2]) + "|"
-                                                                       + columnTitles[3].FillEvenlyWith(' ', widthCap[3]) + "|"
-                                                                       + columnTitles[4].FillEvenlyWith(' ', widthCap[4]) + "|"
-                                                                       + columnTitles[5].FillEvenlyWith(' ', widthCap[5]) + "|"
-                                                                       + columnTitles[6].FillEvenlyWith(' ', widthCap[6]) + "|"
-                                                                       + columnTitles[7].FillEvenlyWith(' ', widthCap[7]) + "\n");
-        result.Append(CrossRow(widthCap));
+        
         
         var totalStrategyTime = 0L;
-
         foreach (var report in _statistics)
         {
-            result.Append(report.Name.FillEvenlyWith(' ', widthCap[0]) + "|"
-                                                                       + report.Usage.ToString().FillEvenlyWith(' ', widthCap[1]) + "|"
-                                                                       + report.Score.ToString().FillEvenlyWith(' ', widthCap[2]) + "|"
-                                                                       + report.SolutionsAdded.ToString().FillEvenlyWith(' ', widthCap[3]) + "|"
-                                                                       + report.PossibilitiesRemoved.ToString().FillEvenlyWith(' ', widthCap[4]) + "|"
-                                                                       + (report.ScorePercentage()
-                                                                           .ToString(CultureInfo.InvariantCulture) + "%").FillEvenlyWith(' ', widthCap[5]) + "|"
-                                                                       + (report.TotalTimeInSecond()
-                                                                           .ToString(CultureInfo.InvariantCulture) + "s").FillEvenlyWith(' ', widthCap[6]) + "|"
-                                                                       + (report.AverageTime()
-                                                                           .ToString(CultureInfo.InvariantCulture) + "ms").FillEvenlyWith(' ', widthCap[7]) + "\n");
-            result.Append(CrossRow(widthCap));
-            
             totalStrategyTime += report.TotalTime;
         }
 
@@ -137,15 +97,6 @@ public class StatisticsTracker<TSolvingState> : Tracker<TSolvingState>
 
         return result.ToString();
     }
-
-    private static string CrossRow(int[] widthCap)
-    {
-        return '-'.Repeat(widthCap[0]) + "+" + '-'.Repeat(widthCap[1]) + "+"
-               + '-'.Repeat(widthCap[2]) + "+" + '-'.Repeat(widthCap[3]) + "+"
-               + '-'.Repeat(widthCap[4]) + "+" + '-'.Repeat(widthCap[5]) + "+"
-               + '-'.Repeat(widthCap[6]) + "+" + '-'.Repeat(widthCap[7]) + "\n";
-    }
-
     public IReadOnlyList<StrategyStatistics> GetStatistics() => _statistics;
 
     private StrategyStatistics? Get(int initialIndex)
@@ -173,6 +124,17 @@ public class StrategyStatistics
     public StrategyStatistics(string name)
     {
         Name = name;
+    }
+    
+    [JsonConstructor]
+    public StrategyStatistics(string name, int score, int solutionsAdded, int possibilitiesRemoved, int usage, long totalTime)
+    {
+        Name = name;
+        Score = score;
+        SolutionsAdded = solutionsAdded;
+        PossibilitiesRemoved = possibilitiesRemoved;
+        Usage = usage;
+        TotalTime = totalTime;
     }
 
     public void StartUsing()

@@ -26,7 +26,7 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
         _possibilities = new ReadOnlyBitSet8[0, 0];
 
         ManagedGraph = new ConstructedGraph<ITectonicSolverData, IGraph<ITectonicElement, LinkStrength>>(
-            new HDictionaryLinkGraph<ITectonicElement>(), this);
+            GraphCreator.CreateForLink<ITectonicElement>(GraphCollectionType.HashSet, false), this);
     }
 
     public void SetTectonic(ITectonic tectonic)

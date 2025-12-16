@@ -515,8 +515,8 @@ public class SudokuStrategiesTests
         strategy.InstanceHandling = InstanceHandling.UnorderedAll;
         
         var stopWatch = new Stopwatch();
-        var result = new SpeedTestResult();
         var nanosPerTick = 1000L * 1000L * 1000L / Stopwatch.Frequency;
+        var result = new SpeedTestResult("Result", count, nanosPerTick);
         var state = SudokuTranslator.TranslateBase32Format(stateBefore32,
             DefaultBase32Alphabet.Instance);
 
@@ -530,8 +530,8 @@ public class SudokuStrategiesTests
 
             result.AddEntry(n, stopWatch.ElapsedTicks);
         }
-
-        result.ToConsole(nanosPerTick, count);
+        
+        Console.WriteLine(result.TicksToString(result.GetAverageTicks()));
     }
 
     private const string MSLSBank =

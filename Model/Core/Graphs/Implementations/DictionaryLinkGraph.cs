@@ -5,18 +5,16 @@ using Model.Utility.Collections;
 
 namespace Model.Core.Graphs.Implementations;
 
-public abstract class DictionaryLinkGraph<T> : IGraph<T, LinkStrength> where T : notnull
+public  class DictionaryLinkGraph<T, TCollection> : IGraph<T, LinkStrength> 
+    where T : notnull where TCollection : IContainingCollection<T>, new()
 {
-    private readonly Dictionary<T, IContainingCollection<T>[]> _links = new();
-
-    protected abstract IContainingCollection<TCollectionType> CreateCollection<TCollectionType>() 
-        where TCollectionType : notnull;
+    private readonly Dictionary<T, TCollection[]> _links = new();
 
     public void Add(T from, T to, LinkStrength strength, LinkType type = LinkType.BiDirectional)
     {
         if (!_links.TryGetValue(from, out var collection))
         {
-            collection = new[] { CreateCollection<T>(), CreateCollection<T>() };
+            collection = new[] { new TCollection(), new TCollection() };
             _links[from] = collection;
         }
         collection[(int)strength - 1].Add(to);
@@ -25,7 +23,7 @@ public abstract class DictionaryLinkGraph<T> : IGraph<T, LinkStrength> where T :
         
         if (!_links.TryGetValue(to, out collection))
         {
-            collection = new[] { CreateCollection<T>(), CreateCollection<T>() };
+            collection = new[] { new TCollection(), new TCollection() };
             _links[to] = collection;
         }
         collection[(int)strength - 1].Add(from);
@@ -107,24 +105,15 @@ public abstract class DictionaryLinkGraph<T> : IGraph<T, LinkStrength> where T :
     }
 }
 
-public class HDictionaryLinkGraph<T> : DictionaryLinkGraph<T> where T : notnull
-{
-    protected override IContainingCollection<TCollectionType> CreateCollection<TCollectionType>() 
-        => new ContainingHashSet<TCollectionType>();
-}
-
-public class ULDictionaryLinkGraph<T> : DictionaryLinkGraph<T> where T : notnull
-{
-    protected override IContainingCollection<TCollectionType> CreateCollection<TCollectionType>() 
-        => new UniqueList<TCollectionType>();
-}
-
-public abstract class DictionaryConditionalLinkGraph<TElement, TValue> : DictionaryLinkGraph<TElement>,
-    IConditionalGraph<TElement, LinkStrength, TValue> where TElement : notnull
+public class DictionaryConditionalLinkGraph<TElement, TValue, TCollection1, TCollection2> : DictionaryLinkGraph<TElement, TCollection1>,
+    IConditionalGraph<TElement, LinkStrength, TValue> 
+    where TElement : notnull 
+    where TCollection1: IContainingCollection<TElement>, new()
+    where TCollection2 : IContainingCollection<(TElement, ICondition<TElement, TValue>)>, new() //TODO Conditional graph where met conditions are kept in memory ?
 {
     public IValueCollection<TElement, TValue>? Values { get; set; }
     
-    private readonly Dictionary<TElement, IContainingCollection<(TElement, ICondition<TElement, TValue>)>[]>
+    private readonly Dictionary<TElement, TCollection2[]>
         _conditionalLinks = new();
     
     public void Add(ICondition<TElement, TValue> condition, TElement from, TElement to, LinkStrength edge,
@@ -132,8 +121,7 @@ public abstract class DictionaryConditionalLinkGraph<TElement, TValue> : Diction
     {
         if (!_conditionalLinks.TryGetValue(from, out var collection))
         {
-            collection = new[] { CreateCollection<(TElement, ICondition<TElement, TValue>)>(),
-                CreateCollection<(TElement, ICondition<TElement, TValue>)>() };
+            collection = new[] { new TCollection2(), new TCollection2() };
             _conditionalLinks[from] = collection;
         }
         collection[(int)edge - 1].Add((to, condition));
@@ -142,8 +130,7 @@ public abstract class DictionaryConditionalLinkGraph<TElement, TValue> : Diction
         
         if (!_conditionalLinks.TryGetValue(to, out collection))
         {
-            collection = new[] { CreateCollection<(TElement, ICondition<TElement, TValue>)>(),
-                CreateCollection<(TElement, ICondition<TElement, TValue>)>() };
+            collection = new[] { new TCollection2(), new TCollection2() };
             _conditionalLinks[to] = collection;
         }
 
@@ -261,16 +248,4 @@ public abstract class DictionaryConditionalLinkGraph<TElement, TValue> : Diction
         base.Clear();
         _conditionalLinks.Clear();
     }
-}
-
-public class HDictionaryConditionalLinkGraph<TElement, TValue> : DictionaryConditionalLinkGraph<TElement, TValue> where TElement : notnull
-{
-    protected override IContainingCollection<TCollectionType> CreateCollection<TCollectionType>() 
-        => new ContainingHashSet<TCollectionType>();
-}
-
-public class ULDictionaryConditionalLinkGraph<TElement, TValue> : DictionaryConditionalLinkGraph<TElement, TValue> where TElement : notnull
-{
-    protected override IContainingCollection<TCollectionType> CreateCollection<TCollectionType>() 
-        => new UniqueList<TCollectionType>();
 }

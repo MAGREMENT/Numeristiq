@@ -31,8 +31,14 @@ public class OddagonSearchAlgorithmsTest
             UnitStrongLinkConstructionRule.Instance);
         var graph = solver.PreComputer.SimpleGraph.Graph;
         var write = new bool[2];
-        
-        ImplementationSpeedComparator.Compare<IOddagonSearchAlgorithm>(algo =>
+
+        (IOddagonSearchAlgorithm, string)[] impl =
+        [
+            (new OddagonSearchAlgorithmV1(), "V1"),
+            //(new OddagonSearchAlgorithmV2(), "V2")
+        ];
+
+        ImplementationSpeedComparator.Compare(impl, 3, algo =>
             {
                 algo.MaxLength = 7;
                 algo.MaxGuardians = 3;
@@ -59,7 +65,7 @@ public class OddagonSearchAlgorithmsTest
                 }
                 
                 Assert.That(result, Has.Count.GreaterThan(0));
-            }, 3, new OddagonSearchAlgorithmV1()/*, new OddagonSearchAlgorithmV3()*/);
+            });
     }
 
     [Test]

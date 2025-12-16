@@ -21,7 +21,7 @@ public class BinairoSolver : BinaryStrategySolver<Strategy<IBinairoSolverData>, 
     public BinairoSolver()
     {
         ManagedGraph = new ConstructedGraph<IBinairoSolverData, IGraph<CellPossibility, LinkStrength>>(
-            new HDictionaryLinkGraph<CellPossibility>(), this);
+            GraphCreator.CreateForLink<CellPossibility>(GraphCollectionType.HashSet, false), this);
     }
 
     public void SetBinairo(Binairo binairo)

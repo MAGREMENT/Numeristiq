@@ -5,22 +5,20 @@ using Model.Utility.Collections;
 
 namespace Model.Core.Graphs.Implementations;
 
-public abstract class DoubleDictionaryLinkGraph<T> : IGraph<T, LinkStrength> where T : notnull
+public class DoubleDictionaryLinkGraph<T, TCollection> : IGraph<T, LinkStrength>
+    where T : notnull where TCollection : IContainingCollection<T>, new()
 {
-    private readonly Dictionary<T, IContainingCollection<T>>[] _links =
+    private readonly Dictionary<T, TCollection>[] _links =
     {
         new(), new()
     };
-
-    protected abstract IContainingCollection<TCollectionType> CreateCollection<TCollectionType>() 
-        where TCollectionType : notnull;
 
     public void Add(T from, T to, LinkStrength strength, LinkType type = LinkType.BiDirectional)
     {
         var dic = _links[(int)strength - 1];
         if (!dic.TryGetValue(from, out var collection))
         {
-            collection = CreateCollection<T>();
+            collection = new TCollection();
             dic[from] = collection;
         }
         collection.Add(to);
@@ -29,7 +27,7 @@ public abstract class DoubleDictionaryLinkGraph<T> : IGraph<T, LinkStrength> whe
         
         if (!dic.TryGetValue(to, out collection))
         {
-            collection = CreateCollection<T>();
+            collection = new TCollection();
             dic[to] = collection;
         }
         collection.Add(from);
@@ -125,16 +123,4 @@ public abstract class DoubleDictionaryLinkGraph<T> : IGraph<T, LinkStrength> whe
     {
         return GetEnumerator();
     }
-}
-
-public class HDoubleDictionaryLinkGraph<T> : DoubleDictionaryLinkGraph<T> where T : notnull
-{
-    protected override IContainingCollection<TCollectionType> CreateCollection<TCollectionType>() 
-        => new ContainingHashSet<TCollectionType>();
-}
-
-public class ULDoubleDictionaryLinkGraph<T> : DoubleDictionaryLinkGraph<T> where T : notnull
-{
-    protected override IContainingCollection<TCollectionType> CreateCollection<TCollectionType>() 
-        => new UniqueList<TCollectionType>();
 }

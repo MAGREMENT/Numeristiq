@@ -16,7 +16,8 @@ public static class Program
         var instance = new ArgumentInterpreter();
         
         instance.Root.AddCommand(new HelpCommand(), true)
-            .AddCommand(new SessionCommand());
+            .AddCommand(new SessionCommand())
+            .AddCommand(new CompareStatisticsCommand());
 
         var sDir = instance.Root.AddDirectory(new Directory("Sudoku"))
             .AddCommand(new HelpCommand(), true)
