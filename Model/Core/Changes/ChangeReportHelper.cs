@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.Binairos;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Sudokus;
 using Model.Utility;
 using Model.Utility.Collections;

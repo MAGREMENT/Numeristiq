@@ -1,4 +1,4 @@
-﻿using Model.Core.Highlighting;
+﻿using Model.Binairos;
 
 namespace DesktopApplication.Presenter.Binairos.Solve;
 

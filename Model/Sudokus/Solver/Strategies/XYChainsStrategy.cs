@@ -4,9 +4,8 @@ using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
-using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.Collections;
@@ -71,7 +70,7 @@ public class XYChainsStrategy : SudokuStrategy
     }
 }
 
-public readonly struct XYCell
+public readonly struct XYCell : IEquatable<XYCell>
 {
     public int XPossibility { get; }
     public int YPossibility { get; }
@@ -97,8 +96,7 @@ public readonly struct XYCell
 
     public override bool Equals(object? obj)
     {
-        return obj is XYCell xy && xy.Row == Row && xy.Column == Column && xy.XPossibility == XPossibility
-               && xy.YPossibility == YPossibility;
+        return obj is XYCell xy && Equals(xy);
     }
 
     public override int GetHashCode()
@@ -109,6 +107,20 @@ public readonly struct XYCell
     public override string ToString()
     {
         return $"{XPossibility}{YPossibility}r{Row + 1}c{Column + 1}";
+    }
+    public static bool operator ==(XYCell left, XYCell right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(XYCell left, XYCell right)
+    {
+        return !left.Equals(right);
+    }
+
+    public bool Equals(XYCell other)
+    {
+        return XPossibility == other.XPossibility && YPossibility == other.YPossibility && Row == other.Row && Column == other.Column;
     }
 }
 

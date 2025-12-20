@@ -463,7 +463,7 @@ public class KakuroBoard : LayeredDrawingBoard, IKakuroDrawingData, ISizeOptimiz
     }
 }
 
-public readonly struct AmountCell
+public readonly record struct AmountCell
 {
     public AmountCell(int row, int column, Orientation orientation)
     {

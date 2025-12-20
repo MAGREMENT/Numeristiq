@@ -1,7 +1,9 @@
 ﻿using Model.Core;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Core.Steps;
 using Model.Tectonics;
+using Model.Tectonics.Solver;
 
 namespace DesktopApplication.Presenter.Tectonics.Solve;
 

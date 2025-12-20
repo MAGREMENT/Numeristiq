@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Player;
 
 public struct PlayerCell //TODO make readonly
+    : IEquatable<PlayerCell>
 {
     /*
      * 0-8 bottom possibilities
@@ -170,6 +172,11 @@ public struct PlayerCell //TODO make readonly
     private void UnSet(int n)
     {
         _bits &= ~(1 << n);
+    }
+
+    public bool Equals(PlayerCell other)
+    {
+        return _bits == other._bits;
     }
 }
 

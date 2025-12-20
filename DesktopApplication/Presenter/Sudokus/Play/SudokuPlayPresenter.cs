@@ -6,6 +6,7 @@ using DesktopApplication.Presenter.Sudokus.Solve;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Repositories;
 using Model.Sudokus;
 using Model.Sudokus.Player;

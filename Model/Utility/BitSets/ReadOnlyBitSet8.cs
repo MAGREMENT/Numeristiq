@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Model.Sudokus.Solver.Strategies;
 
 namespace Model.Utility.BitSets;
 
-public readonly struct ReadOnlyBitSet8
+public readonly struct ReadOnlyBitSet8 : IEquatable<ReadOnlyBitSet8>
 {
     public byte Bits { get; }
     public int Count { get; }
@@ -276,5 +277,10 @@ public readonly struct ReadOnlyBitSet8
         }
         
         return builder.ToString();
+    }
+
+    public bool Equals(ReadOnlyBitSet8 other)
+    {
+        return Bits == other.Bits;
     }
 }

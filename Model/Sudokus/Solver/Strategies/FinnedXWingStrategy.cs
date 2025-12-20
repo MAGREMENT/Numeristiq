@@ -3,6 +3,7 @@ using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Sudokus.Solver.Position;
 
 namespace Model.Sudokus.Solver.Strategies;

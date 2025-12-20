@@ -4,7 +4,7 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility;
 
-public readonly struct House
+public readonly struct House : IEquatable<House>
 {
     public House(Unit unit, int number)
     {
@@ -17,7 +17,7 @@ public readonly struct House
 
     public override bool Equals(object? obj)
     {
-        return obj is House ch && ch == this;
+        return obj is House ch && Equals(ch);
     }
 
     public override int GetHashCode()
@@ -40,12 +40,17 @@ public readonly struct House
 
     public static bool operator ==(House left, House right)
     {
-        return left.Unit == right.Unit && left.Number == right.Number;
+        return left.Equals(right);
     }
 
     public static bool operator !=(House left, House right)
     {
-        return !(left == right);
+        return !left.Equals(right);
+    }
+    
+    public bool Equals(House other)
+    {
+        return Unit == other.Unit && Number == other.Number;
     }
 
     public Cell GetCellAt(int unit)

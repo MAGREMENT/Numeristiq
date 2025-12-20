@@ -1737,7 +1737,7 @@ public class LinePossibilitiesDrawableComponent : IDrawableComponent<ISudokuDraw
     }
 }
 
-public readonly struct NeighborBorder
+public readonly struct NeighborBorder : IEquatable<NeighborBorder>
 {
     public NeighborBorder(int insideRow, int insideColumn, BorderDirection direction)
     {
@@ -1764,18 +1764,22 @@ public readonly struct NeighborBorder
 
     public override bool Equals(object? obj)
     {
-        return obj is NeighborBorder nb && nb == this;
+        return obj is NeighborBorder nb && Equals(nb);
     }
 
     public static bool operator ==(NeighborBorder left, NeighborBorder right)
     {
-        return left.InsideColumn == right.InsideColumn && left.InsideRow == right.InsideRow
-                                                       && left.Direction == right.Direction;
+        return left.Equals(right);
     }
 
     public static bool operator !=(NeighborBorder left, NeighborBorder right)
     {
-        return !(left == right);
+        return !left.Equals(right);
+    }
+
+    public bool Equals(NeighborBorder other)
+    {
+        return InsideRow == other.InsideRow && InsideColumn == other.InsideColumn && Direction == other.Direction;
     }
 }
 

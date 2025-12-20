@@ -4,6 +4,7 @@ using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Position;

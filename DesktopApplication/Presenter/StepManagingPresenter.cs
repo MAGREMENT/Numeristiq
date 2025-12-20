@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Core.Steps;
 
 namespace DesktopApplication.Presenter;

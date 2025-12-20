@@ -1,4 +1,5 @@
 ﻿using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 
 namespace DesktopApplication.Presenter;
 

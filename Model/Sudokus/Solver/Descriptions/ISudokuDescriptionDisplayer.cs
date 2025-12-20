@@ -1,6 +1,7 @@
 ﻿using Model.Core;
 using Model.Core.Descriptions;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 
 namespace Model.Sudokus.Solver.Descriptions;
 

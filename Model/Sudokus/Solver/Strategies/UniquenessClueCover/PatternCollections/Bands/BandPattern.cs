@@ -109,7 +109,7 @@ public readonly struct EliminationFlag
     }
 }
 
-public readonly struct BoxPosition
+public readonly record struct BoxPosition
 {
     public BoxPosition(int width, int length)
     {

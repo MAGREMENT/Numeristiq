@@ -7,7 +7,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Utility;
 
-public readonly struct CellPossibility : ISudokuElement, ITectonicElement
+public readonly struct CellPossibility : ISudokuElement, ITectonicElement, IEquatable<CellPossibility>
 {
     public int Possibility { get; }
     public int Row { get; }
@@ -134,6 +134,28 @@ public readonly struct CellPossibility : ISudokuElement, ITectonicElement
     public static bool operator !=(CellPossibility left, CellPossibility right)
     {
         return !(left == right);
+    }
+
+    public bool Equals(CellPossibility other)
+    {
+        return Possibility == other.Possibility && Row == other.Row && Column == other.Column;
+    }
+}
+
+public static class CellPossibilityUtility
+{
+    public static double Distance(CellPossibility one, CellPossibility two)
+    {
+        var oneX = one.Column * 3 + one.Possibility % 3;
+        var oneY = one.Row * 3 + one.Possibility / 3;
+
+        var twoX = two.Column * 3 + two.Possibility % 3;
+        var twoY = two.Row * 3 + two.Possibility / 3;
+
+        var dx = twoX - oneX;
+        var dy = twoY - oneY;
+
+        return Math.Sqrt(dx * dx + dy * dy);
     }
 }
 

@@ -3,7 +3,7 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.NRCZTChains;
 
-public readonly struct ConjugateRelation
+public readonly struct ConjugateRelation : IEquatable<ConjugateRelation>
 {
     public CellPossibility From { get; }
     public CellPossibility To { get; }
@@ -16,7 +16,7 @@ public readonly struct ConjugateRelation
 
     public override bool Equals(object? obj)
     {
-        return obj is ConjugateRelation cr && cr.From == From && cr.To == To;
+        return obj is ConjugateRelation cr && Equals(cr);
     }
 
     public override int GetHashCode()
@@ -38,5 +38,19 @@ public readonly struct ConjugateRelation
         }
 
         return "?";
+    }
+    public static bool operator ==(ConjugateRelation left, ConjugateRelation right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(ConjugateRelation left, ConjugateRelation right)
+    {
+        return !(left == right);
+    }
+
+    public bool Equals(ConjugateRelation other)
+    {
+        return From.Equals(other.From) && To.Equals(other.To);
     }
 }

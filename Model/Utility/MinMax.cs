@@ -2,7 +2,7 @@
 
 namespace Model.Utility;
 
-public readonly struct MinMax
+public readonly struct MinMax : IEquatable<MinMax>
 {
     public MinMax(int min, int max)
     {
@@ -46,5 +46,10 @@ public readonly struct MinMax
     public static bool operator !=(MinMax left, MinMax right)
     {
         return left.Min != right.Min || left.Max != right.Max;
+    }
+
+    public bool Equals(MinMax other)
+    {
+        return Min == other.Min && Max == other.Max;
     }
 }

@@ -322,7 +322,7 @@ public static class NonogramUtility
     }
 }
 
-public readonly struct ValueSpace
+public readonly struct ValueSpace : IEquatable<ValueSpace>
 {
     public ValueSpace(int start, int end, int value)
     {
@@ -389,6 +389,11 @@ public readonly struct ValueSpace
     public static bool operator !=(ValueSpace left, ValueSpace right)
     {
         return !(left == right);
+    }
+
+    public bool Equals(ValueSpace other)
+    {
+        return this == other;
     }
 }
 

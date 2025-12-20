@@ -2,6 +2,7 @@
 using Model.Core.BackTracking;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 
 namespace Model.Nonograms.Solver;
 

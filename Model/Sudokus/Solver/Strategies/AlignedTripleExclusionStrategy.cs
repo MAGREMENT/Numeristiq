@@ -4,6 +4,7 @@ using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilitySets;
@@ -312,7 +313,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
     }
 }
 
-public readonly struct TriValue
+public readonly struct TriValue : IEquatable<TriValue>
 {
     public TriValue(int one, int two, int three)
     {
@@ -332,22 +333,24 @@ public readonly struct TriValue
 
     public override bool Equals(object? obj)
     {
-        if (obj is not TriValue tri) return false;
-        int i = 1 << One | 1 << Two | 1 << Three;
-        int j = 1 << tri.One | 1 << tri.Two | 1 << tri.Three;
-        return i == j;
+        return obj is TriValue tri && Equals(tri);
     }
 
     public static bool operator ==(TriValue left, TriValue right)
     {
-        int i = 1 << left.One | 1 << left.Two | 1 << left.Three;
-        int j = 1 << right.One | 1 << right.Two | 1 << right.Three;
-        return i == j;
+        return left.Equals(right);
     }
 
     public static bool operator !=(TriValue left, TriValue right)
     {
         return !(left == right);
+    }
+
+    public bool Equals(TriValue other)
+    {
+        int i = 1 << One | 1 << Two | 1 << Three;
+        int j = 1 << other.One | 1 << other.Two | 1 << other.Three;
+        return i == j;
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Sudokus;
 using Model.Sudokus.Solver.Utility;
 

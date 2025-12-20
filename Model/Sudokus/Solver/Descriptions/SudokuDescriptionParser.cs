@@ -6,6 +6,7 @@ using System.Text;
 using Model.Core;
 using Model.Core.Descriptions;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Core.Steps;
 using Model.Utility;
 using Model.XML;

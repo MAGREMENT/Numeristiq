@@ -2,7 +2,7 @@
 
 namespace Model.Utility;
 
-public readonly struct RGB
+public readonly struct RGB : IEquatable<RGB>
 {
     public byte Red { get; }
     public byte Green { get; }
@@ -86,5 +86,10 @@ public readonly struct RGB
     public static bool operator !=(RGB left, RGB right)
     {
         return left.Red != right.Red || left.Blue != right.Blue || left.Green != right.Green;
+    }
+
+    public bool Equals(RGB other)
+    {
+        return Red == other.Red && Green == other.Green && Blue == other.Blue;
     }
 }

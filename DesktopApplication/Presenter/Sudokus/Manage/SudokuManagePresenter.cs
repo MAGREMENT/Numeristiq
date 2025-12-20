@@ -2,6 +2,7 @@
 using Model.Core;
 using Model.Core.Descriptions;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Repositories;
 using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Descriptions;

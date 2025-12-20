@@ -5,6 +5,7 @@ using Model.Core.Changes;
 using Model.Core.Explanations;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;

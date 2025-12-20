@@ -4,6 +4,7 @@ using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Utility;
 using Model.Utility.BitSets;
 

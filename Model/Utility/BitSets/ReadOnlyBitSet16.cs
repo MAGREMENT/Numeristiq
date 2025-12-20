@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Model.Sudokus.Solver.Strategies;
 
 namespace Model.Utility.BitSets;
 
-public readonly struct ReadOnlyBitSet16
+public readonly struct ReadOnlyBitSet16 : IEquatable<ReadOnlyBitSet16>
 {
     public ushort Bits { get; }
     public int Count { get; }
@@ -244,6 +245,11 @@ public readonly struct ReadOnlyBitSet16
     public override bool Equals(object? obj)
     {
         return obj is ReadOnlyBitSet16 set && set.Bits == Bits;
+    }
+    
+    public bool Equals(ReadOnlyBitSet16 other)
+    {
+        return Bits == other.Bits;
     }
 
     public override int GetHashCode()

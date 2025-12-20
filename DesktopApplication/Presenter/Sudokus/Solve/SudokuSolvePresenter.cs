@@ -5,6 +5,7 @@ using DesktopApplication.Presenter.Sudokus.Solve.ChooseStep;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Steps;
 using Model.Core.Trackers;

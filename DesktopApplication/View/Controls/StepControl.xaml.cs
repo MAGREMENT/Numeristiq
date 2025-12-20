@@ -4,6 +4,7 @@ using System.Windows.Input;
 using DesktopApplication.Presenter;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Core.Steps;
 
 namespace DesktopApplication.View.Controls;

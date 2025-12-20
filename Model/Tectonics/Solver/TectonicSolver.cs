@@ -4,6 +4,7 @@ using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Graphs.Implementations;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Tectonics.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;

@@ -1,13 +1,14 @@
 ﻿using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Sudokus;
 using Model.Sudokus.Solver;
-using Model.Sudokus.Solver.Highlighting;
 using Model.Sudokus.Solver.PossibilitySets;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 using Repository;
 using Repository.Files;
 using Repository.Files.Types;
@@ -114,23 +115,18 @@ public class TestHighlighter : List<object>, ISudokuHighlighter
         Add(new Cell(row, col));
     }
 
-    public void EncircleHouse(House house, StepColor color)
+    public void EncircleRectangle(CellPossibility topLeft, CellPossibility bottomRight, StepColor color)
     {
-        Add((house, color));
+        Add((topLeft, bottomRight));
     }
 
-    public void HighlightElement(ISudokuElement element, StepColor color)
+    public void EncircleRectangle(Cell topLeft, Cell bottomRight, StepColor color)
     {
-        Add((element, color));
+        Add((topLeft, bottomRight));
     }
 
-    public void CreateLink(ISudokuElement from, ISudokuElement to, LinkStrength linkStrength)
+    public void DelimitPossibilityPatch(CellPossibility[] cps, StepColor color)
     {
-        Add((from, to, linkStrength));
-    }
-
-    public void CreateLink(IPossibilitySet from, IPossibilitySet to, int link)
-    {
-        Add((from, to, link));
+        Add(new EqualizableArray<CellPossibility>(cps));
     }
 }

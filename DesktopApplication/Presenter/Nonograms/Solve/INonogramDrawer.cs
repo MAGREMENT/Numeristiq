@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Nonograms.Solver;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Utility;
 using Model.Utility.Collections;
 

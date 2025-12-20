@@ -291,11 +291,10 @@ public class SudokuBoard : LayeredDrawingBoard, ISudokuDrawingData, ISudokuSolve
         Layers[EncirclesIndex].Add(new InwardCellDrawableComponent(row, col, InwardBrushType.Link));
     }
 
-    public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
-        StepColor color)
+    public void EncircleRectangle(CellPossibility from, CellPossibility to, StepColor color)
     {
-        Layers[EncirclesIndex].Add(new PossibilityRectangleDrawableComponent(rowFrom, colFrom, possibilityFrom,
-            rowTo, colTo, possibilityTo, color));
+        Layers[EncirclesIndex].Add(new PossibilityRectangleDrawableComponent(from.Row, from.Column, from.Possibility,
+            to.Row, to.Column, to.Possibility, color));
     }
 
     public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, StepColor color)

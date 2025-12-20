@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilitySets;
@@ -399,7 +401,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
     }
 }
 
-public readonly struct BiValue
+public readonly struct BiValue : IEquatable<BiValue>
 {
     public BiValue(int one, int two)
     {
@@ -417,8 +419,7 @@ public readonly struct BiValue
 
     public override bool Equals(object? obj)
     {
-        if (obj is not BiValue bi) return false;
-        return (bi.One == One && bi.Two == Two) || (bi.One == Two && bi.Two == One);
+        return obj is BiValue bi && Equals(bi);
     }
 
     public override string ToString()
@@ -428,12 +429,17 @@ public readonly struct BiValue
 
     public static bool operator ==(BiValue left, BiValue right)
     {
-        return (left.One == right.One && left.Two == right.Two) || (left.One == right.Two && left.Two == right.One);
+        return left.Equals(right);
     }
 
     public static bool operator !=(BiValue left, BiValue right)
     {
         return !(left == right);
+    }
+
+    public bool Equals(BiValue other)
+    {
+        return (other.One == One && other.Two == Two) || (other.One == Two && other.Two == One);
     }
 }
 

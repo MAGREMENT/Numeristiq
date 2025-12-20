@@ -4,7 +4,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Utility;
 
-public readonly struct Cell
+public readonly struct Cell : IEquatable<Cell>
 {
     public int Row { get; }
     public int Column { get; }
@@ -48,6 +48,11 @@ public readonly struct Cell
     public static bool operator !=(Cell left, Cell right)
     {
         return !(left == right);
+    }
+
+    public bool Equals(Cell other)
+    {
+        return Row == other.Row && Column == other.Column;
     }
 }
 
@@ -106,5 +111,19 @@ public static class CellUtility
         }
 
         return set.Count == cells.Count;
+    }
+    
+    public static double Distance(Cell oneCell, Cell twoCell)
+    {
+        var oneX = oneCell.Column * 3;
+        var oneY = oneCell.Row * 3;
+
+        var twoX = twoCell.Column * 3;
+        var twoY = twoCell.Row * 3;
+
+        var dx = twoX - oneX;
+        var dy = twoY - oneY;
+
+        return Math.Sqrt(dx * dx + dy * dy);
     }
 }

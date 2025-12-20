@@ -1,5 +1,6 @@
 ﻿using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Sudokus.Solver.PossibilitySets;
 
 namespace Model.Core.Explanations;

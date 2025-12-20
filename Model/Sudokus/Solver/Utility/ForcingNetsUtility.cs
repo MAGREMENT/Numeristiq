@@ -5,6 +5,8 @@ using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Graphs.Coloring;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 using Model.Utility;
 using Model.Utility.BitSets;

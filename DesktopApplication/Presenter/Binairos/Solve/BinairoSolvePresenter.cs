@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Model.Binairos;
 using Model.Core;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Core.Steps;
 
 namespace DesktopApplication.Presenter.Binairos.Solve;

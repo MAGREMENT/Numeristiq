@@ -1,6 +1,6 @@
 ﻿namespace Model.CrossSums.Solver;
 
-public class ICrossSumHighlighter
+public interface ICrossSumHighlighter
 {
     
 }

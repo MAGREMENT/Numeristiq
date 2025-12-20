@@ -76,7 +76,7 @@ public class StatisticsTracker<TSolvingState> : Tracker<TSolvingState>
             report.Score.ToString(),
             report.SolutionsAdded.ToString(),
             report.PossibilitiesRemoved.ToString(),
-            report.ScorePercentage().ToString(CultureInfo.InvariantCulture) + "s",
+            report.ScorePercentage().ToString(CultureInfo.InvariantCulture) + "%",
             report.TotalTimeInSecond().ToString(CultureInfo.InvariantCulture) + "s",
             report.AverageTime().ToString(CultureInfo.InvariantCulture) + "ms"
         ], ColumnTitle.Follow("Strategy name", "Usage", "Score", 

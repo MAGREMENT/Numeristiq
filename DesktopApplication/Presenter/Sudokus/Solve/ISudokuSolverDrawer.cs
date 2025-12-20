@@ -18,8 +18,7 @@ public interface ISudokuSolverDrawer : ISudokuDrawer
     void DelimitPossibilityPatch(CellPossibility[] cps, StepColor color);
     void EncirclePossibility(int row, int col, int possibility);
     void EncircleCell(int row, int col);
-    void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo,
-        int possibilityTo, StepColor color);
+    void EncircleRectangle(CellPossibility from, CellPossibility to, StepColor color);
     void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, StepColor color);
     void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
         LinkStrength strength);

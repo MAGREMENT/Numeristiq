@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Model.Core;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 using Model.Core.Steps;
 using Model.Tectonics;
 using Model.Tectonics.Solver;

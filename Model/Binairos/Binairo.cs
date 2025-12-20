@@ -225,7 +225,7 @@ public class Binairo : IReadOnlyBinairo, ICellsAndDigitsPuzzle
     }
 }
 
-public readonly struct ReadOnlyBinairoUnitBitSet
+public readonly struct ReadOnlyBinairoUnitBitSet : IEquatable<ReadOnlyBinairoUnitBitSet>
 {
     private readonly ulong _bits;
     public int OnesCount { get; }
@@ -243,16 +243,6 @@ public readonly struct ReadOnlyBinairoUnitBitSet
     public bool Contains(ReadOnlyBinairoUnitBitSet set) => (_bits | set._bits) == _bits;
 
     public int GetTotalCount() => OnesCount + TwosCount;
-    
-    public override bool Equals(object? obj)
-    {
-        return obj is ReadOnlyBinairoUnitBitSet other && other == this;
-    }
-
-    public override int GetHashCode()
-    {
-        return (int)_bits;
-    }
 
     public ReadOnlyBinairoUnitBitSet Add(int index, int value)
     {
@@ -295,6 +285,16 @@ public readonly struct ReadOnlyBinairoUnitBitSet
         return result;
     }
 
+    public override bool Equals(object? obj)
+    {
+        return obj is ReadOnlyBinairoUnitBitSet other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return (int)_bits;
+    }
+    
     public static bool operator ==(ReadOnlyBinairoUnitBitSet set1, ReadOnlyBinairoUnitBitSet set2)
     {
         return set1._bits == set2._bits;
@@ -303,6 +303,11 @@ public readonly struct ReadOnlyBinairoUnitBitSet
     public static bool operator !=(ReadOnlyBinairoUnitBitSet set1, ReadOnlyBinairoUnitBitSet set2)
     {
         return set1._bits != set2._bits;
+    }
+
+    public bool Equals(ReadOnlyBinairoUnitBitSet other)
+    {
+        return _bits == other._bits;
     }
 }
 

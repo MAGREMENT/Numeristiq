@@ -2,6 +2,7 @@
 using Model.Core.Changes;
 using Model.Core.Explanations;
 using Model.Core.Highlighting;
+using Model.Sudokus.Solver.Highlighting;
 
 namespace Model.Core.Steps;
 
