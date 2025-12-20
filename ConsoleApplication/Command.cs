@@ -8,6 +8,8 @@ public abstract class Command
     public IReadOnlyList<Argument> Arguments { get; }
     public IReadOnlyList<Option> Options { get; }
     public abstract string Description { get; }
+
+    public virtual IReadOnlyList<string> Synonyms { get; } = [];
     
     protected Command(string name)
     {

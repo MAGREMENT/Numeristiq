@@ -8,6 +8,8 @@ public abstract class SolveCommand : Command
     private const int PathIndex = 0;
     
     public override string Description { get; }
+    
+    public override IReadOnlyList<string> Synonyms { get; } = ["s"];
 
     protected SolveCommand(string name) : base("Solve",
         new[]

@@ -49,12 +49,12 @@ public class CallReport : IReadOnlyCallReport, IDisposable
     {
         foreach (var obj in _arguments)
         {
-            (obj as IDisposable)?.Dispose();
+            (obj as FileStream)?.Dispose();
         }
 
         foreach (var value in _options)
         {
-            if(value.IsUsed) (value.Value as IDisposable)?.Dispose();
+            if(value.IsUsed) (value.Value as FileStream)?.Dispose();
         }
         
         GC.SuppressFinalize(this);

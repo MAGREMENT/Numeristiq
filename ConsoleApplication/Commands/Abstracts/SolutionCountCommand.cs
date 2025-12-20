@@ -9,6 +9,8 @@ public abstract class SolutionCountCommand<TPuzzle, TData> : Command where TPuzz
     protected abstract BackTracker<TPuzzle, TData> BackTracker { get; }
     public override string Description { get; }
     
+    public override IReadOnlyList<string> Synonyms { get; } = ["sc"];
+    
     protected SolutionCountCommand(string name) : base("SolutionCount",
         new Argument(name + " string", ValueType.String))
     {

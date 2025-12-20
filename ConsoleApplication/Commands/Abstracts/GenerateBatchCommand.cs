@@ -17,6 +17,8 @@ public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TSta
     
     public override string Description { get; }
 
+    public override IReadOnlyList<string> Synonyms { get; } = ["gb"];
+
     protected GenerateBatchCommand(string name, IPuzzleGenerator<TPuzzle> generator, params Option[] additionalOptions) 
         : base("GenerateBatch", additionalOptions.MergeWithReverseOrder(
             new Option("-c", "Count", ValueRequirement.Mandatory, ValueType.Int),

@@ -40,8 +40,7 @@ public class HelpCommand : Command
         
         Console.WriteLine("\nUsage : [Directory]* [Command] [Argument] ([Option] [Value]?)*" +
                           $"\nWhere :\n{"1.".FillRightWith(' ', FirstIndentation.Length)}* = 0 to many times" +
-                          $"\n{"2.".FillRightWith(' ', FirstIndentation.Length)}? = Optional\n" +
-                          "3.".FillRightWith(' ', FirstIndentation.Length) + "Directories and commands are case insensitive");
+                          $"\n{"2.".FillRightWith(' ', FirstIndentation.Length)}? = Optional\n");
 
         if(report.Directory.Directories.Count == 0) Console.WriteLine("\nNo directory");
         else

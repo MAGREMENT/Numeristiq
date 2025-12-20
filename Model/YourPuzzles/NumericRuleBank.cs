@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Utility;
 using Model.Utility.Collections;
 using Model.Utility.Collections.Lexicography;
@@ -21,18 +22,18 @@ public static class NumericRuleBank
         new GreaterThanNumericPuzzleRuleCrafter()
     };
 
-    private static readonly LexicographicTree<int> _tree = new(() => new ListNode<int>());
+    private static readonly Trie<int> _trie = new ListTrie<int>();
 
     static NumericRuleBank()
     {
         for (int i = 0; i < _global.Length; i++)
         {
-            _tree.Add(_global[i].Abbreviation, i);
+            if(!_trie.Add(_global[i].Abbreviation, i)) throw new ArgumentException("Already exists");
         }
         
         for (int i = 0; i < _local.Length; i++)
         {
-            _tree.Add(_local[i].Abbreviation, i + _global.Length);
+            if(!_trie.Add(_local[i].Abbreviation, i + _global.Length)) throw new ArgumentException("Already exists");
         }
     }
 
@@ -48,7 +49,7 @@ public static class NumericRuleBank
 
     public static INumericPuzzleRule? Craft(string abbreviation, string data)
     {
-        if (!_tree.TryGet(abbreviation, out var i)) return null;
+        if (!_trie.TryGet(abbreviation, out var i)) return null;
 
         INumericPuzzleRuleCrafter crafter = i >= _global.Length ? _local[i - _global.Length] : _global[i];
         return crafter.Craft(data);

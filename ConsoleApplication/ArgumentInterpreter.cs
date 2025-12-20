@@ -2,8 +2,29 @@
 
 public class ArgumentInterpreter
 {
+    private readonly Dictionary<string, Stream> _buffers = new();
     public Directory Root { get; } = new("Root");
     public Instantiator Instantiator { get; } = new();
+
+    public bool AddBuffer(string name)
+    {
+        return _buffers.TryAdd(name, new MemoryStream());
+    }
+
+    public bool RemoveBuffer(string name)
+    {
+        if (!_buffers.TryGetValue(name, out var b)) return false;
+        
+        b.Dispose();
+        _buffers.Remove(name);
+
+        return true;
+    }
+
+    public IEnumerable<string> EnumerateBuffers()
+    {
+        return _buffers.Keys;
+    }
     
     public void Execute(IReadOnlyList<string> args)
     {
@@ -127,10 +148,20 @@ public class ArgumentInterpreter
                 var r = int.TryParse(value, out var n);
                 objectValue = n;
                 return r;
-            case ValueType.ReadFile :
+            case ValueType.ReadableStream :
+                if (value.Length == 0) return false;
+
+                if (value[0] == '$')
+                {
+                    var result = _buffers.TryGetValue(value[1..], out var stream1);
+                    stream1!.Position = 0;
+                    objectValue = stream1;
+                    return result;
+                }
+                
                 try
                 {
-                    objectValue = new StreamReader(value, new FileStreamOptions
+                    objectValue = new FileStream(value, new FileStreamOptions
                     {
                         Share = FileShare.Read,
                         Access = FileAccess.Read,
@@ -143,10 +174,19 @@ public class ArgumentInterpreter
                 {
                     return false;
                 }
-            case ValueType.WriteFile :
+            case ValueType.WritableStream :
+                if (value.Length == 0) return false;
+
+                if (value[0] == '$')
+                {
+                    var result = _buffers.TryGetValue(value[1..], out var stream2);
+                    objectValue = stream2!;
+                    return result;
+                }
+                
                 try
                 {
-                    objectValue = new StreamWriter(value, new FileStreamOptions
+                    objectValue = new FileStream(value, new FileStreamOptions
                     {
                         Share = FileShare.Write,
                         Access = FileAccess.Write,

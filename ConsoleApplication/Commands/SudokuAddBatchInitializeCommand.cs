@@ -9,7 +9,7 @@ public class SudokuAddBatchInitializeCommand : Command
     private const int FileIndex = 0;
     
     public SudokuAddBatchInitializeCommand() : base("AddBatch", 
-        new Argument("File name", ValueType.ReadFile))
+        new Argument("File name", ValueType.ReadableStream))
     {
     }
 
@@ -23,7 +23,7 @@ public class SudokuAddBatchInitializeCommand : Command
         var hardest = new HardestStrategyTracker();
         hardest.AttachTo(solver);
 
-        var reader = (StreamReader)report.GetArgumentValue(FileIndex);
+        var reader = new StreamReader((Stream)report.GetArgumentValue(FileIndex));
         List<(Sudoku, Difficulty)> toAdd = new();
         int count = 0;
         while (reader.ReadLine() is { } line)

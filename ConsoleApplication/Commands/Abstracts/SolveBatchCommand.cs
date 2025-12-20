@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Model.Core;
 using Model.Core.Trackers;
 
@@ -15,8 +14,11 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
     private const int LimitIndex = 4;
     private const int OutputIndex = 5;
     private const int SaveStatsIndex = 6;
+    private const int DisplayStatsIndex = 7;
     
     public override string Description { get; }
+    
+    public override IReadOnlyList<string> Synonyms { get; } = ["sb"];
 
     private readonly StatisticsTracker<TState> _statistics = new();
     private string? _line;
@@ -24,7 +26,7 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
     protected SolveBatchCommand(string name) : base("SolveBatch",
         new[]
         {
-            new Argument($"Text file containing the {name}'s", ValueType.ReadFile)
+            new Argument($"Text file containing the {name}'s", ValueType.ReadableStream)
         },
         new[]
         {
@@ -37,9 +39,10 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
             new Option("--limit", $"Limits the number of {name} solved", ValueRequirement.Mandatory,
                 ValueType.Int),
             new Option("--output", $"File to write the output {name}'s to", 
-                ValueRequirement.Mandatory, ValueType.WriteFile),
+                ValueRequirement.Mandatory, ValueType.WritableStream),
             new Option("--save-stats", "File to write the statistics to",
-                ValueRequirement.Mandatory, ValueType.WriteFile)
+                ValueRequirement.Mandatory, ValueType.WritableStream),
+            new Option("--display-stats", "Display the statistics")
         })
     {
         Description = $"Solves all the {name}'s in a text file";
@@ -64,7 +67,7 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
         List<string> fails = new();
         List<string> instances = new();
         List<string> absences = new();
-        var writer = report.IsOptionUsed(OutputIndex) ? (StreamWriter)report.GetOptionValue(OutputIndex)! : null;
+        var writer = report.IsOptionUsed(OutputIndex) ? new StreamWriter((Stream)report.GetOptionValue(OutputIndex)!) : null;
         UsedStrategiesTracker? usedTracker = null;
 
         if (report.IsOptionUsed(InstancesIndex) || report.IsOptionUsed(AbsencesIndex))
@@ -72,8 +75,8 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
             usedTracker = new UsedStrategiesTracker();
             usedTracker.AttachTo(solver);
         }
-        
-        var reader = (StreamReader)report.GetArgumentValue(FileIndex);
+
+        var reader = new StreamReader((Stream)report.GetArgumentValue(FileIndex));
 
         int count = 0;
         while ((_line = reader.ReadLine()) is not null)
@@ -104,13 +107,18 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
             if (++count >= limit) break;
         }
 
-        Console.WriteLine(_statistics);
+        if (report.IsOptionUsed(DisplayStatsIndex))
+        {
+            Console.WriteLine(_statistics);
+        }
+        
         _statistics.Detach();
 
         if (report.IsOptionUsed(SaveStatsIndex))
         {
-            var w = (StreamWriter)report.GetOptionValue(SaveStatsIndex)!;
+            var w = new StreamWriter((Stream)report.GetOptionValue(SaveStatsIndex)!);
             w.Write(JsonSerializer.Serialize(_statistics.GetStatistics()));
+            w.Flush();
         }
 
         if (report.IsOptionUsed(FailsIndex))

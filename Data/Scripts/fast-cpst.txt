@@ -1,0 +1,3 @@
+﻿buff crt stats
+sud sb D:\Programmation\Numeristiq\Data\Banks\Sudokus\OnlineBank2.txt --feedback --save-stats $stats
+dev cpst D:\Programmation\Numeristiq\Data\Stats\Sudokus\OnlineBank2.txt $stats

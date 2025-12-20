@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Model.Core.Trackers;
 using Model.Utility;
 
@@ -11,10 +10,12 @@ public class CompareStatisticsCommand : Command
     private const int SecondFileIndex = 1;
 
     private const double Delta = 1.5;
-    
+
+    public override IReadOnlyList<string> Synonyms { get; } = ["cpst"];
+
     public CompareStatisticsCommand() : base("CompareStats", 
-        new Argument("First file of stats", ValueType.ReadFile),
-        new Argument("Second file of stats", ValueType.ReadFile))
+        new Argument("First file of stats", ValueType.ReadableStream),
+        new Argument("Second file of stats", ValueType.ReadableStream))
     {
     }
 
@@ -22,16 +23,18 @@ public class CompareStatisticsCommand : Command
     
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
-        var r = (StreamReader)report.GetArgumentValue(FirstFileIndex);
-        var stats1 = JsonSerializer.Deserialize<StrategyStatistics[]>(r.ReadToEnd());
+        var r = new StreamReader((Stream)report.GetArgumentValue(FirstFileIndex));
+        var s = r.ReadToEnd();
+        var stats1 = JsonSerializer.Deserialize<StrategyStatistics[]>(s);
         if (stats1 == null)
         {
             Console.WriteLine("Could not parse first file");
             return;
         }
-        
-        r = (StreamReader)report.GetArgumentValue(SecondFileIndex);
-        var stats2 = JsonSerializer.Deserialize<StrategyStatistics[]>(r.ReadToEnd());
+
+        r = new StreamReader((Stream)report.GetArgumentValue(SecondFileIndex));
+        s = r.ReadToEnd();
+        var stats2 = JsonSerializer.Deserialize<StrategyStatistics[]>(s);
         if (stats2 == null)
         {
             Console.WriteLine("Could not parse first file");
