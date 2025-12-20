@@ -30,20 +30,6 @@ public partial class StepControl
         TextOutput.Text = step.Description;
     }
 
-    private void OnMouseEnter(object sender, MouseEventArgs e)
-    {
-        if (sender is not Border b) return;
-
-        b.SetResourceReference(BorderBrushProperty, "Primary");
-    }
-
-    private void OnMouseLeave(object sender, MouseEventArgs e)
-    {
-        if (sender is not Border b) return;
-
-        b.SetResourceReference(BorderBrushProperty, "Background1");
-    }
-
     public void Open()
     {
         BottomPart.Visibility = Visibility.Visible;

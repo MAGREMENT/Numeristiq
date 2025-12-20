@@ -65,8 +65,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
             
-                    <TextBlock Grid.Row="0" Grid.Column="0" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Left"
-                               Foreground="{DynamicResource Text}" Margin="5 0 0 0">Steps</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource BlockTitle}" Margin="5 0 0 0">Steps</TextBlock>
             
                     <controls:PageSelectorControl Grid.Row="0" Grid.Column="1" x:Name="PageSelector" PageChanged="OnPageChange"/>
             

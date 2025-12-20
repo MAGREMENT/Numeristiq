@@ -6,29 +6,23 @@
              xmlns:c="clr-namespace:DesktopApplication.View.Controls"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="380">
-    <Border Background="{DynamicResource Background1}" BorderBrush="{DynamicResource Background1}" Padding="5, 0, 0, 0"
-            BorderThickness="2, 0, 0, 0" MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave" MouseLeftButtonDown="OnClick">
+    <Border Background="{DynamicResource Background2}" BorderBrush="{DynamicResource Background1}"
+            CornerRadius="5" Margin="0, 5, 0, 5" Padding="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-        
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-        
-            <Border Grid.Row="0" Grid.Column="0" Background="{DynamicResource Background2}" Height="40"
-                    MinWidth="40" Margin="5" CornerRadius="5">
-                <TextBlock FontSize="20" Foreground="{DynamicResource Text}" 
+            
+            <StackPanel Background="Transparent" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Stretch" MouseLeftButtonDown="OnClick" Cursor="Hand">
+                <TextBlock FontSize="14" Foreground="{DynamicResource Text}" 
                            FontWeight="Bold" x:Name="Number" VerticalAlignment="Center" HorizontalAlignment="Center">0</TextBlock>
-            </Border>
             
-            <TextBlock Grid.Row="0" Grid.Column="1" FontSize="18" VerticalAlignment="Center" Margin="5, 0, 0, 0"
-                       FontWeight="Bold" TextWrapping="Wrap" x:Name="Title" Foreground="White">Strategy</TextBlock>
+                <TextBlock FontSize="18" VerticalAlignment="Center" Margin="10, 0, 0, 0"
+                           FontWeight="Bold" TextWrapping="Wrap" x:Name="Title" Foreground="White">Strategy</TextBlock>
+            </StackPanel>
             
-            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="BottomPart" Visibility="Collapsed">
+            <Grid Grid.Row="1" Grid.Column="0" x:Name="BottomPart" Visibility="Collapsed" Margin="0, 5, 0, 0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -38,21 +32,21 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 
-                <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" x:Name="TextOutput" FontSize="15" HorizontalAlignment="Left"
-                           Foreground="{DynamicResource Text}" TextWrapping="Wrap" Margin="10, 10, 0, 10"/>
-                    
-                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="10 0 10 0">
+                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
                     <RadioButton VerticalAlignment="Center" x:Name="BeforeButton" Style="{StaticResource StepRadioButton}" Checked="BeforeChecked">Before</RadioButton>
                     <RadioButton VerticalAlignment="Center" x:Name="AfterButton" Style="{StaticResource StepRadioButton}" Checked="AfterChecked">After</RadioButton>
                 </StackPanel>
                 
-                <c:PageSelectorControl Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" x:Name="PageSelector"/>
+                <c:PageSelectorControl Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" x:Name="PageSelector"/>
                 
-                <Button Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource FullPrimaryButton}" Margin="10" 
-                        Padding="7" FontSize="20" HorizontalAlignment="Stretch" Click="OnExplanationAsked"
-                        x:Name="ExplanationButton">Explanation</Button>
+                <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" x:Name="TextOutput" FontSize="15" HorizontalAlignment="Left"
+                           Foreground="{DynamicResource Text}" TextWrapping="Wrap" Margin="0, 20, 0, 20"/>
+                
+                <Button Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Style="{StaticResource FullPrimaryButton}" Margin="0, 0, 0, 0" 
+                        Padding="7" FontSize="16" HorizontalAlignment="Stretch" Click="OnExplanationAsked">Explanation</Button>
             </Grid>
         </Grid>
     </Border>
