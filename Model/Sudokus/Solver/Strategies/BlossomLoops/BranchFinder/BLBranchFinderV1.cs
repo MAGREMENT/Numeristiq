@@ -4,7 +4,6 @@ using Model.Core.Graphs;
 using Model.Core.Graphs.Coloring;
 using Model.Core.Graphs.Coloring.ColoringAlgorithms;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.BlossomLoops.BranchFinder;

@@ -1,5 +1,4 @@
 ﻿using Model.Core.Graphs;
-using Model.Sudokus.Solver.Utility.Graphs;
 
 namespace Model.Sudokus.Solver.Utility;
 

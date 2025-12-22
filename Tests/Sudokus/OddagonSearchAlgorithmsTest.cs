@@ -35,10 +35,9 @@ public class OddagonSearchAlgorithmsTest
         (IOddagonSearchAlgorithm, string)[] impl =
         [
             (new OddagonSearchAlgorithmV1(), "V1"),
-            //(new OddagonSearchAlgorithmV2(), "V2")
         ];
 
-        ImplementationSpeedComparator.Compare(impl, 3, algo =>
+        ImplementationSpeedComparator.Compare(impl, 10, algo =>
             {
                 algo.MaxLength = 7;
                 algo.MaxGuardians = 3;
@@ -47,7 +46,8 @@ public class OddagonSearchAlgorithmsTest
                 var index = algo switch
                 {
                     OddagonSearchAlgorithmV1 => 0,
-                    OddagonSearchAlgorithmV3 => 1,
+                    OddagonSearchAlgorithmV2 => 1,
+                    OddagonSearchAlgorithmV3 => 2,
                     _ => throw new Exception()
                 };
                 if (!write[index])

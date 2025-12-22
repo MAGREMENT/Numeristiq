@@ -7,7 +7,7 @@ using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.Implementations;
 
-public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength> //TODO finish and look into using
+public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength> //TODO finish and look into using + use CPArrayGraph as base + Generalize
 {
     private UniqueList<ISudokuElement>?[,,,] _cps = new UniqueList<ISudokuElement>[9, 9, 9, 2];
     private readonly Dictionary<ISudokuElement, UniqueList<ISudokuElement>[]> _others = new();
