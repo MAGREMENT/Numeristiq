@@ -32,9 +32,9 @@ public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TSta
         _generator = generator;
     }
 
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
-        if (!SetUpGenerator(_generator, report)) return;
+        if (!SetUpGenerator(_generator, report)) return CommandResult.Fail("Could not setup generator");
         _generator.KeepSymmetry = report.IsOptionUsed(SymmetryIndex);
         _generator.KeepUniqueness = !report.IsOptionUsed(NotUniqueIndex);
         
@@ -109,6 +109,8 @@ public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TSta
         }
 
         _generator.StepDone -= OnStepDone;
+        
+        return CommandResult.Succes;
     }
 
     private static void OnStepDone(StepType type)

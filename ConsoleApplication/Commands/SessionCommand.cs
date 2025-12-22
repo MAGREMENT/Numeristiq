@@ -15,12 +15,11 @@ public class SessionCommand : Command
     {
     }
     
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         if (_isRunning)
         {
-            Console.WriteLine("Session already started");
-            return;
+            return CommandResult.Fail("Session already started");
         }
         
         Console.WriteLine($"Session started. (Enter {StopCommandsToString()} to exit)");
@@ -44,11 +43,13 @@ public class SessionCommand : Command
 
             if (StopCommands.Contains(response)) break;
             
-            interpreter.Execute(GetArgs(response));
+            interpreter.Execute(GetArgs(response)).WriteLine();;
         }
         
         Console.WriteLine("\nSession closed");
         _isRunning = false;
+        
+        return CommandResult.Succes;
     }
 
     private static List<string> GetArgs(string s)

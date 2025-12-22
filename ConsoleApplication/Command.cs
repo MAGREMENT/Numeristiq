@@ -49,5 +49,30 @@ public abstract class Command
         return -1;
     }
 
-    public abstract void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report);
+    public abstract CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report);
+}
+
+public class CommandResult
+{
+    public static readonly CommandResult? Succes = null;
+
+    public static CommandResult Fail(string message)
+    {
+        return new CommandResult(message);
+    }
+    
+    private CommandResult(string message)
+    {
+        Message = message;
+    }
+    
+    public string Message { get; }
+}
+
+public static class CommandResultExtensions
+{
+    public static void WriteLine(this CommandResult? result)
+    {
+        if(result != CommandResult.Succes) Console.WriteLine(result!.Message);
+    }
 }

@@ -28,7 +28,7 @@ public abstract class SolveCommand : Command
 
     protected abstract string PuzzleAsString(ISolver solver);
     
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var solver = GetSolverAndSetPuzzle(interpreter, (string)report.GetArgumentValue(StringIndex));
         if (!report.IsOptionUsed(PathIndex)) solver.FastMode = true;
@@ -49,5 +49,7 @@ public abstract class SolveCommand : Command
                                   $" {step.ChangesToString()}\nExplanation : {explanation}");
             }
         }
+        
+        return CommandResult.Succes;
     }
 }

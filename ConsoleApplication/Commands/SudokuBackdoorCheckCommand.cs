@@ -25,7 +25,7 @@ public class SudokuBackdoorCheckCommand : Command
         }) { }
 
     public override string Description => "Checks if the Sudoku has a possible backdoor";
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var solver = new SudokuSolver();
         if (report.IsOptionUsed(SetIndex))
@@ -39,8 +39,7 @@ public class SudokuBackdoorCheckCommand : Command
                     AddSSTSStrategies(solver);
                     break;
                 default:
-                    Console.WriteLine("The strategy set value must be either 'singles' or 'ssts'");
-                    return;
+                    return CommandResult.Fail("The strategy set value must be either 'singles' or 'ssts'");
             }
         }
         else AddSinglesStrategies(solver);
@@ -52,7 +51,7 @@ public class SudokuBackdoorCheckCommand : Command
         if (solutions.Count == 0)
         {
             Console.WriteLine("The sudoku has no solution");
-            return;
+            return CommandResult.Succes;
         }
 
         int count = 0;
@@ -79,6 +78,7 @@ public class SudokuBackdoorCheckCommand : Command
         }
         
         if(count == 0) Console.WriteLine("This sudoku has no backdoor");
+        return CommandResult.Succes;
     }
 
     private static void AddSinglesStrategies(SudokuSolver solver)

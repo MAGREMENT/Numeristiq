@@ -21,15 +21,14 @@ public class CompareStatisticsCommand : Command
 
     public override string Description => "Compares the stats of two files";
     
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var r = new StreamReader((Stream)report.GetArgumentValue(FirstFileIndex));
         var s = r.ReadToEnd();
         var stats1 = JsonSerializer.Deserialize<StrategyStatistics[]>(s);
         if (stats1 == null)
         {
-            Console.WriteLine("Could not parse first file");
-            return;
+            return CommandResult.Fail("Could not parse first file");
         }
 
         r = new StreamReader((Stream)report.GetArgumentValue(SecondFileIndex));
@@ -37,14 +36,13 @@ public class CompareStatisticsCommand : Command
         var stats2 = JsonSerializer.Deserialize<StrategyStatistics[]>(s);
         if (stats2 == null)
         {
-            Console.WriteLine("Could not parse first file");
-            return;
+            return CommandResult.Fail("Could not parse second file");
         }
 
         if (stats1.Length != stats2.Length)
         {
             Console.WriteLine("Different strategies used");
-            return;
+            return CommandResult.Succes;
         }
 
         for (int i = 0; i < stats1.Length; i++)
@@ -52,7 +50,7 @@ public class CompareStatisticsCommand : Command
             if (stats1[i].Name != stats2[i].Name)
             {
                 Console.WriteLine("Different strategies used");
-                return;
+                return CommandResult.Succes;
             }
         }
 
@@ -101,5 +99,7 @@ public class CompareStatisticsCommand : Command
         {
             Console.WriteLine("\nNo notable difference between stats");
         }
+        
+        return CommandResult.Succes;
     }
 }

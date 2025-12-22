@@ -9,12 +9,14 @@ public class BufferRemoveCommand : Command
 
     public override string Description => "Removes a buffer with a specific name";
     
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         if (!interpreter.RemoveBuffer((string)report.GetArgumentValue(0)))
         {
-            Console.WriteLine("A buffer with that name does not exists");
+            CommandResult.Fail("A buffer with that name does not exists");
         }
-        else Console.WriteLine("Buffer removed");
+        
+        Console.WriteLine("Buffer removed");
+        return CommandResult.Succes;
     }
 }

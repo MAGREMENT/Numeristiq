@@ -9,7 +9,7 @@ public class BufferEnumerateCommand : Command
 
     public override string Description => "Enumerate all buffers";
     
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         bool atleastOne = false;
         foreach (var buffer in interpreter.EnumerateBuffers())
@@ -19,5 +19,6 @@ public class BufferEnumerateCommand : Command
         }
         
         if(!atleastOne) Console.WriteLine("No buffer found !");
+        return CommandResult.Succes;
     }
 }

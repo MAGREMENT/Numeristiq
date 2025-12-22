@@ -17,7 +17,7 @@ public class HelpCommand : Command
     {
     }
 
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         if (report.IsOptionUsed(CommandIndex))
         {
@@ -32,10 +32,10 @@ public class HelpCommand : Command
                 }
             }
 
-            if (command is null) Console.WriteLine("No corresponding command found");
-            else ShowCommand(command, -1, "", FirstIndentation, SecondIndentation);
+            if (command is null) return CommandResult.Fail("No corresponding command found");
             
-            return;
+            ShowCommand(command, -1, "", FirstIndentation, SecondIndentation);
+            return CommandResult.Succes;
         }
         
         Console.WriteLine("\nUsage : [Directory]* [Command] [Argument] ([Option] [Value]?)*" +
@@ -66,6 +66,8 @@ public class HelpCommand : Command
                 counter++;
             }
         }
+        
+        return CommandResult.Succes;
     }
 
     private static void ShowCommand(Command command, int number, string ind1, string ind2, string ind3)

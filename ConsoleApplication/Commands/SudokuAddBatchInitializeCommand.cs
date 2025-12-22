@@ -14,7 +14,7 @@ public class SudokuAddBatchInitializeCommand : Command
     }
 
     public override string Description => "Evaluates and adds all the Sudoku's in a text file";
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var repo = interpreter.Instantiator.InstantiateBankRepository();
         var solver = interpreter.Instantiator.InstantiateSudokuSolver();
@@ -52,5 +52,6 @@ public class SudokuAddBatchInitializeCommand : Command
         }
         
         hardest.Detach();
+        return CommandResult.Succes;
     }
 }

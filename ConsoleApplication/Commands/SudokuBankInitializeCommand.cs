@@ -7,17 +7,18 @@ public class SudokuBankInitializeCommand : Command
     }
 
     public override string Description => "Initialize the Sudoku bank";
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var repo = interpreter.Instantiator.InstantiateBankRepository();
         try
         {
             repo.Initialize();
             Console.WriteLine("Operation was done successfully");
+            return CommandResult.Succes;
         }
         catch(Exception e)
         {
-           Console.WriteLine(e.Message); 
+           return CommandResult.Fail(e.Message);
         }
     }
 }

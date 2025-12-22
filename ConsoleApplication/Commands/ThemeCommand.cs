@@ -13,14 +13,13 @@ public class ThemeCommand : Command
     {
     }
     
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var repo = interpreter.Instantiator.InstantiateThemeRepository();
         var theme = repo.FindTheme((string)report.GetArgumentValue(NameIndex));
         if (theme is null)
         {
-            Console.WriteLine("No theme with this name found");
-            return;
+            return CommandResult.Fail("No theme with this name found");
         }
 
         var builder = new StringBuilder($"new Theme(\"{theme.Name}\"");
@@ -36,5 +35,7 @@ public class ThemeCommand : Command
 
         builder.Append(')');
         Console.WriteLine(builder.ToString());
+        
+        return CommandResult.Succes;
     }
 }

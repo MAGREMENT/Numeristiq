@@ -17,7 +17,7 @@ public abstract class SolutionCountCommand<TPuzzle, TData> : Command where TPuzz
         Description = "Counts the number of solutions for a given " + name;
     }
     
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         SetBackTracker((string)report.GetArgumentValue(StringIndex));
         var result = BackTracker.Solutions();
@@ -28,6 +28,8 @@ public abstract class SolutionCountCommand<TPuzzle, TData> : Command where TPuzz
         {
             Console.WriteLine(ToString(s) + "\n");
         }
+        
+        return CommandResult.Succes;
     }
 
     protected abstract void SetBackTracker(string s);

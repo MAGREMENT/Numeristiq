@@ -2,7 +2,7 @@
 
 namespace ConsoleApplication.Commands;
 
-public class ExecuteScriptCommand : Command //TODO make command fails to prevent execution after problem
+public class ExecuteScriptCommand : Command
 {
     public override IReadOnlyList<string> Synonyms { get; } = ["exec"];
 
@@ -11,7 +11,7 @@ public class ExecuteScriptCommand : Command //TODO make command fails to prevent
 
     public override string Description => "Executes a script";
     
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var reader = new StreamReader((Stream)report.GetArgumentValue(0));
         var script = reader.ReadToEnd();
@@ -20,6 +20,7 @@ public class ExecuteScriptCommand : Command //TODO make command fails to prevent
         var builder = new StringBuilder();
         var isOpen = false;
 
+        CommandResult? result;
         foreach (var c in script)
         {
             switch (c)
@@ -47,7 +48,10 @@ public class ExecuteScriptCommand : Command //TODO make command fails to prevent
                     isOpen = false;
                     if(args.Count == 0) continue;
 
-                    interpreter.Execute(args);
+                    result = interpreter.Execute(args);
+                    result.WriteLine();
+                    if (result != CommandResult.Succes) return CommandResult.Fail("One command in the script failed. The script was interrupted");
+                    
                     args.Clear();
                     
                     break;
@@ -77,6 +81,10 @@ public class ExecuteScriptCommand : Command //TODO make command fails to prevent
             builder.Clear();
         }
         
-        interpreter.Execute(args);
+        result = interpreter.Execute(args);
+        result.WriteLine();
+        return result != CommandResult.Succes 
+            ? CommandResult.Fail("One command in the script failed. The script was interrupted") 
+            : CommandResult.Succes;
     }
 }

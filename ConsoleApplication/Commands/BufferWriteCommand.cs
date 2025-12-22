@@ -10,10 +10,12 @@ public class BufferWriteCommand : Command
 
     public override string Description => "Writes to a buffer";
     
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var writer = new StreamWriter((Stream)report.GetArgumentValue(0));
         writer.Write((string)report.GetArgumentValue(1));
         writer.Flush();
+        
+        return CommandResult.Succes;
     }
 }

@@ -54,7 +54,7 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
 
     protected abstract string CurrentToString(ISolver solver);
     
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override CommandResult? Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var solver = GetSolver(interpreter.Instantiator);
         solver.FastMode = true;
@@ -159,11 +159,8 @@ public abstract class SolveBatchCommand<TState> : Command where TState : class
                 }
             }
         }
-
-        if (report.IsOptionUsed(SaveStatsIndex))
-        {
-            
-        }
+        
+        return CommandResult.Succes;
     }
 
     private void OnSolveDone(ISolveResult<TState> result)

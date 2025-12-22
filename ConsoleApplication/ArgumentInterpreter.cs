@@ -26,7 +26,7 @@ public class ArgumentInterpreter
         return _buffers.Keys;
     }
     
-    public void Execute(IReadOnlyList<string> args)
+    public CommandResult? Execute(IReadOnlyList<string> args)
     {
         var d = Root;
         Command? c;
@@ -34,11 +34,10 @@ public class ArgumentInterpreter
         if (args.Count == 0)
         {
             c = Root.DefaultCommand();
+            if (c is null) return CommandResult.Fail("No default command set");
             
-            if (c is null) Console.WriteLine("No default command set");
-            else c.Execute(this, new CallReport(Root, c));
-
-            return;
+            c.Execute(this, new CallReport(Root, c));
+            return CommandResult.Succes;
         }
 
         int cursor = 0;
@@ -54,14 +53,12 @@ public class ArgumentInterpreter
 
         if (c == null)
         {
-            Console.WriteLine("No corresponding command found");
-            return;
+            return CommandResult.Fail("No corresponding command found");
         }
 
         if (args.Count - cursor < c.Arguments.Count)
         {
-            Console.WriteLine($"Not enough arguments for command : {c.Name}");
-            return;
+            return CommandResult.Fail($"Not enough arguments for command : {c.Name}");
         }
 
         using var report = new CallReport(d, c);
@@ -75,9 +72,8 @@ public class ArgumentInterpreter
             {
                 if (!CheckValueType(args[cursor], c.Arguments[argumentCursor].ValueType, out value))
                 {
-                    Console.WriteLine($"Value of the wrong type for argument {argumentCursor + 1}" +
-                                      $"\nExpected type '{c.Arguments[argumentCursor]}'");
-                    return;
+                    return CommandResult.Fail($"Value of the wrong type for argument {argumentCursor + 1}" +
+                                              $"\nExpected type '{c.Arguments[argumentCursor]}'");
                 }
 
                 report.SetArgumentValue(argumentCursor++, value);
@@ -87,8 +83,7 @@ public class ArgumentInterpreter
             var index = c.IndexOfOption(args[cursor]);
             if (index == -1)
             {
-                Console.WriteLine($"Command '{c.Name}' is not compatible with this option : {args[cursor]}");
-                return;
+                return CommandResult.Fail($"Command '{c.Name}' is not compatible with this option : {args[cursor]}");
             }
 
             var o = c.Options[index];
@@ -100,14 +95,12 @@ public class ArgumentInterpreter
                 case ValueRequirement.Mandatory :
                     if (cursor == args.Count - 1)
                     {
-                        Console.WriteLine($"Missing mandatory value for option '{o.Name}'");
-                        return;
+                        return CommandResult.Fail($"Missing mandatory value for option '{o.Name}'");
                     }
 
                     if (!CheckValueType(args[cursor + 1], o.ValueType, out value))
                     {
-                        Console.WriteLine($"Value of the wrong type for : {args[cursor]}\nExpected type '{o.ValueType}'");
-                        return;
+                        return CommandResult.Fail($"Value of the wrong type for : {args[cursor]}\nExpected type '{o.ValueType}'");
                     }
 
                     cursor++;
@@ -117,8 +110,7 @@ public class ArgumentInterpreter
                     
                     if (!CheckValueType(args[cursor + 1], o.ValueType, out value))
                     {
-                        Console.WriteLine($"Value of the wrong type for : {args[cursor] + 1}\nExpected type '{o.ValueType}'");
-                        return;
+                        return CommandResult.Fail($"Value of the wrong type for : {args[cursor] + 1}\nExpected type '{o.ValueType}'");
                     }
 
                     cursor++;
@@ -129,7 +121,7 @@ public class ArgumentInterpreter
             else report.AddUsedOption(index, value);
         }
 
-        c.Execute(this, report);
+        return c.Execute(this, report);
     }
 
     private bool CheckValueType(string value, ValueType type, out object objectValue)

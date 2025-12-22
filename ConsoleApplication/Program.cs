@@ -8,7 +8,7 @@ public static class Program
     
     public static void Main(string[] args)
     {
-        Interpreter().Execute(args);
+        Interpreter().Execute(args).WriteLine();
     }
     
     private static ArgumentInterpreter Interpreter()
