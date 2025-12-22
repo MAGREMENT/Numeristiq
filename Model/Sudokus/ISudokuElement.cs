@@ -23,3 +23,16 @@ public interface ISudokuElement
     bool Contains(int possibility);
     bool Contains(CellPossibilities cp);
 }
+
+public static class ISudokuElementExtensions
+{
+    public static bool ContainsAny(this ISudokuElement el, CellPossibility[] cps)
+    {
+        for (int i = 0; i < cps.Length; i++)
+        {
+            if (el.Contains(cps[i])) return true;
+        }
+
+        return false;
+    }
+}

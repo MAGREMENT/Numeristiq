@@ -1,44 +1,50 @@
 ﻿using System.Collections.Generic;
+using Model.Utility;
 using System.Linq;
 using Model.Core.Graphs;
-using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.BlossomLoops.LoopFinders;
 
-public class BLLoopFinderV1 : IBlossomLoopLoopFinder
+public class BlossomLoopExclusiveDFSLoopFinder : IBlossomLoopLoopFinder
 {
-    private readonly int _maxLoopSize;
+    public int MaxLoopLength { get; set; }
 
-    public BLLoopFinderV1(int maxLoopSize)
+    public BlossomLoopExclusiveDFSLoopFinder(int maxLoopSize)
     {
-        _maxLoopSize = maxLoopSize;
+        MaxLoopLength = maxLoopSize;
     }
 
     public List<Loop<ISudokuElement, LinkStrength>> Find(CellPossibility[] cps, IGraph<ISudokuElement, LinkStrength> graph)
     {
         List<Loop<ISudokuElement, LinkStrength>> result = new();
+        Dictionary<ISudokuElement, int> nope = new();
 
         foreach (var start in cps)
         {
-            Search(cps, graph, new ChainBuilder<ISudokuElement, LinkStrength>(start), result);
+            Search(cps, graph, nope, new ChainBuilder<ISudokuElement, LinkStrength>(start), result);
+            nope.Clear();
         }
 
         return result;
     }
 
-    private void Search(CellPossibility[] cps, IGraph<ISudokuElement, LinkStrength> graph,
-        ChainBuilder<ISudokuElement, LinkStrength> builder, List<Loop<ISudokuElement, LinkStrength>> result)
+    private bool Search(CellPossibility[] cps, 
+        IGraph<ISudokuElement, LinkStrength> graph, 
+        Dictionary<ISudokuElement, int> nope,
+        ChainBuilder<ISudokuElement, LinkStrength> builder, 
+        List<Loop<ISudokuElement, LinkStrength>> result)
     {
-        if (builder.Count > _maxLoopSize) return;
+        if (builder.Count > MaxLoopLength) return false;
         
         var last = builder.LastElement();
         var first = builder.FirstElement();
         var link = builder.LastLink() == LinkStrength.None ? LinkStrength.Any : builder.LastLink() ==
             LinkStrength.Strong ? LinkStrength.Any : LinkStrength.Strong;
 
+        bool foundSomething = false;
         foreach (var friend in graph.Neighbors(last, link))
         {
-            if (friend.Equals(first)) continue;
+            if (friend.Equals(first) || (nope.TryGetValue(friend, out var num) && num <= builder.Count)) continue;
 
             if (friend is CellPossibility cp && cps.Contains(cp))
             {
@@ -46,26 +52,22 @@ public class BLLoopFinderV1 : IBlossomLoopLoopFinder
                 
                 builder.Add(LinkStrength.Weak, friend);
                 result.Add(builder.ToLoop(LinkStrength.Strong));
+                foundSomething = true;
                 builder.RemoveLast();
             }
-            else if (!builder.ContainsElement(friend) && ComponentsCheck(cps, friend))
+            else if (!builder.ContainsElement(friend) && !friend.ContainsAny(cps))
             {
                 builder.Add(link == LinkStrength.Any ? LinkStrength.Weak : LinkStrength.Strong, friend);
-                Search(cps, graph, builder, result);
+                if (Search(cps, graph, nope, builder, result)) foundSomething = true;
                 builder.RemoveLast();
             }
         }
-    }
-    
-    private bool ComponentsCheck(CellPossibility[] cps, ISudokuElement friend)
-    {
-        if (friend is CellPossibility) return true;
 
-        foreach (var cp in friend.EnumerateCellPossibility())
+        if (!foundSomething)
         {
-            if (cps.Contains(cp)) return false;
+            nope[last] = builder.Count;
         }
-
-        return true;
+        
+        return foundSomething;
     }
 }

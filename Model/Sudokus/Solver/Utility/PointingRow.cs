@@ -188,7 +188,7 @@ public class PointingRow : ISudokuElement
     {
         return Possibility == cp.Possibility && Row == cp.Row && _pos.Contains(cp.Column);
     }
-    
+
     public bool Contains(int possibility)
     {
         return Possibility == possibility;

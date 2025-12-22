@@ -8,5 +8,7 @@ namespace Model.Sudokus.Solver.Strategies.BlossomLoops;
 
 public interface IBlossomLoopLoopFinder
 {
+    public int MaxLoopLength { get; set; }
+
     List<Loop<ISudokuElement, LinkStrength>> Find(CellPossibility[] cps, IGraph<ISudokuElement, LinkStrength> graph);
 }

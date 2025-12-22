@@ -150,6 +150,13 @@ public class Loop<TElement, TLink> : Chain<TElement, TLink> where TElement : not
 
         return loop.Links[index].Equals(Links[0]);
     }
+
+    public override int GetHashCode()
+    {
+        var code = 0;
+        foreach (var el in Elements) code ^= el.GetHashCode();
+        return code;
+    }
 }
 
 public class ChainBuilder<TElement, TLink> where TElement : notnull where TLink : notnull

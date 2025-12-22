@@ -13,6 +13,13 @@ namespace Tests.Sudokus;
 
 public class BlossomLoopAlgorithmsTest
 {
+    /*
+        838
+         Name |    Total    |    Average   |   Minimum   |   Maximum   |     Dry     
+        ------+-------------+--------------+-------------+-------------+-------------
+          V1  | 2,1422566 s | 214,22566 ms | 202,9517 ms | 261,2931 ms | 252,4954 ms 
+        ------+-------------+--------------+-------------+-------------+-------------
+     */
     [Test]
     public void Test()
     {
@@ -23,8 +30,7 @@ public class BlossomLoopAlgorithmsTest
             UnitStrongLinkConstructionRule.Instance, UnitWeakLinkConstructionRule.Instance,
             PointingPossibilitiesConstructionRule.Instance);
         var graph = solver.PreComputer.ComplexGraph.Graph;
-        var branchFinder = new BLBranchFinderV1();
-        var wrote = false;
+        var branchFinder = new BlossomLoopBFSBranchFinder();
 
         var types = new IBlossomLoopType[]
         {
@@ -34,12 +40,13 @@ public class BlossomLoopAlgorithmsTest
 
         (IBlossomLoopLoopFinder, string)[] impl =
         [
-            (new BLLoopFinderV1(12), "V1")
+            (new BlossomLoopDFSLoopFinder(12), "DFS"),
+            (new BlossomLoopExclusiveDFSLoopFinder(12), "Exclusive DFS")
         ];
         
         ImplementationSpeedComparator.Compare(impl, 10, i =>
         {
-            var total = 0;
+            var total = new HashSet<Loop<ISudokuElement, LinkStrength>>();
             
             foreach (var t in types)
             {
@@ -48,16 +55,12 @@ public class BlossomLoopAlgorithmsTest
                     foreach (var loop in i.Find(c, graph))
                     {
                         var result = branchFinder.FindShortestBranches(graph, c, loop);
-                        if (result != null) total++;
+                        if (result != null) total.Add(loop);
                     }
                 }
             }
 
-            if (!wrote)
-            {
-                Console.WriteLine(total);
-                wrote = true;
-            }
+            Console.WriteLine(total.Count);
         });
     }
 }

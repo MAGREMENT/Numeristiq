@@ -307,7 +307,7 @@ public class SudokuStrategiesTests
     [Test]
     public void BlossomLoopSpeedTest()
     {
-        TestSudokuStrategySpeed(new BlossomLoopStrategy(new BLLoopFinderV3(12), new BLBranchFinderV1(), new CellType()),
+        TestSudokuStrategySpeed(new BlossomLoopStrategy(new BlossomLoopExclusiveDFSLoopFinder(12), new BlossomLoopBFSBranchFinder(), new CellType()),
             "2105090hh0o2124192og03og94418409akb4cg4g11aea88e0i0mg10i2105g11o0o811241s009s2d694c6i2j60h114gsic68k21g2090609114ie0qgsg05qga24kg14gec03cs7gagb84m81214cgs11kigi0a",
             20);
     }
@@ -315,7 +315,7 @@ public class SudokuStrategiesTests
     [Test]
     public void BlossomLoopTest1()
     {
-        TestSudokuStrategyInstance(new BlossomLoopStrategy(new BLLoopFinderV3(12), new BLBranchFinderV1(), new CellType()),
+        TestSudokuStrategyInstance(new BlossomLoopStrategy(new BlossomLoopExclusiveDFSLoopFinder(12), new BlossomLoopBFSBranchFinder(), new CellType()),
             "2105090hh0o2124192og03og94418409akb4cg4g11aea88e0i0mg10i2105g11o0o811241s009s2d694c6i2j60h114gsic68k21g2090609114ie0qgsg05qga24kg14gec03cs7gagb84m81214cgs11kigi0a",
             "- 228 431 463 689 889");
     }
@@ -323,7 +323,7 @@ public class SudokuStrategiesTests
     [Test]
     public void BlossomLoopTest2()
     {
-        TestSudokuStrategyInstance(new BlossomLoopStrategy(new BLLoopFinderV3(12), new BLBranchFinderV1(), new UnitType()),
+        TestSudokuStrategyInstance(new BlossomLoopStrategy(new BlossomLoopExclusiveDFSLoopFinder(12), new BlossomLoopBFSBranchFinder(), new UnitType()),
             "p2b2090hj2i241j494l205k0h2ja81hoj81o0hb0i005j841h80398210o0i12410m811cg1g441g2p2p009210h16o68q1121gggk0a4c46521i81ga05gihql821093i0541iiiihi811i42g16i88ai1105484o",
             "- 328 269 171 172 378 182 793");
     }
