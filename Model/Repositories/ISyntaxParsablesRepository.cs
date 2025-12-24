@@ -3,7 +3,7 @@ using Model.Core.Syntax;
 
 namespace Model.Repositories;
 
-public interface ISyntaxParsablesRepository<T> where T : ISyntaxElement
+public interface ISyntaxParsablesRepository
 {
-    IEnumerable<ISyntaxParsable<T>> GetParsables();
+    IEnumerable<ISyntaxParsable> GetParsables();
 }

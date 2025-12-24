@@ -1,7 +1,7 @@
 namespace Model.Core.Syntax;
 
-public interface ISyntaxParsable<out T> where T : ISyntaxElement
+public interface ISyntaxParsable
 {
     public string? IsSimpleString { get; }
-    public T? Parse(string s);
+    public ISyntaxElement? Parse(string s);
 }

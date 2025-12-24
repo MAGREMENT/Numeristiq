@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace Model.Core.Syntax.Parsables;
 
-public abstract class FormatParsable<T> : ISyntaxParsable<T> where T : ISyntaxElement
+public abstract class FormatParsable<T> : ISyntaxParsable where T : ISyntaxElement
 {
     private readonly Regex _regex;
     
@@ -14,7 +14,7 @@ public abstract class FormatParsable<T> : ISyntaxParsable<T> where T : ISyntaxEl
         _regex = new Regex(s);
     }
     
-    public T? Parse(string s)
+    public ISyntaxElement? Parse(string s)
     {
         var result = _regex.Match(s);
         if (!result.Success) return default;

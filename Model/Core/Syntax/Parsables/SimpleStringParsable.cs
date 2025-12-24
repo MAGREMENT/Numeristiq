@@ -1,6 +1,6 @@
 namespace Model.Core.Syntax.Parsables;
 
-public class SimpleStringParsable<T> : ISyntaxParsable<T> where T : ISyntaxElement, new()
+public class SimpleStringParsable<T> : ISyntaxParsable where T : ISyntaxElement, new()
 {
     public string? IsSimpleString { get; }
 
@@ -9,7 +9,7 @@ public class SimpleStringParsable<T> : ISyntaxParsable<T> where T : ISyntaxEleme
         IsSimpleString = s;
     }
     
-    public T? Parse(string s)
+    public ISyntaxElement? Parse(string s)
     {
         return s != IsSimpleString ? default : new T();
     }

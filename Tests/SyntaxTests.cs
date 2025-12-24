@@ -1,17 +1,13 @@
 using Model.Core.Syntax;
-using Model.Core.Syntax.Types;
-using Model.Core.Syntax.Values;
+using Model.Repositories;
+using Repository.HardCoded;
 
 namespace Tests;
 
 public class SyntaxTests
 {
-    private static readonly ISyntaxParsable<IIntEquationSyntaxElement>[] _parsables =
-    {
-        new IntParsable(),
-    };
-    
-    private static readonly SyntaxParser<ISyntaxElement> _parser = new(_parsables);
+    private static readonly ISyntaxParsablesRepository _repository = new HardCodedSyntaxParsablesRepository();
+    private static readonly SyntaxParser _parser = new(_repository.GetParsables());
     
     [Test]
     public void SimpleEquationTest()
@@ -22,9 +18,6 @@ public class SyntaxTests
         Assert.That(b, Is.Not.Null);
         Assert.That(b!.ToString(), Is.EqualTo(s));
         AssertFirst3Operators(b, "=", "+", "+");
-
-        /*var e2 = _ypInterpreter.TryInterpret(new ParsedLine[] { new(0, b) }, out var i);
-        Assert.That(e2, Is.Null);*/
     }
 
     [Test]

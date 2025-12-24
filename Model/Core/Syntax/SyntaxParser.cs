@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Model.Core.Syntax;
 
-public class SyntaxParser<T> where T : class, ISyntaxElement
+public class SyntaxParser
 {
-    private readonly Dictionary<string, ISyntaxParsable<T>> _simpleStrings = new();
-    private readonly List<ISyntaxParsable<T>> _others = new();
+    private readonly Dictionary<string, ISyntaxParsable> _simpleStrings = new();
+    private readonly List<ISyntaxParsable> _others = new();
     
-    public SyntaxParser(IEnumerable<ISyntaxParsable<T>> parsables)
+    public SyntaxParser(IEnumerable<ISyntaxParsable> parsables)
     {
         foreach (var p in parsables)
         {
@@ -17,9 +17,9 @@ public class SyntaxParser<T> where T : class, ISyntaxElement
         }
     }
 
-    public ParserError? TryParseText(string s, out IReadOnlyList<ParsedLine<T>> list)
+    public ParserError? TryParseText(string s, out IReadOnlyList<ParsedLine> list)
     {
-        var result = new List<ParsedLine<T>>();
+        var result = new List<ParsedLine>();
         var start = 0;
         var line = 0;
         for (int current = 0; current < s.Length; current++)
@@ -35,7 +35,7 @@ public class SyntaxParser<T> where T : class, ISyntaxElement
                     return e;
                 }
                 
-                if(b is not null) result.Add(new ParsedLine<T>(line, b));
+                if(b is not null) result.Add(new ParsedLine(line, b));
             }
 
             start = current + 1;
@@ -46,10 +46,10 @@ public class SyntaxParser<T> where T : class, ISyntaxElement
         return ParserError.None;
     }
 
-    public ParserError? TryParseLine(ReadOnlySpan<char> s, out T? result, int line = 0)
+    public ParserError? TryParseLine(ReadOnlySpan<char> s, out ISyntaxElement? result, int line = 0)
     {
         result = null;
-        List<T?> queue = new() { result };
+        List<ISyntaxElement?> queue = new() { result };
         var index = 0;
 
         var start = 0;
@@ -77,7 +77,7 @@ public class SyntaxParser<T> where T : class, ISyntaxElement
             if (current != start)
             {
                 var span = s.Slice(start, current - start).ToString();
-                T? el = null;
+                ISyntaxElement? el = null;
                 if (_simpleStrings.TryGetValue(span, out var parsable)) el = parsable.Parse(span);
                 else
                 {
@@ -118,7 +118,7 @@ public class SyntaxParser<T> where T : class, ISyntaxElement
         return ParserError.None;
     }
 
-    private static bool TrySetNext(List<T?> queue, int index, T el)
+    private static bool TrySetNext(List<ISyntaxElement?> queue, int index, ISyntaxElement el)
     {
         if (queue[index] is null)
         {
@@ -141,12 +141,12 @@ public class SyntaxParser<T> where T : class, ISyntaxElement
     }
 }
 
-public readonly struct ParsedLine<T> where T : ISyntaxElement
+public readonly struct ParsedLine
 {
     public readonly int Line;
-    public readonly T Value;
+    public readonly ISyntaxElement Value;
 
-    public ParsedLine(int line, T value)
+    public ParsedLine(int line, ISyntaxElement value)
     {
         Line = line;
         Value = value;

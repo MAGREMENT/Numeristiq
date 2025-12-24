@@ -6,9 +6,9 @@ using Model.Repositories;
 
 namespace Repository.HardCoded;
 
-public class HardCodedSyntaxParsablesRepository : ISyntaxParsablesRepository<ISyntaxElement>
+public class HardCodedSyntaxParsablesRepository : ISyntaxParsablesRepository
 {
-    private static readonly ISyntaxParsable<ISyntaxElement>[] _arr =
+    private static readonly ISyntaxParsable[] _arr =
     {
         new CellParsable(),
         new IntParsable(),
@@ -20,7 +20,7 @@ public class HardCodedSyntaxParsablesRepository : ISyntaxParsablesRepository<ISy
         new SimpleStringParsable<PowerOperator>("^")
     };
 
-    public IEnumerable<ISyntaxParsable<ISyntaxElement>> GetParsables()
+    public IEnumerable<ISyntaxParsable> GetParsables()
     {
         return _arr;
     }
