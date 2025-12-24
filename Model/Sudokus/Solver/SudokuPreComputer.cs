@@ -41,7 +41,7 @@ public class SudokuPreComputer
     {
         _solverData = solverData;
         SimpleGraph = new ConstructedGraph<ISudokuSolverData, IGraph<CellPossibility, LinkStrength>>(
-            GraphCreator.CreateForLink<CellPossibility>(GraphCollectionType.HashSet, false), _solverData);
+            GraphCreator.CreateForCellPossibilityLink(GraphCollectionType.HashSet, 9, 9, 9), _solverData);
         ComplexGraph = new ConstructedGraph<ISudokuSolverData, IConditionalGraph<ISudokuElement, LinkStrength, ElementColor>>(
             GraphCreator.CreateForConditionalLink<ISudokuElement, ElementColor>(GraphCollectionType.HashSet), _solverData);
     }

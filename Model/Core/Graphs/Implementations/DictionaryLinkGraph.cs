@@ -76,7 +76,7 @@ public  class DictionaryLinkGraph<T, TCollection> : IGraph<T, LinkStrength>
                                                             collection[1].Contains(to));
     }
 
-    public virtual LinkStrength GetLinkBetween(T from, T to)
+    public virtual LinkStrength GetEdge(T from, T to)
     {
         if (!_links.TryGetValue(from, out var sets))
         {
@@ -223,9 +223,9 @@ public class DictionaryConditionalLinkGraph<TElement, TValue, TCollection1, TCol
         return false;
     }
 
-    public override LinkStrength GetLinkBetween(TElement from, TElement to)
+    public override LinkStrength GetEdge(TElement from, TElement to)
     {
-        var b = base.GetLinkBetween(from, to);
+        var b = base.GetEdge(from, to);
         if (b != LinkStrength.None) return b;
 
         if (Values is null || !_conditionalLinks.TryGetValue(from, out var collection)) return LinkStrength.None;

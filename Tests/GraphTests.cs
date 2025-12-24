@@ -3,6 +3,7 @@ using Model.Core.Graphs.Implementations;
 using Model.Sudokus;
 using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
+using Model.Sudokus.Solver.Utility.Graphs.Implementations;
 using Model.Utility;
 using Tests.Utility;
 

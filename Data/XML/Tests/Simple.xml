@@ -1,6 +1,8 @@
-﻿<a>Hi</a>
-<b>
-Mmmh
-<c/>
-</b>
-Test
+﻿<root>
+    <a>Hi</a>
+        <b>
+            Mmmh
+            <c/>
+        </b>
+    Test
+</root>

@@ -442,14 +442,14 @@
   },
   {
     "Name": "Cell Blossom Loop",
-    "Enabled": true,
+    "Enabled": false,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Unit Blossom Loop",
-    "Enabled": true,
+    "Enabled": false,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {}

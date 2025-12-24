@@ -39,7 +39,7 @@ public static class PathFinder
     }
 }
 
-public static class DirectoryFinder
+public static class DirectoryFinder //TODO remove
 {
     public static string? Find(string directoryName, bool searchParentDirectories, bool createIfNotFound)
     {

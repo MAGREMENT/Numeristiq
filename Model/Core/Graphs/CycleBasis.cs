@@ -46,8 +46,8 @@ public static class CycleBasis //TODO test
                             else
                             {
                                 var loop = constructor(path1.ToChain(), path2.ToChain(), index,
-                                    graph.GetLinkBetween(cur1, next1.To), 
-                                    graph.GetLinkBetween(start, friend));
+                                    graph.GetEdge(cur1, next1.To), 
+                                    graph.GetEdge(start, friend));
                                 if (loop is not null)
                                 {
                                     result.Add(loop);
@@ -71,8 +71,8 @@ public static class CycleBasis //TODO test
                             else
                             {
                                 var loop = constructor(path2.ToChain(), path1.ToChain(), index,
-                                    graph.GetLinkBetween(cur2, next2.To),
-                                    graph.GetLinkBetween(start, friend));
+                                    graph.GetEdge(cur2, next2.To),
+                                    graph.GetEdge(start, friend));
                                 if (loop is not null)
                                 {
                                     result.Add(loop);
@@ -165,7 +165,7 @@ public static class CycleBasis //TODO test
                 {
                     if(result.ContainsKey(friend) || starts.Contains(friend)) continue;
 
-                    var link = graph.GetLinkBetween(friend, current);
+                    var link = graph.GetEdge(friend, current);
                     if(link is LinkStrength.None) continue;
                     
                     result.Add(friend, new EdgeTo<LinkStrength, TElement>(link, current));

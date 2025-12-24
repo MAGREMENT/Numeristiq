@@ -90,7 +90,7 @@ public class DoubleDictionaryLinkGraph<T, TCollection> : IGraph<T, LinkStrength>
                (_links[1].TryGetValue(from, out collection) && collection.Contains(to));
     }
 
-    public virtual LinkStrength GetLinkBetween(T from, T to)
+    public virtual LinkStrength GetEdge(T from, T to)
     {
         if (_links[0].TryGetValue(from, out var collection) && collection.Contains(to)) return LinkStrength.Strong;
         if (_links[1].TryGetValue(from, out collection) && collection.Contains(to)) return LinkStrength.Weak;

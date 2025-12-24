@@ -68,7 +68,7 @@ public class CellPossibilityArrayLinkGraph<TCollection> : IGraph<CellPossibility
         return l is not null && l.Contains(to);
     }
 
-    public LinkStrength GetLinkBetween(CellPossibility from, CellPossibility to)
+    public LinkStrength GetEdge(CellPossibility from, CellPossibility to)
     {
         var list = _edges[from.Row, from.Column, from.Possibility - 1, 0];
         if (list is not null && list.Contains(to)) return LinkStrength.Strong;

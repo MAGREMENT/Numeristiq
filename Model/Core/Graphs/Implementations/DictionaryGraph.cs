@@ -70,7 +70,7 @@ public class DictionaryGraph<TElement, TEdge, TCollection> : IGraph<TElement, TE
         return false;
     }
 
-    public TEdge? GetLinkBetween(TElement from, TElement to)
+    public TEdge? GetEdge(TElement from, TElement to)
     {
         if (!_edges.TryGetValue(from, out var collection)) return default;
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Model.Core.Syntax;
 
@@ -18,9 +17,9 @@ public class SyntaxParser<T> where T : class, ISyntaxElement
         }
     }
 
-    public ParserError? TryParseText(string s, out IReadOnlyList<ParsedLine> list)
+    public ParserError? TryParseText(string s, out IReadOnlyList<ParsedLine<T>> list)
     {
-        var result = new List<ParsedLine>();
+        var result = new List<ParsedLine<T>>();
         var start = 0;
         var line = 0;
         for (int current = 0; current < s.Length; current++)
@@ -32,11 +31,11 @@ public class SyntaxParser<T> where T : class, ISyntaxElement
                 var e = TryParseLine(s.AsSpan(start, current - start), out var b, line);
                 if (e != ParserError.None)
                 {
-                    list = Array.Empty<ParsedLine>();
+                    list = [];
                     return e;
                 }
                 
-                if(b is not null) result.Add(new ParsedLine(line, b));
+                if(b is not null) result.Add(new ParsedLine<T>(line, b));
             }
 
             start = current + 1;
@@ -47,10 +46,10 @@ public class SyntaxParser<T> where T : class, ISyntaxElement
         return ParserError.None;
     }
 
-    public ParserError? TryParseLine(ReadOnlySpan<char> s, out ISyntaxElement? result, int line = 0)
+    public ParserError? TryParseLine(ReadOnlySpan<char> s, out T? result, int line = 0)
     {
         result = null;
-        List<ISyntaxElement?> queue = new() { result };
+        List<T?> queue = new() { result };
         var index = 0;
 
         var start = 0;
@@ -119,7 +118,7 @@ public class SyntaxParser<T> where T : class, ISyntaxElement
         return ParserError.None;
     }
 
-    private static bool TrySetNext(List<ISyntaxElement?> queue, int index, ISyntaxElement el)
+    private static bool TrySetNext(List<T?> queue, int index, T el)
     {
         if (queue[index] is null)
         {
@@ -142,12 +141,12 @@ public class SyntaxParser<T> where T : class, ISyntaxElement
     }
 }
 
-public readonly struct ParsedLine
+public readonly struct ParsedLine<T> where T : ISyntaxElement
 {
     public readonly int Line;
-    public readonly ISyntaxElement Value;
+    public readonly T Value;
 
-    public ParsedLine(int line, ISyntaxElement value)
+    public ParsedLine(int line, T value)
     {
         Line = line;
         Value = value;

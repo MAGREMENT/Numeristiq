@@ -1,13 +1,17 @@
 using Model.Core.Syntax;
-using Model.Repositories;
-using Repository.HardCoded;
+using Model.Core.Syntax.Types;
+using Model.Core.Syntax.Values;
 
 namespace Tests;
 
 public class SyntaxTests
 {
-    private static readonly ISyntaxParsablesRepository<ISyntaxElement> _repository = new HardCodedSyntaxParsablesRepository();
-    private static readonly SyntaxParser<ISyntaxElement> _parser = new(_repository.GetParsables());
+    private static readonly ISyntaxParsable<IIntEquationSyntaxElement>[] _parsables =
+    {
+        new IntParsable(),
+    };
+    
+    private static readonly SyntaxParser<ISyntaxElement> _parser = new(_parsables);
     
     [Test]
     public void SimpleEquationTest()

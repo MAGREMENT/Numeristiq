@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Model.Sudokus;
+using Model.Core.Graphs;
 using Model.Utility;
 using Model.Utility.Collections;
 
-namespace Model.Core.Graphs.Implementations;
+namespace Model.Sudokus.Solver.Utility.Graphs.Implementations;
 
-public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength> //TODO finish and look into using
+public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength> //TODO finish and look into using + Generalize
 {
     private UniqueList<ISudokuElement>?[,,,] _cps = new UniqueList<ISudokuElement>[9, 9, 9, 2];
     private readonly Dictionary<ISudokuElement, UniqueList<ISudokuElement>[]> _others = new();
@@ -83,7 +83,7 @@ public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength> 
         return l is not null && l.Contains(to);
     }
 
-    public LinkStrength GetLinkBetween(ISudokuElement from, ISudokuElement to)
+    public LinkStrength GetEdge(ISudokuElement from, ISudokuElement to)
     {
         return LinkStrength.None; //TODO
     }
