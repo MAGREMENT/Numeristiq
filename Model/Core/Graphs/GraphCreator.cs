@@ -50,9 +50,9 @@ public static class GraphCreator
             switch (type)
             {
                 case GraphCollectionType.HashSet :
-                    return new DictionaryLinkGraph<TElement, ContainingHashSet<TElement>>();
+                    return new DoubleDictionaryLinkGraph<TElement, ContainingHashSet<TElement>>();
                 case GraphCollectionType.UniqueList :
-                    return new DictionaryLinkGraph<TElement, UniqueList<TElement>>();
+                    return new DoubleDictionaryLinkGraph<TElement, UniqueList<TElement>>();
             }
         }
         else
@@ -60,9 +60,9 @@ public static class GraphCreator
             switch (type)
             {
                 case GraphCollectionType.HashSet :
-                    return new DoubleDictionaryLinkGraph<TElement, ContainingHashSet<TElement>>();
+                    return new DictionaryLinkGraph<TElement, ContainingHashSet<TElement>>();
                 case GraphCollectionType.UniqueList :
-                    return new DoubleDictionaryLinkGraph<TElement, UniqueList<TElement>>();
+                    return new DictionaryLinkGraph<TElement, UniqueList<TElement>>();
             }
         }
 

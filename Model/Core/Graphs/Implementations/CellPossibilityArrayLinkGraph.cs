@@ -9,7 +9,7 @@ namespace Model.Core.Graphs.Implementations;
 public class CellPossibilityArrayLinkGraph<TCollection> : IGraph<CellPossibility, LinkStrength> 
     where TCollection : IContainingCollection<CellPossibility>, new()
 {
-    private readonly TCollection?[,,,] _edges;
+    private TCollection?[,,,] _edges;
 
     public CellPossibilityArrayLinkGraph(int rowCount, int colCount, int posCount)
     {
@@ -31,15 +31,11 @@ public class CellPossibilityArrayLinkGraph<TCollection> : IGraph<CellPossibility
 
     public IEnumerable<CellPossibility> GetNeighbors(CellPossibility from)
     {
-        foreach (var n in _edges[from.Row, from.Column, from.Possibility - 1, 0] ?? Enumerable.Empty<CellPossibility>())
-        {
-            yield return n;
-        }
-            
-        foreach (var n in _edges[from.Row, from.Column, from.Possibility - 1, 1] ?? Enumerable.Empty<CellPossibility>())
-        {
-            yield return n;
-        }
+        var e1 = _edges[from.Row, from.Column, from.Possibility - 1, 0];
+        var e2 = _edges[from.Row, from.Column, from.Possibility - 1, 1];
+
+        if (e1 is null) return e2 ?? Enumerable.Empty<CellPossibility>();
+        return e2 is null ? e1 : e1.Concat(e2);
     }
 
     public IEnumerable<EdgeTo<LinkStrength, CellPossibility>> GetNeighborsWithEdges(CellPossibility from)
@@ -85,19 +81,7 @@ public class CellPossibilityArrayLinkGraph<TCollection> : IGraph<CellPossibility
 
     public void Clear()
     {
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                for (int k = 0; k < 9; k++)
-                {
-                    for (int l = 0; l < 2; l++)
-                    {
-                        _edges[i,j,k,l]?.Clear();
-                    }
-                }
-            }
-        }
+        _edges = new TCollection[9, 9, 9, 2];
     }
     
     public IEnumerator<CellPossibility> GetEnumerator()

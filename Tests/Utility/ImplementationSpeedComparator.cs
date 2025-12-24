@@ -29,12 +29,40 @@ public static class ImplementationSpeedComparator
         
         Console.WriteLine(result.ToGridReport(6, str => [
             str.Name,
-            str.TicksToString(str.TotalTicks),
-            str.TicksToString(str.GetAverageTicks()),
-            str.TicksToString(str.MinTicks),
-            str.TicksToString(str.MaxTicks),
-            str.TicksToString(str.Dry)
-        ], ColumnTitle.Follow("Name", "Total", "Average", "Minimum", "Maximum", "Dry")));
+            GetStatus(result, str, s => s.GetAverageTicks()) + str.TicksToString(str.GetAverageTicks()),
+            GetStatus(result, str, s => s.MinTicks) + str.TicksToString(str.MinTicks),
+            GetStatus(result, str, s => s.MaxTicks) + str.TicksToString(str.MaxTicks),
+            GetStatus(result, str, s => s.Dry) + str.TicksToString(str.Dry)
+        ], ColumnTitle.Follow("Name", "Average", "Minimum", "Maximum", "Dry")));
+    }
+
+    private static string GetStatus(SpeedTestResult[] results, SpeedTestResult str, Func<SpeedTestResult, double> get)
+    {
+        if (results.Length <= 1) return string.Empty;
+        
+        var best = results[0];
+        var worst = results[0];
+
+        var bestValue = get(results[0]);
+        var worstValue = get(results[0]);
+
+        for (int i = 1; i < results.Length; i++)
+        {
+            var v = get(results[i]);
+            if (v > worstValue)
+            {
+                worstValue = v;
+                worst = results[i];
+            }
+
+            if (v < bestValue)
+            {
+                bestValue = v;
+                best = results[i];
+            }
+        }
+
+        return str == best ? "^ " : (str == worst ? "v " : string.Empty) ;
     }
 }
 
@@ -91,23 +119,13 @@ public class SpeedTestResult
         return nanos switch
         {
             < 1_000 => nanos + " ns",
-            < 1_000_000 => nanos / 1_000 + " mis",
-            < 1_000_000_000 => nanos / 1_000_000 + " ms",
-            _ => nanos / 1_000_000_000 + " s"
+            < 1_000_000 => Math.Round(nanos / 1_000, 4) + " mis",
+            < 1_000_000_000 => Math.Round(nanos / 1_000_000, 4)+ " ms",
+            _ => Math.Round(nanos / 1_000_000_000, 4) + " s"
         };
     }
 
-    public string TicksToString(long ticks)
-    {
-        var nanos = ticks * _nanosPerTick;
-        return nanos switch
-        {
-            < 1_000 => nanos + " ns",
-            < 1_000_000 => (double)nanos / 1_000 + " mis",
-            < 1_000_000_000 => (double)nanos / 1_000_000 + " ms",
-            _ => (double)nanos / 1_000_000_000 + " s"
-        };
-    }
+    public string TicksToString(long ticks) => TicksToString((double)ticks);
 }
 
 public delegate void Test<in T>(T value);
