@@ -12,12 +12,12 @@ public interface IGraph<TElement, TEdge> : IEnumerable<TElement>, IClearable
     where TElement : notnull where TEdge : notnull
 {
     public void Add(TElement from, TElement to, TEdge edge, LinkType type = LinkType.BiDirectional);
-    public IEnumerable<TElement> Neighbors(TElement from, TEdge edge);
-    public IEnumerable<TElement> Neighbors(TElement from);
-    public IEnumerable<EdgeTo<TEdge, TElement>> NeighborsWithEdges(TElement from);
+    public IEnumerable<TElement> GetNeighbors(TElement from, TEdge edge);
+    public IEnumerable<TElement> GetNeighbors(TElement from);
+    public IEnumerable<EdgeTo<TEdge, TElement>> GetNeighborsWithEdges(TElement from);
     public bool AreNeighbors(TElement from, TElement to, TEdge edge);
     public bool AreNeighbors(TElement from, TElement to);
-    public TEdge? LinkBetween(TElement from, TElement to);
+    public TEdge? GetLinkBetween(TElement from, TElement to);
 }
 
 public interface IConditionalGraph<TElement, TEdge, TValue> : IGraph<TElement, TEdge>

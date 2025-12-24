@@ -33,15 +33,15 @@ public class DoubleDictionaryLinkGraph<T, TCollection> : IGraph<T, LinkStrength>
         collection.Add(from);
     }
 
-    public virtual IEnumerable<T> Neighbors(T from, LinkStrength strength)
+    public virtual IEnumerable<T> GetNeighbors(T from, LinkStrength strength)
     {
-        if (strength == LinkStrength.Any) return Neighbors(from);
+        if (strength == LinkStrength.Any) return GetNeighbors(from);
         return _links[(int)strength - 1].TryGetValue(from, out var collection) 
             ? collection 
             : Enumerable.Empty<T>();
     }
 
-    public virtual IEnumerable<T> Neighbors(T from)
+    public virtual IEnumerable<T> GetNeighbors(T from)
     {
         if (_links[0].TryGetValue(from, out var collection))
         {
@@ -60,7 +60,7 @@ public class DoubleDictionaryLinkGraph<T, TCollection> : IGraph<T, LinkStrength>
         }
     }
 
-    public virtual IEnumerable<EdgeTo<LinkStrength, T>> NeighborsWithEdges(T from)
+    public virtual IEnumerable<EdgeTo<LinkStrength, T>> GetNeighborsWithEdges(T from)
     {
         if (_links[0].TryGetValue(from, out var collection))
         {
@@ -90,7 +90,7 @@ public class DoubleDictionaryLinkGraph<T, TCollection> : IGraph<T, LinkStrength>
                (_links[1].TryGetValue(from, out collection) && collection.Contains(to));
     }
 
-    public virtual LinkStrength LinkBetween(T from, T to)
+    public virtual LinkStrength GetLinkBetween(T from, T to)
     {
         if (_links[0].TryGetValue(from, out var collection) && collection.Contains(to)) return LinkStrength.Strong;
         if (_links[1].TryGetValue(from, out collection) && collection.Contains(to)) return LinkStrength.Weak;

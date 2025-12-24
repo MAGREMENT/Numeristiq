@@ -4,4 +4,7 @@
         <Nullable>enable</Nullable>
         <RootNamespace>Model</RootNamespace>
     </PropertyGroup>
+    <ItemGroup>
+      <Folder Include="Sudokus\Solver\Utility\Graphs\Implementations\" />
+    </ItemGroup>
 </Project>

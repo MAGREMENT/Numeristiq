@@ -45,7 +45,7 @@ public class NishioForcingNetStrategy : Strategy<BinairoSolver>
         while (queue.Count > 0)
         {
             var current = queue.Dequeue();
-            foreach (var offFriend in graph.Neighbors(current))
+            foreach (var offFriend in graph.GetNeighbors(current))
             {
                 if (first == offFriend || on.ContainsKey(offFriend))
                 {
@@ -73,7 +73,7 @@ public class NishioForcingNetStrategy : Strategy<BinairoSolver>
                     continue;
                 }
 
-                foreach (var onFriend in graph.Neighbors(offFriend, LinkStrength.Strong))
+                foreach (var onFriend in graph.GetNeighbors(offFriend, LinkStrength.Strong))
                 {
                     if (off.ContainsKey(onFriend))
                     {

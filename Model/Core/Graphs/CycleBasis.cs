@@ -15,7 +15,7 @@ public static class CycleBasis //TODO test
 
         foreach (var start in graph)
         {
-            foreach (var friend in graph.Neighbors(start))
+            foreach (var friend in graph.GetNeighbors(start))
             {
                 if((forest.TryGetValue(start, out var startSource) && startSource.To.Equals(friend))
                    || (forest.TryGetValue(friend, out var friendSource) && friendSource.To.Equals(start))) continue;
@@ -46,8 +46,8 @@ public static class CycleBasis //TODO test
                             else
                             {
                                 var loop = constructor(path1.ToChain(), path2.ToChain(), index,
-                                    graph.LinkBetween(cur1, next1.To), 
-                                    graph.LinkBetween(start, friend));
+                                    graph.GetLinkBetween(cur1, next1.To), 
+                                    graph.GetLinkBetween(start, friend));
                                 if (loop is not null)
                                 {
                                     result.Add(loop);
@@ -71,8 +71,8 @@ public static class CycleBasis //TODO test
                             else
                             {
                                 var loop = constructor(path2.ToChain(), path1.ToChain(), index,
-                                    graph.LinkBetween(cur2, next2.To),
-                                    graph.LinkBetween(start, friend));
+                                    graph.GetLinkBetween(cur2, next2.To),
+                                    graph.GetLinkBetween(start, friend));
                                 if (loop is not null)
                                 {
                                     result.Add(loop);
@@ -161,11 +161,11 @@ public static class CycleBasis //TODO test
             while (queue.Count > 0)
             {
                 var current = queue.Dequeue();
-                foreach (var friend in graph.Neighbors(current))
+                foreach (var friend in graph.GetNeighbors(current))
                 {
                     if(result.ContainsKey(friend) || starts.Contains(friend)) continue;
 
-                    var link = graph.LinkBetween(friend, current);
+                    var link = graph.GetLinkBetween(friend, current);
                     if(link is LinkStrength.None) continue;
                     
                     result.Add(friend, new EdgeTo<LinkStrength, TElement>(link, current));

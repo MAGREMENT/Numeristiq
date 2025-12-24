@@ -64,11 +64,11 @@ public class XYZRingStrategy : SudokuStrategy
         var cpr = new CellPossibility(hingeRow, poss);
         var cpc = new CellPossibility(hingeCol, poss);
         
-        foreach (var neighbor in graph.Neighbors(cpr))
+        foreach (var neighbor in graph.GetNeighbors(cpr))
         {
             if (!CheckIntegrity(neighbor, cph, cpc)) continue;
 
-            foreach (var secondNeighbor in graph.Neighbors(neighbor, LinkStrength.Strong))
+            foreach (var secondNeighbor in graph.GetNeighbors(neighbor, LinkStrength.Strong))
             {
                 if (!CheckIntegrity(secondNeighbor, cph, cpc, cpr)) continue;
 

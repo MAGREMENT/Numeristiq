@@ -39,7 +39,7 @@ public class BlossomLoopDFSLoopFinder : IBlossomLoopLoopFinder
         var link = builder.LastLink() == LinkStrength.None ? LinkStrength.Any : builder.LastLink() ==
             LinkStrength.Strong ? LinkStrength.Any : LinkStrength.Strong;
         
-        foreach (var friend in graph.Neighbors(last, link))
+        foreach (var friend in graph.GetNeighbors(last, link))
         {
             if (friend.Equals(first)) continue;
 

@@ -42,7 +42,7 @@ public class BlossomLoopExclusiveDFSLoopFinder : IBlossomLoopLoopFinder
             LinkStrength.Strong ? LinkStrength.Any : LinkStrength.Strong;
 
         bool foundSomething = false;
-        foreach (var friend in graph.Neighbors(last, link))
+        foreach (var friend in graph.GetNeighbors(last, link))
         {
             if (friend.Equals(first) || (nope.TryGetValue(friend, out var num) && num <= builder.Count)) continue;
 

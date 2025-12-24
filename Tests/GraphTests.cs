@@ -1,8 +1,8 @@
 ﻿using Model.Core.Graphs;
+using Model.Core.Graphs.Implementations;
 using Model.Sudokus;
 using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
-using Model.Sudokus.Solver.Utility.Graphs.Implementations;
 using Model.Utility;
 using Tests.Utility;
 
@@ -52,12 +52,12 @@ public class GraphTests
             {
                 var otherGraph = graphs[i];
                 
-                foreach (var friend in graphs[0].Item1.Graph.Neighbors(start, LinkStrength.Strong))
+                foreach (var friend in graphs[0].Item1.Graph.GetNeighbors(start, LinkStrength.Strong))
                 {
                     Assert.True(otherGraph.Item1.Graph.AreNeighbors(start, friend, LinkStrength.Strong));
                 }
             
-                foreach (var friend in graphs[0].Item1.Graph.Neighbors(start, LinkStrength.Weak))
+                foreach (var friend in graphs[0].Item1.Graph.GetNeighbors(start, LinkStrength.Weak))
                 {
                     Assert.True(otherGraph.Item1.Graph.AreNeighbors(start, friend, LinkStrength.Weak));
                 }
@@ -68,7 +68,7 @@ public class GraphTests
         {
             foreach (var start in graph.Graph)
             {
-                foreach (var friend in graph.Graph.Neighbors(start))
+                foreach (var friend in graph.Graph.GetNeighbors(start))
                 {
                     var a = friend.EveryCell();
                 }

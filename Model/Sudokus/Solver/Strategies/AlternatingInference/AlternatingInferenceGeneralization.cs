@@ -63,7 +63,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     {
         if (chain.Elements.Count < 3 || chain.Elements.Count % 2 == 1) return false;
 
-        foreach (var target in graph.Neighbors(chain.Elements[0]))
+        foreach (var target in graph.GetNeighbors(chain.Elements[0]))
         {
             if (graph.AreNeighbors(target, chain.Elements[^1]))
                 solverData.ChangeBuffer.ProposePossibilityRemoval(target);
@@ -80,7 +80,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     {
         if (chain.Elements.Count < 3 || chain.Elements.Count % 2 == 1) return false;
 
-        foreach (var target in graph.Neighbors(chain.Elements[0]))
+        foreach (var target in graph.GetNeighbors(chain.Elements[0]))
         {
             if (target is not CellPossibility cp) continue;
             

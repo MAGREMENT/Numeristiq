@@ -30,23 +30,23 @@ public class DictionaryGraph<TElement, TEdge, TCollection> : IGraph<TElement, TE
         hs.Add(new EdgeTo<TEdge, TElement>(edge, from));
     }
 
-    public IEnumerable<TElement> Neighbors(TElement from, TEdge edge)
+    public IEnumerable<TElement> GetNeighbors(TElement from, TEdge edge)
     {
-        foreach (var edgeTo in NeighborsWithEdges(from))
+        foreach (var edgeTo in GetNeighborsWithEdges(from))
         {
             if (edgeTo.Edge.Equals(edge)) yield return edgeTo.To;
         }
     }
 
-    public IEnumerable<TElement> Neighbors(TElement from)
+    public IEnumerable<TElement> GetNeighbors(TElement from)
     {
-        foreach (var edgeTo in NeighborsWithEdges(from))
+        foreach (var edgeTo in GetNeighborsWithEdges(from))
         {
             yield return edgeTo.To;
         }
     }
 
-    public IEnumerable<EdgeTo<TEdge, TElement>> NeighborsWithEdges(TElement from)
+    public IEnumerable<EdgeTo<TEdge, TElement>> GetNeighborsWithEdges(TElement from)
     {
         return _edges.TryGetValue(from, out var hs) ? hs : Enumerable.Empty<EdgeTo<TEdge, TElement>>();
     }
@@ -70,7 +70,7 @@ public class DictionaryGraph<TElement, TEdge, TCollection> : IGraph<TElement, TE
         return false;
     }
 
-    public TEdge? LinkBetween(TElement from, TElement to)
+    public TEdge? GetLinkBetween(TElement from, TElement to)
     {
         if (!_edges.TryGetValue(from, out var collection)) return default;
 

@@ -37,14 +37,14 @@ public class XYChainsStrategy : SudokuStrategy
     private bool Search(ISudokuSolverData solverData, IGraph<CellPossibility, LinkStrength> graph, CellPossibility current,
         List<XYCell> route, HashSet<CellPossibility> visited)
     {
-        var friend = graph.Neighbors(current, LinkStrength.Strong).First();
+        var friend = graph.GetNeighbors(current, LinkStrength.Strong).First();
         
         route.Add(new XYCell(current.Possibility, friend.Possibility, current.Row, current.Column));
         visited.Add(current);
         
         if(friend.Possibility == route[0].XPossibility && Process(solverData, route)) return true;
 
-        foreach (var next in graph.Neighbors(friend, LinkStrength.Weak))
+        foreach (var next in graph.GetNeighbors(friend, LinkStrength.Weak))
         {
             if (!visited.Contains(next))
             {

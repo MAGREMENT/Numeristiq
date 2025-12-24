@@ -50,7 +50,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
     private bool Search(ISudokuSolverData solverData, IGraph<IPossibilitySet, ReadOnlyBitSet16> graph,
         GridPositions occupied, HashSet<IPossibilitySet> explored, ChainBuilder<IPossibilitySet, int> chain)
     {
-        foreach (var friend in graph.NeighborsWithEdges(chain.LastElement()))
+        foreach (var friend in graph.GetNeighborsWithEdges(chain.LastElement()))
         {
             if (explored.Contains(friend.To) || occupied.ContainsAny(friend.To.Positions)) continue;
 

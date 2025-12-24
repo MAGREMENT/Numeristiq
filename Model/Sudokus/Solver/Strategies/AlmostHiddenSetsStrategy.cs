@@ -98,9 +98,9 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
                 if (one.Contains(possibility) || two.Contains(possibility)) continue;
 
                 var current = new CellPossibility(cell, possibility);
-                foreach (var friend in graph.Neighbors(current, LinkStrength.Strong))
+                foreach (var friend in graph.GetNeighbors(current, LinkStrength.Strong))
                 {
-                    foreach (var friendOfFriend in graph.Neighbors(friend, LinkStrength.Strong))
+                    foreach (var friendOfFriend in graph.GetNeighbors(friend, LinkStrength.Strong))
                     {
                         var asCell = friendOfFriend.ToCell();
 

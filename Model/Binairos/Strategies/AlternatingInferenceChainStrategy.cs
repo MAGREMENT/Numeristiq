@@ -37,13 +37,13 @@ public class AlternatingInferenceChainStrategy : Strategy<IBinairoSolverData>
         {
             var current = queue.Dequeue();
 
-            foreach (var eOn in graph.Neighbors(current, LinkStrength.Strong))
+            foreach (var eOn in graph.GetNeighbors(current, LinkStrength.Strong))
             {
                 if (IsInPath(current, eOn, off, on) || !on.TryAdd(eOn, current)) continue;
 
                 if (TryProcessChain(solverData, start, eOn, on, off, graph)) return true;
 
-                foreach (var eOff in graph.Neighbors(eOn))
+                foreach (var eOff in graph.GetNeighbors(eOn))
                 {
                     if (eOff == start || IsInPath(eOn, eOff, on, off))
                         continue;
@@ -62,7 +62,7 @@ public class AlternatingInferenceChainStrategy : Strategy<IBinairoSolverData>
     {
         if (current.Possibility == start.Possibility) return false;
         
-        foreach (var target in graph.Neighbors(current))
+        foreach (var target in graph.GetNeighbors(current))
         {
             if(graph.AreNeighbors(new CellPossibility(start.Row, start.Column,
                    BinairoUtility.Opposite(start.Possibility)), target))

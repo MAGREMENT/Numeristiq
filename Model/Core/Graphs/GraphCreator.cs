@@ -1,5 +1,6 @@
 ﻿using System;
 using Model.Core.Graphs.Implementations;
+using Model.Utility;
 using Model.Utility.Collections;
 
 namespace Model.Core.Graphs;
@@ -22,6 +23,22 @@ public static class GraphCreator
                 return new DictionaryGraph<TElement, TEdge, UniqueList<EdgeTo<TEdge, TElement>>>();
         }
 
+        throw new ArgumentException();
+    }
+
+    public static IGraph<CellPossibility, LinkStrength> CreateForCellPossibilityLink(GraphCollectionType type, 
+        int rowCount, int colCount, int posCount)
+    {
+        switch (type)
+        {
+            case GraphCollectionType.HashSet :
+                return new CellPossibilityArrayLinkGraph<ContainingHashSet<CellPossibility>>(rowCount, colCount,
+                    posCount);
+            case GraphCollectionType.UniqueList :
+                return new CellPossibilityArrayLinkGraph<UniqueList<CellPossibility>>(rowCount, colCount,
+                    posCount);
+        }
+        
         throw new ArgumentException();
     }
     

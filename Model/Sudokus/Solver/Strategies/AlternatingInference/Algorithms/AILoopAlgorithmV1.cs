@@ -33,7 +33,7 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
 
         if (path.Count % 2 == 1)
         {
-            foreach (var friend in graph.Neighbors(last, LinkStrength.Strong))
+            foreach (var friend in graph.GetNeighbors(last, LinkStrength.Strong))
             {
                 if (path.FirstElement().Equals(friend))
                 {
@@ -51,7 +51,7 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
         {
             if (path.Count >= 4)
             {
-                foreach (var weakFromLast in graph.Neighbors(last, LinkStrength.Weak))
+                foreach (var weakFromLast in graph.GetNeighbors(last, LinkStrength.Weak))
                 {
                     if (graph.AreNeighbors(path.FirstElement(), weakFromLast, LinkStrength.Weak))
                     {
@@ -64,7 +64,7 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
                 }
             }
             
-            foreach (var friend in graph.Neighbors(last, LinkStrength.Weak))
+            foreach (var friend in graph.GetNeighbors(last, LinkStrength.Weak))
             {
                 if (path.FirstElement().Equals(friend))
                 {
@@ -81,7 +81,7 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
                 }
             }
             
-            foreach (var friend in graph.Neighbors(last, LinkStrength.Strong))
+            foreach (var friend in graph.GetNeighbors(last, LinkStrength.Strong))
             {
                 if (path.FirstElement().Equals(friend))
                 {

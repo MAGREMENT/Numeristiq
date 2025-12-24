@@ -36,7 +36,7 @@ public class BlossomLoopBFSBranchFinder : IBlossomLoopBranchFinder
                     var link = current.Coloring == ElementColor.On ? LinkStrength.Any : LinkStrength.Strong;
                     var opposite = current.Coloring == ElementColor.On ? ElementColor.Off : ElementColor.On;
 
-                    foreach (var friend in graph.Neighbors(current.Element, link))
+                    foreach (var friend in graph.GetNeighbors(current.Element, link))
                     {
                         if (nope.Contains(friend) || parents.ContainsChild(friend)) continue;
                         if (friend.ContainsAny(cps))

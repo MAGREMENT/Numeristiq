@@ -52,7 +52,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
         ReadOnlyBitSet16 occupied, HashSet<IPossibilitySet> explored, ChainBuilder<IPossibilitySet, Cell> chain,
         IGraph<CellPossibility, LinkStrength> linkGraph)
     {
-        foreach (var friend in graph.NeighborsWithEdges(chain.LastElement()))
+        foreach (var friend in graph.GetNeighborsWithEdges(chain.LastElement()))
         {
             if (explored.Contains(friend.To) || occupied.ContainsAny(friend.To.EveryPossibilities())) continue;
 
@@ -97,11 +97,11 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
                 if (first.Contains(possibility) || last.Contains(possibility)) continue;
 
                 var current = new CellPossibility(cell, possibility);
-                foreach (var friend in linkGraph.Neighbors(current, LinkStrength.Strong))
+                foreach (var friend in linkGraph.GetNeighbors(current, LinkStrength.Strong))
                 {
                     if (nope.Contains(friend.ToCell())) continue;
                     
-                    foreach (var friendOfFriend in linkGraph.Neighbors(friend, LinkStrength.Strong))
+                    foreach (var friendOfFriend in linkGraph.GetNeighbors(friend, LinkStrength.Strong))
                     {
                         var asCell = friendOfFriend.ToCell();
 

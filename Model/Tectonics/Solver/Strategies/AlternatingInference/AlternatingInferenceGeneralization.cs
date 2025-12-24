@@ -43,13 +43,13 @@ public class AlternatingInferenceGeneralization : Strategy<ITectonicSolverData>
         {
             var current = queue.Dequeue();
 
-            foreach (var eOn in graph.Neighbors(current, LinkStrength.Strong))
+            foreach (var eOn in graph.GetNeighbors(current, LinkStrength.Strong))
             {
                 if (IsInPath(current, eOn, off, on) || !on.TryAdd(eOn, current)) continue;
 
                 if (TryProcessChain(solverData, start, eOn, on, off)) return true;
 
-                foreach (var eOff in graph.Neighbors(eOn))
+                foreach (var eOff in graph.GetNeighbors(eOn))
                 {
                     if (eOff is CellPossibility cp2 && cp2 == start || IsInPath(eOn, eOff, on, off))
                         continue;

@@ -18,7 +18,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
             var current = queue.Dequeue();
             var opposite = current.Coloring == ElementColor.Off ? ElementColor.On : ElementColor.Off;
 
-            foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Strong))
+            foreach (var friend in graph.GetNeighbors(current.Element, LinkStrength.Strong))
             {
                 if (visited.Contains(friend)) continue;
 
@@ -27,7 +27,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                 queue.Enqueue(new ColoredElement<T>(friend, opposite));
             }
                 
-            foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Weak))
+            foreach (var friend in graph.GetNeighbors(current.Element, LinkStrength.Weak))
             {
                 if (visited.Contains(friend)) continue;
 
@@ -52,7 +52,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
             var current = queue.Dequeue();
             var opposite = current.Coloring == ElementColor.Off ? ElementColor.On : ElementColor.Off;
 
-            foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Strong))
+            foreach (var friend in graph.GetNeighbors(current.Element, LinkStrength.Strong))
             {
                 if (visited.Contains(friend)) continue;
 
@@ -63,7 +63,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
 
             if (opposite == ElementColor.Off)
             {
-                foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Weak))
+                foreach (var friend in graph.GetNeighbors(current.Element, LinkStrength.Weak))
                 {
                     if (visited.Contains(friend)) continue;
 

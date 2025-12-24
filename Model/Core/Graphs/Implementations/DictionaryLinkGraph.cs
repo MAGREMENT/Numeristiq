@@ -29,13 +29,13 @@ public  class DictionaryLinkGraph<T, TCollection> : IGraph<T, LinkStrength>
         collection[(int)strength - 1].Add(from);
     }
 
-    public virtual IEnumerable<T> Neighbors(T from, LinkStrength strength)
+    public virtual IEnumerable<T> GetNeighbors(T from, LinkStrength strength)
     {
-        if (strength == LinkStrength.Any) return Neighbors(from);
+        if (strength == LinkStrength.Any) return GetNeighbors(from);
         return _links.TryGetValue(from, out var collection) ? collection[(int)strength - 1] : Enumerable.Empty<T>();
     }
 
-    public virtual IEnumerable<T> Neighbors(T from)
+    public virtual IEnumerable<T> GetNeighbors(T from)
     {
         if (!_links.TryGetValue(from, out var collection)) yield break;
         
@@ -50,7 +50,7 @@ public  class DictionaryLinkGraph<T, TCollection> : IGraph<T, LinkStrength>
         }
     }
 
-    public virtual IEnumerable<EdgeTo<LinkStrength, T>> NeighborsWithEdges(T from)
+    public virtual IEnumerable<EdgeTo<LinkStrength, T>> GetNeighborsWithEdges(T from)
     {
         if (!_links.TryGetValue(from, out var collection)) yield break;
         
@@ -76,7 +76,7 @@ public  class DictionaryLinkGraph<T, TCollection> : IGraph<T, LinkStrength>
                                                             collection[1].Contains(to));
     }
 
-    public virtual LinkStrength LinkBetween(T from, T to)
+    public virtual LinkStrength GetLinkBetween(T from, T to)
     {
         if (!_links.TryGetValue(from, out var sets))
         {
@@ -137,9 +137,9 @@ public class DictionaryConditionalLinkGraph<TElement, TValue, TCollection1, TCol
         collection[(int)edge - 1].Add((from, condition));
     }
 
-    public override IEnumerable<TElement> Neighbors(TElement from, LinkStrength strength)
+    public override IEnumerable<TElement> GetNeighbors(TElement from, LinkStrength strength)
     {
-        var b = base.Neighbors(from, strength);
+        var b = base.GetNeighbors(from, strength);
         return Values is null ? b : b.Concat(ConditionalNeighbors(from, strength));
     }
 
@@ -152,9 +152,9 @@ public class DictionaryConditionalLinkGraph<TElement, TValue, TCollection1, TCol
         }
     }
     
-    public override IEnumerable<TElement> Neighbors(TElement from)
+    public override IEnumerable<TElement> GetNeighbors(TElement from)
     {
-        var b = base.Neighbors(from);
+        var b = base.GetNeighbors(from);
         return Values is null ? b : b.Concat(ConditionalNeighbors(from));
     }
     
@@ -172,9 +172,9 @@ public class DictionaryConditionalLinkGraph<TElement, TValue, TCollection1, TCol
         }
     }
 
-    public override IEnumerable<EdgeTo<LinkStrength, TElement>> NeighborsWithEdges(TElement from)
+    public override IEnumerable<EdgeTo<LinkStrength, TElement>> GetNeighborsWithEdges(TElement from)
     {
-        var b = base.NeighborsWithEdges(from);
+        var b = base.GetNeighborsWithEdges(from);
         return Values is null ? b : b.Concat(ConditionalNeighborsWithEdge(from));
     }
     
@@ -223,9 +223,9 @@ public class DictionaryConditionalLinkGraph<TElement, TValue, TCollection1, TCol
         return false;
     }
 
-    public override LinkStrength LinkBetween(TElement from, TElement to)
+    public override LinkStrength GetLinkBetween(TElement from, TElement to)
     {
-        var b = base.LinkBetween(from, to);
+        var b = base.GetLinkBetween(from, to);
         if (b != LinkStrength.None) return b;
 
         if (Values is null || !_conditionalLinks.TryGetValue(from, out var collection)) return LinkStrength.None;

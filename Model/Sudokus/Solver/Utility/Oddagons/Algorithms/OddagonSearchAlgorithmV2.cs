@@ -37,7 +37,7 @@ public class OddagonSearchAlgorithmV2 : IOddagonSearchAlgorithm
             var current = queue.Dequeue();
             var last = current.Last();
 
-            foreach (var friend in graph.Neighbors(last))
+            foreach (var friend in graph.GetNeighbors(last))
             {
                 if(current.ContainsGuardian(friend)) continue;
                 var (contains, isFirst) = current.ContainsExceptFirst(friend);

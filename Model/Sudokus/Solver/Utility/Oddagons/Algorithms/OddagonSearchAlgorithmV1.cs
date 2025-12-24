@@ -33,7 +33,7 @@ public class OddagonSearchAlgorithmV1 : IOddagonSearchAlgorithm
         var last = builder.LastElement();
         var first = builder.FirstElement();
 
-        foreach (var friend in graph.Neighbors(last, LinkStrength.Strong))
+        foreach (var friend in graph.GetNeighbors(last, LinkStrength.Strong))
         {
             if (done.Contains(friend) || currentGuardians.Contains(friend)) continue;
             
@@ -51,7 +51,7 @@ public class OddagonSearchAlgorithmV1 : IOddagonSearchAlgorithm
             }
         }
         
-        foreach (var friend in graph.Neighbors(last, LinkStrength.Weak))
+        foreach (var friend in graph.GetNeighbors(last, LinkStrength.Weak))
         {
             if (done.Contains(friend) || currentGuardians.Contains(friend)) continue;
             

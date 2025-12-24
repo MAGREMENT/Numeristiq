@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Model.Core.Graphs;
+using Model.Sudokus;
 using Model.Utility;
 using Model.Utility.Collections;
 
-namespace Model.Sudokus.Solver.Utility.Graphs.Implementations;
+namespace Model.Core.Graphs.Implementations;
 
 public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength> //TODO finish and look into using + use CPArrayGraph as base + Generalize
 {
@@ -18,16 +18,16 @@ public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength> 
         if (type == LinkType.BiDirectional) AddMono(to, from, strength);
     }
 
-    public IEnumerable<ISudokuElement> Neighbors(ISudokuElement from, LinkStrength strength)
+    public IEnumerable<ISudokuElement> GetNeighbors(ISudokuElement from, LinkStrength strength)
     {
-        if (strength == LinkStrength.Any) return Neighbors(from);
+        if (strength == LinkStrength.Any) return GetNeighbors(from);
         
         if (from is CellPossibility cp) return _cps[cp.Row, cp.Column, cp.Possibility - 1, (int)strength - 1] ?? Enumerable.Empty<ISudokuElement>();
         
         return _others.TryGetValue(from, out var resume) ? resume[(int)strength - 1] : Enumerable.Empty<ISudokuElement>();
     }
 
-    public IEnumerable<ISudokuElement> Neighbors(ISudokuElement from)
+    public IEnumerable<ISudokuElement> GetNeighbors(ISudokuElement from)
     {
         if (from is CellPossibility cp)
         {
@@ -57,7 +57,7 @@ public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength> 
         }
     }
 
-    public IEnumerable<EdgeTo<LinkStrength, ISudokuElement>> NeighborsWithEdges(ISudokuElement from)
+    public IEnumerable<EdgeTo<LinkStrength, ISudokuElement>> GetNeighborsWithEdges(ISudokuElement from)
     {
         throw new System.NotImplementedException();
     }
@@ -83,7 +83,7 @@ public class SudokuElementArrayLinkGraph : IGraph<ISudokuElement, LinkStrength> 
         return l is not null && l.Contains(to);
     }
 
-    public LinkStrength LinkBetween(ISudokuElement from, ISudokuElement to)
+    public LinkStrength GetLinkBetween(ISudokuElement from, ISudokuElement to)
     {
         return LinkStrength.None; //TODO
     }

@@ -9,7 +9,10 @@ public interface IContainingEnumerable<T> : IEnumerable<T>
 
 public interface IContainingCollection<T> : IContainingEnumerable<T>
 {
+    int Count { get; }
+    
     bool Add(T element);
+    void Clear();
 }
 
 public class ContainingList<T> : List<T>, IContainingCollection<T>

@@ -27,7 +27,7 @@ public class AIChainAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T :
         var explored = next == LinkStrength.Strong ? onExplored : offExplored;
         var last = builder.LastElement();
 
-        foreach (var friend in graph.Neighbors(last, next))
+        foreach (var friend in graph.GetNeighbors(last, next))
         {
             if (current.Contains(friend) || explored.Contains(friend)) continue;
 
@@ -45,7 +45,7 @@ public class AIChainAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T :
 
         if (next == LinkStrength.Weak)
         {
-            foreach (var friend in graph.Neighbors(last, LinkStrength.Strong))
+            foreach (var friend in graph.GetNeighbors(last, LinkStrength.Strong))
             {
                 if (current.Contains(friend)) continue;
 
